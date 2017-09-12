@@ -1,0 +1,7 @@
+EnableContentAssist=true
+EnableDeclView=true
+EnableHoverTip=true
+EnableVPG=true
+FortranIncludePaths=\\cdss-app-statemod-fortran\n
+FortranModulePaths=\\cdss-app-statemod-fortran\n
+eclipse.preferences.version=1
