@@ -8,13 +8,71 @@
 # The compiler
 FC = gfortran
 # The flags for debugging or for maximum performance, comment as necessary
-#FCFLAGS = -g -fbounds-check -fno-align-commons
+
+# -cpp
+#
+# Enable preprocessing. The preprocessor is automatically invoked if the file extension is
+# .fpp, .FPP, .F, .FOR, .FTN, .F90, .F95, .F03 or .F08. Use this option to manually enable
+# preprocessing of any kind of Fortran file.
+#
+# To disable preprocessing of files with any of the above listed extensions, use the negative form: -nocpp.
+#
+# The preprocessor is run in traditional mode. Any restrictions of the file-format,
+# especially the limits on line length, apply for preprocessed output as well, so it might be
+# advisable to use the -ffree-line-length-none or -ffixed-line-length-none options.
+#------------
+#
+# -fcheck=bounds
+#
+# Enable generation of run-time checks for array subscripts and against the declared
+# minimum and maximum values. It also checks array indices for assumed and deferred
+# shape arrays against the actual allocated bounds and ensures that all string lengths
+# are equal for character array constructors without an explicit typespec.
+#
+# Some checks require that -fcheck=bounds is set for the compilation of the main program.
+#
+# Note: In the future this may also include other forms of checking, e.g., checking substring references.
+#------------
+#
+# -finit-local-zero
+#
+# The -finit-local-zero option instructs the compiler to initialize local INTEGER, REAL,
+# and COMPLEX variables to zero, LOGICAL variables to false, and CHARACTER variables to a string of null bytes
+#------------
+#
+# -fno-align-commons
+#
+# By default, gfortran enforces proper alignment of all variables in a COMMON block
+# by padding them as needed. On certain platforms this is mandatory, on others it
+# increases performance. If a COMMON block is not declared with consistent data types
+# everywhere, this padding can cause trouble, and -fno-align-commons can be used to
+# disable automatic alignment. The same form of this option should be used for all
+# files that share a COMMON block. To avoid potential alignment issues in COMMON blocks,
+# it is recommended to order objects from largest to smallest.
+#------------
+#
+# -fno-automatic
+#
+# Treat each program unit (except those marked as RECURSIVE) as if the SAVE statement were
+# specified for every local variable and array referenced in it. Does not affect common blocks.
+# (Some Fortran compilers provide this option under the name -static or -save.)
+# The default, which is -fautomatic, uses the stack for local variables smaller than the value
+# given by -fmax-stack-var-size. Use the option -frecursive to use no static memory.
+#------------
+#
+# -g 
+#------------
+#
+# -static
+#------------
+
+#FFLAGS = -g -fbounds-check -fno-align-commons
 # use -static especially for windows compiling 
-#FCFLAGS = -g -cpp -fbounds-check -fno-align-commons -static
-FCFLAGS = -g -cpp -fno-align-commons -static -fbounds-check -fno-automatic -finit-local-zero
-#FCFLAGS = -O2
+#FFLAGS = -g -cpp -fbounds-check -fno-align-commons -static
+FFLAGS = -g -cpp -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero
+#FFLAGS = -O2
 # The flags for all cases (e.g. look for system .mod files, required in gfortran)
-FCFLAGS += -I/usr/include
+FFLAGS += -I/usr/include
 # The libraries needed for linking
 #LDFLAGS = -li_need_this_lib
 # The ist of executables to be built within the package
@@ -206,13 +264,18 @@ welrig3p.o: common.inc
 xdebug.o: common.inc
 
 # The rule for building the statemod executable
-#   The following is a carefully constructed list created by starting with statem.o
-#   and adding files as needed to reconcile missing subroutine error messages.  
+# - all source modules are listed as dependencies
+# - interdependencies are not accounted for, just the main program requirements
+# - the following were in Jim Brannon's code.  Add back in some form once basic compilation is working.
+#		parse_gfortran.o
+#		getpath_windows.o
+#		dattim_gfortran.o
+#		putpath_windows.o 
 statemod: \
 	statem.o \
 		namext.o \
-		parse_gfortran.o \
-		getpath_windows.o \
+		parse.o \
+		getpath.o \
 		gnu.o \
 		skipn.o \
 		getfn.o \
@@ -243,7 +306,7 @@ statemod: \
 			comment.o \
 			count.o \
 			datinp.o \
-			dattim_gfortran.o \
+			dattim.o \
 			daydata.o \
 			daydist.o \
 			daydivo.o \
@@ -371,7 +434,7 @@ statemod: \
 			powsea.o \
 			powseap.o \
 			powsear.o \
-			putpath_windows.o \
+			putpath.o \
 			replace.o \
 			repsort.o \
 			resrgp.o \
@@ -436,19 +499,7 @@ statemod: \
 			welrig3p.o \
 			year.o \
 			year2.o
-	$(FC) $(FCFLAGS) -o statemod $^ $(LDFLAGS)
-
-# Using Fortran MODULES: prog4.f90 USEs a Fortran module defined
-# inside mod.f90, this is similar to the include case (prog2), but,
-# since there is no standard naming convention for compiled module
-# files in f90, the dependency is more easily built on the object
-# files, because when mod.o is generated, one is sure that
-# any_module_inside_mod.mod has been newly generated as well; mod.o
-# must also be linked in when building the executable, so the
-# dependency on mod.o is added also for prog4, as in the external
-# procedure case (prog3):
-#prog4.o: mod.o
-#prog4: mod.o
+	$(FC) $(FFLAGS) -o statemod $^ $(LDFLAGS)
 
 # ======================================================================
 # The general rules.  These generally should not require modification
@@ -458,27 +509,32 @@ statemod: \
 # used in order to list additional object files on which the
 # executable depends
 %: %.o
-	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o $@ $^ $(LDFLAGS)
 
-# General rules for building prog.o from prog.f90 or prog.F90; $< is
-# used in order to list only the first prerequisite (the source file)
-# and not the additional prerequisites such as module or include files
+# General rules for compiling source files into object files.
+#
+# % = wildcard to match file basename
+# $< = source file name
+
+# Compile files with extension .f90 into .o object files
 %.o: %.f90
-	$(FC) $(FCFLAGS) -o $@ -c $<
+	$(FC) $(FFLAGS) -c $<
 
+# Compile files with extension .F90 into .o object files
 %.o: %.F90
-	$(FC) $(FCFLAGS) -o $@ -c $<
+	$(FC) $(FFLAGS) -c $<
 
-#added by jhb for the statemod files from ray b after changing everything to lower case
+# Compile files with extension .for into .o object files
 %.o: %.for
-	$(FC) $(FCFLAGS) -o $@ -c $<
+	$(FC) $(FFLAGS) -c $<
 
 # Utility targets
 .PHONY: clean veryclean
 
+# Remove intermediate files used when compiling
 clean:
 	rm -f *.o *.mod *.MOD
 
+# Remove all intermediate files and the final executable
 veryclean: clean
 	rm -f *~ $(PROGRAMS)
-
