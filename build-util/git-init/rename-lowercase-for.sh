@@ -8,7 +8,6 @@
 ls -1 *.for *.FOR *.For | (while read f;
 do
         fLower=`echo ${f} | tr '[A-Z]' '[a-z]'`
-        fLower="${fLower/.obj/.o}"
 	if [ ${f} != ${fLower} ]
 		then
 		# Original and lowercase filename are different so rename
@@ -20,9 +19,17 @@ do
 	hasZ=`grep -P '\x1A' ${fLower} | wc --bytes`
 	if [ ${hasZ} != "0" ]
 		then
-		# Remove the ^Z to a temporary file and then rename back
+		# Found nonzero count of ^Z in the file.
+		# Remove the ^Z to a temporary file and then rename back.
         	echo "Detected ctrl-z in ${fLower}...removing"
 		sed 's///g' ${fLower} > ztemp
 		mv ztemp ${fLower}
 	fi
 done)
+
+# Remove the temporary file if it still exists
+
+if [ -a "ztemp" ]
+	then
+	rm ztemp
+fi

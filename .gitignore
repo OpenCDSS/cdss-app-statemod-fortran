@@ -10,11 +10,15 @@
 
 # Products of compiling software (but need to be careful if library dependencies are included)
 *.o
+*.obj
 *.exe
 *.lib
 *.a
 *.so
 *.log
+
+# Lahey dynamic files
+*.DEP
 
 # Top-level bin folder and distribution folder
 /bin

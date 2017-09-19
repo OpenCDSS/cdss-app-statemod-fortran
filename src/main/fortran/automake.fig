@@ -1,0 +1,25 @@
+QUITONERROR
+
+FILES=*.for
+#
+# _________________________________________________________
+# Standard compilation
+# rrb 02/05/09; Fast and with local variables saved
+COMPILE=@lf95 -c -nap -nchk -ncover -ng -o1 -npca -ntrace -sav -nstchk -nw %fi
+#
+# _________________________________________________________
+# Semi fast. The following saves local variables and checks stack
+# it will not find variable overflows
+COMPILE=@lf95 -c -nap -nchk -ncover -ng -o1 -npca -ntrace -sav -stchk -nw %fi
+#
+# _________________________________________________________
+# Slow The following does all checks and is very slow
+# 2006/05/01 Update
+# rrb  COMPILE=@lf95 -c -nap -chk -ncover -g -o1 -pca -trace -sav -stchk -w %fi
+#
+# _________________________________________________________
+# rrb test without warn to remove 
+LINK=@lf95 @%rf -warn -exe %ex
+# rrb LINK=@lf95 @%rf -exe %ex
+TARGET=StateMod.exe
+
