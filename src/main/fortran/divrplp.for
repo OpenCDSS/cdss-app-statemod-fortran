@@ -266,16 +266,17 @@ c		            ioutiw = water right used for detailed output
 c		            ioutE = detailed output for Exchange Reach
 c		            ioutA = detailed output for ChekAva
 c               ioutIR= instream flow reach
-c               iout5  details on releasing at the original source 
-c                      and limiting the capacity of the original 
-c                      source
+c               iout26= 1 details on reporting when the original source 
+c                       was a type 26 operating rule and limiting the
+c                       capacity of the original source
+c               iout26= 2 summary of iout26=1
 c
       iout=0
       ioutiw=0
       ioutE=0
       ioutA=0
       ioutIR=0
-      iout5=0
+      iout26=0
       ioutQ=0
       
       cDest1='NA'
@@ -311,7 +312,9 @@ c ---------------------------------------------------------
       ndP=-1
       nsP=-1
       ipuse=-1
-      lopr=-1
+      lopr5=-1
+      lopr6=-1
+      lopr26=-1
       
       nsR=-1
       iscd=-1
@@ -502,12 +505,13 @@ c		ipTC  = T&C plan
       if(ipTC.gt.0) cTandC='Yes'
 c
 c ---------------------------------------------------------
-c		i. Set assocaited operating rule
-c		   for carrier & capacity adjustments     
-      lopr=iopsou(5,l2) 
+c		            i. Set associated operating rule
+c		   for carrier & capacity adjustments  
+c rrb 2015/02/03X; Done below based on the value of ioprlim   
+cx    lopr5=iopsou(5,l2) 
 c
 c ---------------------------------------------------------
-c		j. Set CU limit switch      
+c		            j. Set CU limit switch      
       rec12=cDivTyp(l2)
       iDep=0
       if(rec12(1:9).eq.'Diversion') iDep=0
@@ -580,50 +584,49 @@ c
 c ---------------------------------------------------------
 c rrb 2014/11/14; n. Set location of the operating right that
 c                    provided source of water to a type 11 plan
-      lopr5=0
-      lr5=0
-      nd5=0
-      iscd5=0
-      ndns5=0
+      lopr26=0
+      lr26=0
+      nd26=0
+      iscd26=0
+      ndns26=0
 c
-      if(iout5.eq.1) then
+      if(iout26.eq.1) then
         write(nlog,*) ' '
         write(nlog,*) ' DivRplP_1; l2, ioprlim(l2), iopsou(5,l2)'   
         write(nlog,*) ' DivRplP_1;', l2, ioprlim(l2), iopsou(5,l2)         
       endif
 c  
-c     
-c                                      
-c rrb 2015/02/03X; Revise to use Creuse 
+c                            
+c rrb 2015/02/03X; Revise to use Creuse to identify the type 26 rule
 cx      if(ioprlim(l2).eq.5 .and. iopsou(5,l2).gt.0) then
-cx      lopr5=iopsou(5,l2)
+cx      lopr26=iopsou(5,l2)
       if(nsP.gt.0 .and. iplntyp(nsP).eq.11) then        
-        lopr5=ireuse(l2)
-        lr5=iopsou(1,lopr5)
-        nd5=idivco(1,lr5)
-        iscd5=IDVSTA(nd5)          
-        ndns5=NDNNOD(iscd5)
+        lopr26=ireuse(l2)
+        lr26=iopsou(1,lopr26)
+        nd26=idivco(1,lr26)
+        iscd26=IDVSTA(nd26)          
+        ndns26=NDNNOD(iscd26)
 c
 c rrb 2015/01/24; Revised reporting approach. 
 c                 Set iscd1 the node containing the plan
 c                 the original source water right diverted to
-        nsp1=iopdes(1,lopr5)
+        nsp1=iopdes(1,lopr26)
         iscd1=ipsta(nsp1)   
         iok=0
-        if(lopr5.eq.0 .or. lr5.eq.0  .or. nd5.eq.0. or.
-     1     iscd5.eq.0 .or. nsp1.eq.0 .or. iscd1.eq.0) then
-          iout5=1
+        if(lopr26.eq.0 .or. lr26.eq.0  .or. nd26.eq.0. or.
+     1     iscd26.eq.0 .or. nsp1.eq.0 .or. iscd1.eq.0) then
+          iout26=1
           iok=1     
         endif       
       endif    
 c   
-      if(iout5.eq.1) then
+      if(iout26.eq.1) then
         write(nlog,*) ' '         
         write(nlog,*)
-     1    ' DivRplP_2;   lopr5     lr5     nd5  iscd5',
-     1                '   ndns5    nsp1   iscd1  ndns5'   
+     1    ' DivRplP_2;   lopr26    lr26    nd26  iscd26',
+     1                '   ndns26    nsp1   iscd1  ndns26'   
         write(nlog,'(a12,8i8)')
-     1    ' DivRplP_2;', lopr5, lr5, nd5, iscd5, ndns5, iscd1, ndns5
+     1    ' DivRplP_2;', lopr26, lr26, nd26, iscd26, ndns26, iscd1, ndns26
 c      
         if(iok.eq.1) then
           write(nlog,*) ' Problemm with source water right reporting'
@@ -741,23 +744,28 @@ c
 c _________________________________________________________
 c               
 c               Step 4; Limit to monthly and annual limits
-c rrb 2007/10/23;      
-      if(iOprLim(l2).eq.2 .and. iopsou(5,l2).gt.0) then
-        lopr=iopsou(5,l2)
-        oprmaxM1=amin1(oprmaxM(lopr), oprmaxA(lopr))
-        ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
-        alocfs3=alocfs
-        
-        if(iout.eq.1) then 
-          write(nlog,*) ' DivRplP;',lopr, oprmaxM(lopr), 
-     1      oprmaxA(lopr), alocfs2*fac, alocfs3*fac
-        endif          
-
-        if(alocfs.le.small) then
-          iwhy=5
-          cwhy='Monthly or Annual Limit (OprMaxM1) = zero'          
-          goto 300
-        endif  
+c rrb 2007/10/23;    
+c rrb 2015/02/03X; Allow type 4 that is a type 2 + type 3  
+cx    if(iOprLim(l2).eq.2 .and. iopsou(5,l2).gt.0) then
+      if(iOprLim(l2).eq.2 .or. iOprLim(l2).eq.4) then
+        if(iopsou(5,l2).gt.0) then
+          lopr5=iopsou(5,l2)
+          oprmaxM1=amin1(oprmaxM(lopr5), oprmaxA(lopr5))
+          ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
+          alocfs3=alocfs
+          
+          if(iout.eq.1) then 
+            write(nlog,*) ' DivRplP; lopr5,oprmaxM(),oprmaxA()'
+            write(nlog,*) ' DivRplP;',lopr5,oprmaxM(lopr5),
+     1        oprmaxA(lopr5)          
+          endif          
+         
+          if(alocfs.le.small) then
+            iwhy=5
+            cwhy='Monthly or Annual Limit (OprMaxM1) = zero'          
+            goto 300
+          endif 
+        endif 
       endif  
 c
 c _________________________________________________________
@@ -766,22 +774,38 @@ c rrb 2009/01/15;
 c               Step 4b; Limit to the amount diverted by another 
 c		              operating rule
 c		
-      if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then
-        lopr=iopsou(5,l2)
-        oprmaxM1=amax1(0.0, divo(lopr)*fac)
-c       write(nlog,*) ' DivRplP; ',ioprlim(l2), lopr, OprmaxM1
-        
-        ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
-        alocfs3=alocfs
-        
-        if(iout.eq.1) 
-     1    write(nlog,*) ' DivRplP;',lopr, oprmaxM1, 
-     1      divo(lopr)*fac, alocfs2*fac, alocfs3*fac
-
-        if(alocfs.lt.small) then
-          iwhy=6
-          cwhy='Operating Rule Limit (OprMaxM1 or alocfs3) = zero'          
-          goto 300
+c rrb 2015/02/03X; Allow type 4 that is a type 2 + type 3 
+cx    if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then    
+      if(ioprlim(l2).eq.3 .or. ioprlim(l2).eq.4) then
+        if(iopsou(6,l2).gt.0) then      
+          lopr6=iopsou(6,l2)
+          oprmaxM1=amax1(0.0, divo(lopr6)*fac)        
+c        
+c rrb 2015/03/02X; Revise to limit to diversions in prior iterations        
+          oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)        
+          
+          if(iout.eq.1) then
+            write(nlog,*) ' '
+            write(nlog,*) 
+     1        ' DivRplP; ioprlim(l2),lopr6,divo(lopr6),divo(l2),\',
+     1                   'OprmaxM1'
+            write(nlog,*)
+     1        ' DivRplP; ',ioprlim(l2), lopr6, divo(lopr6)*fac, 
+     1                     divo(l2)*fac, OprmaxM1
+          endif
+                  
+          ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
+          alocfs3=alocfs
+          
+          if(iout.eq.1) 
+     1      write(nlog,*) ' DivRplP;',lopr6, oprmaxM1, 
+     1        divo(lopr6)*fac, alocfs2*fac, alocfs3*fac
+         
+          if(alocfs.lt.small) then
+            iwhy=6
+            cwhy='Operating Rule Limit (OprMaxM1 or alocfs3) = 0'          
+            goto 300
+          endif
         endif
       endif        
 c
@@ -790,18 +814,18 @@ c
 c rrb 2014/11/24;
 c     Step 4c; Limit to the capacity in the original source
 c		
-      if(lopr5.gt.0) then
-        divcap1 = amax1(0.0, divcap(nd5) - divmon(nd5))     
+      if(lopr26.gt.0) then
+        divcap1 = amax1(0.0, divcap(nd26) - divmon(nd26))     
         alocfs4=alocfs
         ALOCFS=AMIN1(ALOCFS, divcap1)
         alocfs5=alocfs
         
-        if(iout5.eq.1) then
+        if(iout26.eq.1) then
           write(nlog,*) ' '
           write(nlog,*) 
-     1    ' DivRplP_3;  lopr5  alocfs4 divcap1 alocfs5'
+     1    ' DivRplP_3;  lopr26  alocfs4 divcap1 alocfs5'
           write(nlog,*) 
-     1    ' DivRplP_3;',lopr5, alocfs4*fac, divcap1*fac, alocfs5*fac 
+     1    ' DivRplP_3;',lopr26, alocfs4*fac, divcap1*fac, alocfs5*fac 
         endif
         
         if(alocfs.lt.small) then
@@ -1103,8 +1127,11 @@ c	              	that supplied water to the accounting
 c	             	  plan that already has a capacity 
 c	             		adjustment
       if(ncarry.gt.0) then
-        if(lopr.gt.0) then        
-          loprR=iopsou(1,lopr)
+c
+c rrb 2015/02/03X; Correction to specify source of lopr
+cx      if(lopr.gt.0) then 
+        if(lopr6.gt.0) then       
+          loprR=iopsou(1,lopr6)
           noprS=idivco(1,loprR)        
         endif  
       
@@ -1287,18 +1314,18 @@ c
 c
 c rrb 2014/11/24; Add a plan release to the original source downstream
 c
-      if(iout5.eq.1) then
+      if(iout26.eq.1) then
         write(nlog,*) ' '         
-        write(nlog,*) ' DivRplP_4; lopr5, ndns5, iscd5'
-        write(nlog,*) ' DivRplP_4; ', lopr5, ndns5, iscd5
+        write(nlog,*) ' DivRplP_4; lopr26, ndns26, iscd26'
+        write(nlog,*) ' DivRplP_4; ', lopr26, ndns26, iscd26
       endif     
 c      
-      if(lopr5.eq.0) then      
+      if(lopr26.eq.0) then      
         CALL TAKOUT(maxsta,AVAIL,RIVER,AVINP,QTRIBU,IDNCOD,
      1              relact,ndns,iscd)
       else
         call TAKOUT(maxsta,avail,river,avinp,qtribu,idncod,
-     1              relact,ndns5,iscd5)     
+     1              relact,ndns26,iscd26)     
       endif 
           
 c
@@ -1355,7 +1382,14 @@ c
 c
 c _________________________________________________________
 c		            Step 18; Add return flows if a diversion     
-      if(ndtype.eq.3 .and. ipuse.eq.0) then
+c
+c rrb 2007/12/04; Add Loss
+cx      write(nlog,*) ' DivRplP; ndtype, ipUse divactL'
+cx      write(nlog,*) ' DivRplP;', ndtype, ipUse, divactL*fac
+
+c rrb 2015/02/03X; Correction
+cx    if(ndtype.eq.3 .and. ipuse.eq.0) then
+      if(ndtype.eq.3 .and. ipuse.le.0) then      
         CALL RTNSEC(icx,divactL,l2,IUSE,Idcd,nd,ieff2)       
       endif
 c
@@ -1541,29 +1575,29 @@ c
 c rrb 2015/01/24; Report amount diverted as Carried... at the 
 c                 the source plan node (iscd), the original
 c                 source plan node befor a split (iscd1) and
-c                 if not a carrier, the water right node (iscd5)
+c                 if not a carrier, the water right node (iscd26)
 c
 c                 qdiv(38 Carried water reported as Carried, Exchange
 c                   or Bypassed but not used to calculaete
 c                   River Divert in Outmon.f
 c
-        if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then 
+        if(iplntyp(nsP).eq.11 .and. lopr26.gt.0) then 
 c
           qdiv(38,iscd) = qdiv(38,iscd) - relact
           qdiv(38,iscd1)= qdiv(38,iscd1) - relact
 c
-          if(nd5.ne.ncar) then
-            qdiv(38,iscd5)=qdiv(38,iscd5) - relact     
+          if(nd26.ne.ncar) then
+            qdiv(38,iscd26)=qdiv(38,iscd26) - relact     
           endif
 c                  
-          if(iout5.eq.2) then
+          if(iout26.eq.2) then
             write(nlog,*) ' '  
             write(nlog,*)          
-     1        ' DivRplP_5;   lopr5   iscd   iscd1   iscd5',
-     1                   '     nd5    ncar  relact qdiv(38'
+     1        ' DivRplP_5;   lopr26   iscd   iscd1   iscd26',
+     1                   '     nd26    ncar  relact qdiv(38'
              write(nlog,'(a13, 6i8, 20f8.0)')                                      
-     1        ' DivRplP_5; ', lopr5, iscd, iscd1, iscd5, 
-     1          nd5, ncar, relact*fac,  qdiv(38,iscd5)*fac                                       
+     1        ' DivRplP_5; ', lopr26, iscd, iscd1, iscd26, 
+     1          nd26, ncar, relact*fac,  qdiv(38,iscd26)*fac                                       
           endif  
         endif             
       endif      
@@ -1686,24 +1720,24 @@ c rrb 2014/11/24
 c     Step 26a; Adjust the amount diverted (divmon) based on 
 c               the amount released which is how
 c               a diversion is limited by capacity    
-      if(lopr5.gt.0) then    
-        if(nd5.ne.ncar) then
-          divcap2=divcap(nd5) - divmon(nd5)         
-          divmon(nd5) = amax1(divmon(nd5) + divact,0.0)
-          divcap3=divcap(nd5) - divmon(nd5)   
+      if(lopr26.gt.0) then    
+        if(nd26.ne.ncar) then
+          divcap2=divcap(nd26) - divmon(nd26)         
+          divmon(nd26) = amax1(divmon(nd26) + divact,0.0)
+          divcap3=divcap(nd26) - divmon(nd26)   
         else
-          divcap2=divcap(nd5) - divmon(nd5)          
+          divcap2=divcap(nd26) - divmon(nd26)          
           divcap3=divcap2
         endif
 c
-        if(iout5.eq.2) then
+        if(iout26.eq.2) then
           write(nlog,*) ' '           
           write(nlog,*) 
-     1     ' DivResP2_6;',
-     1     '    lopr  ncarry     nd5    ncar',
+     1     ' DivRPlP_6;',
+     1     '  lopr26  ncarry     nd26    ncar',
      1     '  divact divcap1 divcap2 divcap3'
           write(nlog,'(1x,a12,4i8, 20f8.0)')
-     1     ' DivResP2_6;', lopr5, ncarry, nd5, iscd,
+     1     ' DivRplP_6;', lopr26, ncarry, nd26, iscd,
      1       divact*fac, divcap1*fac, divcap2*fac, divcap3*fac
         endif        
       endif
@@ -1716,20 +1750,25 @@ c               Step 27; Adjust monthly or annual plan limitations
 c
 c rrb 2009/01/15; Revise to recognize ioprlim(l2)=3      
 cx    if(iOprLim(l2).gt.1 .and. iopsou(5,l2).gt.0) then
-      if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2) then
+c
+c rrb 2015/02/03; Revise to recognize ioprlim(l2)=4
+cx    if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2) then
+      if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2 .or.
+     1   iOprLim(l2).eq.4) then
+c     
         if(iopsou(5,l2).gt.0) then
       
-          lopr=iopsou(5,l2)
-          ipLim=iopsou(1,lopr)
+          lopr5=iopsou(5,l2)
+          ipLim=iopsou(1,lopr5)
           
 cx          if(iplim.eq.5.and. divact.gt.small) 
 cx     1      write(nlog,*) 'DivRpl before', 
 cx     1      iplim,  psto1(ipLim), psto2(ipLim), corid1     
         
           call SetLimit(
-     1      nlog, icx, lopr, ipLim, ioprlim(l2), fac, 
-     1      divact, OprmaxM(lopr), OprMaxA(lopr), 
-     1      Oprmax(lopr,mon), Oprmax(lopr,13), OprmaxM1, OprmaxM2, 
+     1      nlog, icx, lopr5, ipLim, ioprlim(l2), fac, 
+     1      divact, OprmaxM(lopr5), OprMaxA(lopr5), 
+     1      Oprmax(lopr5,mon), Oprmax(lopr5,13), OprmaxM1, OprmaxM2, 
      1      psto1(ipLim), psto2(ipLim), corid1)     
      
 cx          if(iplim.eq.5 .and. divact.gt.small) 
@@ -1849,16 +1888,16 @@ c _________________________________________________________
 c
 c               Step X; Check plan supply
 cx      if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2) then
-cx        lopr=iopsou(5,l2)
-cx        if(iopsou(5,l2).gt.0 .and. psuply(lopr).gt.small .and.
+cx        lopr5=iopsou(5,l2)
+cx        if(iopsou(5,l2).gt.0 .and. psuply(lopr5).gt.small .and.
 cx     1    abs(divact).gt.small) then
-cx          ipLim=iopsou(1,lopr)
+cx          ipLim=iopsou(1,lopr5)
 cx
-cx          write(nlog,*) ' DivRplP;   ', ndp, nsp, ipuse, lopr, iplim           
+cx          write(nlog,*) ' DivRplP;   ', ndp, nsp, ipuse, lopr5, iplim           
 cx          write(nlog,*) ' DivRplP;   ', 
-cx     1      corid1, icx, lopr, ioprlim(l2), 
-cx     1      psuply(iplim)*fac, psuplyT(iplim)*fac, 
-cx     1      psto1(ipLim), psto2(ipLim)    
+cx     1      corid1, icx, lopr5, ioprlim(l2), 
+cx     1      psuply(iplim5)*fac, psuplyT(iplim5)*fac, 
+cx     1      psto1(ipLim5), psto2(ipLim5)    
 cx        endif
 cx      endif       
 c
@@ -1903,10 +1942,10 @@ cx   1  ' imcd  sht   avail  Qdiv29 iOprLim iopsou5',/
      1  ' ____ ____________________________________')
 cx   1  ' ____ ____ _______ _______ _______ _______ _______ _______')
  280   format(a12, i5, 1x,a4, i5, 3(1x,a12), 6i5, i8,
-     1 12f8.1, i5, 1x,a36, 2i5, 20f8.1)
+     1 12f8.1, i5, 1x,a48, 2i5, 20f8.1)
      
  282   format(a12, i5, 1x,a4, i5, 2(1x,a12), 6i5,
-     1 11f8.3, i5, 1x,a36, 2i5, 20f8.3)
+     1 11f8.3, i5, 1x,a48, 2i5, 20f8.3)
 
  301   format(/,60('_'),/,
      1   '  DivrplP;  iyr  mon iteration ', 3i5,/

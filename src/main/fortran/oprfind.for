@@ -867,7 +867,7 @@ c
 c ---------------------------------------------------------
 c rrb 00/02/28; c. Allow monthly and intervening structures
 c                  Note Recognize -8 and -20 for GUI operation 
-c		   of RG compact 
+c		               of RG compact 
           if(idumx.lt.0) then
             if(idumx.eq.-8) then
               do im=1,12
@@ -1292,7 +1292,7 @@ c __________________________________________________________
      1'  Oprfind; ', a8, ' Operating Right ', a12,/                      
      1 11x,' Cannot find an Operating Right',
      1     ' = ', a12,/
-     1 11x,' in the Operating Right (*.opr) file above this opr rule.'
+     1 11x,' in the Operating Right (*.opr) file above this opr rule'/
      1 11x,' This error often occurs when oprlimit is greater',/
      1 11x,' than zero')
      

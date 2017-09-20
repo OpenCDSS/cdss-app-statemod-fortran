@@ -57,11 +57,22 @@ c               Step 2; Adjust monthly or annual diversion limits UP
         oprmaxA1=oprmaxAX
         oprmaxAX=oprmaxAX + divact*fac
         oprmaxAX=amin1(oprmaxAX, oprmax13) 
+c
+c rrb 2015/02/03; Correction
+        if(iplim.gt.0) then
+          psto2X=psto2X+divact*fac          
+        endif 
+        
         
         if(iout.eq.1 .and. abs(divact).gt.small) then
           write(nlog,*) 
      1      ' SetLimit; Adjusting Monthly and Annual Limits UP'
-          write(nlog,'(a12, 1x,a12,1x, 4i5, 20f8.0)') 
+          write(nlog,*)
+     1      ' SetLimit;      coridX        icx ioprLimt   lopr',
+     1      '   iplim  oprmaxM1    divact  oprmaxMX',
+     1              '  OprmaxA1  OprmaxAX    psto1X    psto2X'
+     
+          write(nlog,'(a12, 1x,a12,1x, 4i8, 20f10.0)') 
      1      ' SetLimit; ',coridX, icx, ioprLimX, lopr, iplim,
      1        oprmaxM1, divact*fac, oprmaxMX,
      1        OprmaxA1, OprmaxAX, psto1X, psto2X
