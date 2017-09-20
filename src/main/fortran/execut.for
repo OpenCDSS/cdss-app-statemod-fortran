@@ -1078,13 +1078,13 @@ c                   = -1 depletion replacement
 	        if(ireptyp(nd).ne.0 .and. rdvnk(l2).le.reprnkx) then
 c             write(nlogx,*) '  Execut; calling replace'
               call replace(iw,l2,nrepcall,divactx, ncall)
-	          nrepcall=nrepcall+1
-	          nrepcalt=nrepcalt+1
+	            nrepcall=nrepcall+1
+	            nrepcalt=nrepcalt+1
 c             write(nlog,*) ' Called by replace ', l1, l2
 	          goto 400
 	        endif
 	      endif
-c         endif DIRECT DIVERSION RIGHTS (l1.eq.3) 
+c           endif for DIRECT DIVERSION RIGHTS (l1.eq.3) 
 c_______________________________________________________________________
 c         Step X; OTHER WATER RIGHTS (POWER DEMAND, ETC.)
 c		    NOT Active

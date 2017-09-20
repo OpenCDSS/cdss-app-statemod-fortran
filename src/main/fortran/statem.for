@@ -192,8 +192,8 @@ c				 7 includes new binary output format
 c		     yy has new functionality
 c		     zz is a bug fix
 c		
-        ver='14.02.22'
-        vdate = '2015/08/11'
+        ver='14.02.23'
+        vdate = '2015/08/23'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -607,6 +607,16 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2015/08/23 (14.02.23)',/
+     1 '      Revised DivResp2 (type 27) to correct a problem ',/
+     1 '        associated with porting the routine to the',/
+     1 '        gfortran compiler that impacted how variable ishort',/
+     1 '        was set that impacted the operation of Replace',/
+     1 '        (type 10)',/
+     1 '      Revised PowseaP, the Reservoir or Plan Spill operating',/
+     1 '        rule to not adjust Avail at the reservoir itself',/
+     1 '        if the source is a reservoir. This is consistent with',/
+     1 '        a Spill to Reservoir Target operating rule (type 9)',/     
      1 '    - 2015/08/11 (14.02.22)',/
      1 '      Revised RsrSpu.f (type 6) to set qres(29,n) for all',/
      1 '        reservoir to reservoir bookovers to correct a water',/
