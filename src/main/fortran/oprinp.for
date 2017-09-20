@@ -45,7 +45,7 @@ c               sometimes used when reservoir releases are tied to
 c               another right (see type 6) or for depletion Vs
 c               diversion offset (see type 4) or for a second reservoir
 c               (see type 2?)
-c rrb 01/12/26; Revmove equivlence & revised dumx = dumc & idumx=idumc
+c rrb 01/12/26; Remove equivalence & revised dumx = dumc & idumx=idumc
 c rrb 01/08/18; Reset iopdes(2,k) = 1 rather than stop
 c rrb 01/01/18; Type 22 Soil Moisture Use
 c rrb 01/01/05; Type 21 Sprinkler Use
@@ -670,8 +670,8 @@ c		              Nas2=1 (ciopso2=NA)
             endif
           endif 
 c ______________________________________________________________________
-c rrb 2011/10/15; Update to type 45 operating rule
-c		Type 27 and 28 Plan and 45 with an operating rule limit
+c rrb 2011/10/15; Update to type 45 operating rule that allows 
+c		              an operating rule limit
           if(ityopr(k).eq.45) then
             if(iout.eq.1) write(nchk,*) ' Oprinp; Associated Opr Rule ', 
      1        k, ityopr(k), oprlimit(k)
@@ -5919,8 +5919,11 @@ c               a1. Read monthly constraints
 c
 c ---------------------------------------------------------
 c               a2. Read intervening structures
+c rrb 2015/10/28; Revise to read intervening structures plus loss
+cx      itype = 21
+        itype = 23
         istop=0
-        call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,ix, ix,
+        call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,ix, ix,
      1               nx, cx, 1, istop, rops2,ioprsw(k), cidvri)
 c
 c ---------------------------------------------------------
@@ -7786,7 +7789,7 @@ c
  1045   continue 
 c               Type 45; Carrier with Losses
 c                to a diversion or reservoir
-c		             where soruce is a diversion, diversion water right
+c		             where source is a diversion, diversion water right
 c		             or reservoir water right
 c rrb 01/06/20; 
 c                destination = diversion or reservoir ID

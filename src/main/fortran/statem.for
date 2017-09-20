@@ -192,8 +192,8 @@ c				 9 inlcudes wells
 c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
-        ver='15.00.00'
-        vdate = '2015/10/18'
+        ver='15.00.01'
+        vdate = '2015/10/28'
 c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -615,6 +615,8 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2015/10/18 (15.00.01)',/
+     1 '      Revised qdiv reporting for Type 32, DivresR.f',/
      1 '    - 2015/10/18 (15.00.00)',/
      1 '      Copied version 14.02.27 to version 15.00.00',/
      1 '        to signify testing and comparison to historic',/
