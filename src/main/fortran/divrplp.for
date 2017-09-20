@@ -1694,7 +1694,17 @@ c               not amount diverted (divact)
 c		Note this is required for consistency and
 c		for plan output to be correct (it uses *.xop output)
 cr    divo(l2)=divo(l2)+divact
-      divo(l2)=divo(l2)-relact
+c
+c rrb 2015/09/06; TEST to keep small numbers from accumulating
+      if(divactx.gt.small) then
+        divo(l2)=divo(l2)-relact
+      endif
+c
+c rrb 2015/09/06; Detailed output      
+      if(iout.eq.5 .and. mon.eq.monout .and. l2.eq.18) then
+        write(nlog,*) '  DivRplP; l2, ',l2, iyrmo(mon), corid1, 
+     1    xmonam(mon), divact*fac, divo(l2)*fac
+      endif
       
 c
 c _________________________________________________________

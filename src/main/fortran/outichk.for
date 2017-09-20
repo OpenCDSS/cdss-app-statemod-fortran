@@ -30,7 +30,10 @@ c                 variable ichk = 4 or 94
         if(iyrmo(mon).ne. 1998) goto 100
         if(mon.ne.7) goto 100
         write(nlog,*) '  OutIchk; curown(13) = ', curown(13)
-      endif
+      endif                   
+      
+cx    npage=51
+      npage=11
       
       
       if(ichk.eq.4 .or. ichk.eq.94) then
@@ -46,9 +49,9 @@ c rrb 2011/07/20; Revise if the first right is turned off
 cx        if(iw.eq.1 .and. iwx.eq.1) write(nlog,200) ichk   
           if((iw.eq.1 .and. iwx.eq.1) .or. ichk4n.eq.1) 
      1      write(nlog,200) ichk          
-          if(iw.eq.1 .or. ichk4n.eq.1 .or. ichk4n.eq.51) 
+          if(iw.eq.1 .or. ichk4n.eq.1 .or. ichk4n.eq.npage) 
      1      write(nlog,202) 
-            if(ichk4n.ge.51) ichk4n=1
+            if(ichk4n.ge.npage) ichk4n=1
           
             if(l1.eq.5) then
               ctype='Operating Rule'              
@@ -58,7 +61,7 @@ cx        if(iw.eq.1 .and. iwx.eq.1) write(nlog,200) ichk
      1          idy,iwx,iw, 
      1          ctype, itypeX, rec12, cpri, -1., -1.,
      1          dem1*fac, divactx*fac, divreqx*fac, divchk*fac,
-     1          divsum, ireop, ichkX
+     1          divsum, ireop, ichkX, 18, divo(18)*fac
            else
               rec12='NA'
               cwr=-1.0
@@ -119,7 +122,7 @@ c
      1          idy,iwx, iw,
      1          ctype, itypeX, rec12, cpri, cwr, cwr*fac, 
      1          dem1*fac,  divx*fac, divreqx*fac, divchk*fac, 
-     1          divsum, ireop, ichkx
+     1          divsum, ireop, ichkx, 18, divo(18)*fac   
             endif
           goto 100
         endif
@@ -248,10 +251,13 @@ c
 c rrb 2015/07/30; Test output
 cx 100   return
  100  continue
-cx      if(iyrmo(mon).eq.1993 .and. mon.eq.7) then
-cx        write(nlog,*) '  OutIchk;', 
-cx     1  iyrmo(mon), xmonam(mon), cresid(29), qres(4,29)
-cx      endif
+ 
+cx      if(iyrmo(mon).eq.1998 .and. mon.eq.11) then
+cx        write(nlog,*) 
+cx     1  '  OutIchk; divo(18)', l2,
+cx     1  iyrmo(mon), xmonam(mon), divo(18)*fac
+cx      endif                          
+c
       return
 c
 c _________________________________________________________
@@ -278,15 +284,15 @@ c
      1     'reoperation (if = 1 reoperate)',/
      1   '  IchkX = location the subroutine is called from Execut',/)
      
- 202  format(/    
+ 202  format(/  ' OutIchk ;',
      1   '    # Year Mon   Day Iter   iw Type             OprType',
      1   ' Right ID         Priority Dec-cfs  Dec-af  Demand  Divert',
-     1   '   Short  DivChk  DivSum   Ireop   ichkX',/
+     1   '   Short  DivChk  DivSum   Ireop   ichkX      l2 divo(l2)',/
      1   ' ____ ____ ____ ____ ____ ____ ________________ _______',
      1   ' ____________ ____________ _______ _______ _______ _______',
-     1   ' _______ _______ _______ _______ _______')
+     1   ' _______ _______ _______ _______ _______ _______ _______')
     
- 210  format(
+ 210  format(' OutIchk ;', 
      1   i5, i5, 1x, a4, i5,i5, i5, 1x, a16, i8, 1x,a12, 1x,f12.5, 
      1   7f8.0, 3i8, 2f10.3)
      

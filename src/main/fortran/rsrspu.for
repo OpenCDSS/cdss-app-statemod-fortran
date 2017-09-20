@@ -65,6 +65,11 @@ c                       = 1 limit reoperation of operating rule l2
 c                         when the operating rule associated with
 c                         ID = ciopsoX2(l2) has been operated 
 c
+c        iresT1	          Type of account distribution in Accou
+c			                  = 0 Ownership Ratio 
+c                       = 1 Available Space 
+c                       = -1 One Account  
+c
 c        qres(4          From carrier to storage by Other
 c		     qres(22         From storage to carrier
 c        qres(29,nr)     Amount diverted within the same reservoir
@@ -91,9 +96,6 @@ c		iout=99 summary indenpendent of ioutiw
       iout=0
       ioutiw=0
 c
-c rrb 2015/06/25; Additional output control for debugging
-      ioutX=0
-c
 c rrb 2016-/06/25; Additional outut  
       if(ichk.eq.4) iout=2 
 c         
@@ -101,7 +103,16 @@ c
       if(corid(l2).eq. ccall) ioutiw=iw
 c
 c rrb 2015/06/25; Additional output control for debugging
-      if(iout.eq.2 .and. ioutiw.eq.iw) ioutX=0
+c                 when iout=2 and ioutiw=iw.  Note:   
+c                 ioutX = 1 misc source & destination detail 
+c                 ioutx = 2 focused source & destination detail
+      ioutX=0
+      if(iout.eq.2 .and. ioutiw.eq.iw) then
+        ioutX=0  
+        write(io99,*) ' '    
+        write(io99,*) '________________________________'
+        write(io99,*) 'Rsrspu; iout, iw, ioutX', iout, iw, ioutX
+      endif
 c     
       divaf = 0.0
       small = 0.001
@@ -120,6 +131,7 @@ c
       tarcon=-1.0
       qres291=-1.0
       qres292=-1.0
+      resalo=-1.0
       
       cdestyp='NA'
       ccarry='No'
@@ -190,7 +202,7 @@ c     write(6,*) '  Rsrspu; nr = ', nr
 C
       IROW=NOWNER(NR)+IOPSOU(2,L2)-1
       ISCD=IRSSTA(NR)
-      cstaid1=cresid(nr)
+      cstaid1=cresid(nr)       
 c
 c _________________________________________________________
 c
@@ -209,6 +221,15 @@ c
       IDCD=IRSSTA(ND)
 cr    IDOW=NOWNER(ND)+IOPDES(2,L2)-1
 c
+c rrb 2015/09/09; Detailed output
+      if(ioutx.eq.1) then
+        write(nlog,*) 
+     1    'RsrSpu; Step 3;   l2   nr   nd  iopsou cstaid1'
+        write(nlog,'(a15,1x, 3i5, i8, 1x, a12)') 
+     1   ' RsrSpu; Step 3;', l2, nr, nd, iopsou(2,l2), cstaid1        
+      endif
+
+c
 c ---------------------------------------------------------
 c rrb 2006/09/25; Allow multiple accounts - Initilize      
 c rrb 2015/06/25; If iopdes(2,l2)>0 bookover to one account
@@ -224,20 +245,26 @@ c rrb 2015/06/25;
         nbook=2      
         nro=-iopdes(2,l2)
         idow=nowner(nd)
+c
+c rrb 2015/09/11; Correction
+        iresT1=0
       endif
 
       if(iopdes(2,l2).gt.0) then
         nro=1
         idow=nowner(nd)+iopdes(2,l2)-1
+c
+c rrb 2015/09/11; Correction
+        iresT1=-1        
       endif
       
 c
 c _________________________________________________________
 c
 c		Step 5; Determine if limited by an
-c                       Opr right or diversion 
-c		Note 0 = none
-c		     <0 = opr right or diversion limit
+c           Opr right or diversion 
+c		        Note 0 = none
+c		            <0 = opr right or diversion limit
 c
 c rrb 2006/11/27; Revise to allow output
 c     caprem=2000000
@@ -246,7 +273,6 @@ c     caprem=2000000
       
       ity=-(iopsou(3,l2)-((iopsou(3,l2)/10)*10))
       write(99,*) 'ity',ity
-czzz  if(ity.eq.2) go to 100
 c _________________________________________________________
 c
 c		Step 6; Diversion Limit (ity=1)      
@@ -323,8 +349,9 @@ c
 c rrb 2015/06/25; Additional output control for debugging
       if(ioutX.eq.1) then
         write(nlog,*) ' '
-        write(nlog,*) ' RsrSpu_Step 8;    nr, nd, irow, RESAVL'
-        write(nlog,*) ' RsrSpu_Step 8; ', nr, nd, irow, RESAVL 
+        write(nlog,*) 'RsrSpu_Step 8;    nr   nd irow  RESAVL'
+        write(nlog,'(a15, 3i5, 20f8.0)') 
+     1                ' RsrSpu_Step 8; ', nr, nd, irow, RESAVL 
         write(nlog,*) ' '
       endif
 c
@@ -371,9 +398,10 @@ c
 c rrb 2015/06/25; Additional output control for debugging
         if(ioutX.eq.1) then
           cx=ownmax(n1)-curown(n1)
-          write(nlog,*) 'RsrSpu_Step 10; , nro, n, n1,',
-     1                  ' ownmax(n1), curown(n1), cx, cursa'
-          write(nlog,*) 'RsrSpu_Step 10; ', nro, n, n1,
+          write(nlog,*) 'RsrSpu_Step 10;  nro    n   n1',
+     1                  '  ownmax  curown      cx   cursa'
+          write(nlog,'(a16, 3i5, 20f8.0)')
+     1      ' RsrSpu_Step 10;', nro, n, n1,
      1                    ownmax(n1), curown(n1), cx, cursa    
         endif    
       end do    
@@ -394,8 +422,8 @@ c
 c rrb 2015/06/25; Additional output control for debugging
       if(ioutX.eq.1) then
         write(nlog,*) ' '
-        write(nlog,*) 'RsrSpu_Step 10;    nr, nd, irow, RESALO'
-        write(nlog,*) 'RsrSpu_Step 10; ', nr, nd, irow, RESALO 
+        write(nlog,*) 'RsrSpu_Step 10b;    nr, nd, irow, RESALO'
+        write(nlog,*) 'RsrSpu_Step 10b; ', nr, nd, irow, RESALO 
         write(nlog,*) ' '
       endif
 c               
@@ -429,11 +457,13 @@ c rrb 2015/06/25; Additional output
       if(ioutX.eq.2) then
         write(nlog,*)' '
         write(nlog,*)
-     1    'RsrSpu_Step 15a;   divaf, nr, cursto(nr), irow,',
-     1                ' curown(irow), nd, cursto(nd)'
-        write(nlog,*) 
-     1    'RsrSpu Step 15a;', divaf, nr, cursto(nr), irow,
-     1                  curown(irow), nd, cursto(nd)   
+        write(nlog,*)
+     1    'RsrSpu_Step 15a;  nro   divaf',
+     1    '   nr  cursto irow curownS   nd  cursto idow curownD'
+        write(nlog,'(1x, a16, 20(i5,f8.0))') 
+     1    'RsrSpu Step 15a;', nro, divaf,
+     1     nr, cursto(nr), irow, curown(irow), nd, cursto(nd),  
+     1     idow, curown(idow) 
       endif
 
 c
@@ -441,30 +471,41 @@ c
       CUROWN(IROW)=CUROWN(IROW)-DIVAF
 C
       CURSTO(ND  )=CURSTO(ND  )+DIVAF
+c
+c
+c rrb 2015/09/09; Note the following has been commented
+c                 out for a long time so that subroutine
+c                 Accou can be used to allocate water to
+c                 accounts.
 cr    CUROWN(IDOW)=CUROWN(IDOW)+DIVAF
 c
 c rrb 2015/06/25; Additional output
       if(ioutX.eq.2) then
         write(nlog,*)' '
         write(nlog,*)
-     1    'RsrSpu_Step 15b;   divaf, nr, cursto(nr), irow,',
-     1                ' curown(irow), nd, cursto(nd)'
-        write(nlog,*) 
-     1    'RsrSpu Step 15b;', divaf, nr, cursto(nr), irow,
-     1                  curown(irow), nd, cursto(nd)   
+        write(nlog,*)
+     1    'RsrSpu_Step 15b;  nro   divaf',
+     1    '   nr  cursto irow curownS   nd  cursto idow curownD'
+        write(nlog,'(1x, a16, 20(i5,f8.0))') 
+     1    'RsrSpu Step 15b;', nro, divaf, 
+     1     nr, cursto(nr), irow, curown(irow), nd, cursto(nd),  
+     1     idow, curown(idow) 
       endif
 c
 c ---------------------------------------------------------
 c rrb 2006/09/25; Allow multiple accounts - Allocate
 c		  Note:
-c		   iResT1=0 distributes based on ownership ratio
-c		   nrown1=number of accounts in this reservoir
-c		   iown = first account associated with this reservoir  
-c		   icx  = subrouine calling accou.for       
-c		   ia   = account to adjust
+c		   iResT1 =  distributes based on ownership ratio
+c		   nrown1 =  number of accounts in this reservoir
+c		   iown   =   first account associated with this reservoir  
+c		   icx    =   subrouine calling accou.for       
+c		   ia     =   account to adjust
       
       nrX=nd
-      iResT1=0
+c
+c rrb 2015/09/11; Correction set IresT1 above based on 
+c                 number of accounts  
+cx    iResT1=0
       nrown1=nro
       iownX=idow
       icx=106
@@ -478,11 +519,12 @@ c rrb 2015/06/25; Additional output
       if(ioutX.eq.2) then
         write(nlog,*)' '
         write(nlog,*)
-     1    'RsrSpu_Step 15c;   divaf, nr, cursto(nr), irow,',
-     1                ' curown(irow), nd, cursto(nd)'
-        write(nlog,*) 
-     1    'RsrSpu Step 15c;', divaf, nr, cursto(nr), irow,
-     1                  curown(irow), nd, cursto(nd)   
+     1    'RsrSpu_Step 15c;  nro   divaf',
+     1    '   nr  cursto irow curownS   nd  cursto idow curownD'
+        write(nlog,'(1x, a16, 20(i5,f8.0))') 
+     1    'RsrSpu Step 15c;', nro, divaf,
+     1     nr, cursto(nr), irow, curown(irow), nd, cursto(nd),  
+     1     idow, curown(idow) 
       endif
      
      
@@ -503,13 +545,22 @@ c
 cr    accr(4,idow)  = accr(4,idow)+divaf
       accr(22,irow) = accr(22,irow)+divaf
 c
+c rrb 2015/09/11; Additional output
+      if(ioutX.eq.2) then
+        write(nlog,*) ' '
+        write(nlog,*) 'RsrSpu_1; l2, divo(l2)', l2, divo(l2)*fac
+      endif
+c
       divo(l2)=divo(l2)+(divaf/fac)
+c      
+      if(ioutX.eq.2) 
+     1 write(nlog,*) 'RsrSpu_2; l2, divo(l2)', l2, divo(l2)*fac      
 c
 c ---------------------------------------------------------
 c rrb 2006/10/03; 
 c		Store amount booked over within the same reservoir
 c		for basin balance
-c rrb 2015/08/11; Reviise to set qres(29 for all reservoir to
+c rrb 2015/08/11; Revise to set qres(29 for all reservoir to
 c                 reservoir bookovers to correct a reporting
 c                 problem in the San Juan
 cx      if(nd.eq.nr) then
@@ -540,7 +591,7 @@ c		Detailed header
       if(iout.eq.99 .and. divact.lt. small) iout=98
       if((iout.eq.2 .and. iw.eq.ioutiw) .or. iout.ge.99) then      
         ncallX=ncallX+1
-        if(ncallX.eq.1) then
+        if(ncallX.eq.1 .or. ioutX.eq.2) then
           write(nlog,270) corid(l2), cdestyp, ccarry, cpuse          
         endif  
   
@@ -559,14 +610,16 @@ c
      1               curown,cursto,cresid)
 c
 c rrb 2015/06/25; Additional output
-        if(ioutX.eq.2) then
+        if(ioutX.eq.1) then
           write(nlog,*)' '
           write(nlog,*)
-     1      'RsrSpu_Step 15d;   divaf, nr, cursto(nr), irow,',
-     1                  ' curown(irow), nd, cursto(nd)'
-          write(nlog,*) 
-     1      'RsrSpu Step 15d;', divaf, nr, cursto(nr), irow,
-     1                    curown(irow), nd, cursto(nd)   
+          write(nlog,*)
+     1      'RsrSpu_Step 15d;  nro   divaf',
+     1      '   nr  cursto irow curownS   nd  cursto idow curownD'
+          write(nlog,'(1x, a16, 20(i5,f8.0))') 
+     1      'RsrSpu Step 15d;', nro, divaf,
+     1       nr, cursto(nr), irow, curown(irow), nd, cursto(nd),  
+     1       idow, curown(idow) 
         endif    
       endif
 c
@@ -578,23 +631,32 @@ c            if water right l2 has operated and
 c            the operating right ID of l2 is specified
 c            as ciopsoX2 for water right k based on user
 c            supplied data
-      if(ioprlim(l2).eq.1) then
+c rrb 2015/09/11; Correction; should not require the rule
+c                 used to monitor reoperation (ioprlim(l2)) 
+c                 have data required to turn itself off.  
+cr      if(ioprlim(l2).eq.1) then
         do k=1,numopr
           if(corid(l2) .eq. ciopsoX2(k)) then
 c
-c 2015/07/18; Correction      
+c rrb 2015/07/18; Correction 
+c rrb 2015/09/11; Back to original     
 cx          icallOP(k) = icallOP(k) + 1
-            icallOP(l2) = icallOP(l2) + 1                 
-            if(ioutX.eq.2) then
+cx          icallOP(l2) = icallOP(l2) + 1 
+            icallOP(k) = icallOP(k) + 1               
+c             
+            if(ioutX.eq.1) then
               write(nlog,*)
+     1          ' RsrSpu; Switch to not allow reoperation on'              
               write(nlog,*) 
-     1          ' RsrSpu; k, l2, corid(l2), ciopsoX2(k), icallOP(l2)'
+     1          ' RsrSpu; k, l2, corid(k), corid(l2),
+     1            ciopsoX2(k), icallOP(l2)'
               write(nlog,*) 
-     1          ' RsrSpu;', k, l2, corid(l2), ciopsoX2(k), icallOP(l2)  
+     1          ' RsrSpu;', k, l2, corid(k), corid(l2),
+     1            ciopsoX2(k), icallOP(l2)  
             endif
           endif
         end do 
-      endif         
+cr      endif         
 c
 c _________________________________________________________
 c
