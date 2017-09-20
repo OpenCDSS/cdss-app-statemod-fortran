@@ -113,6 +113,8 @@ c       qdiv(24,iscd) 	Pumping (diversion) by a well to a user at iscd
 c       qdiv(25,iscd) 	Depletion (From River by Well) at river ID iscd
 c	      qdiv(28        	Carried, Exchange or Bypass (column 11)
 c                      	Source is a reuse or Admin Plan
+c		    qdiv(30         From River from a Res or Reuse Plan 
+c                        to a T&C or Aug Plan. Note non consumptive
 c       qdiv(31        	From River by Exc or Plan
 c	
 c 	    qdiv(35        	Water with a Reuse or Admin plan source 
@@ -302,36 +304,14 @@ c rrb 2007/08/17; Limit to ownership %
         pct=ropdes(l2,n2)/100.0
         divact=alocfs*Pct
         divactT=divactT+divact
-        
-c       write(nlog,*) ' '
-c       write(nlog,*) ' DivMulti; ', mon, n, ndp, idcdD, pct, 
-c    1    alocfs*fac, divact*fac, divactT*fac
-c                                                                   
-c rrb 2014/11/24; Transfer water by carrier, not the river
-cx          CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,  
-cx     1              divact, ndnsD,  idcdD  )                                
 c
-c		         qdiv(31 is From River by Exc Pln    
-c            qdiv(20 is From Carrier by Other
-c            qdiv(35 is Water with a Reuse or Admin plan source 
-c			               at the destination.
-c            qdiv(38 is Carried water not used in any calculations
-c                    to report River Divert
+c		    qdiv(30         From River from a Res or Reuse Plan 
+c                        to a T&C or Aug Plan. Note non consumptive
+c 	    qdiv(35        	Water with a Reuse or Admin plan source 
+c			                  tracked at the destination.
+c       qdiv(38         Carried water not used in any calculations
+c                       to report River Divert
 c
-c rrb 2014/11/24; Correction use qdiv(31 with (20
-cx      qdiv(31,idcdD) = qdiv(31,idcdD) + divact     
-c
-c rrb 2015/01/16; Correction use qdiv(18 not 20 
-cx      qdiv(20,idcdD) = qdiv(20,idcdD) + divact       
-cx      qdiv(18,idcdD) = qdiv(18,idcdD) + divact          
-c    
-c rrb 2015/01/16; Correction comment out qdiv935
-cx      qdiv(35,idcdD) = qdiv(35,idcdD) + divact
-c
-c rrb 2015/01/24; Revise to not report water from an admin plan
-c                 until actually used by DivresP2 (type 27) or
-c                 DivRplP (type 28) by commenting out qdiv(38       
-cx      qdiv(38,idcdD) = qdiv(38,idcdD) + divact
 c
         if(iplntyp(ndP).ne.11) then
           qdiv(35,idcdD) = qdiv(35,idcdD) + divact
