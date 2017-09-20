@@ -8,21 +8,24 @@ c
 
 c
 c 	Type 26; Changed Water Right   
-c		 1. Part of  water right to be diverted at its
-c		 original location to a diversion and 
+c		 1. Simulates part of  water right to be diverted 
+c       at its original location to a diversion and 
 c		 2. The balance of a water right to be 
-c		 diverted to a Plan
+c		    diverted to a Plan
 c
 c      Approach: 
 c      1. Initilize
 c      2. Source is a water right (iopsou(1,l2)
 c      3. Destination is a plan (iopdes(1,l2) 
-c      4. Calculate diversion to the source limited by 
-c         % ownership of right, availability of water and
-c         demand (STEP 7)
+c      4. Calculate the water right left at the source limited by 
+c         % ownership of right, availability of water, capacity
+c         and demand (STEP 7)
 c      5. Calculate changed WR to the destination limited by 
 c         % ownership of right, availability of water
-c         and demand STEP 8-10
+c         and demand STEP 8-10.  Note diversion to changed WR
+c         is not limited by the structure capacity; capacity 
+c         adjustments occur when water is released by a type
+c         27 or 28 rule.
 c      6. Determine if more water can be diverted at source
 c         (can occurr if the changed WR was limited for any reason)
 C         STEP 16
@@ -31,10 +34,12 @@ c         Note
 c         Only allowed to operate once per time step in execut
 c         Destination must be a type 11 plan
 c         Source must be a water right
-c         The canal capacity of the source water is not reduced
-c           (capacity limits are imposed when water is released
-c           from the plan by a direct release (type 27) or by 
-c           exchange (type 28)
+c         The water right % remaining at the source and diverted 
+c           has the souce capacity  reduced.  The water right % 
+c           that is changed and diverted to a plan does not 
+c           reduce the source capacity.  Capacity limits are 
+c           imposed when water is released from the plan by 
+c           a direct release (type 27) or by exchange (type 28)
 c		 
 c _________________________________________________________
 c	Update History
@@ -63,19 +68,19 @@ c     iopsou(4,l2)   NA
 c     oprpct(l2)     Percent of the water right to be changed WR
 c	
 c
-c     iopdes(1,l2)   destination
+c     iopdes(1,l2)   destination type
 c                    if(ndtype.eq.2) cdestyp='Reservoir'
 c                      if = iopdesr(l2) = 2 Reservoir
 c                      if = iopdesr(l2) = 3 Diversion
 c                      if = iopdesr(l2) = 7 Plan
 c    
-c     iopdes(2,l2)   destination account
+c     iopdes(2,l2)   destination account (reservoir only)
 c    
-c     cdivTyp       Diversion Limit transfer to 
+c     cdivTyp        Diversion Limit transfer to 
 c	 	                  Depletion limit transfer to CU
-c     divmon(nd)	  Amount diverted by the source (nd) in previous
-c	                  iterations (used to calculate available 
-c			              capacity)
+c     divmon(nd)	   Amount diverted by the source (nd) in previous
+c	                   iterations (used to calculate available 
+c			               capacity)
 c
 c     nd             source diversion ID
 c     iscd           idvsta(l2) stream ID of source diversion (nd)
@@ -96,14 +101,13 @@ c     ndns2          # of nodes downstream of destination
 c                    diversion plan
 c     iuse2          destination user 
 c
-c	    ipuse		       Reuse indicator 0=no, +=reuse plan
+c     ipuse		       Reuse indicator 0=no, +=reuse plan
 c
 c     imcdX          pointer to avail array. 
-c	    imcdS          pointer to minimum flow below source
+c     imcdS          pointer to minimum flow below source
 c
 c     icx            subroutine call # (26) for I/O in rtnsec
-c     IW             Global water right counter
-c     L2             Operational right pointer
+c
 c     ishort         code for reoperation; 0=no, 1=yes
 c
 c   	CuLimit        fraction to be diverted (diversion or depletion)
@@ -120,7 +124,7 @@ c                    iterations (cfs)
 c     dcrdiv1        Remaining water right at source (cfs)
 c     dcrdivE        % of Water right used at changed WR (cfs) Set in 
 C                      oprinp
-c	    dcrdiv2        Remaining water right at changed WR (cfs)
+c     dcrdiv2        Remaining water right at changed WR (cfs)
 c
 c     divcap         Structure capacity
 c     divmon         Amount diverted in previous iterations
@@ -142,7 +146,8 @@ c
 c     ndnr           Number of downstream nodes from return
 c                    (ndnr = f (ndnnod)) 
 c
-c     nCarry         0 No carrier
+c     nCarry         Number of carriers
+c                    0 = No carrier
 c
 c     oprmaxM(l2)	   Monthly limit on changed WR	
 c     oprmaxA(l2)    Annual limit on changed WR
@@ -162,7 +167,7 @@ c                      River Divert in Outmon.f
 c     currtn         Immediate return to diverting node??
 c     qtribu         Tributary InFlow (baseflow point)
 c     qstern         Flow at diversion (used for transmtn divs)
-c     small          a small value for roundoff (0.0) concerns
+c     small          a small value for roundoff (0.0) checking
 c
 c     pobl(it,ip)    T&C Obligation to a plan (ip) at time (it)
 c		               	 Note calculated in RtnsecP
@@ -297,11 +302,11 @@ c               c. Initilize
       psto22=0.0
 c
 c ---------------------------------------------------------
-c                 Return to River
+c                 d1. Return to River
       nriver=0
       cRiver='NA'
 c
-c                 Diversion type
+c                 d2. Diversion type
       ndtype = iopdesr(l2)
       if(ndtype.eq.7) then
         cdestyp='Plan     '
@@ -350,7 +355,8 @@ c               h. Set Transit and Carrier Loss
      1 OprLost,  OprEff1, OprEffT, TranLoss, 
      1 internT,internL,corid(l2))
 c
-c                 Check for release to river capability
+c ---------------------------------------------------------
+c                 i. Check for release to river capability
       if(nRiver.gt.0) then
         write(nlog,*) 
      1   '  Directwr; Problem the type 26 operating rule does not ',
@@ -395,10 +401,23 @@ c		For a daily model set demand for end of season
           ioff=1
         endif  
       endif  
-      
+c
+c _________________________________________________________
+c              Step 2b; Set reoperation control
+c rrb 2015/07/08; Add capability to not operate any more
+c                 this time step 
+       icallOP(l2)=icallOP(l2) + 1 
+c
+c rrb 2015/07/18; Correction       
+cx     if(icallOP(l2).ge.1) then
+       if(icallOP(l2).gt.1) then       
+         iwhy=2
+         cwhy='Reoperation not allowed'
+         ioff=1
+       endif         
 c      
 c ________________________________________________________
-c               Step 2b; Set T&C Plan pointer
+c               Step 2c; Set T&C Plan pointer
 c		                     ipTC  = T&C plan
 c		                     ipUse = Reuse plan
       ipTC=iopsou(3,l2)
@@ -418,7 +437,8 @@ c
 cr    write(nlog,*) '  directwr; l2, lr', l2, lr
       nd=idivco(1,lr)
 c
-c		              Exit if source structure is off (iwhy=2)
+c ---------------------------------------------------------
+c		              a1. Exit if source structure is off (iwhy=2)
       if(idivsw(nd).eq.0) then
         iwhy=2
         cwhy='Source Structure is Off'        
@@ -429,6 +449,9 @@ c
       NDNS=NDNNOD(ISCD)
       iuse=nduser(nd)
       csour=cdivid(nd)
+c
+c ---------------------------------------------------------
+c                 a2. Set Demand at source                      
 c           
 c     write(nlog,*) '  directwr; iscd, ndns ', iscd, ndns
 c
@@ -439,7 +462,7 @@ c
       endif
 c
 c ---------------------------------------------------------
-c		b. Set CU limit switch      
+c		              b. Set CU limit switch      
       rec12=cDivTyp(l2)
       iDep=0
       if(rec12(1:9).eq.'Diversion') then
@@ -454,13 +477,15 @@ cx      iDep=1
       endif 
 c
       diveff1=diveff(mon,nd)/100
-      
+c
+c ---------------------------------------------------------
+c		              c. Set CuLimit      
       if(iDep.eq.0) then
         CuLimit=1.0
       else
 c
 c ---------------------------------------------------------
-c		c. Use default or plan efficiency
+c		              d. Use default or plan efficiency
 c		Note pfail is in acft for continuity
         CuLimit=diveff(mon,nd)/100.        
       endif
@@ -479,7 +504,10 @@ c
       dcrdiv2=amax1(0.0, dcrdivE(l2)-divdE(l2))
 c
 c ---------------------------------------------------------
-c               e. Set current Capacity limits      
+c               e. Set current Capacity limits    
+c rrb 2015/05-06/11/29; Set Capacity limit
+        divCap1=divcap(nd)-divmon(nd)
+        divCap2=divCap1
 c
 c _________________________________________________________
 c               Step 4; Set destination data 
@@ -574,11 +602,13 @@ c               Test for a quick exit from routine (260)
 c_____________________________________________________________
 c               Step 7; Begin to calculate diversion at SOURCE
 c                       (divact1)limited by decree (dcrdiv1),
-c                       demand(divreqX) & capacity (divcapS)
+c                       demand(divreqX) & capacity (divcap1)
 c                       BUT NOT WATER SUPPLY
-c                       Note divcap1 is set in step 1e
-c              
-      divalo=amin1(dcrdiv1, divreqX) 
+c                       Note divcap1 is set in step 3e
+c 
+c rrb 2015-05-06; Limit by capacity of total structure (divcap1             
+cx    divalo=amin1(dcrdiv1, divreqX) 
+      divalo=amin1(dcrdiv1, divreqX, divCap1)       
       divalo=amax1(divalo,0.0)
       
       if(iout.eq.1) then
@@ -589,7 +619,7 @@ c
 
 c
 c ---------------------------------------------------------
-c                 Calculate available flow to source
+c               a. Calculate available flow to source
 c
 c rrb 2014-05-15; Replace with simple downstream search and takout
        CALL DNMFSO2(maxsta,avail,IDNCOD,Iscd,NDNS,IMCD,
@@ -616,7 +646,7 @@ c                 changed WR is limited in Step 15
             
 c  
 c --------------------------------------------------------- 
-c                 Remove diversion at source
+c               b. Remove diversion at source
        CALL TAKOUT(maxsta,AVAIL,RIVER,AVINP,QTRIBU,IDNCOD,
      1       divact1,ndns,iscd)  
 c 
@@ -650,9 +680,10 @@ c
 c
 c_____________________________________________________________
 c               Step 8 Begin diversion at changed WR
+c                      note not limited by source capacity
 c
 c ---------------------------------------------------------
-c                     8a Exit to Source (250) if monthly switch for 
+c               8a. Exit to Source (250) if monthly switch for 
 c                        changed WR is off
       if(ioff.eq.1) then
         divactE=0.0
@@ -662,7 +693,7 @@ c                        changed WR is off
       endif  
 c
 c ---------------------------------------------------------
-c                     8c Calculate Available flow at the Destination
+c               8b. Calculate Available flow at the Destination
 c
 c
 c rrb 2014-11-24; Key difference from a type 24 
@@ -688,16 +719,16 @@ c
 c
 c      
 c ---------------------------------------------------------  
-c		                8e Destination is a Plan
-c                      np11 is set in step 4b
+c		            8c. Destination is a Plan
+c                   np11 is set in step 4b
 c
       if(ndtype.eq.7) then
         divaloE=amin1(divact2, dcrdiv2, divreqX2)         
 c
-c                 Add carrier Loss befor transfer limit      
+c               Add carrier Loss befor transfer limit      
         divaloE=divaloE/OprEffT     
 c
-c		              Limit to annual or monthly limit (oprmax1)        
+c		            Limit to annual or monthly limit (oprmax1)        
         divaloE=amin1(divaloE, oprmax1)                 
         divaloE=amax1(0.0,divaloE)
         
@@ -710,7 +741,7 @@ c		              Limit to annual or monthly limit (oprmax1)
       endif      
 c
 c ---------------------------------------------------------  
-c		                9b. Exit to source (250) if changed WR = 0      
+c		            8d. Exit to source (250) if changed WR = 0      
       if(divaloE.le.small) then
         iwhy=13
         cwhy = 'Demand or remaining water right  = 0'
@@ -738,15 +769,17 @@ c
      1    ' divcu*fac, divaloE*fac, dcrdiv2*fac, divactE*fac'
         write(nlog,*) '            ',
      1    divCU*fac, divaloE*fac, dcrdiv2*fac, divactE*fac
-      endif
-           
+      endif          
 c
-c                 Adjust amount diverted at the source,(divmon), its 
-c		              carrier capacity (divcap2), and bypass decree (dcrdiv2)
+c ---------------------------------------------------------
+c               10a. Adjust amount diverted at the source,
+c                      (divmon), its carrier capacity 
+c                      (divcap2), and bypass decree (dcrdiv2)
       dcrdiv2=amax1(0.0, dcrdiv2-divactE)      
 c
 c                 Allow Carrier Loss                       
       divactL=divactE*OprEffT  
+c
 c ---------------------------------------------------------
 c		            10b Exit to source (250 if no available flow 
       if(divactE.lt.small) then
@@ -766,7 +799,7 @@ c		                  	if not done in Rivrtn (nriver>0)
      
 c
 c
-c rrb 2014-11-24; Key revision to a ty;e 24 approach.
+c rrb 2014-11-24; Key revision to a type 24 approach.
 c                 Remove limitation associated
 c                 with an exchange by calculating flow 
 c                 available from the source downstream 
@@ -800,7 +833,8 @@ c rrb 2014/05/20; Check available flow from source downstream
        CALL DNMFSO2(maxsta, AVAIL, IDNCOD, Iscd, NDNS, IMCD,
      1  cCallBy)
 c
-c                 Exit to warning (9999) if avail is < 0
+c ---------------------------------------------------------
+c               15a. Exit to warning (9999) if avail is < 0
       IF(AVAIL(IMCD).le.(-1.*small)) then
         write(nlog,*) ' '
         write(nlog,*) ' directwr; Step 15'
@@ -814,7 +848,7 @@ c                 Exit to warning (9999) if avail is < 0
 c
 c_____________________________________________________________
 c rrb 2007/07/03
-c                 Step 16; Allow source structure to divert
+c               Step 16; Allow source structure to divert
 c		                any water not used by changed WR
 c
       dcrdivT=dcrdiv1
@@ -825,11 +859,15 @@ c
 c
       divact0=divact1
 c 
-c                 Do not limit by capacity
-      divAdd=amin1(dcrdivT, divreqX)       
+c ---------------------------------------------------------
+c               16a.  Calculate additional diversin (divAdd) 
+c rrb 2015/05/06; Limit diversion at source by the 
+c                 remaining capacity (divCap(nd) - divmon(nd)
+cx    divAdd=amin1(dcrdivT, divreqX)   
+      divAdd=amin1(dcrdivT, divreqX, divCap(nd)-divmon(nd))           
 c 
 c ---------------------------------------------------------
-c                 Check available flow from source downstream    
+c               16b. Check available flow from source downstream    
       CALL DNMFSO2(maxsta, AVAIL, IDNCOD, Iscd, NDNS, IMCD,
      1  cCallBy)
       
@@ -847,13 +885,15 @@ c                 Check available flow from source downstream
       endif
 c 
 c ---------------------------------------------------------
-c
-c		              Remove additional diversion
+c		            16c. Remove additional diversion & add return
+c                    flows
       if(divAdd.gt.small) then
         CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              divAdd, NDNS,  ISCD  )                     
         CALL RTNSEC(icx,divAdd,L2,iuse,ISCD,nd,ieff2)
-        
+c
+c ---------------------------------------------------------
+c               16d. Adjust dimmon for capacity calculations        
         DIVMON(ND)=DIVMON(ND)+divAdd
       endif  
 c
@@ -938,7 +978,8 @@ c
 c
 c _________________________________________________________
 c               Step 24; Update reuse data
-c		                     Note reusable return flows are set in RtnsecR      
+c		                     Note reusable return flows are set in 
+c                        RtnsecR      
 c     if(ipUse.gt.0) then
       if(nr2.gt.0 .and. ipUse.gt.0) then  
         psuply(ipUse)=psuply(ipUse)+divactL
@@ -953,7 +994,7 @@ c     if(ipUse.gt.0) then
 c
 c _________________________________________________________
 c               Step 25; Update maximum diversion rate (Oprmax1)
-c			                   Note opermaxM and oprmaxA are in acft
+c                        Note opermaxM and oprmaxA are in acft
       oprmaxM(l2)=oprmaxM(l2) - divactE*fac
       oprmaxM(l2)=amax1(oprmaxM(l2), 0.0)
       
@@ -963,13 +1004,15 @@ c			                   Note opermaxM and oprmaxA are in acft
 c
 c _________________________________________________________
 c		           Step 26; Set total diversion to be the amount
-c		                    at the source (divact1) and the changed WR
+c		                    at the source (divact1) and the
+c                       changed WR
       divactX=divact1+divactE/culimit      
 c
 c _________________________________________________________
 c		            Step 27; Update diversion by this water right
 c		                     by amount at source (divact1) and by
-c		                     changed WR (divactE) befor CU adj (culimit)
+c		                     changed WR (divactE) befor CU adj
+c                        (culimit)
       divd(lr) = divd(lr)+divactX
       divdS(l2)= divdS(l2)+divact1
 c
@@ -1023,7 +1066,6 @@ c         write(nlog,*) ' '
      1    oprmax1*fac, pfail1,
      1    divcarry*fac, divcap1,   divcap2,pdem2*fac, dcrdiv1*fac,        
      1    divact0*fac, divAdd*fac, divact1*fac,divactE*fac,
-     1    
      1    (divactE+divact1)*fac, iwhy, cwhy
         if(iout.eq.1) then
           write(nlog,*) 'directwr; qdiv 8, 14, & 5'
@@ -1073,7 +1115,7 @@ c rrb 05/05/11; Check Avail going out of the routine
 c
 c _____________________________________________________________
 c               
-c               Step 3 - Check Qdiv array
+c               Step 33 - Check Qdiv array
 c
       if(ioutQ.eq.1) then
         write(nlog,*) ' '
@@ -1086,7 +1128,7 @@ c
       
 c
 c_____________________________________________________________
-c               Step 38; Return
+c               Step 34; Return
 c
 
       RETURN

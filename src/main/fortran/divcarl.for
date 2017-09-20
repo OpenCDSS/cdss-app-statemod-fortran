@@ -1309,8 +1309,11 @@ c
            
            divCapY=amin1(oprmaxM(lopr), oprmaxA(lopr))/fac
            divalo=amin1(divalo, divCapY)
-           write(nlog,*) ' DivCarL; Monthly or annual limit ',
-     1                   lopr, OprmaxM(lopr), oprmaxA(lopr)
+c
+c rrb 2015/06/25; Make detailed output an option
+           if(iout.eq.1)
+     1       write(nlog,*) ' DivCarL; Monthly or annual limit ',
+     1         lopr, OprmaxM(lopr), oprmaxA(lopr)
            
            if(iout.eq.1) 
      1       write(nlog,*) ' DivCarL;',lopr, oprmaxM(lopr), 

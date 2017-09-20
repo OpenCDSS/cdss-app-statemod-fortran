@@ -192,8 +192,8 @@ c				 7 includes new binary output format
 c		     yy has new functionality
 c		     zz is a bug fix
 c		
-        ver='14.02.14'
-        vdate = '2015/04/07'
+        ver='14.02.22'
+        vdate = '2015/08/11'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -606,57 +606,107 @@ c               Go back to menu if in default mode
 c ______________________________________________________________________
 c     Formats
   212   format(//
-     1 ' Recent updates',/    
+     1 ' Recent updates',/
+     1 '    - 2015/08/11 (14.02.22)',/
+     1 '      Revised RsrSpu.f (type 6) to set qres(29,n) for all',/
+     1 '        reservoir to reservoir bookovers to correct a water',/
+     1 '        balance reporting problem identified in the San Juan',/
+     1 '      Revised DivMulti.f (type 46) to not set qres(35,n) if',/
+     1 '        the source is a Changed Water Right Plan (type 13)',/
+     1 '        to correct a water balance reporting problem ',/
+     1 '        identified in the North Platte Model',/
+     1 '    - 2015/07/27 (14.02.21)',/      
+     1 '      Revised Outmon.f to correct a problem with reporting',/
+     1 '        reservoir releases from a type 27 rule by account ',/     
+     1 '    - 2015/07/18 (14.02.20)',/      
+     1 '      Revised Outmon.f to correct a problem with reporting',/
+     1 '        reservoir releases from a type 27 rule for the ',/
+     1 '        total reservoir ',/
+     1 '      Revised Divres.f (type 2 & 3) to correct a problem',/
+     1 '        reporting reservoir releases associated with the',/
+     1 '        above edit.',/
+     1 '      Revised DirectWR.f (type 26) to fix a typo to ',/
+     1 '        allow only one operation per time step that was',/
+     1 '        implemented in version 14.02.18',/                                
+     1 '      Revised Oprinp.f to warn the user if ther are type 6',/
+     1 '        operating rules that book water from a reservoir to',/
+     1 '        itself then back that might cause a reoperation',/
+     1 '        problem observed on the San Juan if not corrected',/
+     1 '        per the documentation',/
+     1 '    - 2015/07/08 (14.02.18)',/                                 
+     1 '      Revised RsrSpu.f (type 6) & Bomsec.f, DaySet.f &',/
+     1 '        common.inc to limit reoperation of a bookover rule)',/
+     1 '        when another opr. rule has already booked water',/
+     1 '        back to the original account.',/
+     1 '      Revised DirectWR.f (type 26) & Execut.f to correct a ',/
+     1 '        problem on how reoperation per time step is ',/
+     1 '        controlled by water right icallOP(l2) not operating',/
+     1 '        rule (icall26)',/
+     1 '    - 2015/06/25 (14.02.17)',/                                 
+     1 '      Added detailed reporting capability to subroutines:',/
+     1 '        DivRes.f, ResRg1.f, RsrSpu.f, OutIchk.f, ChekRes.f,',/
+     1 '        and DivCarl.f',/
+     1 '        Began enhancements to control when a reservoir book',/ 
+     1 '        over should be limited to one operation per time step',/
+     1 '        to resolve a problem indentified in the San Juan',/        
+     1 '    - 2015/06/15 (14.02.16)',/                                 
+     1 '      Revised DsaMod to correct a problem that originated',/
+     1 '        with porting the code to a new compiler with version',/
+     1 '        14.00.00 that materalized when a direct flow water',/
+     1 '        right is non-consumptive',/
+     1 '    - 2015/05/06 (14.02.15)',/
+     1 '        Revised DirectWr to limit % of water right left',/
+     1 '        at headgate by the source structure capacity',/
      1 '    - 2015/04/07 (14.02.14)',/
      1 '      Enhanced warnings initiated in previous version',/
      1 '    - 2015/03/14 (14.02.13)',/   
      1 '      Revised Oprinp to print warnings for certain ',/
-     1 '      combinations of the variable oprlimit ',/
+     1 '        combinations of the variable oprlimit ',/
      1 '    - 2015/02/14 (14.02.12)',/   
      1 '      Revised to correct minor issues assocaied with',/
-     1 '      prior version',/
+     1 '        prior version',/
      1 '    - 2015/02/14 (14.02.11)',/   
      1 '      Revised Type 27 direct release (DivResP2.f) to correct',/
      1 '      minor problems associaed with version 14.02.10',/
      1 '    - 2015/03/07 (14.02.10)',/
      1 '      Revised Oprinp.f to allow type 27 Direct Release and',/
-     1 '      type 28 Release by Exchange to allow variable',/
-     1 '      Oprlimit to be 5-9 not varaible creuse when the',/
-     1 '      source is a Changed Water Right Plan (type 13).',/
-     1 '      Revised type 27 Direct Release (DivResP2.f) and',/
-     1 '      type 28 Release by Exchange (DivRplP.f) to allow',/
-     1 '      OprLimit = 5-9 and not use varaible creuse.',/
+     1 '        type 28 Release by Exchange to allow variable',/
+     1 '        Oprlimit to be 5-9 not varaible creuse when the',/
+     1 '        source is a Changed Water Right Plan (type 13).',/
+     1 '        Revised type 27 Direct Release (DivResP2.f) and',/
+     1 '        type 28 Release by Exchange (DivRplP.f) to allow',/
+     1 '        OprLimit = 5-9 and not use varaible creuse.',/
      1 '      Revised GetPln to allow a Changed Water Right Plan',/
-     1 '      (type 13)',/
+     1 '        (type 13)',/
      1 '    - 2015/02/03 (14.02.09)',/   
      1 '      Revised Type 27 direct release (DivResP2.f) and ',/
-     1 '      Type 28 release by exchange (DivRplP.f) to allow',/
-     1 '      OprLimit = 1, 2, 3 and 4.  Also fixed ',/
-     1 '      a problem with version 14.02.08 that did not allow ',/
-     1 '      return flows to be calculated. ',/ 
+     1 '        Type 28 release by exchange (DivRplP.f) to allow',/
+     1 '        OprLimit = 1, 2, 3 and 4.  Also fixed ',/
+     1 '        a problem with version 14.02.08 that did not allow ',/
+     1 '        return flows to be calculated. ',/ 
      1 '    - 2015/02/03 (14.02.08)',/    
      1 '      Revised Oprinp.f and OprInOut.f to allow a Type 27 ',/
-     1 '      direct release (DivResP2.f) and Type 28 release by ',/
-     1 '      exchange (DivRplP.f) to read the source operating',/
-     1 '      rule as variable cReuse and implemented oprlimit = 4',/
-     1 '      that is a combination of types 2 and 3',/
+     1 '        direct release (DivResP2.f) and Type 28 release by ',/
+     1 '        exchange (DivRplP.f) to read the source operating',/
+     1 '        rule as variable cReuse and implemented oprlimit = 4',/
+     1 '        that is a combination of types 2 and 3',/
      1 '    - 2015/01/24 (14.02.07)',/    
      1 '      Revised *.xdd reporting for a release by Divresp2',/
-     1 '     (type 27) or by exchange by DivRplP (type 28)',/
-     1 '      when the source is a type 26 (DirectWR)',/      
-     1 '      Also, to improve readability, removed miscellaneous',/
-     1 '      comments related to reporting in DirectWR, DivresP2',/
-     1 '      DivRplP, DivMulti and PowseaP',/     
+     1 '       (type 27) or by exchange by DivRplP (type 28)',/
+     1 '        when the source is a type 26 (DirectWR)',/      
+     1 '        Also, to improve readability, removed miscellaneous',/
+     1 '        comments related to reporting in DirectWR, DivresP2',/
+     1 '        DivRplP, DivMulti and PowseaP',/     
      1 '    - 2015/01/24 (14.02.07)',/
      1 '      Revised *.xdd to not report water taken to an admin',/
-     1 '      plan by DirectWR (type 26).  Instead only report when',/
-     1 '      released from an admin plan direct by Divresp2',/
-     1 '     (type 27) or by exchange by DivRplP (type 28)',/      
+     1 '        plan by DirectWR (type 26).  Instead only report when',/
+     1 '        released from an admin plan direct by Divresp2',/
+     1 '       (type 27) or by exchange by DivRplP (type 28)',/      
      1 '    - 2015/01/20 (14.02.05)',/
      1 '      Revised *.xdd reporting for water taken to an admin',/
-     1 '      as Carried-Exchange-Bypass only in DirectWR (type 26)',/
-     1 '      and when released from an admin plan direct by',/
-     1 '      Divresp2 (type 27) to by exchange by DivRplP (type 28)',/  
+     1 '        as Carried-Exchange-Bypass only in DirectWR (type 26)',/
+     1 '        and when released from an admin plan direct by',/
+     1 '        Divresp2 (type 27) to by exchange by DivRplP (type 28)',/  
      1 ' Recent updates',/
      1 '    - 2015/01/16 (14.02.04)',/
      1 '      Revised DirectWR, PowseaP & DivMulti to clean up ',/

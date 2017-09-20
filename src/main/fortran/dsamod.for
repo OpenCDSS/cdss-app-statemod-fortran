@@ -12,6 +12,8 @@ c	    minimum available flow (pavail) given the demand (divalo)
 c
 c _____________________________________________________________
 c	Update History
+c      2015/06/15; Revised edits by jhb to correct a problem
+c                  and revised typo (iretsw = iresw)
 c
 c      2009/01/24; Revise to exit before trying to divert more 
 c	       icase=65 when called by divCarL (icx=45) since it is known
@@ -92,7 +94,7 @@ c     ioutZ=0
 c
 c rrb Turn the following on to see details when the check
 c     option is on for a specified operating rule          
-cx    if(ioutZ.gt.0) iout=2
+      if(ioutZ.gt.0) iout=2
       iout6=0
       
       icxM=-1
@@ -171,19 +173,32 @@ c                 diversion (iretsw=0) is non consumptive (icu=0)
 c jhb 2014/07/13 put a check for the iuse (diversion user index)value
 c                to prevent array bounds problem
 c                ALSO change iresw to iretsw (typo?)
+c rrb 2015/06/15; changed iretsw back to iresw
 c      if(iresw.eq.0 .and. diveff(mon,iuse).lt.small) icu=0
+c
+c rrb 2015/06/15; Changed iretsw back to iresw
+cx      if (iuse.ge.1) then
+cx        if(iretsw.eq.0 .and. diveff(mon,iuse).lt.small) icu=0
+cx      else
+cx        if(iretsw.eq.0) icu=0
+cx      endif          
+cx
       if (iuse.ge.1) then
-        if(iretsw.eq.0 .and. diveff(mon,iuse).lt.small) icu=0
+        if(iresw.eq.0 .and. diveff(mon,iuse).lt.small) icu=0
       else
-        if(iretsw.eq.0) icu=0
+        if(iresw.eq.0) icu=0
       endif
 
 cx    if(pavail.lt.small) then
       if(pavail.lt.small .and. icu.eq.1) then
         iwhy=1
-        cwhy='DsaMod Available flow (pavail) is zero' 
+        cwhy='DsaMod Available flow (pavail) is zero'  
+c                        
+c rrb 2015/06/15; Correct typo     
+cx      if(iuse.gt.0.and.iout.eq.2) write(nlog,*) ' DsaMod;', 
+cx   1     iretsw, mon, iuse, diveff(mon,iuse), icu 
         if(iuse.gt.0.and.iout.eq.2) write(nlog,*) ' DsaMod;', 
-     1   iretsw, mon, iuse, diveff(mon,iuse), icu
+     1     iresw, mon, iuse, diveff(mon,iuse), icu      
         goto 220
       endif  
       
@@ -198,9 +213,9 @@ c               Step 3; Determine diversion
 c
 c
 c ---------------------------------------------------------
-c               Step 3a 
+c               Step 3a2 
 c               Case 1 Destination is a reservoir (iresw=1)
-c		     Diversion with No return flow adjustment possible 
+c		              Diversion with No return flow adjustment possible 
 c                 (irturn=4=transmountain) or no returns (iri<ire)
 c
       if(iresw.eq.1) then
@@ -219,7 +234,7 @@ c
       endif
 c
 c ---------------------------------------------------------
-c               Step 3a 
+c               Step 3a2 
 c               Case 1 Diversion with No return flow adjustment possible 
 c                 (irturn=4=transmountain) or no returns (iri<ire)
 c
@@ -293,6 +308,10 @@ c
 c
 c rrb 2009/01/23; Calculate carrier loss for return calculations        
       pavailL=pavail*oprEffT
+      if(iout.eq.2) then
+        write(nlog,*) '  DsaMod;    OpreffT, pavail, pavailL'
+        write(nlog,*) '  DsaMod; ', OpreffT, pavail*fac, PavailL*fac
+      endif
 cx    if(pavail.ge.divalo) then    
 c
 c ---------------------------------------------------------
@@ -677,8 +696,11 @@ c
 c_____________________________________________________________
 c               Step 7; Detailed Output
       
-      if(iout.ge.2) then
-        if(iretsw.eq.1) then
+      if(iout.ge.2) then  
+c                      
+c rrb 2015/06/15; Correct typo
+cx     if(iretsw.eq.1) then
+       if(iresw.eq.1) then
           divcap1=divcap(nd)*fac
           divmon1=divmon(nd)*fac
         else

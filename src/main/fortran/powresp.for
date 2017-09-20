@@ -45,7 +45,7 @@ c      qres(4  	      From carrier by Storage to reservoir
 c      qres(8  	      From reservoir to carrier for Tmtn
 c      qres(9  	      From reservoir to carrier for non Tmtn.
 c      qres(11 	      From reservoir to carrier
-c      qres(12               From storage to River for Use (Powres*)
+c      qres(12        From storage to River for Use (Powres*)
 c      qres(18 	      From river by Exchange to Reservoir
 c      qres(21 	      From storage for Exchange
 c	     qres(22 	      From storage to carrier

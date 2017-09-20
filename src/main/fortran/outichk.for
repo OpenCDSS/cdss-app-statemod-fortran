@@ -22,7 +22,16 @@ c
       include 'common.inc'
       character rec12*12, ctype*16, rec12b*12, nameX*24
 c
-
+c
+c rrb 2015/06/25; Add code to limit the volume of output when
+c                 variable ichk = 4 or 94
+      iout=0
+      if(iout.eq.1) then
+        if(iyrmo(mon).ne. 1998) goto 100
+        if(mon.ne.7) goto 100
+        write(nlog,*) '  OutIchk; curown(13) = ', curown(13)
+      endif
+      
       
       if(ichk.eq.4 .or. ichk.eq.94) then
         divreqx=-1.0/fac      
@@ -235,7 +244,15 @@ c          Reoperation details - Reservoir Seepage
 c
 c _________________________________________________________
 c          Step X; Return
- 100   return
+c
+c rrb 2015/07/30; Test output
+cx 100   return
+ 100  continue
+cx      if(iyrmo(mon).eq.1993 .and. mon.eq.7) then
+cx        write(nlog,*) '  OutIchk;', 
+cx     1  iyrmo(mon), xmonam(mon), cresid(29), qres(4,29)
+cx      endif
+      return
 c
 c _________________________________________________________
 c      Formats

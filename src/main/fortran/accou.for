@@ -33,11 +33,11 @@ c                       water right
 c       cursta          total available in all ownership accounts
 c       actaf           amount stored
 c
-c        iresty1	type of account distribution
-c			0 Ownership Ratio 
+c       iresty1	        type of account distribution
+c			                  0 Ownership Ratio 
 c                       1 Available Space 
 c                      -1 One Account  
-c	ia		account to adjust
+c	      ia		account to adjust
 c
 c       icx    		subroutine call ID
 c                             111=divcar,   114=divcar1,  116=DirectFS,
@@ -72,7 +72,7 @@ c               Initilize
 c _________________________________________________________
 c
 c               Distribute based on available space 
-c		to first n accounts
+c		            to first n accounts
 c
 cx      if(iresty1.ne.0) then
         if(iresty1.ge.1) then

@@ -1799,7 +1799,16 @@ c		   Note relact and relaf are negative
         relaf=relact*fac
         cursto(nsR)=cursto(nsR)+relaf
         curown(isown)=curown(isown)+relaf
-
+c
+c rrb 2015/07/18 Test
+cx        if((iout.eq.1 .or. iout.eq.2) .and. iw.eq.ioutiw) then
+cx          if(iyrmo(mon).eq. 1993) then
+cx            write(nlog,*) '  DivResp2_1; ncarry, nsr, qres(11, qres(12'
+cx            write(nlog,*) '  DivResp2_1;',
+cx     1                       ncarry,nsr,qres(11,nsR),qres(12,nsr),divaf
+cx          endif
+cx        endif
+        
         if(ncarry.eq.0) then
           qres(12,nsR)=qres(12,nsR)+divaf
           accr(12,isown)=accr(12,isown)+divaf 
@@ -1807,6 +1816,17 @@ c		   Note relact and relaf are negative
           qres(11,nsR)=qres(11,nsR)+divaf
           accr(11,isown)=accr(11,isown)+divaf
         endif  
+c
+c rrb 2015/07/18 Test
+cx        if((iout.eq.1 .or. iout.eq.2) .and. iw.eq.ioutiw) then  
+cx        
+cx          if(iyrmo(mon).eq. 1993) then
+cx            write(nlog,*) '  DivResp2_2; ncarry, nsr, qres(11, qres(12'
+cx            write(nlog,*) '  DivResp2_2;',
+cx     1                       ncarry,nsr,qres(11,nsR),qres(12,nsr),divaf
+cx          endif
+cx        endif
+        
 c        
 c               Check reservoir roundoff when exiting routine
         in=1
@@ -2032,8 +2052,8 @@ c		l. Detailed header
      1      cDivTyp(l2), Creplace, cRiver                    
         endif
         
-c        write(nlog,*) ' DivResP2; ',lopr5, OprmaxM(), oprmaxA()        
-c        write(nlog,*) ' DivResP2; ',lopr5,OprmaxM(lopr5),
+c        write(nlog,*) ' DivResP2_2; ',lopr5, OprmaxM(), oprmaxA()        
+c        write(nlog,*) ' DivResP2_2; ',lopr5,OprmaxM(lopr5),
 c    1                 oprmaxA(lopr5)
 
 cx        write(nlog,*) ' DivResP2; qdiv35a, qdiv35b, qdiv36 ipuse', 

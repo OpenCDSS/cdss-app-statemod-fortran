@@ -238,6 +238,12 @@ c
 c rrb 05/02/14; Plans, etc.        
         divdS(nd)=0.0
         divdE(nd)=0.0
+c
+c rrb: 2015-07-08; Add capabiity to control the number of times
+c                  an operating rule has operated per time step. 
+c                  Currently used by Type 6 (bookover) and Type 26
+c                  (Changed water right operation)
+        icallOP(nd)=0
       end do
 c
 c _________________________________________________________

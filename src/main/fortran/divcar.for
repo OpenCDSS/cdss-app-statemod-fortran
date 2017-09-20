@@ -172,11 +172,11 @@ c
 c               qdiv(18    Carrier passing thru a structure (e.g. divcar)
 c               qdiv(19    From Carrier by Priority (e.g. divcar)
 c               qdiv(28, ) Stored via a reuse plan  
-c		qdiv(32, ) Carrier Loss for a diversion
-c
-c		qres(2,    From carrier by Priority 
-c		qres(25, ) Reservoir Seepage by Carrier Loss
-c		qres(27, ) Carrier Loss for a reservoir
+c		            qdiv(32, ) Carrier Loss for a diversion
+c               
+c		            qres(2,    From carrier by Priority 
+c		            qres(25, ) Reservoir Seepage by Carrier Loss
+c		            qres(27, ) Carrier Loss for a reservoir
 c
 c
 c _________________________________________________________
@@ -712,7 +712,7 @@ c
 c ---------------------------------------------------------
 c rrb 04/09/03; Allow carrier to a reservoir even if the 
 c               current storage is above the target
-c		when iressw(nd2) = 3 (see *.res documentation)
+c		            when iressw(nd2) = 3 (see *.res documentation)
         if(iressw(nr2).eq.3) then
           divalo=amin1(cursa,volmax(nr2)-cursto(nr2))/fac
         else        
@@ -728,6 +728,12 @@ cx   1        nr2, tarmax(nr2), cursto(nr2)
             GOTO 380
           endif       
         endif
+c
+c rrb 2015/07/30
+cx        if(nr2.eq.31) then
+cx          write(nlog,*) ' DivCar; nr2, Cresid1, Divalo = ' 
+cx          write(nlog,*) ' DivCar; ', nr2, cresid(nr2), Divalo*fac
+cx        endif
         
         VolMax1=volmax(nd2)-cursto(nr2)        
         IF (VolMax1.lt.small) then
@@ -779,8 +785,8 @@ c		Increase Demand to reflect Carrier Loss
 c _________________________________________________________
 c
 c               Step 7b. Destination is a reservoir (iresw=1)
-c			                  Source is a reservoir right (irig =-1)
-c			                  Set Demand based on carrier loss
+c			                   Source is a reservoir right (irig =-1)
+c			                   Set Demand based on carrier loss
 c                        Limit to remaining res. capacity 
 c                        (volmax-cursto)
 c
@@ -802,10 +808,10 @@ c rrb 2006/09/25; Revised to work with multiple reservoir
 c
 c
 c ---------------------------------------------------------
-c rrb 04/09/03; Allow carrier to a reservoir even if the 
-c               current storage is above the target
-c		when iressw(nd2) = 3 (see *.res documentation)
-c		Else limit to target and destination account
+c rrb 2004/09/03; Allow carrier to a reservoir even if the 
+c                 current storage is above the target
+c		              when iressw(nd2) = 3 (see *.res documentation)
+c		              Else limit to target and destination account
         if(iressw(nd2).eq.3) then
           divalo=amin1(cursa,volmax(nr2)-cursto(nr2))/fac
         else
@@ -813,7 +819,7 @@ c		Else limit to target and destination account
      1    tarmax(nr2)-cursto(nr2))/fac
 c
 c rrb 2006/08/18; Redundant and overrides ability to divert
-c		  to multiple accounts     
+c		              to multiple accounts     
 cx        divalo=amin1(divalo, (ownmax(irow)-curown(irow))/fac)     
           divalo=amax1(0.0,divalo)
         endif

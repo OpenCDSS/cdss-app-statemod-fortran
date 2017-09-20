@@ -49,6 +49,12 @@ c                  8 Print detailed daily baseflow data to *.xtp
 c                  9 or 109 Reoperation information from Execut
 c	                10 Details on reading operating right data 
 c
+c      l1       = water rith type (1=ISF, 2=Res, 3=Opr, 4=Power
+c                 5=well
+c      l2       = pointer for a given water right (e.g. if l1 = 1
+c                 and l2 = 10, then we are operating the 10'th ISF
+c                 water right
+c
 c      nrg1     = counter # of calls to rgrg.f per time step 
 c      nrg2     = counter # of calls to rgco.f per time step
 c
@@ -752,7 +758,11 @@ c rrb 01/02/19; Set reoperation return flow check
           idcallx=0
 c
 c rrb 2014-11-24; Set icall26 to insure its called only once per time step
-          icall26=0
+c rrb 2015/07/08; Add capability to not operate any more
+c                 this time step by water right using
+c                 icallOP(l2) not icall26  that controls by
+c                 operating rule
+cx        icall26=0
 c rrb 05/05/12; Set call to subroutine counter
           do i=1,200
             ncall(i)=0
@@ -931,7 +941,7 @@ c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output        
             if(ichk.eq.94 .or. ichk.eq.4) then
               udem=short/fac
-              call outIchk(2, ichk4n,  l1, l2, iw, o, ishort,
+              call outIchk(2, ichk4n,  l1, l2, iw, 0, ishort,
      1                     fac, udem, divx, divx, divsum,
      1                     0, iwx, rec12b)
             endif 
@@ -1205,8 +1215,21 @@ c
 c              Type 6. Transfer from reservoir to reservoir by carrier
 c               (aka bookover)   Note: No returns !
   240 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 6-RsSpu'   
-      CALL RSRSPU(IW,L2,ncall(6))
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 6-RsSpu'  
+c
+c rrb 2015/07/08; Add capability to not call this iteration based 
+c                 on user provided data (See documentation for
+c                 Type 6 operating rule)
+        CALL RSRSPU(IW,L2,ncall(6))
+c
+c rrb 2015/07/30; Add detailed output
+      if(ichk.eq.94 .or. ichk.eq.4) then  
+            rec12b='Opr Rule    '
+            call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2),
+     1                   ishort, fac, uDem, divact2, divx, divsum,
+     1                   4, divact2, rec12b) 
+      endif       
+        
 	    goto 410
 c
 c_______________________________________________________________________
@@ -1232,7 +1255,7 @@ c
 c_______________________________________________________________________
                                                       
 c
-c              Type 9. Target release for power or whatever
+c              Type 9. Target release (spill) for power or whatever
 c
   300 continue    
       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 9-PowSea'   
@@ -1477,8 +1500,14 @@ cx 326       call PowResP(iw,l2,divactX,ncall(26))
 cx rrb 2007/12/26; Move to type 48	
 cx  326	    goto 400
   326  continue
-
-      if(icall26.eq.0) then
+c
+c rrb 2015/07/08; Add capability to not operate any more
+c                 this time step by water right using
+c                 icallOP(l2) that is set in DirectWR
+c                 not by operating rule.  With this correction
+c                 more than one type 26 operating rule
+c                 can be provided as input
+cx    if(icall26.eq.0) then
 c     
 c        write(nlogx,*) ' Execut; Calliing directWR, icall26 ', icall26 
 c        write(nlogx,*) ' Execut; type 26 In Avail(8) ', avail(8)*fac,
@@ -1487,8 +1516,8 @@ c     1                avinp(8)*fac
 c
 c	         
         call directWR(iw,l2,ishort,divactX,ncall(26))
-        icall26=1
-       endif    
+cx      icall26=1
+cx     endif    
 c          
 c      write(nlog,*) ' Execut; type 26 Out Avail(8)', avail(8)*fac,
 c    1               avinp(8)*fac   

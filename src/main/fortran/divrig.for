@@ -143,6 +143,7 @@ c		        2 yes details from DsaMod
       ioutIN=0
       ioutwr=0
       ioutwr=516
+      ioutwr = 380
       iresw=0
       
       if(crigid(l2).eq. ccall) ioutiw=iw
@@ -160,7 +161,12 @@ cx    write(nlog,*) ' Divrig; ichk, ioutiw, iw', ichk, ioutiw, iw
       if(ichk.eq.203 .and. ioutiw.eq.iw) then
         iout=2
         ioutIN=2
-        if(ncallx.eq.0) write(nlog,*) ' DivRig; ccall ', ccall, iw, ioutiw
+c
+c rrb 2015/06/15; Additional detailed output        
+        if(ncallx.eq.0) then
+          write(nlog,*) ' DivRig_1; ccall iw, ioutiw', ccall, iw, ioutiw
+          write(nlog,*) ' DivRig_1; nd, idivsw(nd)', nd, idivsw(nd)   
+        endif     
       endif        
       
       cCallBy='DivRig      '
@@ -225,6 +231,15 @@ c_____________________________________________________________
 c               Step 2; Set Destination Data
 c
       ND  =IDIVCO(1,L2)
+c
+c rrb 2015/06/15; Additional detailed output  
+      if(ichk.eq.203 .and. ioutiw.eq.iw) then      
+        if(ncallx.eq.0) then
+          write(nlog,*) ' DivRig_2; ' 
+          write(nlog,*) ' DivRig_2; nd, idivsw(nd)', nd, idivsw(nd)   
+        endif   
+      endif  
+      
 c
       if(idivsw(nd).eq.0) then
         iwhy=1
@@ -319,7 +334,11 @@ cx    write(nlog,*)'  Divrig; corid1, iscd, ndns ', corid1,iscd,ndns
       call DsaMod(
      1   icx, ioutIN, l2, imcd,  iscd, ndns, nd, iuse, ieff2, 
      1   fac, pavail, divalo, divact, oprEffT, divactL, 
-     1   iwhy, icase, ishort, iresw, cCallBy, corid1, cwhy)
+c
+c rrb; 2016/06/15; Keep iwhy unique to this routine (dont
+c                  reset in dsamod)
+cx   1   iwhy, icase, ishort, iresw, cCallBy, corid1, cwhy)
+     1   iwhy2, icase, ishort, iresw, cCallBy, corid1, cwhy)     
 c
 c_____________________________________________________________
 c               Step 11; UPDATE MONTHLY DIVERSION FOR EACH USER

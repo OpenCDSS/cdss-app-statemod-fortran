@@ -76,10 +76,12 @@ c
 c               qdiv(18  Carrier passing thru a structure 
 c               qdiv(20  From Carrier by Storage or Exchange 
 c
+c --------------------------------------------------------------
+c
 c		            qres(2  From Carrier by Priority
 c               qres(4  From Carrier by Storage or Exch
-c               qres(8  From reservoir to carrier for Tmtn
-c               qres(9  From reservoir to carrier for use
+c               qres(8  From storage to river for use
+c               qres(9  From storage to carrier for non Tmtn.
 c               qres(18 From River by Exchange
 c               qres(21 From River by Exchange
 c               qres(26 From river by Storage to Reservoir

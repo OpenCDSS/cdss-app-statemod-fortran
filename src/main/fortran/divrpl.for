@@ -153,7 +153,7 @@ c
 c         qres(8,ix)            Reservoir Storage to Trans Mountain Diversion
 c         qres(9,ix)            Reservoir Storage to Diversion
 c         qres(18,ix)           From River by Exchange
-c         qres(11,ix)           ??
+c         qres(21, ix           From storage for Exchange
 c
 c _________________________________________________________
 c	Dimensions

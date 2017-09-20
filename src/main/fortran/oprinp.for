@@ -2035,17 +2035,17 @@ c
 c         
  1011   continue 
 c               Type 11; Carrier to a diversion or reservoir
-c		 where soruce is a diversion, diversion water right
-c		 or reservoir water right
+c		             where soruce is a diversion, diversion water right
+c		             or reservoir water right
 c rrb 01/06/20; 
 c                destination = diversion or reservoir ID
 c                source 1 = a diversion or water right 
 c                source 2 = water right type >=0 = diversion, <0=reservoir
-c		 source 3 = NA
+c		             source 3 = NA
 c                source 4 = NA
 c                source 5 = NA
-c		 source 6 = NA
-c		 source 7 = NA
+c		             source 6 = NA
+c		             source 7 = NA
 c
 c                  ion=1 means turn off opr right if right is off
 c		   Note istop=0 Stop if not found
@@ -2232,9 +2232,9 @@ c
 c ---------------------------------------------------------
 c               e. Find source 2 the location where water is 
 c                   diverted. Note:
-c		    ion=0 leaves the original water right on
+c		                ion=0 leaves the original water right on
 c                   iacc=1 Check the account varaible (iops2) > 0
-c		    iacc=0 Do not check the account variable
+c		                iacc=0 Do not check the account variable
 c                   itype=3 a diversion
 c                   istop = 1 Do not Stop if not found
         if(NAs2.eq.1) then        
@@ -2254,7 +2254,7 @@ c		        istop=1 Do not Stop if not found
      1         ioprsw(k), cidvri)
           iopsou(3,k) = -iops1
 c
-c		Reservoir location     
+c	  Reservoir location     
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
 
@@ -5532,12 +5532,11 @@ c		   set istop=1 (OK if not found)
           iopdes(1,k)=iops1
           idcdD=idvsta(iops1)
           iopdesr(k)=itype
-        endif  
-c *********     
+        endif   
 c
 c ---------------------------------------------------------
 c                b. Find source 1 a reservoir if any (type 2)
-c		   Note istop=1, do not stop if not found
+c		                Note istop=1, do not stop if not found
         istop=1
         itype=2
         call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
@@ -5551,7 +5550,7 @@ c       write(nlog,*) ' Oprinp 1; type 29 nr, np1, np2', nr, np1, np2
 c
 c ---------------------------------------------------------
 c               c. Find source 1 a plan (type 7)
-c		   Note istop=1, do not stop if not found
+c		               Note istop=1, do not stop if not found
         istop=1
         itype=7
         iacc=1
@@ -5588,7 +5587,8 @@ c       write(nlog,*) '  Oprinp 3; type 29 nr, np1, np2', nr, np1, np2
 c
 c ---------------------------------------------------------
 c               e. Find source 2 a plan (type 7)
-c		   Note istop=1, do not stop if not found
+c		               Note istop=1, do not stop if not found
+c                  NAs2 = 1 when iopsou(2, ) = NA, 0, or blank
 c rrb 2008/08/06; Simplify logic and warnings
         if(NAs2.eq.0) then
           istop=1
@@ -9445,7 +9445,8 @@ c                 is tied to a different reservoir and account
             endif
           end do  
         endif
-      end do    
+      end do   
+       
 c ______________________________________________________________________
 c rrb 2007/07/09; 
 c 		          Step C10; Check conflicting direct flow exchange (24)
@@ -9479,31 +9480,81 @@ cx          if((k1.ne.k2) .and. (iopsou(1,k1).eq.iopsou(1,k2))) then
           end do  
         endif
       end do    
+      
+c _________________________________________________________
+c
+c rrb 2015/07/08
+c		Warn the user if there is one or more accounts in a reservoir that
+c   book water (type 8) to another account in the same reservoir and
+c   then book water back into an account in the same reservoir.  Note
+c   this check was implemented for the reallocation issues on teh San
+c   Juan that caused a reoperation
+c
+      do k=1,numopr
+        ciopso1=ciopsoX(1,k)
+        ciopde=ciopdeX(1,k)
+c
+c   Determine if the first operating right is a type 6 (book over) 
+c   and the source and destinaion are the same ID.
+        if(ityopr(k).eq.6 .and. ciopso1.eq.ciopde) then
+          iopdesA=iopdes(2,k)
+          
+          k2b=k+1
+          do k2=k2b, numopr
+c
+c   Determine if the source reservoirs are the same for both operating
+c   rules and one part of the reoperation control (ioprlim(k)) is not
+c   set to 1          
+            if(ciopso1 .eq. ciopsoX(1,k2) .and. ioprlim(k).ne.1) then
+              ciopso1=ciopsoX(1,k2)
+              ciopde=ciopdeX(1,k2) 
+c
+c   Determine if the second operating right is a type 6 (book over) 
+c   and the source and destinaion are the same ID.
+              if(ityopr(k2).eq.6 .and. ciopso1.eq.ciopde) then 
+                iopdesB=iopdes(2,k2)
+c
+c   Determine if water is booked in by first rule and out by the second
+                if((iopdesA.gt.0 .and. iopdesB.le.0) .or.
+     1             (iopdesA.lt.0 .and. iopdesB.gt.0)) then
+c  
+c   Warn user           
+                   write(nlog,1384) ityopr(k), corid(k), 
+     1             ciopsoX(1,k), iopsou(2,k), ciopdeX(1,k), iopdes(2,k),
+     1             ityopr(k2), corid(k2),      
+     1             ciopsoX(1,k2),iopsou(2,k2),ciopdex(1,k2),iopdes(2,k2)
+                endif
+              endif
+            endif
+          end do
+        endif
+      end do  
+              
+      
 c ______________________________________________________________________
  901  close(55)
  500  return
 c ______________________________________________________________________
 c		Warnings
-  916 format(/
+  916 format(/, 72('_'), /,
      1 '  Oprinp; Warning *.opr rule ID ', a12 ' Type ', i5,/  
      1 '          has source 2 (ciopso(2) = ',a12,/
      1 '          and a return pattern switch (iopsou(4,1) = ',i5,/
      1 '          which is not allowed. ',/
      1 '          recommend you revise the operating rule file.',/
      1 '          StateMod is continuing to operate as if it is zero')
-  918 format(/
+  918 format(/, 72('_'), /,
      1 '  Oprinp; Warning *.opr rule ID ', a12,/  
      1 '          has a release type (iopdes(4,k)) = ', i5,/
      1 '          which means make a reservoir release only if a', /
      1 '          ditch has a CIR.  Since you have the variable'/
      1 '          efficiency off in the *.ctl file this has no effect')
-  919 format(/
+  919 format(/, 72('_'), /,
      1 '  Oprinp; Warning *.opr rule ID ', a12,  
      1          ' has a destination account = ', i5,/
      1 '          which means the opr rule treats the reservoir', 
      1          ' as a total, not by an account')
-  925 format(/
-     1 72('_'),/  
+  925 format(/72('_'),/  
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, / 
      1 '          destination account = ', i5, ' Reset to 1')
 c ______________________________________________________________________
@@ -9611,11 +9662,11 @@ c     Formats
      1 '  Oprinp; Old operational right (*.opr) file provided',/
      1 '          That DOES NOT INCLUDE variable OprLoss and OprLimit'/
      1 '          Start Date and End Date')         
-  202 format(/,
+  202 format(/,72('_'), /,
      1 '  Oprinp; New operational right (*.opr) file provided',/
      1 '          That DOES INCLUDE variable OprLoss and OprLimit'/
      1 '          Start Date and End Date')         
-  203 format(/,
+  203 format(/,72('_'), /,
      1 '  Oprinp; Warning a possible mixture of new and old ',/
      1 '          operarating right formats determined',/
      1 '          This might cause problems with recent updates to ',/
@@ -9626,7 +9677,7 @@ c     Formats
      1 '             and ioEnd with your data.',/
      1 '          Note the *.chk file includes data in the new',/
      1 '          format including any comments in the original file')
-  104 format(/,
+  104 format(/,72('_'), /,
      1  '  Oprinp; Warning StateMod Version 11.46 and greater revised',/
      1  '          the input data used by a Carrier (Type 11) and ',/
      1  '          Constrained Carrier (Type 14) operating rules.',/
@@ -9676,18 +9727,21 @@ c     Formats
   644  format(
      1 ' ____ ____ _________________________ _______' ,/
      1 i5,  '   NA Total                    ',i8)
-  672  FORMAT(/,     
+     
+  672  FORMAT(/, 72('_'), /,    
      1  '  Oprinp; Warning for Operation right = ', a12,/,
      1 10x,'It is carrying water from source ', a12, 
      1 10x,'through itself ', a12,/
      1 10x,'To fix: 1. Delete carrier ', a12, /,
      1 10x,'        2. Revise # of carriers')
+c
   720 format(/, 72('_'),/
      1  '  Oprinp; Problem with Operation right = ', a12,/
      1 10x,'Cannot find source ID  ',a12, 'at location ', i5,/
      1 10x,'Note if the source is a operating right',/,
      1 10x,'that right must be on and occur in the *.opr',/
      1 10x,'file befor this right')
+c
   721 format(/, 72('_'),/
      1  '  Oprinp; Problem with Operation right = ', a12,/
      1 10x,'Cannot find source ID  ',a12,' or source account ', i8)
@@ -9842,7 +9896,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Operation type                     = ', i5,/     
      1 '          Cannot find a corresponding reservoir type -1')
      
-  932 format(/,
+  932 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
      1 '          Operation type                     = ', i5,/     
      1 '          A Reuse Plan (type 4 or 6) is specified ID = ',a12/
@@ -9850,7 +9904,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Recommend you add a Plan Spill operating ',
      1            'right (type 29)')
           
-  933 format(/,
+  933 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
      1 '          Operation type                     = ', i5,/     
      1 '          An Accounting Plan (type 11) is specified ID = ',a12/
@@ -9858,7 +9912,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Recommend you add a Plan Spill operating ',
      1            'right (type 29)')
       
-  934 format(/,
+  934 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
      1 '          Operation type                     = ', i5,/     
      1 '          Your source 1 is a type 3 or 5 Plan ID = ',a12,/
@@ -9867,7 +9921,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Recommend you revise source 1 to be a Reservoir ID',/
      1 '          and source 2 a plan ID')
      
-  935 format(/,
+  935 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
      1 '          Operation type                       = ',i5,/     
      1 '          Your source 1 is Administration Plan = ',a12,/
@@ -9886,7 +9940,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Cannot be found',/
      1 '          Recommend you revise the source 1 ID')
      
-  937 format(/,
+  937 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
      1 '          Operation type                         = ',i5,/ 
      1 '          Source 1 is plan           = ', a12,/ 
@@ -9899,7 +9953,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Recommend you revise the source plan type',/
      1 '          or the variable Oprlimit')
           
-  938 format(/,
+  938 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID         = ', a12, /
      1 '          Operation type                     = ', i5,/     
      1 '          Source 1 is a plan ID = ', a12,/
@@ -9908,7 +9962,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          a reservoir and source 2 should be a plan ID',/
      1 '          Recommend you revise your source 1 and or 2 IDs')
      
-  939 format(/,
+  939 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID         = ', a12, /
      1 '          Operation type                     = ', i5,/     
      1 '          The destination is an operational right = ',a12,/
@@ -9916,7 +9970,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Recommend you review the operational right data')
 c
 c rrb 2015/03/30
-  940 format(/,
+  940 format(/, 72('_'), /,
      1 '  Oprinp; Warning with *.opr rule ID          = ', a12, /
      1 '          Operation type                      = ', i5,/     
      1 '          Source ID                           = ', a12,/
@@ -9930,7 +9984,7 @@ c rrb 2015/03/30
      1 '          limit')
 c
 c rrb 2015/03/30
-  942 format(/,
+  942 format(/,72('_'), /,
      1 '  Oprinp; Warning with *.opr rule ID          = ', a12, /
      1 '          Operation type                      = ', i5,/     
      1 '          Source ID                           = ', a12,/
@@ -10540,7 +10594,22 @@ c
      1 10x,'Note: The only destination plan type allowed for a',/
      1 10x,'      type 26 operating rule is a type 13, Changed',/
      1 10x,'      Water Right Plan.')
-    
+c
+ 1384 format(/, 72('_'), /,'  Oprinp; Warning',/
+     1 10x,'Operating right type =  ',i2,' ID = ', a12,/
+     1 10x,'Books water from reservoir ID = ', a12,' account ', i5,/
+     1 10x,'to destination reservoir   ID = ', a12,' account ', i5,
+     1 ' and',/     
+     1 10x,'Operating right type =  ',i2,' ID = ', a12,/
+     1 10x,'Books water from reservoir ID = ', a12,' account ', i5,/
+     1 10x,'to destination reservoir   ID = ', a12,' account ', i5,//
+     1 10x,'This is OK but you may need to set variable ciopso(2)',/
+     1 10x 'to an operating rule Id, iopsou(4,1) to 0 and oprlimit',/
+     1 10x,'to 1 to insure the system does not continuously',/
+     1 10x,'reoperate by booking water into and out of an account',/
+     1 10x,'that are located within the same reserovoir.',/
+     1 10x,'See section 4.13.6 of the documentation.')
+c
 
 c
 c _________________________________________________________
