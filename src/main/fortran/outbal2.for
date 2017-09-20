@@ -109,7 +109,7 @@ c   ioutS=1 print to storage data
 c
       iout=0
       
-      ioutD=1
+      ioutD=0
       ioutI=0
       ioutP=0
       ioutS=0

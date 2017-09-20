@@ -156,9 +156,9 @@ c     qdiv(20        From Carrier by Storage or Exchange
 c     qdiv(26, )     From River by Exc_Pln
 c     qdiv(27, )     Diversion to Carry, Exchange or Bypass
 c     qdiv(28, )     Source is a reuse or admin plan
-c     qdiv(38  )     Carried water not used in any calculations
-c                      to report River Divert
-c
+c     qdiv(38  )     Carried water reported as Carried, Exchange 
+c                      or Bypassed but not used to calculate
+c                      River Divert in Outmon.f
 c     currtn         Immediate return to diverting node??
 c     qtribu         Tributary InFlow (baseflow point)
 c     qstern         Flow at diversion (used for transmtn divs)
@@ -930,7 +930,10 @@ c                 qdiv(18  Carrier passing thru a structure
 c                 qdiv(38  Carried water not used in any calculations
 c                          to report River Divert
 cx    qdiv(18,iscd)=qdiv(18,iscd) + DivactE   
-      qdiv(38,iscd)=qdiv(38,iscd) + DivactE      
+c
+c rrb 2015/01/20; Do not report at source when diverting
+c                 Wait until released by Type 27 or 28
+cx    qdiv(38,iscd)=qdiv(38,iscd) + DivactE      
 c _________________________________________________________
 c
 c                 Step 20; Update data for a plan destination 
@@ -950,9 +953,11 @@ c               Step 22; Set Qdiv for the source and destination
 c
 c                 qdiv(18 = Carrier passing thru a structure     
 c                 qdiv(20 = From Carrier by Storage or Exchange 
-c rrb 2015/01/16; Revise to be qdiv(18     
+c rrb 2015/01/16; Revise to be qdiv(18    
+c rrb 2015/01/24; Revise to report zero unless water is released
+c                 in DivresP2 (type 27) or DivRplP (type 28) 
 cx    qdiv(20,idcd2X)=qdiv(20,idcd2X) + divactE   
-      qdiv(18,idcd2X)=qdiv(18,idcd2X) + divactE       
+cx    qdiv(18,idcd2X)=qdiv(18,idcd2X) + divactE       
       if(iout.eq.1) then
         write(nlog,*) '  Directwr; qdiv(20', idcd2X, iscd, 
      1                   qdiv(20,idcd2X)*fac
