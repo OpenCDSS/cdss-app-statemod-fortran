@@ -1156,8 +1156,8 @@ cx      if(iout.eq.3) write(nlog,*) '  DivactB_1; avail(13), 49',
 cx     1  avail(13)*fac, avail(49)*fac 
       if(nRiver.gt.0) then   
         relact=0.0
-c        write(nlog,*) ' DirectBy; Calling RivRtn OprEfft, divactE ',
-c     1     oprefft, divactE*fac
+c        write(nlog,*) ' DirectBy; Calling RivRtn OprEfft, divactB ',
+c     1     oprefft, divactB*fac
 c
 c rrb 2010/10/15; Update to allow operation with a depletion release
        if(idep.eq.0) then
@@ -1544,12 +1544,19 @@ c               b. Check reservoir roundoff when exiting routine
       endif
 c
 c _________________________________________________________
-c               Step 24; Update Qdiv and Carrier for all destinations
-c rrb 2007/05/25; Add carrier Loss      
-c
-c ---------------------------------------------------------
-c		Step 24a; Set Qdiv for the source and destination
+c               Step 22; Update Qdiv and Carrier for all destinations
       EffmaxT1=(100.0-OprLossC(l2,1))/100.0    
+c     
+c
+c _________________________________________________________
+c               Step 23; set Qdiv at the souce for the
+c                        exchanged amount as carried water
+c rrb 2015/10/04; Set exchanged water as carried at the source
+      qdiv(38,iscd) = qdiv(38,iscd) + divactB
+c _________________________________________________________
+c               Step 24; set Qdiv at the destination.  Also set
+c                        the source if the source is the same
+c                        as the destination
         
       call SetQdiv(nlog, nCarry, nRiver,
      1  nd2, nr2, iscd, idcd2X, idcd2C,

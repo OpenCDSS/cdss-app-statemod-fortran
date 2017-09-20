@@ -20,7 +20,7 @@ c
 c	  Note:
 c	    1. If the source is also a carrier it is handled 100%
 c	    	 in the Calling Program and SetQdiv.
-c	    2. If the destination is the a carrier, it is handled
+c	    2. If the destination is the carrier, it is handled
 c		     100% in SetQdiv
 c	    3. If the carrier is a return to river (ncar=intern(l2,i)<0    
 c		     nothing occurrs
@@ -79,15 +79,36 @@ c		Step 1; Initilize
 c		    iout=0 No detailed output
 c           =1 Details
         iout=0
-        if(l2.eq.147) iout=0
+cx        if(l2.eq.147) iout=0
+cx        if(l2.eq.323) iout=1
         
         small=0.001
         
         if(iout.eq.1) then
 c         write(nlog,250) 
           write(nlog,*) ' '
-          write(nlog,*) ' SetQdivC; icx, ncarry ncnum nd',
-     1      icx,ncarry,ncnum,nd
+          write(nlog,*) 
+     1      ' SetQdivC;  ',
+     1      '     icx  ncarry   ncnum      nd'
+          write(nlog,'(a12, 20i8)') 
+     1      '  SetQdivC;  ',
+     1            icx, ncarry, ncnum, nd
+     
+c		Detailed output
+
+            write(nlog,200)
+            ncar=intern(l2,1)             
+            inode=IDVSTA(ncar)           
+            write(nlog,210) 'SetQdivC IN ', icx, corid1, 
+     1        i, icase, ncar, inode, iscd, idcdX, idcdC,
+     1        divactX*fac, Tranloss*100, OprEff1*100., divactC*fac,  
+     1        EffmaxT1*100, OprlosT*fac,
+     1        qdiv(18,inode)*fac, qdiv(20,inode)*fac,
+     1        qdiv(31,inode)*fac, qdiv(32,inode)*fac, 
+     1        qdiv(33,inode)*fac, qdiv(36,inode)*fac  
+            call flush(nlog)
+      
+     
           call flush(nlog)          
         endif  
 c   
@@ -217,7 +238,7 @@ c ---------------------------------------------------------
 c		Detailed output
           if(iout.eq.1) then
             if(i.eq.1) write(nlog,200)
-            write(nlog,210) icx, corid1, 
+            write(nlog,210) 'SetQdivC OUT', icx, corid1, 
      1        i, icase, ncar, inode, iscd, idcdX, idcdC,
      1        divactX*fac, Tranloss*100, OprEff1*100., divactC*fac,  
      1        EffmaxT1*100, OprlosT*fac,
@@ -242,6 +263,6 @@ c		Formats
      1 '  EffmaxT1   OprlosT   qdiv(18   qdiv(20   qdiv(31',
      1 '   qdiv(32   qdiv(33   qdiv(36',/
      1 ' ___________ ____ ____________', 19(' _________'))
- 210   format(12x, i5,1x,a12, 7i10, 20f10.0)                        
+ 210   format(a12, i5,1x,a12, 7i10, 20f10.0)                        
  250   format(/,72('_'))       
         end

@@ -89,7 +89,7 @@ c
 c           qdiv(18        Carrier passing thru a structure 
 c           qdiv(20        From Carrier by Storage, Exchange or Plan
 c           qdiv(28        Carried or exchanged water
-c	    qdiv(29        Exchange from a plan
+c	          qdiv(29        Exchange from a plan
 c           qdiv(31        Direct Diversion from ReUse plan to a
 c                            Reservoir  or Diversion (DivresP)
 c           qres(18        From River by Exchange to Reservoir
@@ -557,9 +557,9 @@ c
         else
 c
 c rrb 2005/12/07; Revise Note:
-c		qdiv(18 (carried exchange or Bypass)
+c		      qdiv(18 (carried exchange or Bypass)
 c        	qdiv(20 (from Carrier by Plan)       
-c		qdiv(31 (from River by Plan
+c		      qdiv(31 (from River by Plan
 c         qdiv(20,idcdc)=qdiv(20,idcdc)+divact  
           qdiv(31,idcdc)=qdiv(31,idcdc)+divact  
           qdiv(18,idcdc)=qdiv(18,idcdc)+divact

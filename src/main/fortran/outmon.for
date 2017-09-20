@@ -609,7 +609,7 @@ c rrb 2005/11/29; River and Carrier Loss
         CLossDC=qdiv(32,is)
         ClossDR=qdiv(33,is)
 c
-c rrb 04/09/21; Set Carried to carried water (qdiv(18 )or 
+c rrb 2004/09/21; Set Carried to carried water (qdiv(18 )or 
 c               exchanged out of a structure (qdiv(27 )
 c rrb 04/12/28; or from a reuse or admin plan (qdiv(28
 c       Carried  = qdiv(18,is)

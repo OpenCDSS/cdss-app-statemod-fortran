@@ -134,6 +134,7 @@ c		iout=0 no detailed checks
 c		iout=1 details for immediate returns 
 c		iout=2 details for immediate and future returns
 c		iout=3 summary for return flow data
+c   iout=4 details on number of nodes in exchange reach
 c
 c		ichkwr details for water right ichkwr
       iout = 0
@@ -162,8 +163,13 @@ c ---------------------------------------------------------
 c rrb 2011/05/19; Update to to pass ndnS, the # downstream
 c                 to an exchange point   
        ndnn=NDNNOD(idcd)
-       if(ndnn.ne.ndnS) write(nlog,*) '  RtnsecX_1; Warning ',
-     1   ' icx, ndnn, ndnS', icx, ndnn, ndnS
+c
+c rrb 2015/10/04; Print warning when iout=4
+       if(iout.eq.4) then
+         if(ndnn.ne.ndnS) write(nlog,*) '  RtnsecX_1; Warning ',
+     1     ' icx, ndnn, ndnS', icx, ndnn, ndnS
+       endif
+c
 cx     CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnn, IMCD)
        CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnS, IMCD)
        
@@ -431,8 +437,13 @@ c ---------------------------------------------------------
 c rrb 2011/05/19; Update to to pass ndnS, the # downstream
 c                 to an exchange point   
        ndnn=NDNNOD(idcd)
-       if(ndnn.ne.ndnS) write(nlog,*) '  RtnsecX_2; Warning ',
-     1   ' icx, ndnn, ndnS', icx, ndnn, ndnS
+c
+c rrb 2015/10/04; Print warning when iout=4       
+       if(iout.eq.4) then
+         if(ndnn.ne.ndnS) write(nlog,*) '  RtnsecX_2; Warning ',
+     1     ' icx, ndnn, ndnS', icx, ndnn, ndnS
+       endif
+c
 cx     CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnn, IMCD)
        CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnS, IMCD)       
        retmin=avtemp(imcd)

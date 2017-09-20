@@ -449,14 +449,17 @@ c		  0.01 cfs = 0.61 af/mo (0.01*3600*24*31/43560=0.61)
       else
       	divchk=-ireopx*43560./24./3600./31.0
       endif 
-      
-      write(nlogx,*) '  Execut; divchk (af/time step) = ', 
-     1 divchk, ireopx,iday
-      
-      write(nlog,92) divchk, divchk*factor*31.0
- 92   format(/,72('_'),/,
-     1 '  Execut; FYI Reoperation check = ',f10.3,' cfs',/
-     1 '                                = ',f10.3,' af/mo')
+c
+c rrb 2015-09-25; Control detailed output
+      if(iout.eq.1) then      
+        write(nlogx,*) '  Execut; divchk (af/time step) = ', 
+     1   divchk, ireopx,iday
+        
+        write(nlog,92) divchk, divchk*factor*31.0
+ 92     format(/,72('_'),/,
+     1   '  Execut; FYI Reoperation check = ',f10.3,' cfs',/
+     1   '                                = ',f10.3,' af/mo')
+      endif
 c          
 c_______________________________________________________________________
 c               Step x; Print call data header if requested

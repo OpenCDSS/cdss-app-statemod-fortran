@@ -91,7 +91,8 @@ c _________________________________________________________
 c
 c		              iout = 0 No detailed printout
 c		                   = 2 Summary printout
-c                 ioutQ= 1 Print detailed Qdiv results
+c                 ioutQ= 1 Print detailed Qdiv results at nspill
+c                        2 Print detailed Qdiv results at all nodes
 c                 ioutA= 1 Print avail befor & after Takout
       iout=0
       ioutQ=0
@@ -129,13 +130,23 @@ c rrb 98/03/03; Daily capability
 c
 c
 c rrb 2014/01/15; Print Qdiv data
-      if(ioutQ.eq.1) then
+      if(ioutQ.gt.0) then
         write(nlog,*) ' '
         write(nlog,*) ' PowSeaP  in; Qdiv report'
         write(nlog,'(4x, 39i8)') (j, j=1,39)
-        do i=1, numsta
-          write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
-        end do
+c
+c rrb 2015/10/10; Detailed output
+        nspill  =Iopdes(1,L2)
+        if(ioutQ.eq.1 .and. nspill.gt.0) then
+          write(nlog,*)' PowseaP; nspill=', nspill, cstaid(nspill)
+          write(nlog,'(i5, 39f8.0)')
+     1      i, (qdiv(nspill,i)*fac, j=1,39)
+        endif
+        if(ioutQ.eq.2) then
+          do i=1, numsta
+            write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
+          end do
+        endif
       endif
             
       iwhy=0
@@ -209,9 +220,14 @@ c
 c		Step 2; Set Source Data
 c              Find reservoir (nr), owner (iown), river location (iscd)
 c                and # of downstream nodes (ndns)
+c              Note the source is a reservoir when NR > 0
+c              Note the source is a plan when NR < 0 that sets NPS 
+c              Note the source is a reservoir with a plan when NR>0 
+c                and iopsou(3,l2) > 0
 C
       NR = IOPSOU(1,L2)
       if(nr.lt.0) npS=-nr
+      
       NP2 = iopsou(3,l2)
       if(iout.eq.1) write(nlog,*) '  PowseaP; nr, npS, np2',
      1   nr,npS,np2
@@ -220,9 +236,6 @@ c ---------------------------------------------------------
 c
 c		2a; Exit if source 1 reservoir is off      
 c
-c rrb 2006/05/01; Correction
-cr    if(ir.gt.0 .and. iressw(nr).eq.0) then
-c     if(nr.gt.0 .and. iressw(nr).eq.0) then
       if(nr.gt.0) then
         if (iressw(nr).eq.0) then
           iwhy=2
@@ -246,7 +259,7 @@ c
 c ---------------------------------------------------------
 c
 c		2c; Exit if source 2 plan is set (np2 = iopsou(3,l2) > 0 and 
-c       hte plan is off (pon(np2) < 0           
+c       the plan is off (pon(np2) < 0           
       IF(np2.gt.0) then
         if (pon(np2).LE.small) then
           iwhy=4
@@ -291,6 +304,7 @@ c
 c ---------------------------------------------------------
 c
 c		3c; Compare max release (flomax) to flow in river (river)
+c
         FLOAVL=AMAX1(FLOMAX(NR)-RIVER(ISCD),0.)
         ravcfs=amin1(ravcfs, floavl)
         ravcfs2=ravcfs        
@@ -317,26 +331,13 @@ c		Step 4; Source is a Plan
         psuply1=psuply(npS)
 c
 c rrb 2006/04/25; Add data in storage as part of the supply (acft)
-
-c
-c					IF the plan is associated with a reservoir (type 3 or 5) 
-c
 c rrb 2010/10/15; Add type 11 
 c rrb 2011/02/02; Back to original
         iplntyp1=iplntyp(npS)   
         if(iplntyp1.eq.3 .or. iplntyp1.eq.5) then
-cx        if(iplntyp1.eq.3 .or. iplntyp1.eq.5 .or. 
-cx     1    iplntyp1.eq.11) then        
-c
-c rrb 2008/09/22; Total supply in Psto2 (ACFT) includes psuply(np)        
-cx        psuply1= psuply(npS) + psto2(npS)/fac
           psuply1= psto2(npS)/fac
         endif
-c
-c rrb 2008/01/14; Qdiv(28 has a reuse or Admin plan source
-c       write(nlog,*) ' PowseaP_1; release from a plan spill ', iscdP, 
-c    1    qdiv(28,iscdP)*fac, psuply1*fac          
-        
+c        
         ravcfs=psuply1
         ravcfs3=ravcfs
 c
@@ -366,15 +367,8 @@ c		Step 4; Set Plan Source 2 Data
 c
 c rrb 2006/04/25; Add data in storage as part of the supply (acft)
         iplntyp1=iplntyp(npS)
-c
-c rrb 2010/10/15; Add type 11  
-c rrb 2011/02/02; Back to original       
         if(iplntyp1.eq.3 .or. iplntyp1.eq.5) then
-cx        if(iplntyp1.eq.3 .or. iplntyp1.eq.5 .or.
-cx     1     iplntyp1.eq.11) then
-c
-c rrb 2008/09/22; Total supply in Psto2 (ACFT) includes psuply(np)        
-cx        psuply1= psuply(npS) + psto2(npS)/fac
+
           psuply1= psto2(npS)/fac
         endif  
         
@@ -406,8 +400,6 @@ c		        Note ndns and iscd are set above
 c           depending on the supply source
 c
 c rrb 2014-05-05; allow spill to occurr downstream of plan when nspill>0
-c 
-c
 c rrb 2014/11/24 Check Avail         
       if(ioutA.eq.1) then    
         write(nlog,*) ' '   
@@ -424,7 +416,7 @@ c rrb Allow spill location to be set if nspill = iopdes(1,l2) > 0
         CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              TEMP  , NDNS,  ISCD  )
 c
-c rrb 2015/08/23; If the spill locatoin has not been specified, 
+c rrb 2015/08/23; If the spill location has not been specified, 
 c                 revise to not adjust avail at the reservoir itself
 c                 This is consistent with a type 9 reservoir spill    
         AVAIL (ISCD)=AVAIL (ISCD)-DIVACT     
@@ -525,14 +517,10 @@ c ---------------------------------------------------------
 c
 c		8b; Adjust Plan storage 
 c
-c rrb 2010/10/15; Add type 11    
-c rrb 2011/02/02; Back to original 
 c          3 = reuse to a reservoir
 c          5 = reuse to a reservor by tmtn.
         iplntyp1=iplntyp(npS)
         if(iplntyp1.eq.3 .or. iplntyp1.eq.5) then
-cx        if(iplntyp1.eq.3 .or. iplntyp1.eq.5 .or.
-cx   1       iplntyp1.eq.11) then
           psto21=psto2(nps)
           psto2(npS)=amax1(psto2(npS)- divact*fac, 0.0) 
           if(iout.eq.1) write(nlog,*) '  PowSeaP;',
@@ -544,9 +532,25 @@ c         4 is reuse to a diversion,
 c         6 is reuse to a diversion transmountain
 c        11 is an accounting plan
 c				
-c rrb 2014/11/24; Correction
+c rrb 2015/01/16; Do not adjust for qdiv(37 since diversions to
+c                 admin plans are not used in calculating
+c                 River Divert
         if(iplntyp(npS).eq.4 .or. iplntyp(npS).eq.6 .or. 
      1     iplntyp(npS).eq.11) then 
+c
+c        
+c		        qdiv(36         Water released to the river (report as
+c			                      return flow).
+c           qdiv(37         Water released to the river (report as
+c                           a release (negative diversion) that is
+c                           subtracted in outmon.f
+   
+c rrb 2015/10/10; Correct typo from above
+          if(nspill.eq.0) then
+            qdiv(36,iscdP) = qdiv(36,iscdP) + divact
+          else
+            qdiv(36,nspill) = qdiv(36,nspill) + divact 
+          endif  
 
         endif
                
@@ -603,6 +607,7 @@ c		Step 10;  Detailed Output
      1      cDivTyp(l2)
         endif  
 c   
+
         write(nlog,280) '  PowseaP   ', iyrmo(mon),xmonam(mon), idy,
      1    cstaid1, iwx, iw, l2,nr, npS, np2,         
      1    ravcfs1*fac, ravcfs2*fac, ravcfs3*fac, ravcfs4*fac, 
@@ -611,13 +616,22 @@ c
       endif
 c
 c rrb 2014/01/15; Print Qdiv data
-      if(ioutQ.eq.1) then
+      if(ioutQ.gt.0) then
         write(nlog,*) ' '
         write(nlog,*) ' PowSeaP out; Qdiv report'
         write(nlog,'(4x, 39i8)') (j, j=1,39)
-        do i=1, numsta
-          write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
-        end do
+c
+c rrb 2015/10/10; Additonal output
+        if(ioutQ.eq.1 .and. nspill.gt.0) then
+          write(nlog,*)' PowseaP; nspill=', nspill, cstaid(nspill)
+          write(nlog,'(i5, 39f8.0)')
+     1      i, (qdiv(nspill,i)*fac, j=1,39)
+        endif
+        if(ioutQ.eq.2) then
+          do i=1, numsta
+            write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
+          end do
+        endif
       endif      
       
 c _________________________________________________________

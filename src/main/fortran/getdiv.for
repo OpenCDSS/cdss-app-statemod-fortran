@@ -629,7 +629,7 @@ c		Formats
  302  format('  GetDiv;   ', 1x, 3i8, 1x, a12)
 
  330  format(/, 
-     1  '  GetDiv; FYI the folloinw structures are carriers',/
+     1  '  GetDiv; FYI the following structures are carriers',/
      1  '          and therefore always use average efficiency',//
      1  '    # ID             nd iuse  irturn',
      1  '      DivAve', 9('DivEff_',i1), 3(' DivEff_',i2),/

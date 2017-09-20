@@ -8,9 +8,9 @@ c _________________________________________________________
 c	Program Description
 c
 c     DivResP2;	  Type 27 Rule: 
-c                 ReUse plan or Reservoir 
-c		               to a Diversion, Reservoir, Plan or Instream flow
-c                 By a direct release via river or carrier
+c                 Plan to a Reservoir, Diversion, Reservoir, 
+c                 Plan or Instream flow by a direct release 
+c                 via river or carrier
 c		              Tied to a reuse plan (ipuse.ne.9) or
 c		               a OOP Plan (ipuse.eq.9)
 c	                Can release to meet a diversion or a depletion
@@ -51,9 +51,9 @@ c     Note if IOprlim = 5 or 7-9 the source is a Changed Water
 c       Right Plan (type 13) that has special reporting capability
 c
 c rrb 2007/08/22; Revised to allow the return flow calculation for 
-c                 the T&C requirement to vary as follows:
-c                 if(iopsou(4,l2) = 1 call RtnsecP for a STANDARD		  
-c                 if(iopsou(4,l2) = 2 call RtnsecC for a CONSTANT
+c     the T&C requirement to vary as follows:
+c     if(iopsou(4,l2) = 1 call RtnsecP for a STANDARD		  
+c     if(iopsou(4,l2) = 2 call RtnsecC for a CONSTANT
 c
 c rrb 2007/08/17; Revised to allow the destination to be a plan
 c rrb 2007/07/09; Revised to allow the T&C obligation to be
@@ -280,6 +280,9 @@ c		            iout=3  details on nRiver Adjustments
 c               iout=4  details on iteration limitation
 c               iout=5  details on divo(l2)
 c		            iout=99 summary independent of corid
+c               ioutQ = 1 Print qdiv(38
+c                       2 Print qdiv(38 plus qdiv array
+c
 c               ioutIR  details on instream flow reach
 c
 c               iout26= 1 details on reporting when the original 
@@ -326,6 +329,18 @@ c
  102      format(/, 72('_'),/ '  DivResP2; ID = ', a12)
         endif
       endif
+c
+c rrb 2015/09/25; Control detailed output to one operating rule
+c                 ioutQ = 1 Print qdiv(38
+c                         2 Print qdiv(38 plus qdiv array
+c
+      if(iout.eq.2 .and. ioutiw.eq.iw) then 
+        ioutQ=1
+c       ioutQ=2
+      else
+        ioutQ=0
+      endif 
+      
 c
 c ---------------------------------------------------------
       
@@ -768,9 +783,6 @@ c
 c _________________________________________________________
 c               
 c     Step 4a; Limit release (alocfs) to monthly and annual limits
-c rrb 2007/10/23;
-c	
-c		
 c rrb 2015/02/03X; Allow type 4 that is a type 2 + type 3
 c rrb 2015/03/07; Allow Oprlimit to be 1-9 
 cx    if(ioprlim(l2).eq.2 .and. iopsou(5,l2).gt.0) then	
@@ -990,19 +1002,7 @@ c rrb 2007/12/04; Add Loss to Demand for a Diversion Destination
         endif
 
         DIVALO=amax1(0.0,divalo)
-        divaloX=divalo   
-c
-c rrb 2008/12/10; Already done above for all diversion demands             
-cxcr
-cxcr		Set supply based on diversion if iDep=0 or 
-cxc               depletion if iDep=1
-cx        diveff1=diveff(mon,iuse)
-cx        if(iDep.eq.0) then
-cx          alocfs=alocfs
-cx        else  
-cx          alocfs=alocfs/(diveff(mon,iuse)/100.0)              
-cx        endif
-        
+        divaloX=divalo           
       endif  
 c
 c ---------------------------------------------------------
@@ -1547,9 +1547,6 @@ c _________________________________________________________
 c
 c		            Step 18; Add in return flows for a diversion     
 c rrb 2007/12/04; Add Loss
-cx      write(nlog,*) ' DivresP2; ndtype, ipUse divactL'
-cx      write(nlog,*) ' DivResP2;', ndtype, ipUse, divactL*fac
-c
 c rrb 2015/03/02X Correction
 cx    if(ndtype.eq.3 .and. ipuse.eq.0) then
       if(ndtype.eq.3 .and. ipuse.le.0) then       
@@ -1769,7 +1766,20 @@ c
           qdiv(36,iscd)=qdiv(36,iscd) - relact          
           qdiv36=qdiv(36,iscd)
         endif      
-
+c
+c rrb 2015/10/04; Correction to address type 11 before allowing a
+c                 a type 13 plan type for changed water rights
+        if(iplntyp(nsP).eq.11) then
+          qdiv(38,iscd)=qdiv(38,iscd) - relact
+          qdiv38=qdiv(38,iscd)
+          
+          if(ioutQ.eq.1) then
+            write(nlog,*) 
+     1      ' DivRplP; nsp, iscd, cstaid, qdiv38' 
+            write(nlog,*) 
+     1      ' DivRplP;', nsp, iscd, cstaid(iscd), qdiv38*fac
+          endif
+        endif
 c 
 c rrb 2015/01/24; Report amount diverted as Carried, Bypassed or 
 c                 Exchanged at the the source plan node (iscd),
@@ -1849,16 +1859,7 @@ c                some indices were unset (=-1) and cause array
 c                bounds issues
 c
 c rrb 2015/08/23; Back to original
-  300 if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
-cx    if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
-cx
-cx rrb 2015/08/23; Try and find -1 indecies
-cx      if(irep.gt.0) then
-cx        write(nlog,*)
-cx     1  ' DivResP2; l2, idcd, idcdx, iscd, ncar, nd26, iplim, ipTC',
-cx     1  l2, idcd, idcdx, iscd, ncar, nd26, iplim, ipTC
-cx      endif
-  
+  300 if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1  
 c
 c rrb 2007/10/29; Set ishort for a quick exit. Reset initilized
 c		  divact to 0 from -1
@@ -1914,8 +1915,6 @@ c rrb 2015/08/23; Correct problem when idcdX has not been set
 c
 c rrb 2011/02/23; Correction; do not set destination data when
 c                 it is a reservoir     
-cx        qdiv31a=qdiv(31,idcdX)      
-cx        if(ndtype.eq.2) qdiv(31,idcdX)=0.0
         qdiv31b=qdiv(31,idcdX)
         if(iout.eq.1) then
           write(nlog,*) '  DivResP2; Call SetQdiv qdiv31b', qdiv31b*fac
@@ -1946,9 +1945,7 @@ cx   1    nriver, divactX, TranLoss, EffmaxT1,
      1    icx, corid(l2))
       endif 
 c
-c rrb 2014/01/24; Check  
-c rrb 2015/08/23;  
-c                                                                            
+c rrb 2014/01/24; Check                                                                             
 c rrb 2015/08/23; Correct problem when incar has not been set                
       if(ncar.gt.0) then                  
         divcap2=divcap(ncar) - divmon(ncar)
@@ -2013,7 +2010,6 @@ c               Step 26b; Update monthly or annual plan limitations
 c
 c rrb 2009/01/15; Revise to recognize ioprlim(l2)=3      
 cx    if(iOprLim(l2).gt.1 .and. iopsou(5,l2).gt.0) then
-c
 c rrb 2015/02/03; Revise to recognize ioprlim(l2)=4
 c rrb 2015/03/07; Allow Oprlimit to be 1-9 
 cx    if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2) then
@@ -2122,25 +2118,7 @@ c
       endif  
       
       call chekava(17, maxsta, numsta, avail)
-
 c _________________________________________________________
-c
-c               Step X; Check plan supply
-cx      if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2) then
-cx        lopr5=iopsou(5,l2)
-cx        if(iopsou(5,l2).gt.0 .and. psuply(lopr5).gt.small .and.
-cx     1    abs(divact).gt.small) then
-cx          ipLim=iopsou(1,lopr5)
-cx          
-cx          write(nlog,*) ' DivResP2;  ', ndp, nsp, ipuse, lopr5, iplim                     
-cx          write(nlog,*) ' DivResP2;  ', 
-cx     1      corid1, icx, lopr5, ioprlim(l2), 
-cx     1      psuply(iplim5)*fac, psuplyT(iplim5)*fac,  
-cx     1      psto1(ipLim5), psto2(ipLim5)    
-cx       
-cx        endif
-cx      endif       
-cxc _________________________________________________________
 c
 c               Step 30; Return
 

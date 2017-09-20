@@ -8,10 +8,9 @@ c
 
 c
 c 	Type 26; Changed Water Right   
-c		 1. Simulates part of  water right to be diverted 
-c       at its original location to a diversion and 
-c		 2. The balance of a water right to be 
-c		    diverted to a Plan
+c		 1. Simulates diversion of all or part of  water 
+c       right to be diverted at its original location and
+c		 2. The balance of a water right to be diverted to a Plan
 c
 c      Approach: 
 c      1. Initilize
@@ -31,11 +30,12 @@ c         (can occurr if the changed WR was limited for any reason)
 C         STEP 16
 c
 c         Note
-c         Only allowed to operate once per time step in execut
-c         Destination must be a type 11 plan
+c         Only allowed to operate once per time step (see variable
+c           icallOP 
+c         Destination must be a type 13, Changed Water Right plan
 c         Source must be a water right
 c         The water right % remaining at the source and diverted 
-c           has the souce capacity  reduced.  The water right % 
+c           has the souce capacity reduced.  The water right % 
 c           that is changed and diverted to a plan does not 
 c           reduce the source capacity.  Capacity limits are 
 c           imposed when water is released from the plan by 
@@ -46,6 +46,7 @@ c	Update History
 c
 c rrb 2014-11-24;  Copied type 24 (DirectEx) and edited.
 c                  Major differences are:
+c                  Source must be a water right
 c                  Destination must be a plan
 c                  No carrier capabilities
 c                  Water associated with the changed water right
@@ -217,16 +218,19 @@ c		            1 details
 c		            2 summary 
 c          ioutp=1 details of plan operation
 c          ioutq=1 details of qdiv
-      iout=0
+      iout=1
       ioutP=0
       ioutQ=0   
       ioutiw=0 
-         
+c               
       if(ichk.eq.126 .and. iout.eq.0) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw      
 c      
       if(iout.eq.1) then
-        write(Nlog,*)
+        write(nlog,*) ' '
+        write(nlog,*) '  DirectWR  ',     
+     1    iyrmo(mon),xmonam(mon)      
+        write(Nlog,*)        
      1    ' directwr; ncallx    ichk    iout  ioutiw      iw',
      1    ' corid        ccall' 
         write(nlog,'(10x,5i8,2(1x,a12))')  
@@ -404,17 +408,8 @@ c		For a daily model set demand for end of season
 c
 c _________________________________________________________
 c              Step 2b; Set reoperation control
-c rrb 2015/07/08; Add capability to not operate any more
-c                 this time step 
-       icallOP(l2)=icallOP(l2) + 1 
-c
-c rrb 2015/07/18; Correction       
-cx     if(icallOP(l2).ge.1) then
-       if(icallOP(l2).gt.1) then       
-         iwhy=2
-         cwhy='Reoperation not allowed'
-         ioff=1
-       endif         
+c rrb 2015/10/10; Move to below Source data to allow 
+c                 detailed printout
 c      
 c ________________________________________________________
 c               Step 2c; Set T&C Plan pointer
@@ -427,15 +422,25 @@ c		                     ipUse = Reuse plan
      1     'allow T&C data to be evaluated'
         goto 9999
       endif
-cxx      cTandC='Yes'
-cxx      ipUse=ireuse(l2)
-cxx      if(ipUse.gt.0) cpuse='Yes'
+c
 c _________________________________________________________ 
 c               Step 3; Set Source Data
 c
       lr=iopsou(1,l2)
 cr    write(nlog,*) '  directwr; l2, lr', l2, lr
       nd=idivco(1,lr)
+c
+c ---------------------------------------------------------      
+c		              a0. Check reoperation control and exit
+c                     if already operated one time
+c rrb 2015/10/10; Move below to allow detailed printout
+       icallOP(l2)=icallOP(l2) + 1 
+c
+       if(icallOP(l2).gt.1) then       
+         iwhy=2
+         cwhy='Reoperation not allowed'
+         goto 260
+       endif              
 c
 c ---------------------------------------------------------
 c		              a1. Exit if source structure is off (iwhy=2)
@@ -601,7 +606,7 @@ c               Test for a quick exit from routine (260)
       endif
 c_____________________________________________________________
 c               Step 7; Begin to calculate diversion at SOURCE
-c                       (divact1)limited by decree (dcrdiv1),
+c                       (divalo)limited by decree (dcrdiv1),
 c                       demand(divreqX) & capacity (divcap1)
 c                       BUT NOT WATER SUPPLY
 c                       Note divcap1 is set in step 3e
@@ -663,7 +668,6 @@ c                 Update remaining decree for bypass calculations
 c
 c                 Update amount carried to limit changed WR      
       DIVMON(ND)=DIVMON(ND)+divact1      
-cx    divCap2=divCap2-divact1
 c
 c                 Update demand
       divreqX=amax1(0.0, divreqX-divact1)  
@@ -860,7 +864,7 @@ c
       divact0=divact1
 c 
 c ---------------------------------------------------------
-c               16a.  Calculate additional diversin (divAdd) 
+c               16a.  Calculate additional diversion (divAdd) 
 c rrb 2015/05/06; Limit diversion at source by the 
 c                 remaining capacity (divCap(nd) - divmon(nd)
 cx    divAdd=amin1(dcrdivT, divreqX)   
@@ -949,7 +953,7 @@ c		              Update diversion by this structure and user
       USEMON(iuse)=USEMON(iuse)+divact1
 c
 c		              Update diversion by this structure and user
-c		              Note divact1 is the source diversion
+c		              Note divact1 is the source diversion only
       IF(IRTURN(iuse).ne.4) then
         QDIV(5,ISCD)=QDIV(5,ISCD)+divact1
       else
@@ -1067,6 +1071,7 @@ c         write(nlog,*) ' '
      1    divcarry*fac, divcap1,   divcap2,pdem2*fac, dcrdiv1*fac,        
      1    divact0*fac, divAdd*fac, divact1*fac,divactE*fac,
      1    (divactE+divact1)*fac, iwhy, cwhy
+     
         if(iout.eq.1) then
           write(nlog,*) 'directwr; qdiv 8, 14, & 5'
           write(nlog,*)  Qdiv(8,iscd)*fac, qdiv(14,iscd)*fac, 
