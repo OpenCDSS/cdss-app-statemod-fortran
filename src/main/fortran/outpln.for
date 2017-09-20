@@ -1233,7 +1233,57 @@ c			Annual Average
      1          'TOT', -1.0, (planTot(np,iyX,i)/rn, i=2,MaxResPX)
             endif         
           end do 
+        endif    
+c
+c rrb 2015-03-24
+c
+c ---------------------------------------------------------
+c   
+c   Step 22; Print Annual Summary for Release Limit Plans (type 11)
+        if(ipTotal(13).ne.0) then
+          NumplnT=NumplnT+1        
+          do np=13,13
+            write(21,310) cunitm, np, plntypX(np)
+            write(21,232) ' Supply', 'Total', (i, i=1,maxResPX)
+            iy1=0
+            do iy=iystr,iyend  
+              iy1=iy1+1
+              if(isigfig.eq.0) then
+                write(21,242) 'Accounting  ', 'NA          ', iy, 
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+              
+              if(isigfig.eq.1) then
+                write(21,2421) 'Accounting   ', 'NA          ', iy,             
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+              
+              if(isigfig.eq.2) then
+                write(21,2422) 'Changed WR   ', 'NA          ', iy,             
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+            end do
+c
+c			Annual Average          
+            write(21,252)
+            if(isigfig.eq.0) then
+              write(21,243) 'Changed WR   ', 'NA          ', 
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif
+            
+            if(isigfig.eq.1) then
+              write(21,2431) 'Changed WR   ', 'NA          ', 
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif         
+            
+            if(isigfig.eq.2) then
+              write(21,2432) 'Changed WR   ', 'NA          ',
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif         
+          end do 
         endif     
+       
+         
 c
 c _________________________________________________________
 c

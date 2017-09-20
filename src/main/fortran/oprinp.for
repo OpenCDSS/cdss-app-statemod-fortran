@@ -201,6 +201,9 @@ c		Step 2; Initilize
       iops2=0
       small=0.001
       smallN=-1.0*small
+c
+c rrb 2015/03/24; Add file type warning indicator
+      ioutW1=0
       if(ioutSm.eq.1) write(nlog,*) ' Oprinp_01; small ', small
       DO ND=1,NUMDIV
         IDRGST(ND)=0
@@ -347,9 +350,16 @@ c		If an error goto to 100 to read old one
      1      ' Oprinp; cidvri ', cidvri, k,ioBeg(k),ioEnd(k)
 c rrb 2008/03/12; Initilize ioprlim     
           iOprLim(k) = int(oprlimit(k))     
-          write(nlog,*)
-     1    ' oprinp; unknown format; k iOprLim(k) oprlimit(k)',
-     1    k, iOprLim(k), oprlimit(k)
+c
+c rrb 2015/03/24; Revise file type warning
+cx          write(nlog,*)
+cx     1    ' oprinp; unknown format; k iOprLim(k) oprlimit(k)',
+cx     1    k, iOprLim(k), oprlimit(k)
+          if(ioutW1.eq.0) then
+            write(nlog,1290)
+            ioutW1=ioutW1+1
+          endif
+     
           if(iout.eq.1) write(nchk,*) ' Oprinp; Unknown ioprX, k',
      1      ioprX, k  
           goto 101
@@ -374,9 +384,17 @@ c         ioprlim(k) = 9999
           ioprlim(k) = 0
           cdivtyp(k) = 'Diversion   '
           if(iout.eq.1) write(nchk,*) ' Oprinp; Old ioprX, k', ioprX, k  
-          write(nlog,*)
-     1    ' oprinp; old format; k iOprLim(k) oprlimit(k)',
-     1    k, iOprLim(k), oprlimit(k)
+c
+c rrb 2015/03/24; Revise file type warning          
+cx          write(nlog,*)
+cx     1    ' Oprinp; old format; k iOprLim(k) oprlimit(k)',
+cx     1    k, iOprLim(k), oprlimit(k)
+c
+c rrb 2015/03/24; Revise file type warning
+          if(ioutW1.eq.0) then
+            write(nlog,1290)
+            ioutW1=ioutW1+1
+          endif
           goto 101
         endif
 c ______________________________________________________________________
@@ -9223,12 +9241,79 @@ c rrb          endif
 c rrb        endif            
 c rrb      end do 
 c rrbc                                          
-c rrb      if(iwarnp .gt. 0) goto 9999            
+c rrb      if(iwarnp .gt. 0) goto 9999  
+
+c **********************
+c ______________________________________________________________________
+c rrb 2015/03/30
+c               Step C5; 
+c               Check & warn the user if the operating rule specified 
+c               a operating rule id to limit the diversion that 
+c               is used more than once.
+      iwarnp=0
+      ifound=0
+      do k=1,numopr
+        ciopde=ciopsoX(1,k)     
+        ioprlim2=ioprlim(k)
+c
+c ------------------------------------------------------------
+c                Check for a non-type 47 operating rule limit              
+        if(ioprlim2.eq.3 .or. ioprlim2.eq.4 .or.
+     1     ioprlim2.eq.8 .or. ioprlim2.eq.9) then
+c
+          nx = iopsou(6,k)  
+c          
+c         Check if another limit has the same value is specified
+          if(nx.gt.0) then
+            ifound=0      
+            k1=k+1 
+            
+            do k2=k1,numopr
+              if(iopsou(6,k2).eq.nx) ifound = k2
+            end do
+c           
+            if(ifound.gt.0) then
+              write(nlog,940) corid(k), ityopr(k), ciopsoX(1,k),
+     1          ioprlim(k), corid(nx),  corid(ifound)       
+            endif   
+          endif
+        endif 
+c
+c -----------------------------------------------------------
+c                Check for a type 47 operating rule limit   
+        if(ioprlim2.eq.2 .or. ioprlim2.eq.4 .or.
+     1     ioprlim2.eq.7 .or. ioprlim2.eq.9) then
+c
+          nx = iopsou(5,k)  
+c          
+c         Check if another limit has the same value is specified
+          if(nx.gt.0) then
+            ifound=0      
+            k1=k+1 
+            
+            do k2=k1,numopr
+              if(iopsou(5,k2).eq.nx) ifound = k2
+            end do
+c           
+            if(ifound.gt.0) then
+              write(nlog,942) corid(k), ityopr(k), ciopsoX(1,k),
+     1          ioprlim(k), corid(nx),  corid(ifound)       
+            endif 
+          endif
+        endif 
+      end do 
+   
+c******************
+
+
+          
 c ______________________________________________________________________
 c rrb 2011/07/28
 c               Step C6; 
 c               Check if simulating an Accounting Plan (type 11)
-c               as a destination.  Note it does not work with a 
+c               or a Changed Water Right Plan (type 13)
+c               as a destination that a type 29 (spill) rule
+c               has been specified.  Note it does not work with a 
 c               type 46 (multiple user) operating rule so that 
 c               check is done separately (just below)
       iwarnp=0
@@ -9243,8 +9328,11 @@ cx        ip=iopdes(1,k)
           ip1=iopdes(1,k)
           ip=amax0(ip1, -1*ip1)
           ciopde=ciopdeX(1,k)     
-          if(ip.gt.0) then       
-            if(iPlntyp(ip).eq.11) then
+          if(ip.gt.0) then   
+c
+c rrb 2015/03/30; Allow a Changed Water Right Plan (type 13)    
+cx          if(iPlntyp(ip).eq.11) then
+            if(iPlntyp(ip).eq.11 .or. iPlntyp(ip).eq.13) then
 c               Check if a type 29 rule has been specified      
               ifound=0       
               do k2=1,numopr
@@ -9267,14 +9355,15 @@ c ______________________________________________________________________
 c rrb 2011/07/28
 c               Step C7; 
 c               If simulating a type 46 multi user rule check
-c               that any Accounting Plan (type 11) destination
+c               that any destination with an Accounting Plan
+c               (type 11) or Changed Water Right Plan (type 13) 
 c               has a type 29 spill rule specified.
       iwarnp=0
       ifound=0
       do k=1,numopr
 c               Check if the destination is a plan
         if (ityopr(k).eq.46) then
-c 		c1b; Loop for number of destinations
+c 		          c1b; Loop for number of destinations
           n1=0
           n2=0 
           ndes=ioprlim(k)
@@ -9282,11 +9371,18 @@ c 		c1b; Loop for number of destinations
             n1=n2+1 
             n2=n1+1 
             ciopde=ciopdeX(n,k)                  
-            ip=iopdes(n1,k)
+c rrb 2015/03/30; Revise to allow a negative value to be used
+c                 to indicate a plan
+cx          ip=iopdes(n1,k)
+            ip1=iopdes(n1,k)
+            ip=amax0(ip1, -1*ip1)            
 cx            write(nlog,*) '  Oprinp;', k, ityopr(k),n, n1, n2, ip, 
 cx     1        iplntyp(ip), ciopde  
             if(ip.gt.0) then       
-              if(iPlntyp(ip).eq.11) then
+c
+c rrb 2014/03/30; Add type 13
+cx            if(iPlntyp(ip).eq.11) then
+              if(iPlntyp(ip).eq.11 .or. iplntyp(ip).eq. 13) then
 c                 Check if a type 29 rule has been specified      
                 ifound=0       
                 do k2=1,numopr
@@ -9818,6 +9914,34 @@ c    1 10x,'   at the source or destination structure',/
      1 '          The destination is an operational right = ',a12,/
      1 '          whose destination cannot be found',/
      1 '          Recommend you review the operational right data')
+c
+c rrb 2015/03/30
+  940 format(/,
+     1 '  Oprinp; Warning with *.opr rule ID          = ', a12, /
+     1 '          Operation type                      = ', i5,/     
+     1 '          Source ID                           = ', a12,/
+     1 '          has an oprlimit value               = ', i5,/
+     1 '          that points to a operating limit ID = ', a12,/
+     1 '          that is the same limit used by ID   = ', a12,/
+     1 '          This means if the limit is 1000 af, both operating',/
+     1 '          rights can divert up to 1000 af for a total of ',/
+     1 '          2000 af.  Your input data is OK; this is just a ',/
+     1 '          reminder of how StateMod simulates this type of ',/
+     1 '          limit')
+c
+c rrb 2015/03/30
+  942 format(/,
+     1 '  Oprinp; Warning with *.opr rule ID          = ', a12, /
+     1 '          Operation type                      = ', i5,/     
+     1 '          Source ID                           = ', a12,/
+     1 '          has an oprlimit value               = ', i5,/
+     1 '          that points to a operating limit ID = ', a12,/
+     1 '          that is the same limit used by ID   = ', a12,/
+     1 '          This means if the limit is 1000 af, the total',/
+     1 '          diverted by both operating rights is limited',/
+     1 '          to 1000 af. Your input data is OK; this is just a ',/
+     1 '          reminder of how StateMod simulates this type of ',/
+     1 '          limit')
      
  1185 format(/,72('_'),/
      1 '  Oprinp; Problem with Operation right       = ', a12,/                     
@@ -10326,6 +10450,17 @@ c    1 10x,'   at the source or destination structure',/
      1 10x,'Source 2 = ', a12, ' cannot be found or is set to NA',/
      1 10x,'This is not allowed. Recommend you revise the operating',/
      1 10x,'rule file (*.opr)')
+     
+ 1290   format(/, 72('_'),/, '  Oprinp; ',
+     1 'Warning the version of the operating rule',/
+     1 12x,'file (*.opr) provided is not specified.',/
+     1 12x,'Suggest you add the following to the',/
+     1 12x,'first line of the operating rule (*.opr) file to',/
+     1 12x,'indicate the version of the file being provided',/
+     1 12x,'#FileFormatVersion X; where X is the version #',/
+     1 12x,'See Section 4.13 of the documentation for more ',/
+     1 12x,'additional information')          
+     
      
  1300 format(/,72('_'),/                                                          
      1 '  Oprinp; Problem with Operating Right ', a12, ' Type = ',i2,/

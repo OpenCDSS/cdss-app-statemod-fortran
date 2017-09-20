@@ -740,6 +740,7 @@ c
 c ---------------------------------------------------------
 c rrb 2006/11/12; 
 c		Limit to maximum river discharge (flowmax)
+                
         ALOCFS=AMIN1(FLOMAX(nsr)-RIVER(iscd),ALOCFS)
         alocfs = amax1(0.0,alocfs)
         alocfs2=alocfs
@@ -748,7 +749,12 @@ c ---------------------------------------------------------
 c		Exit of zero
         if(alocfs.lt.small) then
           iwhy=4
-          cwhy='Maximum Available Streamflow (alocfs2) = zero'          
+          cwhy='Maximum Available Streamflow (alocfs2) = zero'  
+cx          write(nlog,*) '  DivResp2;',
+cx     1     ' nsr, iscd, Flomax(nsr), river(iscd)'
+cx          write(nlog,*) '  DivResp2;',
+cx     1       nsr, iscd, Flomax(nsr), river(iscd), alocfs
+                  
           goto 300
         endif
       endif
@@ -769,8 +775,10 @@ cx    if(ioprlim(l2).eq.2 .and. iopsou(5,l2).gt.0) then
           lopr5=iopsou(5,l2)                  
           oprmaxM1=amin1(oprmaxM(lopr5), oprmaxA(lopr5))
 c         
-c rrb 2015/03/07; Revise to limit to diversions in prior iterations          
-          oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)    
+c rrb 2015/03/07; Revise to limit to diversions in prior iterations
+c  
+c rrb 2015/03/23; Remove since this is taken care of in SetLimit        
+cx        oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)    
           ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
           alocfs3=alocfs
 c          
@@ -808,6 +816,9 @@ cx    if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then
           oprmaxM1=amax1(0.0, divo(lopr6)*fac)        
 c         
 c rrb 2015/03/02X; Revise to limit to diversions in prior iterations          
+c rrb 2015/03/23; Note not handled in Setlimit since there is no 
+c                 annual limit and it assumes only 1 right will be tied
+c                 to this operating rule        
           oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)
 c          
           alocfs2=alocfs
