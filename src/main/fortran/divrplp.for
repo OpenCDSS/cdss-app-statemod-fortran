@@ -768,8 +768,10 @@ cx    if(iOprLim(l2).eq.2 .and. iopsou(5,l2).gt.0) then
           lopr5=iopsou(5,l2)
           oprmaxM1=amin1(oprmaxM(lopr5), oprmaxA(lopr5))
 c         
-c rrb 2015/03/07; Revise to limit to diversions in prior iterations          
-          oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)          
+c rrb 2015/03/07; Revise to limit to diversions in prior iterations  
+c  
+c rrb 2015/03/23; Remove since this is taken care of in SetLimit           
+cx        oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)          
           ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
           alocfs3=alocfs
 c          
@@ -803,7 +805,10 @@ cx    if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then
           lopr6=iopsou(6,l2)
           oprmaxM1=amax1(0.0, divo(lopr6)*fac)        
 c        
-c rrb 2015/03/02X; Revise to limit to diversions in prior iterations        
+c rrb 2015/03/02X; Revise to limit to diversions in prior iterations 
+c rrb 2015/03/23; Note not handled in Setlimit since there is no 
+c                 annual limit and it assumes only 1 right will be tied
+c                 to this operating rule               
           oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)        
           
           if(iout.eq.1) then

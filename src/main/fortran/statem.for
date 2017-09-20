@@ -192,8 +192,8 @@ c				 7 includes new binary output format
 c		     yy has new functionality
 c		     zz is a bug fix
 c		
-        ver='14.02.11'
-        vdate = '2015/02/14'
+        ver='14.02.14'
+        vdate = '2015/04/07'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -275,7 +275,9 @@ c
       maxPlan = 1440
       maxrtnPP = 1444
 cx    maxPlnO=100
-      maxPlnT=12
+c
+c rrb 2015-03-24
+      maxPlnT=13
       maxOprin=50
       maximprt=15
       nimport=0
@@ -604,7 +606,15 @@ c               Go back to menu if in default mode
 c ______________________________________________________________________
 c     Formats
   212   format(//
-     1 ' Recent updates',/
+     1 ' Recent updates',/    
+     1 '    - 2015/04/07 (14.02.14)',/
+     1 '      Enhanced warnings initiated in previous version',/
+     1 '    - 2015/03/14 (14.02.13)',/   
+     1 '      Revised Oprinp to print warnings for certain ',/
+     1 '      combinations of the variable oprlimit ',/
+     1 '    - 2015/02/14 (14.02.12)',/   
+     1 '      Revised to correct minor issues assocaied with',/
+     1 '      prior version',/
      1 '    - 2015/02/14 (14.02.11)',/   
      1 '      Revised Type 27 direct release (DivResP2.f) to correct',/
      1 '      minor problems associaed with version 14.02.10',/
