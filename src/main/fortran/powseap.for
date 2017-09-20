@@ -423,6 +423,11 @@ c rrb Allow spill location to be set if nspill = iopdes(1,l2) > 0
         TEMP=-DIVACT   
         CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              TEMP  , NDNS,  ISCD  )
+c
+c rrb 2015/08/23; If the spill locatoin has not been specified, 
+c                 revise to not adjust avail at the reservoir itself
+c                 This is consistent with a type 9 reservoir spill    
+        AVAIL (ISCD)=AVAIL (ISCD)-DIVACT     
       else     
         TEMP=-DIVACT    
         CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,

@@ -75,7 +75,9 @@ c
 c        divalo       = demand
 c        relalo       = available supply in plan (acft)
 c        alocfs       = available supply in plan (cfs)
-c        divact       = actual amount diverted
+c        divactX      = actual amount diverted
+c        divacty      = divactX used to pass out and use
+c                        in SetQdivC
 c        relact       = actual amount released from the plan
 c     	 flomax       = maximum flow downstream of the 
 c                       reservoir (e.g. current stream flow
@@ -864,8 +866,7 @@ c
           cwhy='Original source capacity = zero'          
           goto 300
         endif
-      endif        
-        
+      endif          
 c
 c _________________________________________________________
 c  
@@ -1843,8 +1844,17 @@ c
 c jhb 2014/07/13 move 300 down to step 28
 c                some indices were unset (=-1) and cause array
 c                bounds issues
-c  300 if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
-      if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
+c
+c rrb 2015/08/23; Back to original
+  300 if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
+cx    if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
+cx
+cx rrb 2015/08/23; Try and find -1 indecies
+cx      if(irep.gt.0) then
+cx        write(nlog,*)
+cx     1  ' DivResP2; l2, idcd, idcdx, iscd, ncar, nd26, iplim, ipTC',
+cx     1  l2, idcd, idcdx, iscd, ncar, nd26, iplim, ipTC
+cx      endif
   
 c
 c rrb 2007/10/29; Set ishort for a quick exit. Reset initilized
@@ -1878,23 +1888,27 @@ c rrb 2007/12/04
 c               Step 24; Update Qdiv for Source and Destination
 
       EffmaxT1=(100.0-OprLossC(l2,1))/100.0
+c
+c rrb 2015/08/23; Correct problem when idcdX has not been set
+      if(idcdX.gt.0) then
       
-      qdiv31a=qdiv(31,idcdX)
-      call setQdiv(nlog,  nCarry, nRiver,
-     1  ndD, ndR, iscd,   idcdX, idcdC,
-     1  divact, TranLoss, EffmaxT1, OprEffT, fac, 
-     1  rloss, maxsta, maxdiv, maxqdiv, qdiv, icx,
-     1  internL, corid(l2))
+        qdiv31a=qdiv(31,idcdX)
+        call setQdiv(nlog,  nCarry, nRiver,
+     1    ndD, ndR, iscd,   idcdX, idcdC,
+     1    divact, TranLoss, EffmaxT1, OprEffT, fac, 
+     1    rloss, maxsta, maxdiv, maxqdiv, qdiv, icx,
+     1    internL, corid(l2))
 c
 c rrb 2011/02/23; Correction; do not set destination data when
 c                 it is a reservoir     
-cx      qdiv31a=qdiv(31,idcdX)      
-cx      if(ndtype.eq.2) qdiv(31,idcdX)=0.0
-      qdiv31b=qdiv(31,idcdX)
-      if(iout.eq.1) then
-        write(nlog,*) '  DivResP2; Call SetQdiv qdiv31b', qdiv31b*fac
-        call flush(nlog)
-      endif  
+cx        qdiv31a=qdiv(31,idcdX)      
+cx        if(ndtype.eq.2) qdiv(31,idcdX)=0.0
+        qdiv31b=qdiv(31,idcdX)
+        if(iout.eq.1) then
+          write(nlog,*) '  DivResP2; Call SetQdiv qdiv31b', qdiv31b*fac
+          call flush(nlog)
+        endif  
+      endif
 c
 c _________________________________________________________
 c rrb 2007/12/04
@@ -1919,18 +1933,27 @@ cx   1    nriver, divactX, TranLoss, EffmaxT1,
      1    icx, corid(l2))
       endif 
 c
-c rrb 2014/01/24; Check      
-        divcap2=divcap(ncar) - divmon(ncar) 
+c rrb 2014/01/24; Check  
+c rrb 2015/08/23;  
+c                                                                            
+c rrb 2015/08/23; Correct problem when incar has not been set                
+      if(ncar.gt.0) then                  
+        divcap2=divcap(ncar) - divmon(ncar)
+      endif 
 cx      write(nlog,*) '  DivResP2_1 In; ncar, divcapX',ncar,divcapX*fac
 c
 c ---------------------------------------------------------
 c rrb 2010/10/15; Revise to account for TranLoss (a system loss 
 c                 not a carrier loss) at the destination
-      if(Tranloss.gt.small) then
-        if(ncarry.eq.0) then 
-          qdiv(33,idcdX) = qdiv(33,idcdX) + divact*effmaxT1*Tranloss
-        else
-          qdiv(32,idcdX) = qdiv(32,idcdX) + divact*effmaxT1*TranLoss
+c                                                            
+c rrb 2015/08/23; Correct problem when idcdX has not been set
+      if(idcdX.gt.0) then
+        if(Tranloss.gt.small) then
+          if(ncarry.eq.0) then 
+            qdiv(33,idcdX) = qdiv(33,idcdX) + divact*effmaxT1*Tranloss
+          else
+            qdiv(32,idcdX) = qdiv(32,idcdX) + divact*effmaxT1*TranLoss
+          endif
         endif
       endif
 c
@@ -1942,31 +1965,33 @@ c rrb 2014/11/24
 c     Step 26a; Adjust the amount diverted (divmon) based on 
 c               the amount released which is how
 c               a diversion is limited by capacity 
-            
-      if(lopr26.gt.0) then
+c                                                            
+c rrb 2015/08/23; Correct problem when nd26 has not been set
+      if(nd26.gt.0) then            
+        if(lopr26.gt.0) then
 c	
 c rrb 2015/01/20; Do not adjust if the source is the primary carrier	
-        if(nd26.ne.ncar) then
-          divcap2=divcap(nd26) - divmon(nd26)         
-          divmon(nd26) = amax1(divmon(nd26) + divact,0.0)
-          divcap3=divcap(nd26) - divmon(nd26)   
-        else
-          divcap2=divcap(nd26) - divmon(nd26)          
-          divcap3=divcap2
+          if(nd26.ne.ncar) then
+            divcap2=divcap(nd26) - divmon(nd26)         
+            divmon(nd26) = amax1(divmon(nd26) + divact,0.0)
+            divcap3=divcap(nd26) - divmon(nd26)   
+          else
+            divcap2=divcap(nd26) - divmon(nd26)          
+            divcap3=divcap2
+          endif
+c         
+          if(iout26.eq.2) then
+            write(nlog,*) ' '           
+            write(nlog,*) 
+     1       ' DivResP2_6;',
+     1       '   lopr26  ncarry     nd26    ncar',
+     1       '  divact divcap1 divcap2 divcap3'
+            write(nlog,'(1x,a12,4i8, 20f8.0)')
+     1       ' DivResP2_6;', lopr26, ncarry, nd26, ncar,
+     1         divact*fac, divcap1*fac, divcap2*fac, divcap3*fac
+          endif       
         endif
-c
-        if(iout26.eq.2) then
-          write(nlog,*) ' '           
-          write(nlog,*) 
-     1     ' DivResP2_6;',
-     1     '   lopr26  ncarry     nd26    ncar',
-     1     '  divact divcap1 divcap2 divcap3'
-          write(nlog,'(1x,a12,4i8, 20f8.0)')
-     1     ' DivResP2_6;', lopr26, ncarry, nd26, ncar,
-     1       divact*fac, divcap1*fac, divcap2*fac, divcap3*fac
-        endif       
-      endif
-        
+      endif  
 c
 c _________________________________________________________
 c rrb 2007/07/03; 
@@ -2036,8 +2061,10 @@ c
 c               Step 28; Detailed output at Exit
 c
 c rrb 2009/05/12; Reduce output for a daily model
-cx    if((iout.eq.1 .or. iout.eq.2) .and. iw.eq.ioutiw) then       
- 300  continue
+cx    if((iout.eq.1 .or. iout.eq.2) .and. iw.eq.ioutiw) then 
+c
+c rrb 2015/08/23; Back to original      
+cx300  continue
       iprint=1
       if(iday.eq.1 .and. divact.lt.small) iprint=0
       
