@@ -651,8 +651,14 @@ c		Operational right maximum limit 1x/mo
         divdS(k)=0.0
         divdE(k)=0.0
         oprmaxM(k)=oprmax(k,mon)
-        preuse(k)=0.0   
-        
+        preuse(k)=0.0  
+c
+c rrb: 2015-07-08; Add capabiity to control the number of times
+c                  an operating rule has operated per time step. 
+c                  Currently used by Type 6 (bookover) and Type 26
+c                  (Changed water right operation)
+        icallOP(k)=0
+c        
 c
 c 2009/01/15; Revise to allow source 2 to be the month a type 47 
 c		rule is reset

@@ -313,9 +313,15 @@ c       qdiv(38         Carried water not used in any calculations
 c                       to report River Divert
 c
 c
-        if(iplntyp(ndP).ne.11) then
+c rrb 2015/08/11; Correction do not adjust if the source is a 
+c                 changed water right plan (type 13)
+cx        if(iplntyp(ndP).ne.11) then
+cx          qdiv(35,idcdD) = qdiv(35,idcdD) + divact
+cx        endif
+        if(iplntyp(ndP).ne.13) then
           qdiv(35,idcdD) = qdiv(35,idcdD) + divact
         endif
+        
 c
 c rrb 2008/01/15; If a T&C destination set qdiv(30 an
 c		  adjustment to total diversion in outbal2

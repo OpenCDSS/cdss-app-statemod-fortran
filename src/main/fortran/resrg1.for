@@ -355,21 +355,21 @@ c               Step 13; Detailed Printout
 c
 cr    IF(-IOPOUT.eq.IRCD .or. iout.eq.2) then
       if(iout.eq.2 .and. iw.eq.ioutiw) then            
-        if(iday.eq.1 .and. actaf.gt.small) then
-        if(ncallx.eq.0) then
-          write(nlog,270) creswr(l2),cdestyp, cSouTyp, ccarry, cpuse
-          ncallx=ncallx+1
-        endif  
+cx        if(iday.eq.1 .and. actaf.gt.small) then
+          if(ncallx.eq.0) then
+            write(nlog,270) creswr(l2),cdestyp, cSouTyp, ccarry, cpuse
+            ncallx=ncallx+1
+          endif  
 
-        write(nlog,280) 
-     1    ' Out', iyrmo(mon),xmonam(mon), idy, iwx, cstaid(ircd),
-     1    iressw(nr),  iw,  nwrord(1,iw), l2, nr,
-     1    IRSORD(2,IRCD), IOWN, imcd, 
-     1    VOLMAX(NR), CURSTO(NR),caprem,
-     1    tarmax(nr), tarcon, PaperFil,
-     1    Ritrem1, ritrem(l2), cursa, stoalo,
-     1    avail1, availx, -1., actaf, iwhy, cwhy
-        endif
+          write(nlog,280) 
+     1      ' Out', iyrmo(mon),xmonam(mon), idy, iwx, cstaid(ircd),
+     1      iressw(nr),  iw,  nwrord(1,iw), l2, nr,
+     1      IRSORD(2,IRCD), IOWN, imcd, 
+     1      VOLMAX(NR), CURSTO(NR),caprem,
+     1      tarmax(nr), tarcon, PaperFil,
+     1      Ritrem1, ritrem(l2), cursa, stoalo,
+     1      avail1, availx, -1., actaf, iwhy, cwhy
+cx        endif
   280   format(9x, a4,i5,1x,a4,2i5,1x, a12,8i8, 14F8.0, i8, 1x, a48)
      
      

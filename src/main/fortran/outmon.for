@@ -129,7 +129,7 @@ c               qres(11 From storage to carrier
 c               qres(12 From storage to River for Use (Powres*)
 c               qres(18 From river by Exchange
 c               qres(21 From storage for Exchange
-c		            qres(22 From carrier to storage
+c		            qres(22 From storage to carrier
 c		            qres(25 Reservoir Seepage by Carrier Loss
 c               qres(26 From river by Storage to Reservoir
 c               qres(27 Carrier Loss (DivCar)
@@ -906,8 +906,8 @@ c rrb 2005/11/29; Add qdiv(32,is) and Qdiv(33,is) for River and Canal Loss
 c
 c rrb 2008/01/15; In Outbal, adjust diversion for qdiv(30 (Plan to a T&C)    
         cx=qdiv(15,is)+qdiv(30,is)
-  
-           
+c
+c        
         write(43,rec=irecs)
      1    demx(is),  diwrz(is),   RivPri,     RivSto,      RivExPl,
      1    ClossDR,   well,        CarPri,     CarStoEx,    ClossDC, 
@@ -1093,8 +1093,11 @@ c rrb 2005/12/09; River and Carrier Loss
      1            RRivSto - RClossC - RClossR
 c
 c rrb 03/14/96; Show powrel (release due to targets) as Seep and Spill
-        RStoUse= qres(8,nr) + qres(9,nr)  + qres(12,nr) -
-     1          qres(21,nr)- qres(11,nr)
+c rrb 2015/07/18; Correction
+cx        RStoUse= qres(8,nr) + qres(9,nr)  + qres(12,nr) -
+cx     1           qres(21,nr)- qres(11,nr)
+        RStoUse= qres(8,nr) + qres(9,nr)  + qres(12,nr) - qres(21,nr)
+     
         RStoExc  = qres(21,nr)
         RStoCar = qres(11,nr) + qres(16,nr) + qres(17,nr) + qres(22,nr)
         RTotRel = RStoUse      + RStoExc        + RStoCar
@@ -1198,10 +1201,13 @@ c
 c rrb 2006/09/15; Correction          
           RTotSup = RRivPri + RCarPri  + RCarSto + RRivExc +
      1             RRivSto - RClossC - RClossR
-          
-
-          RStoUse= accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n) -
-     1            accr(11,n)                                 
+c          
+c rrb 2015/07/27; Correction
+cx          RStoUse= accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n) -
+cx     1            accr(11,n)          
+          RStoUse= accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n)
+     
+                            
           RStoExc  = accr(21,n)
 c
           RStoCar = accr(11,n) + accr(22,n)

@@ -15,6 +15,12 @@ c
 c rrb 99/05/10; Additional Check
 c rrb 02/01/15; Dimension clean up
 c
+c _____________________________________________________________
+c
+c	Documentation
+c	      small1 = small value used for roundoff issues (1.0 af)
+c       small2 = small value used for roundoff issues (0.1 af)
+c       icx	= calling routine (100 + opr rule or 200 + std rule)
 c_______________________________________________
 c
 c       Dimensions
@@ -38,8 +44,11 @@ c
 c _________________________________________________________
 c		Step 1; Initilize
 c
-        iout=0
-        small2=0.1
+        iout=0          
+c
+c rrb 2015/07/20; Test        
+cx      small2=0.1
+        small2=10.0
         if(in.eq.0) cin='Into  '
         if(in.eq.1) cin='Out of'
         
@@ -54,7 +63,15 @@ c
 
           sum=0.0
           do ir=iri,ire
-            sum=sum+amax1(0.,curown(ir))
+            sum=sum+amax1(0.,curown(ir))  
+c
+c rrb 2015/06/25; Additional output for checking
+            if(iout.eq.1) then
+              write(nlog,*) '  Chekres: cresid(nr), nr, ir,',
+     1              ' curown(ir), sum'   
+              write(nlog,*) '  Chekres: ', cresid(nr), nr, ir, 
+     1                curown(ir), sum   
+            endif                      
           end do
 c
 c rrb 05/21/97; Handle roundoff concerns between main reservoir

@@ -6,7 +6,7 @@ C
 c
 c       DnmFso2; It finds the minimum flow at station iscd
 c               and downstream.
-c		 Same as DnmFso but it includes cCallBy
+c		    Same as DnmFso but it includes cCallBy
 c
       DIMENSION AVAIL(maxsta),IDNCOD(maxsta)
       character cCallBy*12

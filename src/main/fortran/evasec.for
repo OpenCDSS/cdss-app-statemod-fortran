@@ -32,7 +32,7 @@ c                 1. Calculate total evaporation in feet then acft
 c                    (evap0)
 c                 2. Average initial and final storage to get net
 c                    evap in af (evap1)
-c                 3. Limit evap to the toal reservoir by
+c                 3. Limit evap to the total reservoir by
 c                    comparing to accounts that participate using the
 c                    variable (pcteva(ir))
 c                 4. Distribute to accounts

@@ -412,11 +412,13 @@ c		Operating Rule Data #2
      1 iOprLim(3701),   ioBeg(3701),       ioEnd(3701),
      1 numrg,           ideplete,          iexchang,       
      1 iexPoint(3701),  OprLossC(3701,20), ropdes(3701,20),
-     1 internT(3701,20)   
-
+c
+c rrb 2015-07-08; Add reoperation control by water right
+cx   1 internT(3701,20)   
+     1 internT(3701,20), icallOP(3701)
 c
 c _________________________________________________________
-     
+c  
       common/oprc/
      1 ciopdeX(20,3701), ciopsoX(20,3701), 
      1 ciopsoX2(3701),   ciopsoX5(3701),

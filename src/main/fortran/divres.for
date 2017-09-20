@@ -161,8 +161,10 @@ c
       cDest1='NA'
       cDest1='36_ADC019   '
       
-      
-      if(ichk.eq.202 .or. ichk.eq.203) iout=2
+c
+c rrb 2015/06/28 Correction      
+cx    if(ichk.eq.202 .or. ichk.eq.203) iout=2
+      if(ichk.eq.102 .or. ichk.eq.103) iout=2      
       if(corid(lr).eq. ccall) ioutiw=iw
       
       if(iout.eq.2) then
@@ -1022,11 +1024,15 @@ c
 c
 c ---------------------------------------------------------
 c               h. Update Source is a reservoir
-c		   destination is a carrier (qres(11,nr) &
+c		               destination is a carrier (qres(11,nr) &
 c                  accr(11,iown)
       if(ityopr(lr).eq.3) then
         qres(11,nr)=qres(11,nr)-relact*fac
-        accr(11,iown)=accr(11,iown)-relact*fac        
+        accr(11,iown)=accr(11,iown)-relact*fac  
+c
+c rrb 2015/07/18; Test
+cx        write(nlog,*) '  DivRes; corid(lr), nr, qres(11,nr)'
+cx        write(nlog,*) '  DivRes;', corid(lr), nr, qres(11,nr)   
       endif
 c
 c
@@ -1054,17 +1060,27 @@ c ---------------------------------------------------------
 c               k. Set Source is a Reservoir
 c		   From reservoir to carrier
 c                  for transmountain (Qres(8,nr) and accr(8,iown))
-      IF (iresw.eq.0.and.IRTURN(IUSE).EQ.4) GO TO 320
-      QRES(8,NR)=QRES(8,NR)-ACTACF
-      accr(8,iown) = accr(8,iown)-actacf
-      goto 330
+c
+c rrb 2015/07/18; Revise to not set qres(8 or qres(9 when 
+c                 ityopr(lr).ne.3 since
+c                 1. the release is to the river (ityopr(lr).ne.3)
+c                 2. qres(11 (res storage to carrier) is set above
+c                    when ityopr(lr.eq.3) 
+c                 3. Outmon got revised to not subtract qres(11
+c                    when setting RStoCar (from storage to river) 
+      if(ityopr(lr).ne.3) then 
+        IF (iresw.eq.0.and.IRTURN(IUSE).EQ.4) GO TO 320
+        QRES(8,NR)=QRES(8,NR)-ACTACF
+        accr(8,iown) = accr(8,iown)-actacf
+        goto 330
 c
 c
 c ---------------------------------------------------------
 c               l. Set From reservoir to carrier non transmountain
 c                  (Qres(9,nr) and accr(9,iown))
-  320 QRES(9,NR)= QRES(9,NR)-ACTACF
-      accr(9,iown) = accr(9,iown)-actacf
+  320   QRES(9,NR)= QRES(9,NR)-ACTACF
+        accr(9,iown) = accr(9,iown)-actacf       
+      endif
 c
 c
 c _________________________________________________________

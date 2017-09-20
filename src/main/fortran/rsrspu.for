@@ -13,24 +13,62 @@ c		and a demand specified in the diversion demand file
 c               (*.ddm)
 c
 c
+c _____________________________________________________________
+c	Update History
+c
+c      2015/07/08; Revised to control reoperation if
+c                  an operating rule is provided as a limit in
+c                  iopsou(3) (e.g. ity = 2) and that
+c                  operating rule has been called at least
+c                  once in this time step.  Implemented to 
+c                  control bookover operatoins after water is
+c                  booked out then back in when iopsou(3,l2)
+c                  is an operating rule specified and oprlimit(l2)
+c                  is 1.
+c
 c _________________________________________________________
 c
 c		Documentation
 c
-c	iopsou(1,l2)    source reservoir pointer
-c	iopsou(2,l2)    source reservoir account pointer
+c	       iopsou(1,l2)   source reservoir pointer
+c        nr             source reservoir pointer
+c	       iopsou(2,l2)   source reservoir account pointer
+c        
+c	       iopsou(3,l2)	  0 not used
+c                       1 Diversion pointer that limits bookover
+c	       		            2 Operating rule pointer that limits the bookover  
+c 
+c        ity            1 Same as above for iopsou(3,l2) = 1        
+c	       ity            2 Same as above for iopsou(3,l2) = 2
 c
-c	iopsou(3,l2)	0 not used
-c			Operating rule pointer that limits the bookover
-c                       diversion pointer that limits bookover
-c	iopsou(4,l2)	0 not used
-c			99 indicates iopsou(3,l2) is a diversion
+c	       iopsou(4,l2)	  0 not used
+c	       		            99 indicates iopsou(3,l2) is a diversion
+c        
+c	       iopdes(1,l2)   destination reservoir pointer
+c        nd             destination reservoir  pointer
+c	       iopdes(2,l2)   destination reservoir account pointer
+c                       If iopdes(2,l2)>0 bookover to one account
+c                       if iopdes(2,l2)<0 bookover to first n accounts
+c        nro            # of accounts to bookover into
+c        nbook          = 1 bookover to 1 account
+c                       = 2 bookover to first n accounts
 c
-c	iopdes(1,l2)    destination reservoir pointer
-c	iopdes(2,l2)    destination reservoir account pointer
+c        oprCall(l2)    = counts number of times this operating
+c                         rule has been called.  Used with oprlimit(l2)
+c                         is an operatng rule and oprlimit = 1
+c                         to not allow a bookover once another 
+c                         operating rule specified as iopsou(3,l2)
+c                         has operated.
+c                         
+c        ioprlim(l2)    = 0 not used
+c                       = 1 limit reoperation of operating rule l2
+c                         when the operating rule associated with
+c                         ID = ciopsoX2(l2) has been operated 
 c
-c       qres(29,nr)     Amount diverted within the same reservoir
-c		        used in Outbal2 for for basin balance
+c        qres(4          From carrier to storage by Other
+c		     qres(22         From storage to carrier
+c        qres(29,nr)     Amount diverted within the same reservoir
+c		                     used in Outbal2 for for basin balance
 c _________________________________________________________
 c	Dimensions
 c
@@ -52,9 +90,19 @@ c		iout=3 Qres(29 details
 c		iout=99 summary indenpendent of ioutiw
       iout=0
       ioutiw=0
-      
+c
+c rrb 2015/06/25; Additional output control for debugging
+      ioutX=0
+c
+c rrb 2016-/06/25; Additional outut  
+      if(ichk.eq.4) iout=2 
+c         
       if(ichk.eq.106) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw
+c
+c rrb 2015/06/25; Additional output control for debugging
+      if(iout.eq.2 .and. ioutiw.eq.iw) ioutX=0
+c     
       divaf = 0.0
       small = 0.001
       nr=0
@@ -65,7 +113,7 @@ c rrb 98/03/03; Daily capability
       else
         fac=factor
       endif
-      
+c
       divact=0.0      
       resavl=-1.0
       divreq1=-1.0
@@ -114,7 +162,16 @@ c		For a daily model set demand for end of season
           goto 140
         endif  
       endif  
-      
+c
+c _________________________________________________________
+c
+c rrb 2015/07/08; Add capability to not operate any more
+c                 this time step based on user data
+       if(icallOP(l2).ge.1 .and. ioprlim(l2).eq.1) then
+         iwhy=2
+         cwhy='Reoperation limited to once per time step'
+         goto 140
+       endif    
 c
 c _________________________________________________________
 c
@@ -153,9 +210,18 @@ c
 cr    IDOW=NOWNER(ND)+IOPDES(2,L2)-1
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initilize      
+c rrb 2015/06/25; If iopdes(2,l2)>0 bookover to one account
+c                 if iopdes(2,l2)<0 bookover to first n accounts
+c
       nro=1
+c
+c rrb 2015/06/25      
+      nbook=1
       if(iopdes(2,l2).lt.0) then
+c
+c rrb 2015/06/25; 
+        nbook=2      
         nro=-iopdes(2,l2)
         idow=nowner(nd)
       endif
@@ -179,7 +245,7 @@ c     caprem=2000000
       if(iopsou(3,l2).ge.0) go to 110
       
       ity=-(iopsou(3,l2)-((iopsou(3,l2)/10)*10))
-c     write(99,*) 'ity',ity
+      write(99,*) 'ity',ity
 czzz  if(ity.eq.2) go to 100
 c _________________________________________________________
 c
@@ -230,7 +296,8 @@ c _________________________________________________________
 c
 c		Step 7; Source 2 operational right limit (ity.eq.2)
 c100  np=-(iopsou(3,l2)/10)
-      if(ity.eq.2) then
+c
+      if(ity.eq.2) then   
         np=-(iopsou(3,l2)/10)
         caprem=divo(np)-divo(l2)
         caprem=amax1(caprem, 0.0)
@@ -240,22 +307,30 @@ c rrb 2006/11/27; Addition
           iwhy=6
           cwhy='Operational Limit (Caprem) is zero'
           Goto 140
-        endif   
+        endif 
       endif
 c
 c _________________________________________________________
 c
-c		Step 8; CALCULATE VOLUME AVAILABLE FROM RESERVOIRS
+c		Step 8; CALCULATE VOLUME AVAILABLE FROM SOURCE ACCOUNT
 C
   110 if(nr.eq.nd) then
-        RESAVL=CUROWN(IROW)
+        RESAVL=CUROWN(IROW)  
       else
         RESAVL=AMAX1(AMIN1(CURSTO(NR)-VOLMIN(NR),CUROWN(IROW)),0.)
       endif
 c
+c rrb 2015/06/25; Additional output control for debugging
+      if(ioutX.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) ' RsrSpu_Step 8;    nr, nd, irow, RESAVL'
+        write(nlog,*) ' RsrSpu_Step 8; ', nr, nd, irow, RESAVL 
+        write(nlog,*) ' '
+      endif
+c
 c rrb 2006/11/27; Addition      
       if(resavl/fac.le.small) then
-        iwhy=6
+        iwhy=8
         cwhy='Reservoir Source (ResAvl) is zero'
         Goto 140
       endif  
@@ -273,7 +348,7 @@ cr      resavl=amax1(resavl,0.0)
 cr      divreq1=divreq(np)
 cr      
 cr      if(resavl/fac.le.small) then
-cr        iwhy=7
+cr        iwhy=9
 cr        cwhy='Diversion limit (DivReq1) is zero'
 cr        Goto 140
 cr      endif          
@@ -287,11 +362,20 @@ C grb 12-04-94; Include a check to see max target not exceeded
       tarcon=tarmax(nd)-cursto(nd)
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Demand
+c rrb 2006/09/25; Allow multiple accounts for Destination
       cursa=0.0
       do n=1, nro
         n1=idow+n-1
         cursa=cursa+(ownmax(n1)-curown(n1))
+c
+c rrb 2015/06/25; Additional output control for debugging
+        if(ioutX.eq.1) then
+          cx=ownmax(n1)-curown(n1)
+          write(nlog,*) 'RsrSpu_Step 10; , nro, n, n1,',
+     1                  ' ownmax(n1), curown(n1), cx, cursa'
+          write(nlog,*) 'RsrSpu_Step 10; ', nro, n, n1,
+     1                    ownmax(n1), curown(n1), cx, cursa    
+        endif    
       end do    
           
       if(nr.eq.nd) then
@@ -302,11 +386,18 @@ c rrb 2006/09/25; Allow multiple accounts - Demand
       RESALO=AMAX1(RESALO,0.)
       
       if(resalo/fac.le.small) then
-        iwhy=8
+        iwhy=10
         cwhy='Destination Available (ResAlo) is zero'
         Goto 140
       endif  
-      
+c
+c rrb 2015/06/25; Additional output control for debugging
+      if(ioutX.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) 'RsrSpu_Step 10;    nr, nd, irow, RESALO'
+        write(nlog,*) 'RsrSpu_Step 10; ', nr, nd, irow, RESALO 
+        write(nlog,*) ' '
+      endif
 c               
       RAVCFS=RESAVL/fac
       RALCFS=RESALO/fac
@@ -320,7 +411,7 @@ C
 c		The followig exit should never occur
 c     IF(DIVACT.LE.0.00001) Goto 140
       if(resavl/fac.le.small) then
-        iwhy=9
+        iwhy=11
         cwhy='ResAvl, DivReq1 or ResAvl is zero'
         Goto 140
       endif  
@@ -332,12 +423,36 @@ c
 c _________________________________________________________
 c
 c		Step 15; UPDATAE variables
+
+c
+c rrb 2015/06/25; Additional output
+      if(ioutX.eq.2) then
+        write(nlog,*)' '
+        write(nlog,*)
+     1    'RsrSpu_Step 15a;   divaf, nr, cursto(nr), irow,',
+     1                ' curown(irow), nd, cursto(nd)'
+        write(nlog,*) 
+     1    'RsrSpu Step 15a;', divaf, nr, cursto(nr), irow,
+     1                  curown(irow), nd, cursto(nd)   
+      endif
+
 c
       CURSTO(NR  )=CURSTO(NR  )-DIVAF
       CUROWN(IROW)=CUROWN(IROW)-DIVAF
 C
       CURSTO(ND  )=CURSTO(ND  )+DIVAF
 cr    CUROWN(IDOW)=CUROWN(IDOW)+DIVAF
+c
+c rrb 2015/06/25; Additional output
+      if(ioutX.eq.2) then
+        write(nlog,*)' '
+        write(nlog,*)
+     1    'RsrSpu_Step 15b;   divaf, nr, cursto(nr), irow,',
+     1                ' curown(irow), nd, cursto(nd)'
+        write(nlog,*) 
+     1    'RsrSpu Step 15b;', divaf, nr, cursto(nr), irow,
+     1                  curown(irow), nd, cursto(nd)   
+      endif
 c
 c ---------------------------------------------------------
 c rrb 2006/09/25; Allow multiple accounts - Allocate
@@ -359,13 +474,31 @@ c
       call accou(maxacc, maxown, nrX, ownmon, curown, accr, ia, 
      1  ownmax, iownX, nrown1, cursa, divaf, iResT1, icx, cresid1)
 c
+c rrb 2015/06/25; Additional output
+      if(ioutX.eq.2) then
+        write(nlog,*)' '
+        write(nlog,*)
+     1    'RsrSpu_Step 15c;   divaf, nr, cursto(nr), irow,',
+     1                ' curown(irow), nd, cursto(nd)'
+        write(nlog,*) 
+     1    'RsrSpu Step 15c;', divaf, nr, cursto(nr), irow,
+     1                  curown(irow), nd, cursto(nd)   
+      endif
+     
+     
+c
 c ---------------------------------------------------------
 C grb 1-26-95   Update carrier diversions if not same res transfer
 c     DIVMON(NP  )=DIVMON(NP  )+DIVACT
       if (nd.ne.nr) DIVMON(NP  )=DIVMON(NP  )+DIVACT
 c
-      QRES  (4,ND)=QRES  (4,ND)+DIVAF
-      QRES (22,NR)=QRES (22,NR)+DIVAF
+c        nd = destination
+c        nr = source
+c        qres(4          From carrier to storage by Other
+c		     qres(22         From storage to carrier
+c
+      QRES(4,ND)=QRES(4,ND)+DIVAF
+      QRES(22,NR)=QRES(22,NR)+DIVAF
       
 cr    accr(4,idow)  = accr(4,idow)+divaf
       accr(22,irow) = accr(22,irow)+divaf
@@ -374,9 +507,12 @@ c
 c
 c ---------------------------------------------------------
 c rrb 2006/10/03; 
-c		Store amount diverted within the same reservoir
+c		Store amount booked over within the same reservoir
 c		for basin balance
-      if(nd.eq.nr) then
+c rrb 2015/08/11; Reviise to set qres(29 for all reservoir to
+c                 reservoir bookovers to correct a reporting
+c                 problem in the San Juan
+cx      if(nd.eq.nr) then
         qres291=qres(29,nd)
         qres(29,nd)=qres(29,nd) + divaf 
         qres292=qres(29,nd)     
@@ -388,7 +524,7 @@ c		for basin balance
      1      cresid(nr), iyrmo(mon),xmonam(mon), nd, nr, 
      1      qres291, divaf, qres(29,nr)
         endif
-      endif
+cx      endif
 c
 c _________________________________________________________
 c
@@ -421,11 +557,48 @@ c
       if(nr.gt.0) then
         call chekres(io99,maxres, 1, 6, iyr, mon, nr,nowner,
      1               curown,cursto,cresid)
+c
+c rrb 2015/06/25; Additional output
+        if(ioutX.eq.2) then
+          write(nlog,*)' '
+          write(nlog,*)
+     1      'RsrSpu_Step 15d;   divaf, nr, cursto(nr), irow,',
+     1                  ' curown(irow), nd, cursto(nd)'
+          write(nlog,*) 
+     1      'RsrSpu Step 15d;', divaf, nr, cursto(nr), irow,
+     1                    curown(irow), nd, cursto(nd)   
+        endif    
       endif
 c
 c _________________________________________________________
 c
-c		Step 18; Return
+c rrb 2015/07/08
+c		Step 18; Check for switch to not operate water right k
+c            if water right l2 has operated and
+c            the operating right ID of l2 is specified
+c            as ciopsoX2 for water right k based on user
+c            supplied data
+      if(ioprlim(l2).eq.1) then
+        do k=1,numopr
+          if(corid(l2) .eq. ciopsoX2(k)) then
+c
+c 2015/07/18; Correction      
+cx          icallOP(k) = icallOP(k) + 1
+            icallOP(l2) = icallOP(l2) + 1                 
+            if(ioutX.eq.2) then
+              write(nlog,*)
+              write(nlog,*) 
+     1          ' RsrSpu; k, l2, corid(l2), ciopsoX2(k), icallOP(l2)'
+              write(nlog,*) 
+     1          ' RsrSpu;', k, l2, corid(l2), ciopsoX2(k), icallOP(l2)  
+            endif
+          endif
+        end do 
+      endif         
+c
+c _________________________________________________________
+c
+c		Step 19; Return
       return
 c
 c _________________________________________________________

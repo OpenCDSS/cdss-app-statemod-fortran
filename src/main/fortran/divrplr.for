@@ -117,30 +117,30 @@ c                                 limit, etc.
 c         divact                actual diversion
 c	        pavail                minimum available flow 
 c
+c         qdiv(5                Carrier passing thru a structure (e.g. divcar)
 c         qdiv(7                Source Reservoir
 c         qdiv(18               Carrier through a structure
 c         qdiv(19               Carrier used by a structure
-c
-c         qres(18               To reservoir by exchange
-c	        qres(4                To reservoir from carrier by Stor or Exch
-c
-c         qdiv(5                Carrier passing thru a structure (e.g. divcar)
-c         qdiv(18               Carrier passing thru a structure (e.g. divcar)
-c         qdiv(19               Carrier used by a structure (e.g. divcar)
 c         qdiv(20               From Carrier by Storage or Exchange 
 c                               (e.g. carrpl)
-c
 c         qdiv(26  		          From River by a Direct Flow Exchange
 c                             	or Bypass (see DirectEx and DirectBY)
 c         qdiv(27               From River by Exc_Pln via a Direct Flow Exchange
 c         qdiv(28               Stored via a reuse plan in Rtnsec
 c	        qdiv(29               Exchange from a plan
 c
+c ---------------------------------------------------------
+c
+c	        qres(2,ix)            From carrier to Storage by Priority
+c         qres(8,ix)            From storage to river for use
+c         qres(18,ix)           From River by Exchange
+c
+c ---------------------------------------------------------
+c
 c         small                 a local limit used for convergence, etc.
 c         iouta                 0 no detailed printout for avail
 c                               n yes detailed printout for avail
 c	        iwhy                  1 reason for no diversoin
-c
 c	        ncallx		            number of times called per time step
 c
 c ---------------------------------------------------------

@@ -114,6 +114,9 @@ c                                to a T&C Plan. Note non consumptive
 c		        qdiv(32  Carrier loss by a diversion (DivCar, DivcarL) 
 c		        qdiv(33  Carrier loss to a destination (DivCar, DivcarL) 
 c
+c ---------------------------------------------------------
+c
+c           qres(8  From storage to river for use
 c		        qres(22 From carrier to storage
 c		        qres(25 Reservoir Seepage by Carrier Loss
 c           qres(26 From river by Storage 
