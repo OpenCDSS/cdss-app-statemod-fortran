@@ -192,8 +192,8 @@ c				 7 includes new binary output format
 c		yy has new functionality
 c		zz is a bug fix
 c		
-        ver='14.02.04'
-        vdate = '2015/01/16'
+        ver='14.02.06'
+        vdate = '2015/01/24'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -605,6 +605,17 @@ c               Go back to menu if in default mode
 c ______________________________________________________________________
 c     Formats
   212   format(//
+     1 ' Recent updates',/
+     1 '    - 2015/01/24 (14.02.06)',/
+     1 '      Revised *.xdd to not report water taken to an admin',/
+     1 '      plan by DirectWR (type 26).  Instead only report when',/
+     1 '      released from an admin plan direct by Divresp2',/
+     1 '     (type 27) to by exchange by DivRplP (type 28)',/      
+     1 '    - 2015/01/20 (14.02.05)',/
+     1 '      Revised *.xdd reporting for water taken to an admin',/
+     1 '      as Carried-Exchange-Bypass only in DirectWR (type 26)',/
+     1 '      and when released from an admin plan direct by',/
+     1 '      Divresp2 (type 27) to by exchange by DivRplP (type 28)',/  
      1 ' Recent updates',/
      1 '    - 2015/01/16 (14.02.04)',/
      1 '      Revised DirectWR, PowseaP & DivMulti to clean up ',/

@@ -230,25 +230,27 @@ c		Reporting (Outmon) Data
 c
 c           qdiv(18         Carrier passing thru a structure 
 c           qdiv(20         From Carrier by Storage, Exchange or Plan
-c           Qdiv(28         Source is from a reuse or admin plan
-c	                          SET WHEN USED OR SPILLED
 c		        qdiv(30         From River from a Res or Reuse Plan         
 c                           to a T&C or Aug Plan. Note non consumptive
 c                           See type 49 Divrplp2                      
 
-c           qdiv(31         From River by Exc or Plan by DivresP2 or DivrplP
+c           qdiv(31         From River by Exc or Plan by DivresP2 or 
+c                             DivrplP
 c	        
 c           qdiv(36         Water released to the system as return flow
 c                            plan types 4 & 6 reuse from a diversion or
 c                            tmtn diversion
+c           qdiv(38         Carried water reported as Carried, Exchange
+c                             or Bypassed but not used to calculaete
+c                             River Divert in Outmon.f
 c                         
-
 c           qres(4          From Carrier by Storage to reservoir
 c           qres(11         From Storage to carrier
 c           qres(12         From Storage to River for Use (Powres*)
 c           qres(18      	  From River by Exchange to Reservoir
 c           qres(27         From Carrier Loss
 c           qres(30         From River Loss
+
 c                         	
 c ________________________________________________________
 c	Dimensions
@@ -264,15 +266,16 @@ c               Step 1; Initilize
 c
 c ---------------------------------------------------------
 c		a. Miscellaneous
-c		            iout=1 details
-c		            iout=2 summary output
-c		            iout=3 details on nRiver Adjustments
-c               iout=4 details on iteration limitation
+c		            iout=1  details
+c		            iout=2  summary output
+c		            iout=3  details on nRiver Adjustments
+c               iout=4  details on iteration limitation
 c		            iout=99 summary independent of corid
-c               ioutIR details on instream flow reach
-c               iout5  details on releasing at the original source 
-c                      and limiting the capacity of the original 
-c                      source
+c               ioutIR  details on instream flow reach
+c               iout5=1 details on releasing at the original source &
+c                       limiting the capacity of the original source
+c               iout5=2 details on limiting the capacity of the 
+c                       original source
 c   
       iout=0
       ioutiw=0
@@ -571,17 +574,36 @@ c
         lr5=iopsou(1,lopr5)
         nd5=idivco(1,lr5)
         iscd5=IDVSTA(nd5)          
-        ndns5=NDNNOD(iscd5)        
-      endif    
+        ndns5=NDNNOD(iscd5)    
 c
+c rrb 2015/01/24; Revised reporting approach.
+c                 Set iscd1 the node containing the plan
+c                 the original source water right diverted to
+        nsp1=iopdes(1,lopr5)
+        iscd1=ipsta(nsp1)   
+        iok=0
+        if(lopr5.eq.0 .or. lr5.eq.0  .or. nd5.eq.0. or.
+     1     iscd5.eq.0 .or. nsp1.eq.0 .or. iscd1.eq.0) then
+          iout5=1
+          iok=1     
+        endif       
+                 
+      endif    
+c   
       if(iout5.eq.1) then
         write(nlog,*) ' '         
-        write(nlog,*) ' DivResP2_2; lopr5, lr5, nd5, iscd5, ndns5'   
-        write(nlog,*) ' DivResP2_2;', lopr5, lr5, nd5, iscd5, ndns5         
-      endif
+        write(nlog,*)
+     1    ' DivResP2_2;   lopr5     lr5     nd5  iscd5',
+     1                '   ndns5    nsp1   iscd1  ndns5'   
+        write(nlog,'(a12,8i8)')
+     1    ' DivResP2_2;', lopr5, lr5, nd5, iscd5, ndns5, iscd1, ndns5
 c      
-      
-      
+        if(iok.eq.1) then
+          write(nlog,*) ' Problemm with source water right reporting'
+          goto 9999   
+        endif   
+      endif
+c        
 c
 c _________________________________________________________
 c               Step 2; Exit if not on this month
@@ -625,7 +647,7 @@ c               a. Source plan data
         if(ifix(pon(nsp)).eq.0) ioff=1
 c       write(nlog,*) ' DivResP2; nsp = ', nsp
       
-        IsCD=ipsta(nsp)
+        Iscd=ipsta(nsp)
         ndns=NDNNOD(IsCD)
 c        
 c ---------------------------------------------------------
@@ -1079,6 +1101,9 @@ c
 c     Step 6; Destination is through a carrier
 c		          Adjust diversion location idcd but
 c		          not actual diversion location idcdX
+c
+c rrb 2015/01/20; Initilize ncar for capacity adjustment
+      ncar=0
       if(intern(l2,1).gt.0) then
         ncar=intern(l2,1)
         idcd=IDVSTA(ncar)
@@ -1694,12 +1719,36 @@ c rrb 2015/01/16; Revised approach for a diversion to an admin plan
 cx         if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then
 cx           qdiv(37,iscd5)=qdiv(37,iscd5) - relact
 cx         endif 
-c          
+c
+c         qdiv(38 Carried water reported as Carried, Exchange
+c                   or Bypassed but not used to calculaete
+c                   River Divert in Outmon.f
+c
+c rrb 2015/01/24; Report amount diverted as Carried... at the 
+c                 the source plan node (iscd), the original
+c                 source plan node befor a split (iscd1) and
+c                 if not a carrier, the water right node (iscd5)
+         if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then 
+           qdiv(38,iscd) = qdiv(38,iscd) - relact
+c           
+c rrb 2015/01/26           
+cx           if(iscd.ne.iscd1) then
+cx             qdiv(38,iscd1)= qdiv(38,iscd1) - relact
+cx           endif
+cx         endif   
+           qdiv(38,iscd1)=qdiv(38,iscd1) - relact
+           if(nd5.ne.ncar) then
+             qdiv(38,iscd5)= qdiv(38,iscd5) - relact
+           endif
+         endif              
+c                  
          if(iout5.eq.1) then
            write(nlog,*) ' '            
-           write(nlog,*) ' DivResp2_5; lopr5, iscd5, relact, qdiv(37'
-           write(nlog,*) ' DivResp2_5; ', lopr5, iscd5, relact*fac, 
-     1                   qdiv(37,iscd5)*fac
+           write(nlog,*) 
+     1       ' DivResp2_5;   lopr5   iscd   iscd1 relact qdiv(38'
+           write(nlog,'(a13, 3i5, 20f8.0)') 
+     1       ' DivResp2_5; ', lopr5, iscd,  iscd1, relact*fac, 
+     1                   qdiv(38,iscd)*fac
          endif               
       endif
 c      
@@ -1797,6 +1846,7 @@ c		   using the structure properties of the carrier
 c
       qdiv36a=qdiv(36, iscd)
       if(ncarry.gt.0) then      
+c
         call setQdivC(
      1    nlog, ncarry, ncnum, nd, ndD, l2, iscd, idcdX, idcdC, 
 c
@@ -1809,6 +1859,10 @@ cx   1    nriver, divactX, TranLoss, EffmaxT1,
      1    pctlosPP, rlossP, oprLossc,internT, 
      1    icx, corid(l2))
       endif 
+c
+c rrb 2014/01/24; Check      
+        divcap2=divcap(ncar) - divmon(ncar) 
+cx      write(nlog,*) '  DivResP2_1 In; ncar, divcapX',ncar,divcapX*fac
 c
 c ---------------------------------------------------------
 c rrb 2010/10/15; Revise to account for TranLoss (a system loss 
@@ -1833,19 +1887,28 @@ c rrb 2014/11/24
 c     Step 26a; Adjust the amount diverted (divmon) based on 
 c               the amount released which is how
 c               a diversion is limited by capacity 
-c		   
+            
       if(lopr5.gt.0) then
-        divcap1=divcap(nd5) - divmon(nd5)
-        divmon(nd5) = amax1(divmon(nd5) + divact,0.0)
-        divcap2=divcap(nd5) - divmon(nd5)   
+c	
+c rrb 2015/01/20; Do not adjust if the source is the primary carrier	
+        if(nd5.ne.ncar) then
+          divcap2=divcap(nd5) - divmon(nd5)         
+          divmon(nd5) = amax1(divmon(nd5) + divact,0.0)
+          divcap3=divcap(nd5) - divmon(nd5)   
+        else
+          divcap2=divcap(nd5) - divmon(nd5)          
+          divcap3=divcap2
+        endif
 c
-        if(iout5.eq.1) then
+        if(iout5.eq.2) then
           write(nlog,*) ' '           
           write(nlog,*) 
-     1     ' DivResP2_6; lopr  nd5 divcap1  divact divcap2'
-          write(nlog,'(1x,a12,2i5, 20f8.0)')
-     1     ' DivResP2_6;', lopr5, nd5,
-     1                   divcap1*fac, divact*fac, divcap2*fac 
+     1     ' DivResP2_6;',
+     1     '   lopr5  ncarry     nd5    ncar',
+     1     '  divact divcap1 divcap2 divcap3'
+          write(nlog,'(1x,a12,4i8, 20f8.0)')
+     1     ' DivResP2_6;', lopr5, ncarry, nd5, ncar,
+     1       divact*fac, divcap1*fac, divcap2*fac, divcap3*fac
         endif       
       endif
         

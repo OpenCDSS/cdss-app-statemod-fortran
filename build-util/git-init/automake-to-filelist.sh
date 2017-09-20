@@ -22,3 +22,5 @@ do
         ffor="${f/.o/.for}"
         echo ${ffor}
 done < automake-o-filelist.txt > automake-for-filelist.txt
+
+echo "See output files automake-for-filelist.txt and automake-o-filelist.txt"

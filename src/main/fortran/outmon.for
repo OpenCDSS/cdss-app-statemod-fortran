@@ -109,9 +109,10 @@ c               qdiv(37  Not currently used.  Was used to represent
 c                          Water released to the river by a spill in 
 c                          PowseaP (type 29) Report as a negative  
 c                          diversion herein (OutMon) under Rivdiv   
-c               qdiv(38  Carried water not used in any calculations
-c                          used to report River Divert      
-c
+c               qdiv(38  Carried water reported as Carried, Exchange 
+c                          or Bypassed but not used to calculate
+c                          River Divert in Outmon.f   
+c  
 c		            ClossDC From Carrier Loss
 c		            ClossDR From River Loss
 c

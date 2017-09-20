@@ -35,9 +35,9 @@ c _________________________________________________________
 c
 c		Step 1; Initilize
 c		0=no details
-c		1= print details
+c		1= print details of input
 c		2=print return flow details
-c		3=printe diversion summary
+c		3=printe diversion summary only
 c		99=print new input format (*.str, *.eff, *.rtn)
       iout=0
       ioutRF=0
@@ -97,8 +97,8 @@ c rrb 2006/03/20; Adjust character string to left
         cdivid(nd)=adjustl(cdivid(nd))
         cdividy(nd)=adjustl(cdividy(nd))     
      
-        if(iout.eq.1) write(nlog,1200)
-     1    cdivid(nd),rec24,cgoto,
+        if(iout.eq.1) write(nlog,1202)
+     1    nd, cdivid(nd),rec24,cgoto,
      1    idivsw(nd),divcap(nd), ix, ireptyp(nd),
      1    cdividy(nd)
 
@@ -514,7 +514,7 @@ cr      NSTRTN=0
         DO 710 IS=1,NUMSTA
 c
 c rrb 2006/04/12; Initilize at top of Datinp so that Reservoir 
-c		  return data can be read befor GetDiv 
+c		              return data can be read befor GetDiv 
 c                 and this value is not reset to zero                
 cr        IRNORD(IS)=0
           IF(ITEMP(IS).EQ.0) Goto 710
@@ -652,7 +652,7 @@ c		Formats
 
  1200  format(a12,a24,a12,i8,f8.0,2i8,1x,a12)
 
- 1202  format(a12,a24,a12,i8,f8.0,1x,a12,1x,f12.5,1x,a12)      
+ 1202  format(i5,1x, a12,a24,a12,i8,f8.0,2i8,1x,a12)      
  1210  FORMAT(/,72('_'),/
      1  '  GetDiv; Problem for diversion id = ', a12,/
      1  '          in the diversion station file (*.dds) ',/
