@@ -364,6 +364,7 @@ c		Step 9; Monthly loop
         do 200 im=1,12
           nout=0
           if(iout.ge.1) write(nlog,268)
+          if(ioutD.ge.1) write(nlog,*) ' '
 c
 c         fac=mthday(im)*factor
           fac=fmo(im)

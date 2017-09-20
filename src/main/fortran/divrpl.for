@@ -176,7 +176,7 @@ cx     1  corid(lr)
 
       iout=0
       ioutiw=0
-      ioutX=1
+      ioutX=0
       
       if(ichk.eq.104) iout=2
       if(corid(lr).eq. ccall) ioutiw=iw
@@ -1300,7 +1300,7 @@ c               Formats
      1     '                          ', 20f8.2)
 
   350    format(
-     1    '  Divrpl; Warning operation right', ,/
+     1    '  Divrpl; Warning operation right',/
      1    10x, a12, 1x, a24,/
      1    10x, 'is running an exchange with ',/
      1    10x, 'a depletion option on when lots of available flow ',/

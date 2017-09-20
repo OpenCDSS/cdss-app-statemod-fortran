@@ -214,7 +214,9 @@ c
       end do
 
       do nd=1,maxrea
-        divir(nd)=0.
+        do l2=1,MAXIFR
+          divir(l2,nd)=0.
+        end do
       end do
 
       do nd=1,numrsr
@@ -740,7 +742,7 @@ c
      1    '  riverx      cp  avindx',
      1    ' Name                     ',     /8x,
      1    ' ____ ____ ____ ____ ____ ____ ____ ____ ____',
-     1    3(' _______'),' ________________________ ',)
+     1    3(' _______'),' ________________________ ')
  280  format(
      1 ' DaySet ', i5, 1x, a4, 7i5, 3f8.0,1x, a24)
             

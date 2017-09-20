@@ -146,8 +146,19 @@ c		Well Units
               cunitX(j)=' CFS'
             end do
           endif    
+c
+c       structure Units
+          if(nf.eq.67) then
+            nx=33
+            do j=1,33
+              cunitX(j)=' CFS'
+            end do
+          endif
           
           j1=j1+1
+c
+c rrb 2014/12/14; Remove print statement
+cx        write(nlog,*)'nf',nf,'nx',nx
           write(nf,rec=j1) (cunitX(j), j=1,nx)
 
 c
@@ -438,7 +449,7 @@ c               Formats
      1    '#b___eb___exb__________exb______________________ex',
      1    'b___eb___eb___e')
      
-  250     format(' Bintop; Problem with dimension = ', ir)
+  250     format(' Bintop; Problem with dimension = ', i5)
 c
 c _________________________________________________________
 c

@@ -84,7 +84,7 @@ c _________________________________________________________
 c
 c
 c     DO 650 ND=1,MAXDIW
-      do 650 nd=1,maxdiv+1
+      do 650 nd=1,maxdiv-1
 c
 c rrb 2009/05/21; Initilize
         idivco2(nd)=0      
@@ -709,7 +709,7 @@ c		Formats
      1 10x,'But this plan is type ', i4,/
      1 10x,'(Note a well agumentation plan should be a type 2)')
      
- 1256 format(/,,
+ 1256 format(/,
      1 '  GetDiv; FYI at least one Well Station (e.g.) ', a12,/
      1 9x,' is tied to an augmentation plan (planw) = ', a12,
      1     ' Plan Pointer = ', i5)

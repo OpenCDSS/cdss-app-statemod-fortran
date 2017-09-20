@@ -23,7 +23,83 @@ c
 c rrb 03/06/02; Added option to not print a log file with -version
 c               option by moving the temporary log file open
 c               statememtn to parse.f
-c _________________________________________________________
+c jhb 2014/07/09; version 13.00.02A
+c                 interim version for testing
+c                 added new op rule type 24 code from ray b
+c                   (shared shortages)
+c                 changed ipy (and other statecu file) reading code to
+c                   allow for many more records (up to 5000) than are
+c                   in the current statemod network
+c                 code tweaked and updated to support modern gfortran
+c                   compiler and to be platform independent
+c                 code maintained in git repository and managed in
+c                   eclipse/photran development environment
+c jhb 2014/07/14; change diversion array size from 1530 to 3060
+c                 change maxOwnD from 1531 to 3060
+c                 change plan array size from 720 to 1440
+c                 change plan return array size from 722 to 1444
+c                 change maxsta and maxrun array size from 2500 to 5000
+c jhb 2014/07/14; upgraded to version 14.00.00 after testing
+c                 this starts a major new branch of the code,
+c                   new compiler (gfortran), developed in eclipse/photran
+c                   multiple platform compatible
+c                 (runs currently in both windows and linux)
+c jhb 2014/07/14; upgraded to version 14.00.01 after implementing
+c                   and testing a code update that allows ISF reaches
+c                   to correctly use multiple water rights in ifrrig2
+c                 changed divir(i) to divir(l2,i) where i is an isf
+c                   reach node index and l2 is a water right index
+c                   this allowed keeping track of multiple water rights
+c                   at a single node, critical to it working correctly
+c jhb 2014/07/23; upgraded to version 14.00.02 after fixing
+c                 several array bounds issues
+c jhb 2014/07/25; upgraded to version 14.00.03
+c                 removed isf overlapping reach test and warning in datinp()
+c                   because it now works since multiple isf water rights
+c                   are allowed at isf reach nodes
+c                 changed output for an admin plan (to b68 binary and
+c                   therefore the xpl, too) when the plan is being split
+c                   by a type 46 op rule into other plans.  output the
+c                   total supply to those plans from psuplyt()
+c jhb 2014/08/19; upgraded operating rule 35 (transbasin import) behavior
+c                   now the destination should be a type 11 (accounting) plan
+c                   source remains the same.
+c                   reuse is NOT handled by the op rule 35 anymore, but
+c                   should be handled by the modeler downstream of the
+c                   accounting plan
+c                 also (un)fixed a problem in execut.for in the
+c                   IMO variable reset logic.  a change was made previously
+c                   to fix array bounds errors, but the fix broke return flow
+c                   calculations.  therefore reverted code back to original.
+c                   however, now have to find another way to fix array bounds
+c                   problem when daily return flow patterns are used.
+c jhb 2014/09/05; merged newtype35 branch into master
+c                 merged newtype45rayb into master
+c                 op rule 27 deliver to isf
+c                 updated version to 14.01.00
+c jhb 2014/09/05; tweaked or35 code in oprinp.for to account for gnu fortran to c
+c                   precompiler issue - if blocks being evaluated as a single line
+c                 updated version to 14.01.01
+c jhb 2014/10/24; change code to prevent array bounds errors in welrig3.for and ifrrigsp.for 
+c jhb 2014/10/28; change code to prevent rediversion of op rule type 24 returns/spills
+c                   add new option (oprlimit=-1) to opr file input
+c                   that causes the type 24 results to be frozen after
+c                   reop step 1.  done with a simple change to execut.for
+c                   that prevents it from calling DirectEx.for on subsequent
+c                   reop loops over the water right list.
+c jhb 2014/10/31; skip reading secondary records if ioprsw()=0
+c                 only allow plan type 11 as a type 35 destination
+c jhb 2014/11/01; Revise dimensions
+c   ISF rights          241-2241
+c                       because the IfrRigSP routine uses the op rule counter
+c                       as an index in the divi() array.  might have to go larger later.
+c jhb 2014/11/20; ver='14.01.06'
+c                 Fix an array index (iscd) problem in IfrRigSP when the avail water < small
+c                   and a jump to line 260 is triggered
+c                 fix a oprfind call missing arg problem in oprinp.for
+c                   in the op rule 7 specific code
+c                 the current SP model full data set now runs to completion
+c ______________________________________________________________________
 c       Documentation
 C
 C      PROGRAM LIMITS:
@@ -39,7 +115,7 @@ C      RESERVOIRS               maxres         35   155   180
 C      RESERVOIR OWNERS         maxown         50   155   180
 C      RESERVOIR RIGHTS         maxrsr         80   101   251
 C      DIVERSION STATIONS       maxdiv        850  1110   1500
-C      DIVERSION USERS          maxuse        850  1110   1500  1530
+C      DIVERSION USERS          maxuse        850  1110   1500  3060
 c      Diversion Owners         maxownD      2400
 C      DIVERSION RIGHTS         maxdvr       2000  3500   6500
 C      DIVERSION RETURNS        maxrtn       1900  1210   2001
@@ -60,6 +136,10 @@ c      Return delay days        maxdld        930   930 7320 (daily)
 c
 c      IFR Stations             maxifr        300   230
 c      IFR Rights               maxfrr        300   230
+c jhb 2014/11/01; Revise dimensions
+c   ISF rights          241-2241
+c                       because the IfrRigSP routine uses the op rule counter
+c                       as an index in the divi() array.  might have to go larger later.
 c      IFR nodes within all reachs maxrea     N/A  2000
 C      POWER RIGHTS (inactive)  N/A            20    20
 c
@@ -67,7 +147,7 @@ C      OPERATION RIGHTS         maxopr        200   501   800
 C      TOTAL of all RIGHTS      maxnwr       2290  5285  14000
 c
 c      Max # of well stations   maxdivw       202   502   602 402
-c      Max # of well rights     maxdvrw       202  4000  7500
+c      Max # of well rights     maxdvrw       202  4000  7500 13110
 c      Max # of well return     maxrtnw       202  10000
 c
 c      Number of gages per
@@ -92,6 +172,8 @@ c
       include 'common.inc'
       character getid*12, fnlog*256, rec48*48, rec256b*256,
      1 rec8*8    
+c jhb 2014/07/21 initialize this variable passed to xdebug and report
+      integer :: nreach=0
 c
 c
 c _________________________________________________________
@@ -110,8 +192,8 @@ c				 7 includes new binary output format
 c		yy has new functionality
 c		zz is a bug fix
 c		
-        ver='13.00.03'
-        vdate = '2014/07/29'
+        ver='14.02.04'
+        vdate = '2015/01/16'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -129,16 +211,16 @@ C------  SPESIFY MAXIMUM DIMENSION OF ARRAYS
 C
 c
 c rrb 99/08/26; Rio Grande
-      maxsta=2500
-      maxrun=2500
+      maxsta=5000
+      maxrun=5000
       MAXPRE= 180
       MAXEVA= 180
       MAXRAI= 180
       MAXEPT= 180
       MAXRES= 180
       MAXOWN= 251
-      MAXDIV=1530
-      MAXUSE=1530
+      MAXDIV=3060
+      MAXUSE=3060
       MAXRTN=3920
 
       maxwr =201
@@ -167,8 +249,8 @@ c		Includes returns for a diversion, well, reservoir
 c		and plans
       maxrtnA= 5005
 
-      MAXIFR=  241
-      MAXFRR=  241
+      MAXIFR=  2241
+      MAXFRR=  2241
       MAXRSR=  351
       MAXDVR=  6500
       MAXPWR=  51
@@ -188,10 +270,10 @@ c		and plans
       maxfn=256
       maxgrp=57
       maxfile=80
-      maxownD=1531
+      maxownD=3060
 c
-      maxPlan = 720
-      maxrtnPP=722
+      maxPlan = 1440
+      maxrtnPP = 1444
 cx    maxPlnO=100
       maxPlnT=12
       
@@ -450,24 +532,19 @@ cx        ioptio = 0
           goto 170
         endif
       endif
-C
-c
+c ______________________________________________________________________
 c rrb 00/10/30; Add random input file capability
-c
 c rrb 02/08/08; Add *.rsp extension only if a .xxx does not exist
 c     call namext(maxfn, filenc, 'rsp', filena) 
       irsp=0
       do i=1,72
         if(filenc(i:i).eq.'.') irsp=1
       end do
-
       if(irsp.eq.0) call namext(maxfn, filenc, 'rsp', filena) 
-      
       rec48='Response File (*.rsp)'
       write(nlog,101) rec48, filena
  101    format(/,72('_'),/,'  StateM; ', a48,/,5x,a256)
  102    format(/,72('_'),/,'  StateM; ', a48,/,5x,a8)
- 
       rec48='Path'
       if(fpath1(1:1) .ne. ' ') then
         write(nlog,101) rec48, fpath1
@@ -475,57 +552,43 @@ c     call namext(maxfn, filenc, 'rsp', filena)
         rec8='None    '
         write(nlog,102) rec48, rec8
       endif  
-      
       open(20,file=filena,status='old',err=9997)
       call skipn(20)
-
       IIN=20
-c
 c	Check and if positive read all response files
 c	in any order
       call Getfn(iin, nlog, infile, maxfile, 
      1    fileName, ifileNum, filetype, fileSuf)
       close(iin)
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Set parameter values      
       call setpar(maxparm, nlog, paramd, paramr, paramw)
 
       GO TO (130,140,150,160,166,166,166,140,130) IOPTIO
-c
+c ______________________________________________________________________
 c               Baseflow option
   130 write(nlog, 132) 'Baseflow  '
   132 format(/,72('_'),/'  Statem; Option Specified = ', a10)
       call virgen
       goto 166
-c
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c               Execute Option
   140 write(nlog, 132) 'Simulate  '
       call execut    
       goto 166
-c
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c               Report Option
   150 write(nlog, 132) 'Report    '
       call report(igui, istop, ioptio2, getid, nreach)
       goto 166
-c
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c               Check Option
   160 write(nlog, 132) 'Check     '
       call xdebug(nreach)
       goto 166
-C
-                             
   165 write(6,*) ' ** Invalid option, try again **'
       call flush(6)
       goto 166               
-c
 c               Go back to menu if in default mode
   166 if(iback.eq.1) then
         close(20)
@@ -539,29 +602,125 @@ c               Go back to menu if in default mode
       call flush(6)
       call exit(0)
       stop 
-c
-c _________________________________________________________
-c
-c               Formats
+c ______________________________________________________________________
+c     Formats
   212   format(//
-     1 ' Recent updates',/ 
-     1 '    - 2014-07-29 (13.00.03)',/
-     1 '      Revised DivCarL, RivRtn, Oprinp, & SetLoss and',/
-     1 '        added ChkAvail2 to allow a return to the ',/
-     1 '        river to work properly',/
-     1 '      Added ChkAvail2 to allow adjustments to Avail to',/
-     1 '        be checked',/ 
-     1 '    - 2014/06/15 (13.00.02)',/ 
-     1 '      Revised DirectEx (type 24) to allow shortages to be',/
-     1 '        shared per the water right ownership percent',/                                   
-     1 '      Revised Oprinp and DirectEX (type 24) to allow ',/     
-     1 '        iopdesR to be the destination type',/  
-     1 '      Revised PowseaP(29) to allow a spill destination to ',/
-     1 '        be downstream of the plan',/
+     1 ' Recent updates',/
+     1 '    - 2015/01/16 (14.02.04)',/
+     1 '      Revised DirectWR, PowseaP & DivMulti to clean up ',/
+     1 '        reporting for a diversion to Admin Plan (type 11)',/ 
+     1 '    - 2015/01/10 (14.02.03)',/
+     1 '      Revised PowseaP (a type 29 Spill from a from an admin',/
+     1 '        plan) to be reported in *.xdd as if hte diversion',/
+     1 '        never occurred (e.g. From River by Other and River ',/
+     1 '        Divert = 0.0',/
+     1 '    - 2014/12/14 (14.02.02)',/
+     1 '      Revised Oprinp.f logic used to read the Type 26',/
+     1 '        destination',/    
+     1 '    - 2014/12/14 (14.02.01)',/
+     1 '      Revised Oprinp.f to include the following checks:',/
+     1 '        1. A type 27 (from a plan direct) with an admin'/
+     1 '           plan source (type 11) has oprlimit=5 and a ',/
+     1 '           source water right provided in row 4',/
+     1 '        2. A type 28 (from a plan exchange) with an admin'/
+     1 '           plan source (type 11) has oprlimit=5 and a ',/
+     1 '           source water right provided in row 4',/
+     1 '        3. A type 29 (spill) rule with an admin',/
+     1 '           plan source (type 11) has a spill location',/
+     1 '           specified as the destination.',/  
+     1 '    - 2014/11/24 (14.02.00)',/
+     1 '      Added a Changed Water Right (type 26) operating rule',/
+     1 '        as follows:',/
+     1 '        added DirectWR.f the type 26 operating rule',/
+     1 '        revised Oprinp.f to read a type 26 rule',/
+     1 '        revised Execut.f to call a type 26 rule',/
+     1 '        revised Setqdiv.f to process a type 26 rule',/ 
+     1 '      Revised DivResP2.f (type 27), DivRplP.f (type 28) and'/,
+     1 '        PowSeap.f (type 29) to report water spilled',/
+     1 '        from a type 11 plan as qdiv(37,xx) and a negative',/
+     1 '        diversion in outmon.f, not return flow (qdiv(36,xx)',/
+     1 '      Revised Oprinp.f to llow oprlimit = 5 in order ',/
+     1 '        allow the capacity to be reduced when water is',/
+     1 '        released from a plan',/
+     1 '      Revised DivResP2 (type 27) and DivRplP (type 28) to',/
+     1 '        allow oprlimit = 5 and reduce the capacity of the',/
+     1 '        source structure assigned to a changed water ',/
+     1 '        right (type 26)',/
+     1 '    - 2014/11/20 (14.01.06)',/
+     1 '      Fixed an array index problem in IfrRigSP',/
+     1 '      Fixed an opr type 7 specific code problem in OPRInp',/
+     1 '    - 2014/11/01 (14.01.05)',/
+     1 '      Revise ISF rights dimensions from 241 to 2241',/
+     1 '        because the IfrRigSP routine uses the op rule counter',/
+     1 '        as an index in the divi() array.',/
+     1 '    - 2014/10/31 (14.01.04)',/
+     1 '      skip reading secondary records if ioprsw=0 in opr file',/
+     1 '      only allow plan type 11 as a type 35 destination',/
+     1 '    - 2014/10/28 (14.01.03)',/
+     1 '      added op rule type 24 reop control flag in opr file',/
+     1 '         to freeze type 24 results after reop step 1',/
+     1 '         to prevent rediversion of upstream returns/spills.',/
+     1 '    - 2014/10/24 (14.01.02)',/
+     1 '      fixed more array bounds errors that cropped up during',/
+     1 '        model testing',/
+     1 '    - 2014/xx/xx (14.01.01)',/
+     1 '      ',/
+     1 '    - 2014/09/05 (14.01.00)',/
+     1 '      merged new type 35 branch into master:',/
+     1 '        operating rule 35 changed to deliver from import plan',/
+     1 '        (plan type 7) to accounting plan (plan type 11)',/
+     1 '        WITHOUT REUSE. Modeler can split and add reuse after',/
+     1 '        water is in acct plan. This will become default (only)',/
+     1 '        type 35 operating mode and will be documented as such.',/
+     1 '        This branch also has the return flow calculation fix,',/
+     1 '        See details in code comments in statem.for.',/
+     1 '      merged type 45 branch into master:',/
+     1 '        changes to operating rule 45 to allow carrier water',/
+     1 '        to be seen in the river.',/
+     1 '      operating rule 27 delivery to isf node or reach.',/
+     1 '    - 2014/08/26 (03new45)',/
+     1 '      Added changes from Ray B to carrier code, type 45',/
+     1 '      For testing ...',/
+     1 '    - 2014/08/19 (New35Rtn)',/
+     1 '      Experimental branch to change operating rule 35',/
+     1 '      is now working, testing ongoing.',/
+     1 '      Also (un)fixed a return flow calculation change,',/
+     1 '      fix to array bounds problem with daily delay patterns',/
+     1 '      broke return flow calculations. revert to original code',/
+     1 '    - 2014/08/18 (.03New35)',/
+     1 '      Experimental branch to change operating rule 35',/
+     1 '      change it to deliver imported water to accounting plan',/
+     1 '      (type 11) and skip the reuse plan,',/
+     1 '      modeler can handle reuse in the acct plan if needed',/
+     1 '    - 2014/07/25 (14.00.03)',/
+     1 '      Allow isf reaches to overlap (partially/completely)',/
+     1 '      Update admin plan output when split by type 46 op rule',/
+     1 '    - 2014/07/23 (14.00.02)',/
+     1 '      Fixed several array bounds issues found during testing',/
+     1 '    - 2014/07/14 (14.00.01)',/
+     1 '      Updated ISF reach to work with multiple water rights.',/
+     1 '        This allows simulating overlapping ISF reaches.',/
+     1 '    - 2014/07/14 (14.00.00)',/
+     1 '      Array sizes increased:',/
+     1 '        diversions from 1530 to 3060',/
+     1 '        plans from 720 to 1440',/
+     1 '        stations from 2500 to 5000',/
+     1 '      More code changes to avoid compiler warnings',/
+     1 '        and array bounds errors caused by data.',/
+     1 '      Recent code changes tested extensively and deemed',/
+     1 '        stable, so started a major new version - 14.',/
+     1 '    - 2014/07/09 (13.00.02)',/
+     1 '      StateMod code development moved to gfortran compiler,',/
+     1 '        eclipse IDE with photran plugin, git version control.',/
+     1 '      Now supports reading StateCU data files (IPY, etc.)',/
+     1 '        with many more structures than the current network.',/
+     1 '      Recent Type 24 updates allowing shortages to be shared.',/
+     1 '      Many changes to avoid compiler and array bounds errors',/
+     1 '        caused by unexpected data.',/
      1 '    - 2012/05/31 (13.00.01)',/
      1 '      Revised Oprinp and Divrpl (type 4) to allow variable',/
-     1 '        iopdesR to be the destination type and iopdes(3,k)',/
-     1 '        to be the water right limit',/
+     1 '        iopdesR to be the destination type and iopdes(3,k) to',/
+     1 '        be the water right limit',/
      1 '    - 2012/02/15 (13.00.00)',/
      1 '      Changed version to 13 to indicate major testing',/
      1 '        of plan operations have been completed',/

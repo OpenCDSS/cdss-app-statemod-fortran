@@ -4,8 +4,6 @@ c     Last change:  RRB  18 Dec 100    2:29 pm
 c
       SUBROUTINE ChkRivRF(nlog, icx, k, fac, maxopr, maxsta,  
      1  intern,  idcdD,  itypeR, idncod, ndnnod, cstaid, cidvri)
-     
-     
 c
 c		It check return to river data is 
 c		located properly

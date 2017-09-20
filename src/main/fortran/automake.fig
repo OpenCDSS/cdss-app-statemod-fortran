@@ -5,7 +5,7 @@ FILES=*.for
 # _________________________________________________________
 # Standard compilation
 # rrb 02/05/09; Fast and with local variables saved
-COMPILE=@lf95 -c -nap -nchk -ncover -ng -o1 -npca -ntrace -sav -nstchk -nw %fi
+# COMPILE=@lf95 -c -nap -nchk -ncover -ng -o1 -npca -ntrace -sav -nstchk -nw %fi
 #
 # _________________________________________________________
 # Semi fast. The following saves local variables and checks stack

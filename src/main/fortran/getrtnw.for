@@ -43,9 +43,13 @@ c       Dimensions
      1             cstaid(maxsta),     cstadn(maxsta),
      1             cirtndlw(maxdvrw)
 
+
         character  cdividw*12,   cstaid*12,    cstadn*12, crtnid*12,
-     1             cgoto*12,     blank*12,     filena*256, cirtndlw*12,
+c     1             cgoto*12,     blank*12,     filena*256, cirtndlw*12,
+     1             cgoto*12,     blank*12,                 cirtndlw*12,
      1             rec32*32
+c jhb 2014/06/26 gfortran is more strict about the dummy char arg fortran requirement than lahey is
+        character(len=*)  filena
 c
 c _________________________________________________________
 c

@@ -212,7 +212,7 @@ c		Detailed printout for structures w/o a call
      1  '___________  ___________  ___________  ___________ ____',
      1  ' ________ _______________________________')
  110  format(' OutCallS   ',i5,1x,a4, i5, i5, i5,i5, 1x,
-     1 a12, ,a12, 2x,a12, f12.4, 1x,a4, 1x,f8.1, 1x,a32)
+     1 a12, a12, 2x,a12, f12.4, 1x,a4, 1x,f8.1, 1x,a32)
   92  format(/
      1  ' OutCallS    iyr  mon   day Iter   nx Imcd ',
      1  'Calling ID   Calling Rgt Unit',/

@@ -419,7 +419,7 @@ c               Formats
      1      '     avtemp1      avwret          c0        dumx',
      1      '       foret')
      
- 320  format(/,,60('_'),/
+ 320  format(/,60('_'),/
      1  '  RtnMax: Details for Diversion ', a12, ' iout = ', i5,
      1  1x, i5, 1x, a4, i5)
  330  format(/,

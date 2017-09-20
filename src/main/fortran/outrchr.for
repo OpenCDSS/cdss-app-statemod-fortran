@@ -1,7 +1,6 @@
 c *********************************************************
 C
       SUBROUTINE outRchR(nreach,cplot)
-
 c
 c	Called by Report
 C

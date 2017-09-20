@@ -285,7 +285,9 @@ c		Acres = 0
 c
 c rrb 2009/06/22; Correctin
 cx    if(nd2.eq.0) AreaT=AreaGfw(nw) + AreaGsw(nw)
-      if(nd2.eq.0) AreaT=AreaGfw(nw) + AreaGsw(nwe)
+c jhb nw is undefined
+c      if(nd2.eq.0) AreaT=AreaGfw(nw) + AreaGsw(nwe)
+      if(nd2.eq.0) AreaT=AreaGfw(nwe) + AreaGsw(nwe)
       if(nd2.ne.0) AreaT=AreaGf(nd2) + AreaGs(nd2)
 c      
 c ---------------------------------------------------------

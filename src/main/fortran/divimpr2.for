@@ -14,16 +14,17 @@ c	Dimensions
 cC     Last change:  RRB  22 Oct 2002    4:12 pm
 c
 c
-      subroutine DivImpR(iw,l2,ishort,divact,ncallX)
+      subroutine DivImpR2(iw,l2,ishort,divact,ncallX)
 c
 c _________________________________________________________
 c	Program Description
 c
 c
-c       DivImpR; Type 35
+c       DivImpR2; the NEW type 35
 c       It handles diversions from a diversion (import) to a
-c           diversion, reservoir, or carrier with reuse
-c           Called by Execut
+c         diversion, reservoir, ACCOUNTING PLAN, or carrier
+c         with reuse
+c       Called by Execut
 c _________________________________________________________
 c
 c 	Update history
@@ -34,7 +35,11 @@ c                       Removed ability to be called by replacement res
 c			Removed stuff related to a transfer limit 
 c			Removed refrences to transmtn (IRTURN(IUSE).EQ.4)
 c			Added Reservoir Reuse Plan as a source 2 option
-c			
+c       2014/07/31 jhb  copied DivImpR
+c                       first step - add acct plan (type 11) as destination
+c                       second step - remove reuse (type 5,6 plan) when dest = plan
+c                       third (maybe) - make dest=plan and no reuse the only options
+c                       
 c
 c  ________________________________________________________
 c	Documentation
@@ -273,56 +278,27 @@ cr      go to 120
       endif
 c
 c ---------------------------------------------------------
-c jhb 2014/08 add logic for destination = plan type 11 (accounting plan)
-c             nd is the index of the destination structure in the list of structures
-c               but to figure out which type it is takes some work as follows:
-c             destination is a reservoir, iopdesr(l2) = 2
-c               nd < 0 when destination is a reservoir id that is found in the list of reservoirs
-c               nd = -(reservoir index)
-c             destination is a diversion, iopdesr(l2) = 3
-c               nd > 0 when destination is a diversion id that is found in the list of diversions
-c               nd = diversion index
-c             destination is a plan, iopdesr(l2) = 7
-c               nd > 0, when destination is a plan id that is found in the list of plans
-c               nd = plan index
-c ---------------------------------------------------------
-
+c               b. Destination is a diversion (nd>0 & iresw=0)
       if(nd.gt.0) then
-        if(iopdesr(l2).eq.7) then
-c         b. Destination is a plan (nd>0 & iopdesr(l2)=7), set iresw=0
-          cdestyp='Plan     '
-          iresw=0
-          idcd=ipsta(nd)
-          NDND=NDNNOD(IDCD)
-          IUSE=NDUSER(ND)+IOPDES(2,l2)-1
-          write(nlog,*) '  DivImpR; destination is plan!'
-c         check that the destination plan is on
-          if(pOn(nd).le.small) then
-            iwhy=5
-            cwhy='Destination Plan is Off'
-            goto 330
-          endif
-        else
-c         b. Destination is a diversion (nd>0 & iopdesr(l2)=3), set iresw=0
-          cdestyp='Diversion'
-          iresw=0
-          idcd=idvsta(nd)
-          NDND=NDNNOD(IDCD)
-          IUSE=NDUSER(ND)+IOPDES(2,l2)-1
-          divreqX=divreq(iuse)
-          if(idivsw(nd).eq.0) then
-            iwhy=5
-            cwhy='Destination Div is off'
-            goto 330
-          endif
-        endif
-      endif
+        cdestyp='Diversion'              
+        iresw=0
+        idcd=idvsta(nd)        
+        NDND=NDNNOD(IDCD)
+        
+
+        IUSE=NDUSER(ND)+IOPDES(2,l2)-1
+        divreqX=divreq(iuse)
+        
+        if(idivsw(nd).eq.0) then
+          iwhy=5
+          cwhy='Destination Div is off'        
+          goto 330
+        endif  
+      endif  
 c
 c ---------------------------------------------------------
 c               e. Carrier system data 
-c jhb 2014/08 obviously, ityopr(l2) = 35, so...
-c 120  if(ityopr(l2).ne.10) then
- 120   continue
+ 120  if(ityopr(l2).ne.10) then
 cr      if(intern(l2,1).eq.0) go to 130
         if(intern(l2,1).gt.0) then
           ccarry='Yes'
@@ -333,7 +309,7 @@ cr      if(intern(l2,1).eq.0) go to 130
 c         write(nlog,*) '  DivImpR; l2, idcd', l2, idcd
 cr        go to 140
         endif  
-c      endif
+      endif
 c
 c
 c _____________________________________________________________
@@ -347,77 +323,49 @@ cr        write(nlog,*) ' '
         endif  
       endif  
 
-c ---------------------------------------------------------
-c jhb 2014/08 add logic for destination = plan type 11 (accounting plan)
-c             check for iopdesr(l2) = 7
-c ---------------------------------------------------------
+c _________________________________________________________
 c
 c            **  Step 6; Set demand (DIVALO) when the destination
 c                        is a diversion
-c jhb 2014/08            or a plan
 c        
       if(iresw.eq.0) then
-        if(iopdesr(l2).eq.7) then
-c ---------------------------------------------------------
-c          from DirectBy for a plan destination
-c            note that "np2" there is the same as "nd" here
-c ---------------------------------------------------------
-c          idcd2=ipsta(np2)
-c          idcd2X=idcd2
-c          idcd2P=idcd2
-c          ndns2=ndnnod(idcd2)
-c          ndns2X=ndns2
-c          imcdX=idcd2
-c          if(iplntyp(np2) .ne. 11) then
-c            divreqx2=amax1(0.0, pdem(np2))
-c            np11=0
-c          else
-c            divreqx2=99999./fac
-c            np11=1
-c          endif
-c          if(iout.eq.1) write(Nlog,*)'  DirectBy; np2', pdem(np2)*fac,
-c     1      pdemT(np2)*fac, pdem(2)*fac, pdemT(2)*fac
-c ---------------------------------------------------------
-c         essentially, the above says treat a type 11 as if it has infinite demand,
-c         so that it can take all the water delivered
-c         do the same here since it (currently) MUST be a type 11 plan
-c ---------------------------------------------------------
-          divreqx2=99999./fac
-c          pdem1A=pdem(nd)
-c          DIVALO=pdem(nd)
-          DIVALO=divreqx2
-        else
+c
 c ---------------------------------------------------------
 c               a. Diversion demand 
-          DIVALO=AMIN1(DIVREQ(IUSE),DIVCAP(ND)-DIVMON(ND))
-          divcapX=DIVCAP(ND)-DIVMON(ND)
-          divmonX=divMon(nd)
+        DIVALO=AMIN1(DIVREQ(IUSE),DIVCAP(ND)-DIVMON(ND))
+        divcapX=DIVCAP(ND)-DIVMON(ND)
+        divmonX=divMon(nd)
+c
+c
+
 c
 c            Adjust based on release type
-c		  Set based on release type
-c		  ireltyp=0 demand
-c		  ireltyp>0
+c		Set based on release type
+c		ireltyp=0 demand
+c		ireltyp>0
 c               ireltyp = 0 release to meet demand
 c               ireltyp > 0 release only if a CIR (IWR) exists
 c                           and limit release to not exceed IWR/n  
-          effmax1=effmax(nd)
-          ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
-          if(ireltyp.gt.0) then
-            diwrreqX=diwrreq(iuse)
-            if(diwrreq(iuse).le.small) then
-              divalo=0.0
-            else
-              divmax = diwrreq(iuse)/(float(ireltyp)/100.0)
-              divalo=amin1(divalo, divmax)
-            endif
+        effmax1=effmax(nd)
+        ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+
+        if(ireltyp.gt.0) then 
+          diwrreqX=diwrreq(iuse)        
+          if(diwrreq(iuse).le.small) then
+            divalo=0.0
+          else
+            divmax = diwrreq(iuse)/(float(ireltyp)/100.0)
+            divalo=amin1(divalo, divmax)
           endif
-          divalo=amax1(0.0,divalo)
+        endif
+
+        divalo=amax1(0.0,divalo)
+c
 c rrb 01/08/23; Exit if no demand
-          if(divalo.le.small) then
-            iwhy=6
-            cwhy='Demand is zero'
-            goto 330
-          endif
+        if(divalo.le.small) then
+          iwhy=6
+          cwhy='Demand is zero'
+          goto 330
         endif
       endif
 c 
@@ -470,13 +418,14 @@ c               Step 7; Limit release (ALOCFS) to capacity of
 c                       intervening structures
 c                       if required for type 2 & 3 only
 cr    if(ityopr(l2).ne.10) then
-      do 150 i61=1,10
-        if (intern(l2,i61).eq.0) go to 160
-        intvn=intern(l2,i61)
-        alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn)))
-  150 continue
-      alocfs=amax1(0.0,alocfs)
-  160 continue
+        do 150 i61=1,10
+c
+          if (intern(l2,i61).eq.0) go to 160
+          intvn=intern(l2,i61)
+
+  150     alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn))) 
+          alocfs=amax1(0.0,alocfs)
+  160   continue
 cr    endif
 c
 c _________________________________________________________
@@ -488,6 +437,7 @@ c               import water (ALOCFS) and demand (DIVALO)
       divact=amax1(0.0,divact)
       relact=-divact
 c
+c
 c _________________________________________________________
 c
 c               Step 9; Exit if no demand (divact <=0) or 
@@ -497,6 +447,7 @@ c
         cwhy='Demand is zero'
         goto 330
       endif  
+c
 c
 c _________________________________________________________
 c
@@ -518,25 +469,19 @@ c               Step 11 Remove diversion (DIVACT) from stream
 c     write(nlog,*) '  DivImpR; idcd,divact,relact = ',idcd,divact,relact
 c     write(nlog,*) '  DivImpR; iscd,divact = ', idcd, divact, relact
 c
+c
 c _________________________________________________________
 c
 c               Step 12; Add return flows to stream
-
+c
       if (iresw.eq.0 .and. ipUse.eq.0) then
-c jhb 2014/08 put stub of code in place for plan destinations
-        if(iopdesr(l2).eq.7) then
-c         don't have return flows from a type 11 plan...
-        else
-c         it's a diversion, so it has return flows...
-          call rtnsec(icx,divact,l2,iuse,IDCD,nd,ieff2)
-        endif
+        call rtnsec(icx,divact,l2,iuse,IDCD,nd,ieff2)
       endif
+        
 c
 c _________________________________________________________
 
-c		Step 13; Calculate reuse
-c jhb 2014/08 note that ipUse should equal 0 if NA is entered
-c             in the reuse plan field when the destination is a type 11 plan
+c		Step 13; Calculate reuse   
       if(ipUse.gt.0) then
         if(nd.gt.0) then            
           CALL RtnsecR(icx,divact,l2,iuse,idcd,nd,
@@ -620,18 +565,9 @@ c ---------------------------------------------------------
 c               b. Destination is a diversion update demand data
 c
       if(iresw.eq.0) then
-c jhb 2014/08 put stub of code in place for plan destinations
-        if(iopdesr(l2).eq.7) then
-          USEMON(IUSE)=USEMON(IUSE)+DIVACT
-          if(iout.eq.1) write(nlog,*) '  DirectBy; Update Plan Data'
-          call flush(nlog)
-          psuply(nd)=psuply(nd) + divact
-          psuplyT(nd)=psuplyT(nd) + divact
-        else
-          USEMON(IUSE)=USEMON(IUSE)+DIVACT
-          DIVREQ(IUSE)=DIVREQ(IUSE)-DIVACT
-          DIVMON(ND  )=DIVMON(ND  )+DIVACT
-        endif
+        USEMON(IUSE)=USEMON(IUSE)+DIVACT
+        DIVREQ(IUSE)=DIVREQ(IUSE)-DIVACT
+        DIVMON(ND  )=DIVMON(ND  )+DIVACT
 c
 c ---------------------------------------------------------
 c               c. From Carrier Qdiv(20
@@ -650,8 +586,10 @@ c
 c ---------------------------------------------------------
 c               e.  Carrier passing throught a structure Qdiv(18
       do i11=1,10
+c
         if (intern(l2,i11).eq.0) go to 282
         intvn=intern(l2,i11)
+     
         divmon(intvn)=divmon(intvn)+divact
         inode=idvsta(INTVN)
         qdiv(18,inode)=qdiv(18,inode)+divact

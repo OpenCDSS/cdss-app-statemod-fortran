@@ -44,7 +44,7 @@ c	Dimensions
        character filena*256,
      1   filetype*40, filetypX*40, FileName*256, FileId*5,
      1   fileT1*40,   fileT2*40, fileN1*256, fileSuf*5
-     
+
        data fileID/
      1  '*.rsp', '*.ctl', '*.rin', '*.ris', '*.dds',
      1  '*.ddr', '*.ifs', '*.ifr', '*.wes', '*.wer',
@@ -180,8 +180,8 @@ c
 c               iout = 0 no details
 c               iout = 1 details
 c               iout = 2 summary of files read
-c		  iout = 3 summary plus list file types
-       iout= 2
+c		        iout = 3 summary plus list file types
+       iout= 0
        infile=0
        iok=0
        
@@ -202,70 +202,99 @@ c
 c               Step 2; Random file, read in other files and store
        j1=0
        jp=0
+
+       ! jhb May 2014
+       ! summarize the logic
+       ! the idea is to loop continuously,
+       !   skipping comment lines (and now blank lines), until:
+       ! 1. the max possible number of file types has been read
+       !    (handled by the max loop index)
+       ! 2. end of file is reached, exit gracefully by jumping out of loop
+       ! 3. read error - exit abruptly by stopping the program
        do i=1,maxfile
+         ! simplify the logic here and make it a bit more
+         ! portable across different compilers and platforms
+         ! read the line and use the iostatus arg
+  100    read(iin,'(a256)',err=9999, end=500) filena
+         ! if debugging details are on then read the next
+         ! line in the response file and then
+         ! output it to the log file
          if(iout.eq.1) then
            write(nlog,*) '  Getfn; i=', i
-           read(iin,'(a256)',err=9999, end=500) filena
+           ! don't need the next line
+           !read(iin,'(a256)',err=9999, end=500) filena
            write(nlog,*) '  Getfn 1; filena, ', filena           
-           backspace(iin)
+           ! don't need the next line
+           !backspace(iin)
          endif
-         
-         call skipn(iin)
-         read(iin,'(a256)',err=9999, end=500) filena
-         if(iout.eq.1) write(nlog,*) '  Getfn 2; filena, ', filena
-         call getName(i, nlog,nfsize,ifound, filena,fileT1,fileN1)
-c
+         if (len_trim(trim(filena)).eq.0) then
+           ! it's a blank line, which we should skip
+           goto 100
+         else
+           ! it's a non-blank line
+           ! check the first char for # comment char
+           if (filena(1:1).eq.'#') then
+             ! it's a comment line, skip it
+             goto 100
+           else
+             ! don't need the next line
+             !call skipn(iin)
+             ! don't need the next line
+             !read(iin,'(a256)',err=9999, end=500) filena
+             ! if debugging details are on then output to the log file
+             if(iout.eq.1) write(nlog,*) '  Getfn 2; filena, ', filena
+             call getName(i, nlog,nfsize,ifound, filena,fileT1,fileN1)
 c
 c ---------------------------------------------------------
 c               Check for a blank file and/or Sequential input
-         if(ifound.eq.0) then
-           if(j1.eq.0) write(nlog,300)        
-           goto 500
-         else
-           if(j1.eq.0) write(nlog,310)
-           if(j1.eq.0 .and. iout.ge.1) write(nlog,202)
-         endif
-
+             if(ifound.eq.0) then
+               if(j1.eq.0) write(nlog,300)
+               goto 500
+             else
+               if(j1.eq.0) write(nlog,310)
+               if(j1.eq.0 .and. iout.ge.1) write(nlog,202)
+             endif
 c _________________________________________________________
 c
 c               Find File Type
-         ifound=0
-         do j=1,maxfile
-           if(fileT1.eq.filetypX(j)) then
-             ifound=1
-             j1=j1+1
-             ifileNum(j) = ifileNx(j)
-             fileName(j) = FileN1
-             fileType(j) = filetypX(j)
-             fileSuf(j) = fileID(j)
-c             
-             if(iout.ge.2.and. ifilenum(j).ne.0) then
-cr           if(iout.ge.2) then
-               jp=jp+1
-               if(j.eq.4  .or. j.eq.5 .or. j.eq.11) write(nlog,*) ' '
-               if(j.eq.9 .or. j.eq.7 .or. j.eq.13) write(nlog,*) ' '
-               if(j.eq.32 .or. j.eq.53) write(nlog,*) ' '
-               write(nlog,204)  jp, j, ifileNx(j), fileid(j),
-     1          ifileNum(j), fileT1, fileN1
-             end if
-           endif
-         end do
+             ifound=0
+             do j=1,maxfile
+               if(fileT1.eq.filetypX(j)) then
+                 ifound=1
+                 j1=j1+1
+                 ifileNum(j) = ifileNx(j)
+                 fileName(j) = FileN1
+                 fileType(j) = filetypX(j)
+                 fileSuf(j) = fileID(j)
+cr               if(iout.ge.2) then
+                 if(iout.ge.2.and. ifilenum(j).ne.0) then
+                   jp=jp+1
+                   if(j.eq.4 .or. j.eq.5 .or. j.eq.11) write(nlog,*) ' '
+                   if(j.eq.9 .or. j.eq.7 .or. j.eq.13) write(nlog,*) ' '
+                   if(j.eq.32 .or. j.eq.53) write(nlog,*) ' '
+                   write(nlog,204)  jp, j, ifileNx(j), fileid(j),
+     1              ifileNum(j), fileT1, fileN1
+                 end if
+               endif
+             end do
 c
 c ---------------------------------------------------------
 c rrb 2009/03/18; Stop and warn if a file is read but not found
-         if(ifound.eq.0) then
-           write(nlog,1480) fileT1
-           iok=1
-           goto 500
-         endif         
+             if(ifound.eq.0) then
+               write(nlog,1480) fileT1
+               iok=1
+               goto 500
+             endif
 
-         if(i.eq.1 .and. ifound.eq.0) then
-           write(nlog,302)       
-           goto 500
-         else
-           infile=1
-         endif  
-c        if(i.gt.1 .and. ifound.eq.0) goto 9998
+             if(i.eq.1 .and. ifound.eq.0) then
+               write(nlog,302)
+               goto 500
+             else
+               infile=1
+             endif
+c            if(i.gt.1 .and. ifound.eq.0) goto 9998
+           endif
+         endif
        end do
 c
 c _______________________________________________________ 

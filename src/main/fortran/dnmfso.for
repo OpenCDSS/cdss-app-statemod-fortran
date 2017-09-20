@@ -27,7 +27,14 @@ C
 
       if(iout.eq.1) write(99,*) '  DnmFso; In, maxsta, ndns, iscd ', 
      1  maxsta, ndns, iscd
-     
+
+c jhb 2014/06/26 temporary fix...
+      if(ndns.lt.0 .or. ndns.gt.maxsta) then
+        write(99,*) '  DnmFso; ndns has invalid value. Exiting routine.'
+        imcd=iscd
+        return
+      endif
+
       IMCD=ISCD
       ISS=ISCD
       iout1=1
@@ -67,12 +74,32 @@ c
      
       IMCD=ISCD
       ISS=ISCD
-      write(6,302)
-       DO ND=1,NDNS
+      write(nlog,302)
+      DO ND=1,NDNS
         write(99,304) iout1, nd, iscd, ndns, imcd, iss      
 cx      if(iss.eq.0 .or. imcd.eq.0) goto 9999
-        IF(AVAIL(IMCD).GT.AVAIL(ISS)) IMCD=ISS
-        ISS=IDNCOD(ISS)
+c jhb 2014/07/04 added the if block so the code will run without crashing
+c                need to figure out what SHOULD happen when
+c                  imcd < 1 or iss < 1 !!
+        if (iss.ge.1) then
+          if (IMCD.ge.1) then
+            IF(AVAIL(IMCD).GT.AVAIL(ISS)) IMCD=ISS
+          else
+c          if(iout.eq.1) then
+            write(nlogx,*)
+     1      ' dnmfso; avail(IMCD) error:  IMCD = ',
+     1      IMCD
+c          endif
+          endif
+          ISS=IDNCOD(ISS)
+        else
+c         if(iout.eq.1) then
+            write(nlogx,*)
+     1        ' dnmfso; avail(iss) error:  iss = ',
+     1        iss
+c          endif
+        endif
+
       end do 
       
       write(6,310) 

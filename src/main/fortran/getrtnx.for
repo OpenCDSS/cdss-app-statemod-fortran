@@ -404,7 +404,7 @@ c
  1408 write(nlog,1410) istrtyp, maxDivX, maxRtnX
  1410 FORMAT(/,72('_'),/
      1 '  GetRtnX; Problem'/
-     1 11x,'For structure type ', i5,,/
+     1 11x,'For structure type ', i5,/
      1 11x '  where 1=isf, 2=res, 3=div, 4=power, 6=well and 7=plan',/
      1 11x,'The structure dimension (maxDivX)           = ', i5,/
      1 11x,'Exceeds the return flow dimension (maxRtnX) = ', i5,/

@@ -228,7 +228,7 @@ c       qdiv(20         From Carrier by Storage, Exchange or Plan
 c	      qdiv(28         Carried, Exchange or Bypass (column 11)
 c                       Stored via a reuse plan in DirectEx or 
 c                       DirectBy
-c       qdiv(31         From River by Plan by DivresP2 or DivrplP     
+c       qdiv(31         From River by Plan by DivResP2 or DivrplP     
 c	
 c
 c       qdiv(36         Water released to the system as return flow
@@ -254,16 +254,22 @@ c               Step 1a - Initilize general variables
 c
 c ---------------------------------------------------------
 c               Control debut printout
-c		iout=0 none, iout=1 detailed, iout=2 summary
-c		ioutiw = water right used for detailed output
-c		ioutE = detailed output for Exchange Reach
-c		ioutA = detailed output for ChekAva
-c   ioutIR= instream flow reach
+c		            iout=0 none, iout=1 detailed, iout=2 summary
+c		            ioutiw = water right used for detailed output
+c		            ioutE = detailed output for Exchange Reach
+c		            ioutA = detailed output for ChekAva
+c               ioutIR= instream flow reach
+c               iout5  details on releasing at the original source 
+c                      and limiting the capacity of the original 
+c                      source
+c
       iout=0
       ioutiw=0
       ioutE=0
       ioutA=0
       ioutIR=0
+      iout5=0
+      ioutQ=0
       
       cDest1='NA'
       cImcdR='NA'
@@ -331,6 +337,17 @@ c		b. Daily Capability
       else
         fac=factor
       endif
+c
+c rrb 201401/16; Print Qdiv data
+      if(ioutQ.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) ' DivRplP  In; Qdiv report'
+        write(nlog,'(4x, 39i8)') (j, j=1,39)
+        do i=1, numsta
+          write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
+        end do
+      endif      
+      
 c
 c ---------------------------------------------------------
 c		c. Detailed output
@@ -536,6 +553,37 @@ c		p. Check Avail Array
       if(iouta.gt.0) write(nlog,*) ' DivrplP; OK going in for ', 
      1 ' ID = ', corid1
 c
+c ---------------------------------------------------------
+c rrb 2014/11/14;
+c   q. Set location of original source of water
+c     Currently only used if source 1 is a 
+c     Type 11 plan
+      lopr5=0
+      lr5=0
+      nd5=0
+      iscd5=0
+      ndns5=0
+c
+      if(iout5.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) ' DivRplP_1; l2, ioprlim(l2), iopsou(5,l2)'   
+        write(nlog,*) ' DivRplP_1;', l2, ioprlim(l2), iopsou(5,l2)         
+      endif
+c      
+      if(ioprlim(l2).eq.5 .and. iopsou(5,l2).gt.0) then
+        lopr5=iopsou(5,l2)
+        lr5=iopsou(1,lopr5)
+        nd5=idivco(1,lr5)
+        iscd5=IDVSTA(nd5)          
+        ndns5=NDNNOD(iscd5)        
+      endif    
+c
+      if(iout5.eq.1) then
+        write(nlog,*) ' '         
+        write(nlog,*) ' DivRplP_2; lopr5, lr5, nd5, iscd5, ndns5'   
+        write(nlog,*) ' DivRplP_2;', lopr5, lr5, nd5, iscd5, ndns5         
+      endif
+c      
 c _________________________________________________________
 c
 c		Step 2: Exit if not on this month
@@ -668,13 +716,13 @@ c
 c _________________________________________________________
 c               
 c rrb 2009/01/15;
-c               Step X; Limit to the amount diverted by another 
+c               Step 4b; Limit to the amount diverted by another 
 c		  operating rule
 c		
       if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then
         lopr=iopsou(5,l2)
         oprmaxM1=amax1(0.0, divo(lopr)*fac)
-c       write(nlog,*) ' DivResP2; ',ioprlim(l2), lopr, OprmaxM1
+c       write(nlog,*) ' DivRplP; ',ioprlim(l2), lopr, OprmaxM1
         
         ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
         alocfs3=alocfs
@@ -686,6 +734,32 @@ c       write(nlog,*) ' DivResP2; ',ioprlim(l2), lopr, OprmaxM1
         if(alocfs.lt.small) then
           iwhy=6
           cwhy='Operating Rule Limit (OprMaxM1 or alocfs3) = zero'          
+          goto 300
+        endif
+      endif        
+c
+c _________________________________________________________
+c               
+c rrb 2014/11/24;
+c     Step 4c; Limit to the capacity in the original source
+c		
+      if(lopr5.gt.0) then
+        divcap1 = amax1(0.0, divcap(nd5) - divmon(nd5))     
+        alocfs4=alocfs
+        ALOCFS=AMIN1(ALOCFS, divcap1)
+        alocfs5=alocfs
+        
+        if(iout5.eq.1) then
+          write(nlog,*) ' '
+          write(nlog,*) 
+     1    ' DivRplP_3;  lopr5  alocfs4 divcap1 alocfs5'
+          write(nlog,*) 
+     1    ' DivRplP_3;',lopr5, alocfs4*fac, divcap1*fac, alocfs5*fac 
+        endif
+        
+        if(alocfs.lt.small) then
+          iwhy=7
+          cwhy='Original source capacity = zero'          
           goto 300
         endif
       endif        
@@ -1157,14 +1231,29 @@ c rrb 2010/10/15; Update to allow operationn with a depletion release
 c
 c _____________________________________________________________
 c
-c               Step 15; Add in Plan or Reservoir release (relact)
+c               Step 15; Add Plan or Reservoir release (relact)
 c
       if(iout.eq.1) write(nlog,*) ' DivRplP; Takout for relact = ',
      1   iscd, relact*fac
 
       AVAILR=AVAIL(Iscd)
-      CALL TAKOUT(maxsta,AVAIL,RIVER,AVINP,QTRIBU,IDNCOD,
-     1            relact,ndns,iscd)     
+c
+c rrb 2014/11/24; Add a plan release to the original source downstream
+c
+      if(iout5.eq.1) then
+        write(nlog,*) ' '         
+        write(nlog,*) ' DivRplP_4; lopr5, ndns5, iscd5'
+        write(nlog,*) ' DivRplP_4; ', lopr5, ndns5, iscd5
+      endif     
+c      
+      if(lopr5.eq.0) then      
+        CALL TAKOUT(maxsta,AVAIL,RIVER,AVINP,QTRIBU,IDNCOD,
+     1              relact,ndns,iscd)
+      else
+        call TAKOUT(maxsta,avail,river,avinp,qtribu,idncod,
+     1              relact,ndns5,iscd5)     
+      endif 
+          
 c
 c rrb 2011/07/28; Allow water to be added to the source node (iscd)
 c                 Different logic than Divrpl that sets 
@@ -1392,14 +1481,18 @@ c
         if(iplntyp(nsp).eq.3 .or. iplntyp(nsp).eq.5) then
           psto2(nsp)=amax1(psto2(nsp)+relact*fac,0.0)                
         endif  
-c        
-        qdiv(28,iscd) = qdiv(28,iscd) + divact
+c
+c
+c rrb 2015/01/16;  Not used in Outmon       
+cx        qdiv(28,iscd) = qdiv(28,iscd) + divact
 
 c
 c rrb 2010/10/09; Track plan types 4, 6 & 11 (diversion reuse)
-c         as return flow        
-        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
-     1     iplntyp(nsP).eq.11) then  
+c                 as return flow 
+c rrb 2014/11/24; Revise the treatment of a plan release for a type 11         
+cx      if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
+cx   1     iplntyp(nsP).eq.11) then  
+        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6) then
 c
 c rrb 2010/10/15; Revise when operating in depletion mode
 c                 divact .ne. relact So at the source
@@ -1407,9 +1500,25 @@ c                 the return is - relact
 cx        qdiv(36,iscd)=qdiv(36,iscd) + divact
           qdiv(36,iscd)=qdiv(36,iscd) - relact
           qdiv36=qdiv(36,iscd)
-        endif        
-      endif 
-      
+        endif    
+c
+c rrb 2014/11/24; Revise to release at the source water right location
+c                 when ioprlim(l2)=5.  Note: 
+c                 qdiv(37  Water released to the river (reported as
+c                 a release that is subtracted from RivDiv in outmon.f
+c  
+c rrb 2015/01/16; Revised approach to a diversion to an admin plan              
+cx         if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then
+cx           qdiv(37,iscd5)=qdiv(37,iscd5) - relact
+cx         endif 
+c          
+         if(iout5.eq.1) then
+           write(nlog,*) ' '            
+           write(nlog,*) ' DivRplP_5; lopr5, iscd5, relact, qdiv(37'
+           write(nlog,*) ' DivRplP_5; ', lopr5, iscd5, relact*fac, 
+     1                   qdiv(37,iscd5)*fac
+         endif               
+      endif      
 c      
 c ---------------------------------------------------------
 c		b. Source is a Reservoir
@@ -1511,7 +1620,39 @@ cx   1    maxrtnw, maxdivw, OprEff1, ipuse,
      1    pctlosPP, rlossP, oprLossc,internT,
      1    icx, corid1)
       endif
-
+c _________________________________________________________
+c
+c *************************************
+c
+c rrb 2014/11/24
+c     Step 26a; Adjust the source capacity based on the amount released
+c		   
+      if(iout.eq.1) then
+        write(nlog,*) ' DivRplP; l2, ioprlim, iopsou(5,l2)'   
+        write(nlog,*) ' DivRplP;', l2, ioprlim(l2), iopsou(5,l2)         
+      endif
+c      
+c *************************************
+c
+c rrb 2014/11/24
+c     Step 26a; Adjust the amount diverted (divmon) based on 
+c               the amount released which is how
+c               a diversion is limited by capacity 
+c		   
+      if(lopr5.gt.0) then
+        divcap1=divcap(nd5) - divmon(nd5)
+        divmon(nd5) = amax1(divmon(nd5) + divact,0.0)
+        divcap2=divcap(nd5) - divmon(nd5)   
+c
+        if(iout5.eq.1) then
+          write(nlog,*) ' '           
+          write(nlog,*) 
+     1     ' DivRplP_6; lopr  nd5 divcap1  divact divcap2, qdiv(37,'
+          write(nlog,'(1x,a12,2i5, 20f8.0)')
+     1     ' DivRplP_6;', lopr5, nd5,
+     1                   divcap1*fac, divact*fac, divcap2*fac 
+        endif       
+      endif
 c
 c _________________________________________________________
 c
@@ -1544,7 +1685,7 @@ cx     1      iplim,  psto1(ipLim), psto2(ipLim), corid1
       endif
 c
 c_____________________________________________________________
-c rrb 2007/07/09; Allow T&C return flow obligations to be assinged 
+c rrb 2007/07/09; Allow T&C return flow obligations to be assigned 
 c		              at the destination (herein)
 
 c                 Step 28; Calculate return flow obligation
@@ -1666,6 +1807,15 @@ cx     1      psuply(iplim)*fac, psuplyT(iplim)*fac,
 cx     1      psto1(ipLim), psto2(ipLim)    
 cx        endif
 cx      endif       
+c
+c rrb 2014-06-15; Print Qdiv data
+      if(ioutQ.eq.1) then
+        write(nlog,*) ' DivRplP Out; Qdiv report'
+        write(nlog,'(4x, 39i8)') (j, j=1,39)
+        do i=1, numsta
+          write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
+        end do
+      endif      
 
 c
 c _____________________________________________________________
@@ -1696,7 +1846,7 @@ cx   1  ' imcd  sht   avail  Qdiv29 iOprLim iopsou5',/
      1  ' ____ ____ ____ ____ ____ ____ _______', 
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______',
-     1  ' ____ ____________________________________',)
+     1  ' ____ ____________________________________')
 cx   1  ' ____ ____ _______ _______ _______ _______ _______ _______')
  280   format(a12, i5, 1x,a4, i5, 3(1x,a12), 6i5, i8,
      1 12f8.1, i5, 1x,a36, 2i5, 20f8.1)

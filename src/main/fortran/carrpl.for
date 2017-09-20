@@ -346,10 +346,22 @@ c _________________________________________________________
 c               Step 7. Initial checks on demand & available flow
 
 C-----  INITIAL CHECKS ON DEMAND AND AVAILABLE FLOWS
-  140 IF(iresw.eq.0.and.DIVREQ(IUSE).LE.small) then
-        iwhy=4
-        cwhy='Demand is Zero'      
-        goto 420
+c jhb 2014/07/17 the second condition can not always be evaluated so rewrite to isolate it
+c                this is something that the lahey compiler allowed, probably by stopping
+c                  the condition evaluation sequence after the first one evaluates to false
+c                  (since it is an .AND. condition)
+c  140 IF(iresw.eq.0.and.DIVREQ(IUSE).LE.small) then
+c        iwhy=4
+c        cwhy='Demand is Zero'
+c        goto 420
+c      endif
+
+  140 IF(iresw.eq.0) then
+        if(DIVREQ(IUSE).LE.small) then
+          iwhy=4
+          cwhy='Demand is Zero'
+          goto 420
+        endif
       endif  
 
       availX=avail(idcd)
@@ -830,7 +842,16 @@ c
       REPLAC(NR  )=REPLAC(NR  )-REPACT
       CUROWN(IOWN)=CUROWN(IOWN)+ACTACF
 c
-      IF (iresw.eq.0 .and. IRTURN(IUSE).EQ.4) Goto 410
+c jhb 2014/07/17 the second condition can not always be evaluated so rewrite to isolate it
+c                this is something that the lahey compiler allowed, probably by stopping
+c                  the condition evaluation sequence after the first one evaluates to false
+c                  (since it is an .AND. condition)
+c      IF (iresw.eq.0 .and. IRTURN(IUSE).EQ.4) Goto 410
+      IF (iresw.eq.0) then
+        if (IRTURN(IUSE).EQ.4) then
+          Goto 410
+        endif
+      endif
 
       QRES(8,NR)=QRES(8,NR)-ACTACF
       accr(8,iown)=accr(8,iown)-actacf

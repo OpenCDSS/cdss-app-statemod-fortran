@@ -67,7 +67,6 @@ c		tempcu	 CU
 c		templ   Loss
 c		tempp   Pumping
 c		
-c
 c _________________________________________________________
 c	Dimensions
 c
@@ -162,8 +161,9 @@ c
 c =========================================================
 c               Month Loop
 c
-      write(nlog,262) iyrmo(mon)
 
+C      write(nlog,262) iyrmo(mon)
+      write(nlog,262) iyr
       DO 340 MON=1,12
 c
 c rrb 01/12/28; Print in day loop
@@ -1315,7 +1315,7 @@ c
      1 '    # Year ID            Type         ',12(i8),'   Total',/
      1 ' ____ ____ ____________  ____________ ',13(' _______'))
    
- 305  format(2i5, 2(1x,a12,1x,) 20f8.0)    
+ 305  format(2i5, 2(1x,a12,1x), 20f8.0)    
  
  306  format(/, '  Vircom; Detailed CU Report',/
      1 '  Type           # ID           Year  Mon',

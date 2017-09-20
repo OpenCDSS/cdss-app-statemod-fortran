@@ -1,9 +1,10 @@
-# A simple hand-made makefile for a package including applications
-# built from Fortran 90 sources, taking into account the usual
-# dependency cases.
-# - Steve Malers removed src and bin folders so all work is done in this folder.
+# Makefile for compiling StateMod using gfortran
+# - initial version taken from Jim Brannon's work
+# - significant updates to add documentation, help target, make portable
+# - should be able to update to work with Windows, Linux, and Lahey compiler
+
 # ======================================================================
-# the declarations
+# Declarations
 # ======================================================================
 # The compiler
 FC = gfortran
@@ -75,21 +76,75 @@ FFLAGS = -g -cpp -fno-align-commons -static -fcheck=bounds -fno-automatic -finit
 FFLAGS += -I/usr/include
 # The libraries needed for linking
 #LDFLAGS = -li_need_this_lib
-# The ist of executables to be built within the package
+# The list of executables to be built within the package
 PROGRAMS = statemod
 
+# Set the source modules based on the operating system and compiler
+# - this allows this single makefile to work in multiple development environments (as long as GNU make is used)
+# - currently the focus is gfortran on Windows but could get from the environment and change modules
+
+# Compiler-specific routines to handle command line parsing and date/time processing
+ifeq ($(FC),gfortran)
+	# gfortran code version
+	parse_o_file = parse_gfortran.o
+	dattim_o_file = dattim_gfortran.o
+else
+	# Legacy Lahey code version
+	parse_o_file = parse.o
+	dattim_o_file = dattim.o
+endif
+
+# Operating-system-specific code
+# - Although there are other options, initially use code from Jim Brannon
+# - OS environment variable is specific to Windows (assuming the compile occurs
+#   in a Windows command shell) so if set assume Windows
+
+ifdef OS
+	# Assume Windows legacy naming convention
+	getpath_o_file = getpath.o
+	putpath_o_file = putpath.o 
+else
+	# Assume Linux
+	getpath_o_file = getpath_linux.o
+	putpath_o_file = putpath_linux.o 
+endif
+
 # ======================================================================
-# The rules
+# Main targets
 # ======================================================================
-# The rule for making "all"
-#   the default if make is called without arguments
-#   note it only has the dependency and no actions
+
+# all: compile all programs
+# - the default if make is called without arguments
+# - may want to change so default is 'help'
 all: $(PROGRAMS)
 
-# The rule for object files that depend on more than
-#  the same named source (.for) file.  A general rule
-#  below handles that simple case.
-#  For example, include files.
+# help: print the targets that are available
+help:
+	@echo "-----------------------------------------------------------------------"
+	@echo "StateMod makefile targets:"
+	@echo ""
+	@echo "all        Default target to compile all programs, currently only"
+	@echo "           statemod but could include utility programs in the future."
+	@echo "clean      Remove dynamically created files (but not final executable)."
+	@echo "help       Print this message."
+	@echo "veryclean  Make the 'clean' target, and also remove the final executable."
+	@echo ""
+	@echo "file.o     Compile the source file.for file into object file,"
+	@echo "           useful to check syntax for a single file."
+	@echo "-----------------------------------------------------------------------"
+	@echo "Makefile variables that are used:"
+	@echo ""
+	@echo "FC (compiler) = $(FC)"
+	@echo "-----------------------------------------------------------------------"
+	@echo "Environment variables that are used:"
+	@echo ""
+	@echo "OS (to determine operating system) = $(OS)"
+	@echo "-----------------------------------------------------------------------"
+
+# Dependencies for object files
+# - because statemod is the main output (not library, etc.) only concern is the include file
+# - need to make this simpler, but something like makedepends may be too much
+# - not every file depends on common.inc (do `grep -i common.inc *.for` to find)
 bintop.o: common.inc
 bomsec.o: common.inc
 calldat.o: common.inc
@@ -111,17 +166,19 @@ depletep.o: common.inc
 directby.o: common.inc
 directex.o: common.inc
 directfs.o: common.inc
+directwr.o: common.inc
 divalt.o: common.inc
+divcar.o: common.inc
 divcar1.o: common.inc
 divcar2.o: common.inc
-divcar.o: common.inc
 divcarl.o: common.inc
 divcarr.o: common.inc
 divimpr.o: common.inc
+divimpr2.o: common.inc
 divmulti.o: common.inc
 divres.o: common.inc
-divresp2.o: common.inc
 divresp.o: common.inc
+divresp2.o: common.inc
 divresr.o: common.inc
 divrig.o: common.inc
 divrigs.o: common.inc
@@ -133,8 +190,8 @@ dsamod.o: common.inc
 evasec.o: common.inc                      
 execut.o: common.inc
 getcall.o: common.inc
-getdiv2.o: common.inc
 getdiv.o: common.inc
+getdiv2.o: common.inc
 geteomx.o: common.inc      
 getid.o: common.inc
 getipy2.o: common.inc
@@ -144,22 +201,23 @@ getpln.o: common.inc
 getplnr.o: common.inc
 getplnw.o: common.inc
 getrep.o: common.inc
-getres2.o: common.inc
 getres.o: common.inc
+getres2.o: common.inc
 getrig.o: common.inc
+getrtnx.o: common.inc
 getsta.o: common.inc
-getwel2.o: common.inc
 getwel.o: common.inc
+getwel2.o: common.inc
 gwsub.o: common.inc
 ifrdown.o: common.inc
-ifrrig2.o: common.inc
 ifrrig.o: common.inc
+ifrrig2.o: common.inc
 ifrrigsp.o: common.inc
 ifrrigx.o: common.inc
 intersup.o: common.inc
 mdainp.o: common.inc
-oopbook2.o: common.inc
 oopbook.o: common.inc
+oopbook2.o: common.inc
 oopdiv.o: common.inc
 oprfind.o: common.inc
 oprinp.o: common.inc
@@ -185,29 +243,29 @@ outpltr.o: common.inc
 outpltw.o: common.inc
 outrch.o: common.inc
 outrchr.o: common.inc
-outresc.o: common.inc
 outres.o: common.inc
+outresc.o: common.inc
 outrev.o: common.inc
 outrg.o: common.inc
 outriv.o: common.inc
-outspd.o: common.inc
 outsp.o: common.inc
+outspd.o: common.inc
 outsum.o: common.inc
 outsys.o: common.inc
-outsyta.o: common.inc
 outsyt.o: common.inc
+outsyta.o: common.inc
 outtbl.o: common.inc
 outtop.o: common.inc
-outwelc.o: common.inc
 outwel.o: common.inc
+outwelc.o: common.inc
 outwelp.o: common.inc
-outwr2.o: common.inc
 outwr.o: common.inc
+outwr2.o: common.inc
 outxss.o: common.inc
 outxssmo.o: common.inc
 planeva.o: common.inc                      
-powres2.o: common.inc
 powres.o: common.inc
+powres2.o: common.inc
 powresp.o: common.inc
 powsea.o: common.inc
 powseap.o: common.inc
@@ -226,10 +284,10 @@ rigsor.o: common.inc
 rivrtn.o: common.inc
 rsrspu.o: common.inc
 rsrspup.o: common.inc
-rtnmaxe.o: common.inc
 rtnmax.o: common.inc
-rtnsecc.o: common.inc
+rtnmaxe.o: common.inc
 rtnsec.o: common.inc
+rtnsecc.o: common.inc
 rtnsecm.o: common.inc
 rtnsecp.o: common.inc
 rtnsecr.o: common.inc
@@ -266,16 +324,19 @@ xdebug.o: common.inc
 # The rule for building the statemod executable
 # - all source modules are listed as dependencies
 # - interdependencies are not accounted for, just the main program requirements
-# - the following were in Jim Brannon's code.  Add back in some form once basic compilation is working.
-#		parse_gfortran.o
-#		getpath_windows.o
-#		dattim_gfortran.o
-#		putpath_windows.o 
+# - the following were in Jim Brannon's code and have been integrated more generically:
+#
+#	parse_gfortran.o
+#	dattim_gfortran.o
+#
+#	getpath_windows.o
+#	putpath_windows.o 
+#
 statemod: \
 	statem.o \
 		namext.o \
-		parse.o \
-		getpath.o \
+		$(parse_o_file) \
+		$(getpath_o_file) \
 		gnu.o \
 		skipn.o \
 		getfn.o \
@@ -306,7 +367,7 @@ statemod: \
 			comment.o \
 			count.o \
 			datinp.o \
-			dattim.o \
+			$(dattim_o_file) \
 			daydata.o \
 			daydist.o \
 			daydivo.o \
@@ -323,6 +384,7 @@ statemod: \
 			directby.o \
 			directex.o \
 			directfs.o \
+			directwr.o \
 			divalt.o \
 			divcar.o \
 			divcarl.o \
@@ -330,6 +392,7 @@ statemod: \
 			divcar1.o \
 			divcar2.o \
 			divimpr.o \
+			divimpr2.o \
 			divmulti.o \
 			divres.o \
 			divresp2.o \
@@ -434,7 +497,7 @@ statemod: \
 			powsea.o \
 			powseap.o \
 			powsear.o \
-			putpath.o \
+			$(putpath_o_file) \
 			replace.o \
 			repsort.o \
 			resrgp.o \
@@ -502,7 +565,7 @@ statemod: \
 	$(FC) $(FFLAGS) -o statemod $^ $(LDFLAGS)
 
 # ======================================================================
-# The general rules.  These generally should not require modification
+# The general rules.  These generally should not require modification.
 # ======================================================================
 
 # General rule for building prog from prog.o; $^ (GNU extension) is

@@ -121,7 +121,7 @@ c    1 /,'_______________________________________________________',
      1 /,' ID = ',a12, '       Name = ',a24, ' Opr Type = ', i4,
      1   '   Admin # = ',f16.5,
      1 /,' Source 1 = ',a12, ' Destination = ', a12,
-     1   '      Year On = ',i5, '   Year Off = ',i5,)
+     1   '      Year On = ',i5, '   Year Off = ',i5)
   150  format('YEAR', 13(4X,a4),/,
      1   '____',13(' _______'))
   160  format(i4,13f8.0)

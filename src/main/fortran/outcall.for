@@ -96,7 +96,7 @@ c
      1              qdiv(5,imcd1) - qdiv(16,imcd1) 
 c
 c rrb 2010/09/15; Correction     
-dr        CarPri  = qdiv(16,is) + qdiv(19,is)
+cdr        CarPri  = qdiv(16,is) + qdiv(19,is)
           CarPri  = qdiv(16,imcd1) + qdiv(19,imcd1)
           DivPri  = RivPri+CarPri
 c

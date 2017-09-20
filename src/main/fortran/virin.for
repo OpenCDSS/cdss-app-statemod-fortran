@@ -27,7 +27,13 @@ c
       dimension x(12)      
       character cistat*12, blank*12, czero*12, recin*256, rec48*48,
      1  cCallBy*12 
-
+c jhb 2014/06/26 set these as local static variables...
+c      integer, save :: numRre = 0
+c      integer, save :: numDre = 0
+c jhb 2014/07/08 remove the save command because we are using a global
+c                static variable compiler switch -fno-automatic
+      integer :: numRre = 0
+      integer :: numDre = 0
 c
 c _________________________________________________________
 c		Step 1; Initilize   
@@ -42,51 +48,41 @@ c		ioutRe2=Reservoir recharge data
       ioutR=0
       ioutRe=0
       ioutRe2=0
-      
       cCallBy='Virin       '
-
-
+      blank = '            '
+      czero = '0           '
       if(iout.gt.0 .or. ioutRe.gt.0) then      
         write(nlog,*) ' Virin'
         write(6,*) ' Virin'
       endif
-      
-      blank = '            '                 
-      czero = '0           '
-      
 c
 c =========================================================
 c               Called 1x per simulation
       if(ityp.eq.0) then
-
         do is=1,numsta
           ibout(is)=0
           istaru(is)=0
         end do
-
         iin2=iin
         filena='*.rsp'
 c
 c _________________________________________________________
 c		Initilize Recharge Data 
-c             idvRre is reservoir to recharge
+c       idvRre is reservoir to recharge
 c		idvDre is diversion to recharge      
-      do nr=1,numres
-        idvRre(nr)=0
-        do im=1,13
-          RrechM(im,nr)=0.0
+        do nr=1,numres
+          idvRre(nr)=0
+          do im=1,13
+            RrechM(im,nr)=0.0
+          end do
         end do
-      end do
-      
-      do nd=1,numdiv
-        idvDre(nd)=0
-        do im=1,13
-          DrechM(im,nd)=0.0
-          DuseM(im,nd)=0.0
+        do nd=1,numdiv
+          idvDre(nd)=0
+          do im=1,13
+            DrechM(im,nd)=0.0
+            DuseM(im,nd)=0.0
+          end do
         end do
-      end do      
-        
-c
 c
 c _________________________________________________________
 c
@@ -107,7 +103,6 @@ c rrb 2004/11/09; Correction need to open file above
      1               imstr, 0, 25, c, cyr1, maxfn,
      1               infile, idummy, nEomX, fpath1, rec256)
         endif
-c
 c
 c _________________________________________________________
 c
@@ -143,7 +138,6 @@ c			 itype=2 reservoir
           nno=0
           numRre=0 
           if(ioutRe2.eq.1) write(nlog,294) 'Reservoir to Recharge   '
-          
 c
 c rrb 2008/11/05; Read mumsta values to allow extra data in the file          
 c         DO NR=1,NUMRES
@@ -157,10 +151,19 @@ c
               idvRre(numRre)=nx             
 c
 c ---------------------------------------------------------
-c			Warn but Allow data not in the system   
-              if(ioutRe2.eq.1) write(nlog,'(12x,3i8,1x,2a12)') 
+c			Warn but Allow data not in the system
+c jhb 2016/06/26 have to handle nx=0 below!!
+c              if(ioutRe2.eq.1) write(nlog,'(12x,3i8,1x,2a12)')
+c     1             numRre, nr, nx, cistat, cresid(nx)
+              if(ioutRe2.eq.1) then
+                if(nx.eq.0) then
+                  write(nlog,'(12x,3i8,1x,a12)')
+     1             numRre, nr, nx, cistat
+                else
+                  write(nlog,'(12x,3i8,1x,2a12)')
      1             numRre, nr, nx, cistat, cresid(nx)
-              
+                endif
+              endif
               if(nx.eq.0 .and. ioutRe2.eq.0) then            
                 nno=nno+1
                 if(nno.eq.1) write(nlog,290) rec48, 'Reservoir   '
@@ -244,10 +247,19 @@ c
               call stafind(nlog,istop, itype, numdiv, nx, 
      1          cistat, cdivid, cCallBy)     
               idvDre(numDre)=nx
-              
-              if(ioutRe.eq.1) write(nlog,'(12x,3i8,1x,2a12)') 
+
+c jhb 2016//06/26 have to handle nx=0 below
+c              if(ioutRe.eq.1) write(nlog,'(12x,3i8,1x,2a12)')
+c     1             numdre, nd, nx, cistat, cdivid(nx)
+              if(ioutRe.eq.1) then
+                if(nx.eq.0) then
+                   write(nlog,'(12x,3i8,1x,a12)')
+     1             numdre, nd, nx, cistat
+                else
+                   write(nlog,'(12x,3i8,1x,2a12)')
      1             numdre, nd, nx, cistat, cdivid(nx)
-              
+                endif
+              endif
               if(nx.eq.0 .and. ioutRe.eq.0) then
                 nno=nno+1
                 if(nno.eq.1) write(nlog,290) rec48, 'Diversion   '                              
@@ -819,12 +831,10 @@ C
         iin2=55
         filena='*.rre'
         DO nRre=1,numRre
-C
           read(77,270,end=332,err=928) 
      1      iryr,cistat,(x(i),i=1,12)
-          if(ioutRe2.eq.1) 
+          if(ioutRe2.eq.1)
      1      write(nlog,270) iryr,cistat,(x(i),i=1,12)
-
           if(iryr.ne.iyr) then
             write(nlog,1308) 'Reservoir Recharge data (*.rre)',
      1        '(*.res)',iryr,iyr          

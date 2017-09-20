@@ -2,7 +2,6 @@ c
 c     Last change:  RRB  18 Dec 100    2:29 pm
 c
       SUBROUTINE DirectEx(IW,L2,ISHORT,divactX,ncallX)
-c
 c _________________________________________________________
 c	Program Description
 c
@@ -35,7 +34,7 @@ c _________________________________________________________
 c	Update History
 c
 c rrb 2014-04-26;  Revised logic to allow the source and
-c       destination to shsre in shortages 
+c       destination to share in shortages
 c
 c
 c _________________________________________________________
@@ -449,7 +448,10 @@ c		b. Set CU limit switch
       iDep=0
       if(rec12(1:9).eq.'Diversion') iDep=0
       if(rec12(1:9).eq.'Depletion') iDep=1
-      diveff1=diveff(mon,nd)/nd
+c
+c rrb 2014-14-24 Correction
+cx    diveff1=diveff(mon,nd)/nd
+      diveff1=diveff(mon,nd)/100
 cr
 cr rrb 2005/11/14; Add TcLimit
       TcLimit= diveff(mon,nd)/100.  
@@ -556,8 +558,6 @@ c		         Destination is a plan
 c 
       if(ndtype.eq.7) then   
 c
-c rrb 2014-06-15; Revise to use iopdesr(l2) as teh type indicator
-cx      nd2x=nd2-10000
         nd2x=nd2
         np2=nd2x
         ndd2=0
@@ -1688,16 +1688,5 @@ c		Print results
       call flush(6)
       call exit(1)
 
-
       stop 
       END
-
-
-
-
-
-
-
-
-      
-      

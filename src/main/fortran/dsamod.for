@@ -168,13 +168,16 @@ c rrb 2008/04/23; Quick Exit if available flow or diversion = 0
 c rrb 2009/10/20; revise to simulate if pavail = 0 but the
 c                 diversion (iretsw=0) is non consumptive (icu=0)
       icu=1
-c 
-c ***************************************************
-c rrb 2014-07-13; Here is where the S Platte was having trouble
-c                 when iuse = 0.  Also I think there is a typo
-c                 and iresw shoud be iretsw the switch used to
-c                 
-      if(iresw.eq.0 .and. diveff(mon,iuse).lt.small) icu=0
+c jhb 2014/07/13 put a check for the iuse (diversion user index)value
+c                to prevent array bounds problem
+c                ALSO change iresw to iretsw (typo?)
+c      if(iresw.eq.0 .and. diveff(mon,iuse).lt.small) icu=0
+      if (iuse.ge.1) then
+        if(iretsw.eq.0 .and. diveff(mon,iuse).lt.small) icu=0
+      else
+        if(iretsw.eq.0) icu=0
+      endif
+
 cx    if(pavail.lt.small) then
       if(pavail.lt.small .and. icu.eq.1) then
         iwhy=1

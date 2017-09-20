@@ -1,6 +1,5 @@
 c
       SUBROUTINE GetCall(iscd, imcd1, nx, ctype1)        
-      
 c
 c
 c _________________________________________________________

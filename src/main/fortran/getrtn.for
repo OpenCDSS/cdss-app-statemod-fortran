@@ -11,7 +11,6 @@ c
      1               cdividw,  cstaid,  cstadn,  filena,
      1               cirtndlw)
 c
-c
 c _________________________________________________________
 c	Program Description
 c
@@ -234,7 +233,7 @@ c
      1  '           Reconmend you add another node to the river ', 
      1             'network (*.rin) file')
 
- 1280 FORMAT(/,,72('_'),/
+ 1280 FORMAT(/,72('_'),/
      1  '  GetRtn;  Warning the ',a12, ', station file has a return ',/
      1  '           location that is available to the diverter:',/
      1  '    # Str_ID       Str_Name                 River_ID     ',

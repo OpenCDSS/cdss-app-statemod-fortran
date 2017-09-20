@@ -17,15 +17,9 @@ c
 c _________________________________________________________
 c	Dimensions
         character filrsp*256, fpath1*256, x*1
-c jhb added precomiler macro to determine the path separator
-c rrb 2014-11-24 
-cx #if __unix__
-cx      character(len=1), parameter :: path_sep='/'
-cx#elif _WIN32
-      character(len=1), parameter :: path_sep='\'
-cx#else
-cx      character(len=1), parameter :: path_sep='/'
-cx#endif
+c jhb 2014/07/02 removed the precompiler commands
+c                and hardwired the path separator for linux
+      character(len=1), parameter :: path_sep='/'
 c     
 c
 c _________________________________________________________
@@ -33,7 +27,7 @@ c		Step 1; Initilize
 c
 
 c !!!           PC Specific                
-        x='\'
+c       x='\'
 c     
 c !!!           SGI Specific                
 c       x='/'

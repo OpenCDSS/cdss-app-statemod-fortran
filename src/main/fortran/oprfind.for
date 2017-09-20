@@ -115,7 +115,6 @@ c
         select case(itype)
 c
 c               Type 0; stream gage
-c rrb 2014-04-26 Tyyp 0 is really a river node (*.rin)
 c _________________________________________________________
 c
         case(0)
@@ -125,20 +124,14 @@ c
               goto 500
             endif
           end do
-c
-c rrb 2014-04-26          
-cx          nx=-1
-cx          write(nlog,100) cidvri, cx 
-cx          goto 9999
-c          
-c               Print problem could not find river station
-          nx=-1
-          if(istop.eq.0) then
-            write(nlog,170) 'Problem', cx, 
-     1       'River', cx, 'River', '(*.rin)', numsta           
-            goto 9999
-          endif  
           
+          if(istop.eq.1) then
+            goto 500
+          endif
+
+          nx=-1
+          write(nlog,100) cidvri, cx 
+          goto 9999
 c       endif
 c _________________________________________________________ 
 c
@@ -356,11 +349,14 @@ cx        if(nplan.eq.0) istop=0
 cx        if(nplan.eq.0) istop=1
 c
 c ---------------------------------------------------------
-          
+c         loop through all the plans
           do nx =1,nplan
+c           debugging output
             if(ioutP.eq.1 .or. iout.eq.1)
      1        write(nlog,*) ' Oprfind; ',nx, cx, pid(nx)
+c           check to see if this plan id matches the given structure id
             if (pid(nx).eq.cx) then
+c             found a match, it's a plan, save the plan index
               iops1=nx
 c
 c rrb 2009/01/15; Set the default plan account = 1 when the account

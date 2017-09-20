@@ -29,7 +29,7 @@ c
 c _________________________________________________________
 c	Dimensions
 c                       
-        dimension cstaidx(1), cstrtypX(10)
+        dimension cstaidx(*), cstrtypX(10)
         character cstaidx*12, cx*12, cstrtypX*12, cCallBy*12
         data cstrtypX/
      1   'InStream    ', 'Reservoir   ', 'Diversion   ', 'NA          ',

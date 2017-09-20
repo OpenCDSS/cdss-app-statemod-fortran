@@ -49,7 +49,7 @@ c       ifcd=ifrsta(nf)         river location of instream structure
 c       dcrifr(l2Temp)          water right from riginp.f
 c
 c       divi(l2Temp)            amount diverted by this right 
-c       divir(i)                amount diverted by this right 
+c       divir(l2Temp,i)         amount diverted by this right
 c                               at reach node i
 c
 c       flowrq(nf)              demand remaining this time step
@@ -159,7 +159,7 @@ c _________________________________________________________
 c
 c               2. Demand
 c 		Demand is via *.dda or *.ddm
-        aloifr=amin1(dcrifr(l2Temp)-divir(i),florqr(i))
+        aloifr=amin1(dcrifr(l2Temp)-divir(l2Temp,i),florqr(i))
         aloifr=florqr(i)
         if(aloifr.lt.small) goto 100
 c
@@ -180,10 +180,10 @@ c _________________________________________________________
 c
 c               5. Update 
         flowrq1 = florqr(i)    
-        divi1 = divir(i)      
+        divi1 = divir(l2Temp,i)
         florqr(i) = florqr(i) - actwrq
         qdivr1=qdivr(i)
-        divir(i) = divir(i)   + actwrq
+        divir(l2Temp,i) = divir(l2Temp,i)   + actwrq
         qdivr(i) = qdivr(i)   + actwrq
 cr      write(nlog,*) ' IfrDown;', i, qdivr1*fac, qdivr(i)*fac
         
@@ -210,7 +210,7 @@ c               7. Detailed printout
           write(nlog,130)
      1      iyr,mon,i,nf,ifcd,imcd,iss,
      1      xfrnam1(nf), 
-     1      dcrifr(l2Temp)*f,  divir(i)*f, florqr(i)*f, aloifr*f,
+     1      dcrifr(l2Temp)*f,  divir(l2Temp,i)*f, florqr(i)*f, aloifr*f,
      1      avail(iss)*f, actwrq*f
         endif
 c
@@ -251,7 +251,7 @@ c       write(nlog,'(10f8.0)') (avail(j)*f, j=1,numsta)
       if(iout.eq.1) then
         write(nlog,300) iyrmo(mon), xmonam(mon), idy, iwtemp, iwx, 
      1    l2temp, l1, dcall1, dcallx, divo(l2temp)*fx
- 300    format(/,'  IfrDown; for ', i5, 1x, a4,, 1x, i3,/
+ 300    format(/,'  IfrDown; for ', i5, 1x, a4, 1x, i3,/
      1   '    IwTemp                  = ', i8,/
      1   '    Iteration               = ', i8,/ 
      1   '    L2Temp                  = ', i8,/

@@ -4,7 +4,6 @@ C
       SUBROUTINE GetRch(nlog, iget, maxsta, maxrch, 
      1  nreach, iRch, nRchTo, nRchEnd,
      1  RchId, RchIdR, RchNameR, cstaid)
-
 c
 c _________________________________________________________
 c	Program Description

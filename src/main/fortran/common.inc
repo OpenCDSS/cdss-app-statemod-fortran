@@ -2,6 +2,10 @@ C
 C
 C               Revised common block for linked model
 c
+c jhb 2014/11/01; Revise dimensions
+c   ISF rights			241-2241
+c                       because the IfrRigSP routine uses the op rule counter
+c                       as an index in the divi() array.  might have to go larger later. 
 c rrb 2010/09/10; Revise dimensions
 c   Div Rights		    5500 = 6500
 c   Res Rights 		    201 = 351
@@ -84,7 +88,7 @@ c                    space in accounts 1-n
 c               0  = water right goes to all accounts based on
 c                    ownership ratio
 c rrb 06/15/04; Dimension for linked model
-c rrb 04/10/15; change maxuse from 2278 to 2500
+c rrb 04/10/15; change maxuse from 2278 to 5000
 c rrb 04/11/22; Added plan (augmentation and Terms and Conditions) 
 c		see PlanCom
 c rrb 04/12/28; Added reuse plan data. See PlanCom
@@ -126,7 +130,7 @@ c               Wells rights (riginp.f)
      1 idivcow( 2,13110), nrigusw(13110),   irigusw(13110), 
 c               Operations
      1 usemonw(13110),   divdw(13110),     divmonw(13110),
-     1 gwstor(2500),    gw2riv(2500),    gw2gw(2500),   gwmaxr(2500), 
+     1 gwstor(5000),    gw2riv(5000),    gw2gw(5000),   gwmaxr(5000), 
 c
 c               Depletion
      1 depl(240,3920), depld(3660,3920),  deplm(3920)
@@ -156,9 +160,9 @@ c                   Streams
 
 
        COMMON/SY1/
-cx     2 STANAM( 6,2500),XFRNAM( 6, 241),RESNAM( 6,  251),
-cx     3 DIVNAM( 6,1530),USENAM( 6,1530),
-cx     4 RUNNAM( 6,2500),
+cx     2 STANAM( 6,5000),XFRNAM( 6, 2241),RESNAM( 6,  251),
+cx     3 DIVNAM( 6,3060),USENAM( 6,3060),
+cx     4 RUNNAM( 6,5000),
      6 MTHDAY(     12),IDATE (      3),ITIME (      4),
      6 IPAGE (     20),ILINE (     20),
      1 iyrmo (     13),imomo (     13)
@@ -171,14 +175,14 @@ c
 c _________________________________________________________
 
       COMMON/SY2/
-     1 IDNCOD(   2500),NDNNOD(   2500),IUPCOD(   2500),
-     2 NUPNOD(     61),IRUSTA(   2500),IRUTYP(   2500),
+     1 IDNCOD(   5000),NDNNOD(   5000),IUPCOD(   5000),
+     2 NUPNOD(     61),IRUSTA(   5000),IRUTYP(   5000),
 c
 c rrb 2009/05/26; Correction     
-cx   3 ISTRTN(   2500),IRNORD(   2500),NWRORD(2,14991),
-     3 ISTRTN(   5005),IRNORD(   2500),NWRORD(2,14991),
-     4 QSTERN(   1530),QTRIBU(   2500),ISTARU(   2500),
-     5 IRUDND(   2500),TotSup(2500)
+cx   3 ISTRTN(   5000),IRNORD(   5000),NWRORD(2,14991),
+     3 ISTRTN(   5005),IRNORD(   5000),NWRORD(2,14991),
+     4 QSTERN(   3060),QTRIBU(   5000),ISTARU(   5000),
+     5 IRUDND(   5000),TotSup(5000)
 c
 c
 c _________________________________________________________
@@ -187,7 +191,7 @@ c rrb 97/10/22; Redimension for 25 replacement reservoirs
       common/repx/
      1 irepn,          irepk(25),       irepnr(25), 
      1 irepown(25),     ireprnk(25), 
-     1 irepexp(25,1530),ireptyp(1530),
+     1 irepexp(25,3060),ireptyp(3060),
 c
 c grb 4-23-97 added variable iopdesr & iopSouR to reflect diversion 
 c	      and source type
@@ -208,11 +212,11 @@ C
      1 DIVERM(     12)
 C
       COMMON/SY2b/
-     1 VIRINP(12,2500),RIVER (   2500),AVINP (   2500),
-     1 AVAIL (   2500),DIVREQ(   1530),IRSORD( 2,2500),
-     1 ineg  (   2500), qneg (   2500),
-     1 virinpT(12,2500),
-     1 divsw(1530)
+     1 VIRINP(12,5000),RIVER (   5000),AVINP (   5000),
+     1 AVAIL (   5000),DIVREQ(   3060),IRSORD( 2,5000),
+     1 ineg  (   5000), qneg (   5000),
+     1 virinpT(12,5000),
+     1 divsw(3060)
 
 C
 c
@@ -223,9 +227,9 @@ c                   Unit Response
       COMMON/SY3/
 c
 c rrb 2009/05/27; Revise      
-cx   1                 DLYRAT(240, 525),RETUR (240,2500,2),
-     1                 DLYRAT(240, 525),RETUR (240,2500),
-     1 QDIV  (39,2500),QRES  (39,  251),CURRTN(   2500),
+cx   1                 DLYRAT(240, 525),RETUR (240,5000,2),
+     1                 DLYRAT(240, 525),RETUR (240,5000),
+     1 QDIV  (39,5000),QRES  (39,  251),CURRTN(   5000),
      1 irtnid(    525),
      1 dlytot(525)
 c
@@ -233,12 +237,12 @@ c
 c _________________________________________________________
       
       COMMON/SY4/
-     1 DUMMY (2500, 13), dummyd(500),     dumx(2500),
-     1 dum(13,2500),     dum2(13,2500),   dum3(13,2500),
-     1 dumsta(2500),     dumown( 251,2),  dumrig(351,2),
-     1 dumusr(2500),     dumd(32,2500),
-     1 idum(2500),       idum2(2500),     iwarn(2500),
-     1 avtemp(2500),     avwret(2500)
+     1 DUMMY (5000, 13), dummyd(500),     dumx(5000),
+     1 dum(13,5000),     dum2(13,5000),   dum3(13,5000),
+     1 dumsta(5000),     dumown( 251,2),  dumrig(351,2),
+     1 dumusr(5000),     dumd(32,5000),
+     1 idum(5000),       idum2(5000),     iwarn(5000),
+     1 avtemp(5000),     avwret(5000)
 C
 c
 c _________________________________________________________
@@ -277,14 +281,14 @@ c _________________________________________________________
 c                   Instream Flows
 
       COMMON/IFR/
-     1 DCRIFR(241),    IIFRSW(     241), iifrsw1(241), 
-     1 divi(241),      ndnifs(     241), ndnifb(    241),
-     1 IFRSTA(    241),IIFRCO(     241), FLOWR (12, 241),
-     1 flowrX(12,241), 
-     1 FLOWRQ(    241),IFRRSW(     241), ifrst2(    241),
-     1 florqr(1002),   divir(1002),      qdivr(1002),
-     1 ireach,
-     1 iifcom(241),    demconi(241)
+     1 DCRIFR(2241),    IIFRSW(     2241), iifrsw1(2241), 
+     1 divi(2241),      ndnifs(     2241), ndnifb(    2241),
+     1 IFRSTA(    2241),IIFRCO(     2241), FLOWR (12, 2241),
+     1 flowrX(12,2241), 
+     1 FLOWRQ(    2241),IFRRSW(     2241), ifrst2(    2241),
+     1 florqr(1002),   divir(2241,1002),      qdivr(1002),
+     1 ireach, 
+     1 iifcom(2241),    demconi(2241)
 C
 c
 c _________________________________________________________
@@ -303,13 +307,13 @@ c                   Reservoirs
 c
 c ---------------------------------------------------------
 c                    Reservoir Recharge (seepage)     
-     1 idvRre(2500),    
+     1 idvRre(5000),
      1 RrechM(13,251),   RrechD(32,251), Rrech(251)
 c
 c
 c _________________________________________________________
 
-      COMMON/RS1/
+      COMMON/RS2/
      1 IRSSTA(     251),EVAP  (     251),VOLINT(     251),
      1                                   CURSTO(     251),
      1 PROJTF(     251),SPILL (     251),CARRY (     251),
@@ -319,7 +323,7 @@ C
 c
 c _________________________________________________________
 
-      COMMON/RS1/
+      COMMON/RS3/
      1                 DCRRES(     351),IRESCO( 2,  351),
      1 IRRGST(     351),NRIGOW(    251),IRIGOW(     351),
      1 NRIGRS(     251),IRIGRS(    351),LAST  (     351),
@@ -336,27 +340,27 @@ c                   Diversions
 
 
       COMMON/DV1/
-     1 DIVCAP(   1530),AREA  (   1530),NDUSER(   1530),
-     1 IDVCOM(   1530),NRIGUS(   1530),IDUSER(   1530),
+     1 DIVCAP(   3060),AREA  (   3060),NDUSER(   3060),
+     1 IDVCOM(   3060),NRIGUS(   3060),IDUSER(   3060),
 c
 c rrb 2009/05/27; Iopvir is not used     
-cx   1 IDVSTA(   1530),IPOVIR(   2228),DIVMON(   1530),
-     1 IDVSTA(   1530),DIVMON(   1530),
-     1 USEMON(   1530),IDIVSW(   1530),demsrc(   1530),
-     1 rloss(1530), idivco2(1530),     iuseTyp(1530),
+cx   1 IDVSTA(   3060),IPOVIR(   2228),DIVMON(   3060),
+     1 IDVSTA(   3060),DIVMON(   3060),
+     1 USEMON(   3060),IDIVSW(   3060),demsrc(   3060),
+     1 rloss(3060), idivco2(3060),     iuseTyp(3060),
 c
 c                    Diversions to Recharge (carried) and Use
-     1 idvDre(2500),   
-     1 DrechM(13,1530),  DrechD(32,1530),   Drech(1530),
-     1 DuseM(13,1530),   DuseD(32,1530),    Duse(1530)
+     1 idvDre(5000),
+     1 DrechM(13,3060),  DrechD(32,3060),   Drech(3060),
+     1 DuseM(13,3060),   DuseD(32,3060),    Duse(3060)
      
 C
 c
 c _________________________________________________________
 
       COMMON/DV2/
-     1 NRTN  (   1530),IRNSTA(   3920),IRTNDL(   3920),
-     1 IRTURN(   1530),PCTTOT(   3920),pctlos(   3920),
+     1 NRTN  (   3060),IRNSTA(   3920),IRTNDL(   3920),
+     1 IRTURN(   3060),PCTTOT(   3920),pctlos(   3920),
      1 iretsw,         ireop,          ireopx, divchk,
      1 divchkC,        divchkr
 C
@@ -373,8 +377,8 @@ c
 c _________________________________________________________
 
       COMMON/DV4/ 
-     1 DIVER (12,1530), divert(12,1530), diverir(12,1530),
-     1 diverirT(12,1530),demcond(1530)
+     1 DIVER (12,3060), divert(12,3060), diverir(12,3060),
+     1 diverirT(12,3060),demcond(3060)
 
 C
 c
@@ -401,9 +405,9 @@ c		Operating Rule Data #2
      1 divo(3701),       iopid(351),       qdel(13,5),     
      1 qindex(13,5),     
      1 irg1,             irg2,             isp1,
-     1 forecast(13,241), qcarry(5),        qdebt(5),
+     1 forecast(13,2241), qcarry(5),        qdebt(5),
      1 qdebtx(5),
-     1 rgspill(241),    iSetOpr(3701),     oprLoss(3701),
+     1 rgspill(2241),    iSetOpr(3701),     oprLoss(3701),
      1 oprLimit(3701),
      1 iOprLim(3701),   ioBeg(3701),       ioEnd(3701),
      1 numrg,           ideplete,          iexchang,       
@@ -435,7 +439,7 @@ c
 c _________________________________________________________
 
       common/right/
-     1 rfrnk (    241),rrsnk (     351),rdvnk (   6500),
+     1 rfrnk (    2241),rrsnk (     351),rdvnk (   6500),
      1 rpwnk (     25),ropnk (    3701),
      1 reprnk(     25),reprnkx
 
@@ -448,66 +452,66 @@ c
 c _________________________________________________________
 
       common/account/                                                   
-     1 accr(39,251), demcon(12,2500), ritremx(351), nrown(351),
+     1 accr(39,251), demcon(12,5000), ritremx(351), nrown(351),
      1 n2fill(351), n2own(251) 
 c
 c
 c _________________________________________________________
 
       common/basef/
-     1 cnode(440,2500), coeff(12,2500),
-     1 nbase(2500),  nbaset,
-     1 cnodm(440,2500), mbase(2500)
+     1 cnode(440,5000), coeff(12,5000),
+     1 nbase(5000),  nbaset,
+     1 cnodm(440,5000), mbase(5000)
 c
       common/basefc/
-     1 cgagen(2500),  cgagex(440,2500),
-     1 cupper(440,2500)
+     1 cgagen(5000),  cgagex(440,5000),
+     1 cupper(440,5000)
 c
       character*12 cgagen, cgagex, cupper
 c
       common/bases/
-     1 qhisto(12,2500),  rtnacu(12,2500), divacu(12,2500),
-     1 resvol(12,251),   idtype(   2500), ioutx  
+     1 qhisto(12,5000),  rtnacu(12,5000), divacu(12,5000),
+     1 resvol(12,251),   idtype(   5000), ioutx  
 c
 c
 c _________________________________________________________
 c rrb 04/29/97; Daily model
       COMMON/daycom/
      1 iday, idaydem,    imd, idy,   maxdld, numdld, ido,     imstr,
-     1 idays(2500),      idayd(1530),     idaydw(402),
-     1 idayi(241),       idayr(251),      idaye(251), 
-     1 virind(32,2500),  diverd(32,1530), diverdw(32,402),
-     1 flowrd(32,241),   targetd(32,251),  
-     1 riverm(2500),     availm(2500),    avinpm(2500), returm(2500),
+     1 idays(5000),      idayd(3060),     idaydw(402),
+     1 idayi(2241),       idayr(251),      idaye(251), 
+     1 virind(32,5000),  diverd(32,3060), diverdw(32,402),
+     1 flowrd(32,2241),   targetd(32,251),  
+     1 riverm(5000),     availm(5000),    avinpm(5000), returm(5000),
 c 
-     1 returd(3660,2500),dlyratd(3660,525),
+     1 returd(3660,5000),dlyratd(3660,525),
 
-     1 divreqm(1530),    divreqwm(13110),
-     1 flowrqm(241),     qdivm(39,2500),  qdivrm(1002),
+     1 divreqm(3060),    divreqwm(13110),
+     1 flowrqm(2241),     qdivm(39,5000),  qdivrm(1002),
      1 qresm(39,251),    accrm(39,251),   volintm(251), evapm(251),
      1 sepactM(251), 
      1 ritremm(351),     tarmaxm(251),    divom(3701),
-     1 rlossm(1530),     rlosswm(8500),   
+     1 rlossm(3060),     rlosswm(8500),   
      1 rlossw2m(8500),  divmonwm(402),
      1 rdepwm(13110),
-     1 dcum(1530),       dcutm(1530),     dcuwm(402),   dcutwm(402),
-     1 gw2rivm(2500),    gw2gwm(2500), 
+     1 dcum(3060),       dcutm(3060),     dcuwm(402),   dcutwm(402),
+     1 gw2rivm(5000),    gw2gwm(5000), 
      1 qdivsm(1002),     qdivsom(1002),   qdivswm(402), qdivswom(402), 
-     1 diverird(32,1530),diwrd(32,1530),
+     1 diverird(32,3060),diwrd(32,3060),
      1 diveridw(32,402), diwrdw(32,402),  carryWD(32,402),carryWM(402),
-     1 divertd(32,1530), diveritd(32,1530)
+     1 divertd(32,3060), diveritd(32,3060)
 c    1 evapd(32,251),    
 c
 c
 c _________________________________________________________
 c               Daily data read
       COMMON/daycomc/    
-     1 virindx(32,2500), diverdx(32,1530),diverdxw(32,402),
-     1 flowrdx(32,241),  targex2(32,251), evapdx(32,251),
-     1 diverd2(32,1530),  
+     1 virindx(32,5000), diverdx(32,3060),diverdxw(32,402),
+     1 flowrdx(32,2241),  targex2(32,251), evapdx(32,251),
+     1 diverd2(32,3060),  
 
-     1 crunidx(2500),    cdividx(1530),   cdividxw(402), cifridx(241), 
-     1 crunidy(2500),    cdividy(1530),   cdividyw(13110),cifridy(241),
+     1 crunidx(5000),    cdividx(3060),   cdividxw(402), cifridx(2241), 
+     1 crunidy(5000),    cdividy(3060),   cdividyw(13110),cifridy(2241),
      1 cresidx(251),
      1 cresidy(251)
 c
@@ -523,23 +527,23 @@ c _________________________________________________________
 c rrb 00/12/04; Data for variable efficiency (see also annual TS file)
       common/effmaxc/
      1 ieffmax,          
-     1 diwr(12,1530),    diwrw(12,402),  
-     1 diwrT(1530),      diwrwT(402),
-     1 diwrreq(1530),    diwrreqw(402),
-     1 dcu(1530),        dcuw(402),
-     1 dcut(1530),       dcutw(402)
+     1 diwr(12,3060),    diwrw(12,402),  
+     1 diwrT(3060),      diwrwT(402),
+     1 diwrreq(3060),    diwrreqw(402),
+     1 dcu(3060),        dcuw(402),
+     1 dcut(3060),       dcutw(402)
 c
 c
 c _________________________________________________________
 c rrb 06/08/29; Data for new CU approach
       common/NewCU/
-     1 effC(1530),    effF(1530),   effS(1530),
-     1 AreaSF(1530),  AreaSS(1530), AreaGF(1530), AreaGS(1530),
+     1 effC(3060),    effF(3060),   effS(3060),
+     1 AreaSF(3060),  AreaSS(3060), AreaGF(3060), AreaGS(3060),
      1 effCw(402),    effFw(402),   effSw(402),
      1 AreaGFw(402),  AreaGSw(402),
-     1 dIwrSF(1530),  dIwrSS(1530), dIwrGF(1530),  dIwrGS(1530),
+     1 dIwrSF(3060),  dIwrSS(3060), dIwrGF(3060),  dIwrGS(3060),
      1 dIwrGFw(402),  dIwrGSw(402),
-     1 cuactSF(1530), cuactSS(1530),cuactGF(1530), cuactGS(1530),     
+     1 cuactSF(3060), cuactSS(3060),cuactGF(3060), cuactGS(3060),     
      1 cuactGFw(402), cuactGSw(402)
      
      
@@ -550,9 +554,9 @@ c rrb 00/12/20; Data for annual time series file
      1 itsfile,         isprink,
      1 areawa(402),     areasp(402),      igwmode(402),
      1 divcapwa(402),
-     1 effmax(1530),    effmaxw(402),     effmaxs(402),
-     1 effmaxt(1530),   effmaxd(1530),
-     1 itspd(1530),     itspw(402)
+     1 effmax(3060),    effmaxw(402),     effmaxs(402),
+     1 effmaxt(3060),   effmaxd(3060),
+     1 itspd(3060),     itspw(402)
 c
 c
 c _________________________________________________________
@@ -567,7 +571,7 @@ c _________________________________________________________
 c rrb 01/01/07; Data for Soil Accounting
       common/soilc/
      1 isoil, soild,
-     1 awcr(1530), awcr1(1530),soils(1530), qdivs(1530), qdivso(1530),
+     1 awcr(3060), awcr1(3060),soils(3060), qdivs(3060), qdivso(3060),
      1 awcrw(402), awcrw1(402),soilsw(402), qdivsw(402), qdivswo(402)
 c
 c
@@ -585,47 +589,47 @@ c
 c _________________________________________________________
 c rrb 01/03/12; Data for daily base flow
       common/vir1/
-     1 qhistox(2500),    virinpx(2500), rtnacux(2500), divacux(2500), 
-     1 dumy(2500),       dumz(2500),    dumR(2500),    dumU(2500),
-     1 diverx(1530),     diwrx(1530),
+     1 qhistox(5000),    virinpx(5000), rtnacux(5000), divacux(5000), 
+     1 dumy(5000),       dumz(5000),    dumR(5000),    dumU(5000),
+     1 diverx(3060),     diwrx(3060),
      1 diverwx(402),     diwrwx(402),
      1 resvolx(251),     resvol1(251),
-     1 qdivsx(2500),     qdivsox(2500), qcux(2500), qloss(2500),
-     1 qpump(2500),
-     1 qhistod(32,2500), ibout(2500)  
+     1 qdivsx(5000),     qdivsox(5000), qcux(5000), qloss(5000),
+     1 qpump(5000),
+     1 qhistod(32,5000), ibout(5000)  
 c
 c
 c _________________________________________________________
 
 c               Data for baseflow reporting
        common/vir2/
-     1 tempq(2500),      tempd(2500),   tempr(2500), 
-     1 tempe(2500),      temps(2500),   tempi(2500),
-     1 flowx(2500),      delst(2500),
-     1 tempw(2500),      depacu(2500),  temph(2500), tempno(2500),
-     1 tempts(2500),     tempfs(2500),  tempcu(2500),templ(2500),
-     1 tempp(2500),      tempRre(2500), tempDre(2500), tempUse(2500)
+     1 tempq(5000),      tempd(5000),   tempr(5000), 
+     1 tempe(5000),      temps(5000),   tempi(5000),
+     1 flowx(5000),      delst(5000),
+     1 tempw(5000),      depacu(5000),  temph(5000), tempno(5000),
+     1 tempts(5000),     tempfs(5000),  tempcu(5000),templ(5000),
+     1 tempp(5000),      tempRre(5000), tempDre(5000), tempUse(5000)
 c
 c
 c _________________________________________________________
 
 c               Data for daily baseflow reporting
         common/vir3/
-     1 tempqm(2500),     tempim(2500),  tempdm(2500),
-     1 temprm(2500),
-     1 tempwm(2500),     tempem(2500),  tempsm(2500),
-     1 temphm(2500),     tempnom(2500),
-     1 temptsm(2500),    tempfsm(2500), tempcum(2500), templm(2500),
-     1 temppm(2500),     tempRreM(2500),tempDreM(2500),tempUseM(2500)
+     1 tempqm(5000),     tempim(5000),  tempdm(5000),
+     1 temprm(5000),
+     1 tempwm(5000),     tempem(5000),  tempsm(5000),
+     1 temphm(5000),     tempnom(5000),
+     1 temptsm(5000),    tempfsm(5000), tempcum(5000), templm(5000),
+     1 temppm(5000),     tempRreM(5000),tempDreM(5000),tempUseM(5000)
 c
 c               Data for local subroutine use
        common/gen1/
-     1 tot1x(2500),      tot2x(2500),   xzero(2500)
+     1 tot1x(5000),      tot2x(5000),   xzero(5000)
 c
 c               Data for multiple diversion owners (not users)
        common/DivOwnC/
-     1 NumOwnD, MaxOwnD, NdOwn(1530), divnamO(1530), divOwnP(1530),
-     1 divownQ(1530)
+     1 NumOwnD, MaxOwnD, NdOwn(3060), divnamO(3060), divOwnP(3060),
+     1 divownQ(3060)
      
        character 
      1 divnamO*24
@@ -634,8 +638,8 @@ c
 c _________________________________________________________
 c rrb 2005/10/14; Character names     
        common/Name1/
-     1 DivNam1(1530), DivNamW1(402), ResNam1(251), RunNam1(2500),
-     1 StaNam1(2500), XfrNam1(241),  Pname1(720),  UseNam1(1530)
+     1 DivNam1(3060), DivNamW1(402), ResNam1(251), RunNam1(5000),
+     1 StaNam1(5000), XfrNam1(2241),  Pname1(1440),  UseNam1(3060)
      
        character
      1 DivNam1*24,    DivNamW1*24,   ResNam1*24,   RunNam1*24, 
@@ -648,45 +652,45 @@ c		Plan Data (Augmentaton and Terms and Conditions)
        common/PlanCom/
      1 maxplan,           maxPlnO,          maxPlnU,       nplan, 
      1 NumPlan,           maxPlnT,          NumPlnT,
-     1 PlnTypX(100),      Pon(720),         Pid(720),    
-cx     1 Pname(6,720),      
-     1 iPsta(720),        
-     1 iPlnOprE(720,3701),  iplnOprS(720,3701), iplnOprR(720,3701),
-     1 iplnOprU(720,3701),  iplnOprO(720,3701), iplnOprP(720,3701),
-     1 Pobl(240,720),     Pdem(720),        PdemT(720), 
-     1 PoblD(3660,720),   PdemM(720),       PdemTm(720),
-     1 Pdrive(720),       PdriveM(720),
+     1 PlnTypX(100),      Pon(1440),         Pid(1440),    
+cx     1 Pname(6,1440),      
+     1 iPsta(1440),        
+     1 iPlnOprE(1440,3701),  iplnOprS(1440,3701), iplnOprR(1440,3701),
+     1 iplnOprU(1440,3701),  iplnOprO(1440,3701), iplnOprP(1440,3701),
+     1 Pobl(240,1440),     Pdem(1440),        PdemT(1440), 
+     1 PoblD(3660,1440),   PdemM(1440),       PdemTm(1440),
+     1 Pdrive(1440),       PdriveM(1440),
 c
 c		Reuse Plan Data     
-     1 iPlnTyp(720),      ipnode(2500),     ipSource(720), 
-     1 Psup(240,720),     Psuply(720),      PsuplyT(720), 
-     1 PsupD(3660,720),   PsuplyM(720),     PsuplyTm(720),
-     1 Preuse(3701),       PresueM(720),
-     1 Peff(12,720),      iPrf(720),
-     1 iPfail(720),       Pfail(720),       iPacct(720),
+     1 iPlnTyp(1440),      ipnode(5000),     ipSource(1440), 
+     1 Psup(240,1440),     Psuply(1440),      PsuplyT(1440), 
+     1 PsupD(3660,1440),   PsuplyM(1440),     PsuplyTm(1440),
+     1 Preuse(3701),       PresueM(1440),
+     1 Peff(12,1440),      iPrf(1440),
+     1 iPfail(1440),       Pfail(1440),       iPacct(1440),
 c
 c		Plan Augmentation
 c		Note 13110 is because well plans are tied to well rights
-     1 iplanWon,          iplanw(13110),     PlntypC(720),          
-     1 PlanW(720),        Psource(720), 
-     1 PwellC(720),       PwellCM(720),      rdvnkwp(720),
+     1 iplanWon,          iplanw(13110),     PlntypC(1440),          
+     1 PlanW(1440),        Psource(1440), 
+     1 PwellC(1440),       PwellCM(1440),      rdvnkwp(1440),
 c
 c		Reservoir plan storage data
-     1 Psto1(720),        Psto2(720),       Pevap(720),           
-     1 Psto1M(720),       Psto2M(720),      PevapM(720),
+     1 Psto1(1440),        Psto2(1440),       Pevap(1440),           
+     1 Psto1M(1440),       Psto2M(1440),      PevapM(1440),
 c
 c		Plan return flow and recharge plans
      1 maxrtnPP, numRtnPP,
-     1 ipPln(720),       rlossP(720),       rlossPM(720), 
+     1 ipPln(1440),       rlossP(1440),       rlossPM(1440), 
 c
-     1 nrtnPP(722),      pcttotPP(722),   
-     1 pctlosPP(722),    irtndlPP(722),     irnordPP(5005),
-     1 irnstaPP(722),    irnPlan(722),
+     1 nrtnPP(1444),      pcttotPP(1444),   
+     1 pctlosPP(1444),    irtndlPP(1444),     irnordPP(5005),
+     1 irnstaPP(1444),    irnPlan(1444),
 c
 c		Reservoir return flow and recharge plans
      1 maxrtnRP, numRtnRP,
-     1 iplnR(720),       iplnD(720),
-cx   1 ipRes(720),       rlossR(720),       rlossRM(720), 
+     1 iplnR(1440),       iplnD(1440),
+cx   1 ipRes(1440),       rlossR(1440),       rlossRM(1440), 
      1                   rlossR(251),       rlossRM(251), 
      1 nrtnRP(180),      pcttotRP(180),   
      1 pctlosRP(180),    irtndlRP(180),     irnordRP(5005),
@@ -698,8 +702,8 @@ c
 c		Import Data (
        common/ImpCom/
      1 maxImprt,        nImport,
-     1 PImportX(13,720),Pimport(720),    PImportM(720), PimportT(720), 
-     1 PImportD(32,720)
+     1 PImportX(13,1440),Pimport(1440),PImportM(1440),PimportT(1440), 
+     1 PImportD(32,1440)
       
      
        character Pid*12, plnTypC*25,     PlanW*12,      Psource*12,
@@ -711,7 +715,7 @@ c
 c		Call Data 
        common/CallCom/
      1 ioutc, ioutcS, ioutcR, 
-     1 istrtype(2500),     imcdL(2500), ccallR(2500)
+     1 istrtype(5000),     imcdL(5000), ccallR(5000)
 
        CHARACTER 
      1 crunidx*12,       cdividx*12,    cdividxw*12,   cifridx*12,
@@ -723,7 +727,7 @@ c _________________________________________________________
 c
 c rrb 01/31/95; Code Addition water right names
       common/names/
-     1 namei(241), namer(351), named(6500), namep(720), nameo(3701),
+     1 namei(2241), namer(351), named(6500), namep(1440), nameo(3701),
      1 cyr1,       cunitm,     cunitd,      cunitm2,   cunitd2,
      1 cunitdX
 
@@ -736,16 +740,16 @@ c _________________________________________________________
 c
 c rrb 01/31/95; Code Addition IDs
       common/cID/
-     1 cstaid(   2500),  crunid(   2500),  cifrid(    241), 
-     1 cresid(    251),  cdivid(   1530),
-     1 cstadn(   2500),  cgoto,         
+     1 cstaid(   5000),  crunid(   5000),  cifrid(    2241), 
+     1 cresid(    251),  cdivid(   3060),
+     1 cstadn(   5000),  cgoto,         
      1 corid (    3701),  crigid(   6500),  cntern(10),
      1 cevaid(    251),  cpreid(    251),
      1 cevar (    251),  cprer (    251),  ownnam(251),
-     1 creswr(    351),  copid (     351), cretid(1530),
-     1 idreq (   2500),  cirtndl(  2500),  cirtndlw(13110),
+     1 creswr(    351),  copid (     351), cretid(3060),
+     1 idreq (   5000),  cirtndl(  5000),  cirtndlw(13110),
      1 cirtndl2( 13110),  cirtnid(    525),
-     1 cisfwr(    241)
+     1 cisfwr(    2241)
 c
       character *12
      1 cstaid,         crunid,         cifrid,        
@@ -786,7 +790,7 @@ c rrb 2006/12/22; Reach (zone) processing
       common/RchCom/
      1 maxrch,       maxyrs,       dum3d(150,200,40),
      1 nrchTo(150),  nRchEnd(150), 
-     1 iRch(2500),   RchID(2500),  
+     1 iRch(5000),   RchID(5000),  
      1 RchIDR(150),  RchNameR(150)
      
       character
@@ -795,7 +799,7 @@ c _________________________________________________________
 c
 c rrb 2006/12/22; Stream Gage (*rig) data
       common/Gage/
-     1 nGage,      crunidG(2500),  irustaG(2500), runnamG(2500)
+     1 nGage,      crunidG(5000),  irustaG(5000), runnamG(5000)
      
       character
      1 crunidG*12, runnamG*24

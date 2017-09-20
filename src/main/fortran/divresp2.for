@@ -264,39 +264,48 @@ c               Step 1; Initilize
 c
 c ---------------------------------------------------------
 c		a. Miscellaneous
-c		iout=1 details
-c		iout=2 summary output
-c		iout=3 details on nRiver Adjustments
-c   iout=4 details on iteration limitation
-c		iout=99 summary independent of corid
-c   ioutIR details on instream flow reach
-c
+c		            iout=1 details
+c		            iout=2 summary output
+c		            iout=3 details on nRiver Adjustments
+c               iout=4 details on iteration limitation
+c		            iout=99 summary independent of corid
+c               ioutIR details on instream flow reach
+c               iout5  details on releasing at the original source 
+c                      and limiting the capacity of the original 
+c                      source
+c   
       iout=0
       ioutiw=0
       ioutIR=0
+      iout5=0
+      ioutQ=0
       
       lopr=0
       loprR=0
       noprS=0
       corid1=corid(l2)
+      
+      if(iout.eq.1) write(nlog,*) '  DivResP2'
             
       if(ichk.eq.127) iout=2
       if(irep.eq.0) then
         if(corid(l2).eq. ccall) ioutiw=iw
       else
         if(corid(l2).eq. ccall) ioutiw=iw
-      endif      
-
+      endif 
+c       
+      if(iout.eq.1) then    
+        write(Nlog,*)
+     1    ' DivResP2; ncallx    ichk    iout  ioutiw      iw',
+     1    ' corid        ccall' 
+        write(nlog,'(10x,5i8,2(1x,a12))')  
+     1    ncallx, ichk, iout, ioutiw, iw, corid(l2), ccall
+      endif
+c      
       if(iout.eq.2 .and. ioutiw.eq.iw) then
         if(ncallX.eq.0 .and. iday.eq.0) then
-        write(nlog,102) corid(l2)
- 102    format(/, 72('_'),/ '  DivResP2; ID = ', a12)
-c
-c        write(Nlog,*)
-c     1    ' DivResP2; ncallx    ichk    iout  ioutiw      iw',
-c     1    ' corid        ccall' 
-c        write(nlog,'(10x,5i8,2(1x,a12))')  
-c     1    ncallx, ichk, iout, ioutiw, iw, corid(l2), ccall
+          write(nlog,102) corid(l2)
+ 102      format(/, 72('_'),/ '  DivResP2; ID = ', a12)
         endif
       endif
 c
@@ -480,7 +489,7 @@ c	   	ipTC  = T&C plan
       
 c
 c ---------------------------------------------------------
-c		i. CU Factor for T&C Obligation calculations
+c		            i. CU Factor for T&C Obligation calculations
       rec12=cDivTyp(l2)
       iDep=0
       if(rec12(1:9).eq.'Diversion') iDep=0
@@ -499,7 +508,7 @@ c rrb 2005/11/27; Add CuFac
       CuFac=OprEff(mon,l2)/100.        
 c
 c ---------------------------------------------------------
-c		i. Called by Replace
+c		            i. Called by Replace
       if(irep.eq.0) then
         cReplace='No'
       else
@@ -510,7 +519,6 @@ c ---------------------------------------------------------
 c rrb 2000/12/26; j. Variable efficiency consideration
       ieff2=1     
       icx=27
-		      
 c
 c ---------------------------------------------------------
 c rrb 2007/12/04; k. Set Transit and Carrier Loss Data      
@@ -542,12 +550,45 @@ c rrb 2008/01/08; m. Set Avtemp = Avail for Return to river
         avtemp(is)=avail(is)
       end do
 c
+c ---------------------------------------------------------
+c rrb 2014/11/14; n. Set location of original source of water
+c                    Currently only used if source 1 is a 
+c                    Type 11 plan
+      lopr5=0
+      lr5=0
+      nd5=0
+      iscd5=0
+      ndns5=0
+c
+      if(iout5.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) ' DivResP2_1; l2, ioprlim(l2), iopsou(5,l2)'   
+        write(nlog,*) ' DivResP2_1;', l2, ioprlim(l2), iopsou(5,l2)         
+      endif
+c      
+      if(ioprlim(l2).eq.5 .and. iopsou(5,l2).gt.0) then
+        lopr5=iopsou(5,l2)
+        lr5=iopsou(1,lopr5)
+        nd5=idivco(1,lr5)
+        iscd5=IDVSTA(nd5)          
+        ndns5=NDNNOD(iscd5)        
+      endif    
+c
+      if(iout5.eq.1) then
+        write(nlog,*) ' '         
+        write(nlog,*) ' DivResP2_2; lopr5, lr5, nd5, iscd5, ndns5'   
+        write(nlog,*) ' DivResP2_2;', lopr5, lr5, nd5, iscd5, ndns5         
+      endif
+c      
+      
+      
+c
 c _________________________________________________________
 c               Step 2; Exit if not on this month
 c
       if(imonsw(l2,mon).eq.0) then
         iwhy=1
-        cwhy='Monthly Switch = zero'      
+        cwhy='Monthly Switch = zero'
         goto 300
       endif  
 c
@@ -656,8 +697,7 @@ c		Exit of zero
 c
 c _________________________________________________________
 c               
-c               Step 4; Limit release (alocfs) to monthly and annual
-c                       limits
+c     Step 4a; Limit release (alocfs) to monthly and annual limits
 c rrb 2007/10/23;
 c		
       if(ioprlim(l2).eq.2 .and. iopsou(5,l2).gt.0) then
@@ -683,8 +723,8 @@ c
 c _________________________________________________________
 c               
 c rrb 2009/01/153;
-c               Step X; Limit to the amount diverted by another 
-c		  operating rule
+c     Step 4b; Limit to the amount diverted by another
+c	    operating rule
 c		
 cx    write(nlog,*) ' DivResP2; ',ioprlim(l2)
       if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then
@@ -707,19 +747,46 @@ cx    write(nlog,*) ' DivResP2; ',ioprlim(l2)
           cwhy='Operating Rule Limit (OprMaxM1 or alocfs3) = zero'          
           goto 300
         endif
+      endif      
+c
+c _________________________________________________________
+c               
+c rrb 2014/11/24;
+c     Step 4c; Limit to the capacity in the original source
+c		
+      if(lopr5.gt.0) then
+        divcap1 = amax1(0.0, divcap(nd5) - divmon(nd5))     
+        alocfs4=alocfs
+        ALOCFS=AMIN1(ALOCFS, divcap1)
+        alocfs5=alocfs
+        
+        if(iout5.eq.1) then
+          write(nlog,*) ' '
+          write(nlog,*) 
+     1    ' DivResP2_3;  lopr5  alocfs4 divcap1 alocfs5'
+          write(nlog,*) 
+     1    ' DivResP2_3;',lopr5, alocfs4*fac, divcap1*fac, alocfs5*fac 
+        endif
+        
+        if(alocfs.lt.small) then
+          iwhy=7
+          cwhy='Original source capacity = zero'          
+          goto 300
+        endif
       endif        
+        
 c
 c _________________________________________________________
 c  
 c		Set supply based on diversion if iDep=0 or 
 c               depletion if iDep=1
-        alocfsX=alocfs
-        if(iDep.eq.0) then
-          alocfs=alocfs
-        else  
-cx        alocfs=alocfs/(diveff(mon,iuse)/100.0)              
-          alocfs=alocfs/diveff1
-        endif     
+      alocfsX=alocfs
+      if(iDep.eq.0) then
+        alocfs=alocfs
+      else
+cx      alocfs=alocfs/(diveff(mon,iuse)/100.0)
+        alocfs=alocfs/diveff1
+      endif
         
 c        write(nlog,*) ' DivResP2; ',
 c     1    '      nd    iuse     mon alocfsX  alocfs  diveff'
@@ -728,7 +795,7 @@ c     1   nd,,mon, alocfsX*fac,alocfs*fac, diveff1
 c
 c _________________________________________________________
 c               
-c               Step 5; Destination (Demand = Divalo)
+c     Step 5; Destination (Demand = Divalo)
       nd=iopdes(1,l2)
 c
 c ---------------------------------------------------------
@@ -773,7 +840,7 @@ c                  decree (dcrdivx-divdx)
 c
 c		Exit if no remaining decree          
           if(dcrRem.lt.small) then
-            iwhy=6
+            iwhy=8
             cwhy='Remaining Decree (DcrRem) is 0'
             goto 300
           endif  
@@ -782,7 +849,7 @@ c
 c ---------------------------------------------------------
 c		Exit if no demand        
         if(divreq(iuse).lt.small) then
-          iwhy=7
+          iwhy=9
           cwhy='Destination Demand (divreq1) is 0'
           goto 300
         endif 
@@ -790,7 +857,7 @@ c
 c ---------------------------------------------------------
 c		Exit if no capacity        
         if((DIVCAP(ND)-DIVMON(ND)).lt.small) then
-          iwhy=8
+          iwhy=10
           cwhy='Destination Capacity (divcap-divmon) is 0'
           goto 300
         endif 
@@ -842,7 +909,7 @@ cx        endif
 c
 c ---------------------------------------------------------
 c               
-c               b. Destination is a reservoir (Demand = Divalo)
+c       b. Destination is a reservoir (Demand = Divalo)
       if(ndtype.eq.2) then      
 c
 c rrb 2007/10/26; Rely on varaible ndtype      
@@ -885,13 +952,13 @@ c rrb 2006/11/29; Allow multiple destination accounts
         end do         
   
         if(cursa/fac.lt.small) then
-          iwhy=9
+          iwhy=11
           cwhy='Available Storage in accounts (cursa) is 0'
           goto 300
         endif 
 c
 c ---------------------------------------------------------
-c               Set Reservoir demand
+c       Set Reservoir demand
         divreq1=amin1(cursa,
      1                volmax(ndR)-cursto(ndR),
      1                tarmax(ndR)-cursto(ndR))/fac
@@ -908,13 +975,13 @@ c       DIVALO=divreq1
         divaloX=divalo
 c        
         if((volmax(ndR)-cursto(ndR))/fac.lt.small) then
-          iwhy=10
+          iwhy=12
           cwhy='Available Storage in reservoir (volmax-cursto) is 0'
           goto 300
         endif 
         
         if((tarmax(ndR)-cursto(ndR))/fac.lt.small) then
-          iwhy=11
+          iwhy=13
           cwhy='Available Target in reservoir (tarmax-cursto) is 0'
           goto 300
         endif 
@@ -955,7 +1022,7 @@ c ---------------------------------------------------------
 c rrb 2007/12/04; Add Loss to Demand for a Plan Destination                
 c       divreq1=big/fac     
 c rrb 2008/04/23; Limit the transfer for a T&C or Aug plan 
-c		  Types 1 or 2
+c	    Types 1 or 2
         if(iplnTyp(ndp).eq.1 .or. iplnTyp(ndp).eq.2) then
           divreq0=pdem(ndp)
           divreq1=divreq0/OprEffT        
@@ -970,7 +1037,7 @@ c		  Types 1 or 2
       endif  
 c
 c ---------------------------------------------------------
-c		d. Destination is an Instream Flow (Demand = Divalo)
+c	    d. Destination is an Instream Flow (Demand = Divalo)
 c
 c rrb 2008/03/21; Allow an ISF Destination
       if(ndtype.eq.1) then
@@ -1009,9 +1076,9 @@ cx      write(nlog,*) '  DivResP2;', ndI, flowrq(ndI)*fac
 c
 c _____________________________________________________________
 c
-c               Step 6; Destination is through a carrier
-c		         Adjust diversion location idcd but
-c			 not actual diversion location idcdX
+c     Step 6; Destination is through a carrier
+c		          Adjust diversion location idcd but
+c		          not actual diversion location idcdX
       if(intern(l2,1).gt.0) then
         ncar=intern(l2,1)
         idcd=IDVSTA(ncar)
@@ -1033,9 +1100,9 @@ c
 c
 c _________________________________________________________
 c
-c		Step 7. Exit if off      
+c	  Step 7. Exit if off
       if(ioff.gt.0) then
-        iwhy=12
+        iwhy=14
         write(Nlog,*) ' DivResP2; ioff = ', ioff
         cwhy='Plan or Div or Res is off'
         goto 300
@@ -1043,9 +1110,9 @@ c		Step 7. Exit if off
 c
 c _________________________________________________________
 c
-c               Step 8. Exit if no demand
+c     Step 8. Exit if no demand
       IF(divalo.LE.small) then
-        iwhy=13
+        iwhy=15
         cwhy='Demand or Capacity (divalo)=0'
         goto 300
       endif  
@@ -1054,7 +1121,7 @@ c _____________________________________________________________
 c
 c
 c rrb 2006/10/03; 
-c               Step 9; Limit based on OOP storage
+c     Step 9; Limit based on OOP storage
 c rrb 2009/06/09; Correction
       if(ipUse.gt.0) then
         if(iplntyp(ipUse).eq.9) then
@@ -1063,7 +1130,7 @@ c rrb 2009/06/09; Correction
           divalo=amin1(divalo, pstoX)
           
           if(pstoX.le.small) then
-            iwhy=14
+            iwhy=16
             cwhy='OOP Plan Demand (PstoX) = 0'
             goto 300
           endif
@@ -1094,7 +1161,7 @@ c			adjustment
      1    OprEff1, DivCap, DivMon, DivCarry, Divalo)
         
         if(divcarry.lt.small) then
-          iwhy=15
+          iwhy=17
           cwhy='Carrier capacity (Divcarry) = 0 '
           goto 300
         endif    
@@ -1106,8 +1173,6 @@ c           **  Step 11; Set diversion (DIVACT) and
 c               release (RELACT) to be the minimum of
 c               suppply (ALOCFS), demand (DIVALO))
 c	              and carrier limitations (DivCarry)
-
-
       if(ncarry.eq.0) then
         divact=amin1(alocfs, divalo)
       else
@@ -1155,7 +1220,7 @@ c rrb 20090830
         
         if(pavail.le.small) then
           divact=0.0
-          iwhy=16
+          iwhy=18
           cwhy='Available flow for a dep demand (pavail) = 0'
           goto 300
         endif        
@@ -1180,7 +1245,7 @@ cr
         endif
       
         if(divact.le.small) then
-          iwhy=17
+          iwhy=19
           cwhy='Demand (divalo) or Available Flow (alocfs) = 0'
           goto 300
         endif
@@ -1234,7 +1299,7 @@ cx      DivactL=divact*OprEffT
      1  divact*fac, DivactL*fac, oprefft 
      
       if(divact.le. small) then
-        iwhy=18
+        iwhy=20
         cwhy='Available flow without River Return (alocfs)= zero'
         goto 300
       endif  
@@ -1281,7 +1346,7 @@ cx        relact1=relact
 c       write(nlog,*) ' DivResP2_2; avail (190)', imcdR, avail(190)*fac
      
         if(divact.le. small) then
-          iwhy=19
+          iwhy=21
           cwhy='Available flow with Carrier (alocfsR) = zero'
           goto 300
         endif  
@@ -1298,10 +1363,22 @@ c     write(nlog,*) ' DivResp2;', iscd, avail(iscd)*fac, avail(1)*fac
             
 c     if(iout.eq.2)write(nlog,*) ' DivResp2; avail_1 ',avail(1684)*fac,
 c    1  ndns, iscd
-      
-      call TAKOUT(maxsta,avail,river,avinp,qtribu,idncod,
-     1  relact,ndns,iscd)
-c      if(iout.eq.2) write(nlog,*) ' DivResp2; avail_2 ',avail(1684)*fac     
+c
+c rrb 2014/11/24; Add a plan release to the original source downstream
+c
+      if(iout5.eq.1) then
+        write(nlog,*) ' '         
+        write(nlog,*) ' DivResp2_4; lopr5, ndns5, iscd5'
+        write(nlog,*) ' DivResp2_4; ', lopr5, ndns5, iscd5
+      endif     
+c      
+      if(lopr5.eq.0) then
+        call TAKOUT(maxsta,avail,river,avinp,qtribu,idncod,
+     1    relact,ndns,iscd)
+      else
+        call TAKOUT(maxsta,avail,river,avinp,qtribu,idncod,
+     1    relact,ndns5,iscd5)     
+      endif 
       
       if(iout.eq.1) then
         nchkA=90
@@ -1592,9 +1669,12 @@ c
         endif       
 c
 c rrb 2010/10/09; Track plan types 4, 6 & 11(diversion reuse)
-c         as return flow        
-        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
-     1     iplntyp(nsP).eq.11) then  
+c         as return flow 
+c 
+c rrb 2014/11/24; Revise the treatment of a plan release for a type 11      
+cx      if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
+cx   1     iplntyp(nsP).eq.11) then  
+        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6) then    
 c
 c rrb 2010/10/15; Revise when operating in depletion mode
 c                 divact .ne. relact So at the source
@@ -1602,7 +1682,25 @@ c                 the return is - relact
 cx        qdiv(36,iscd)=qdiv(36,iscd) + divact
           qdiv(36,iscd)=qdiv(36,iscd) - relact          
           qdiv36=qdiv(36,iscd)
-         endif          
+        endif      
+c
+c rrb 2014/11/24; Revise to release at the source water right location
+c                 when ioprlim(l2)=5 
+c                 qdiv(37  Water released to the river (reported as
+c                          a release that is subtracted from
+c                          RivDiv in outmon.f
+c 
+c rrb 2015/01/16; Revised approach for a diversion to an admin plan               
+cx         if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then
+cx           qdiv(37,iscd5)=qdiv(37,iscd5) - relact
+cx         endif 
+c          
+         if(iout5.eq.1) then
+           write(nlog,*) ' '            
+           write(nlog,*) ' DivResp2_5; lopr5, iscd5, relact, qdiv(37'
+           write(nlog,*) ' DivResp2_5; ', lopr5, iscd5, relact*fac, 
+     1                   qdiv(37,iscd5)*fac
+         endif               
       endif
 c      
 c ---------------------------------------------------------
@@ -1634,10 +1732,12 @@ c _________________________________________________________
 c               
 c               Step 21;  Update shortage switch (ishort)
 c
-c rrb 2014-07-13; Revise exit point when no diversion is occurring
-
-cx300 if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
-      if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1  
+c jhb 2014/07/13 move 300 down to step 28
+c                some indices were unset (=-1) and cause array
+c                bounds issues
+c  300 if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
+      if(ndtype.eq.3 .and. divact+small .lt. divalo) ishort=1
+  
 c
 c rrb 2007/10/29; Set ishort for a quick exit. Reset initilized
 c		  divact to 0 from -1
@@ -1671,7 +1771,7 @@ c               Step 24; Update Qdiv for Source and Destination
 
       EffmaxT1=(100.0-OprLossC(l2,1))/100.0
       
-      qdiv31a=qdiv(31,idcdX)      
+      qdiv31a=qdiv(31,idcdX)
       call setQdiv(nlog,  nCarry, nRiver,
      1  ndD, ndR, iscd,   idcdX, idcdC,
      1  divact, TranLoss, EffmaxT1, OprEffT, fac, 
@@ -1683,7 +1783,6 @@ c                 it is a reservoir
 cx      qdiv31a=qdiv(31,idcdX)      
 cx      if(ndtype.eq.2) qdiv(31,idcdX)=0.0
       qdiv31b=qdiv(31,idcdX)
-     
       if(iout.eq.1) then
         write(nlog,*) '  DivResP2; Call SetQdiv qdiv31b', qdiv31b*fac
         call flush(nlog)
@@ -1721,17 +1820,39 @@ c                 not a carrier loss) at the destination
           qdiv(32,idcdX) = qdiv(32,idcdX) + divact*effmaxT1*TranLoss
         endif
       endif
-        
-      
-      
+c
 cx      qdiv36b=qdiv(36,iscd)                                                
 cx      write(nlog,*) ' DivResP2; nd, iuse qdiv36 qdive6a, qdiv36b'         
 cx      write(nlog,*) ' DivResP2;', nd, iuse, qdiv36*fac, qdiv36a*fac,
 cx     1   qdiv36b*fac              
 c _________________________________________________________
 c
+c *************************************
+c
+c rrb 2014/11/24
+c     Step 26a; Adjust the amount diverted (divmon) based on 
+c               the amount released which is how
+c               a diversion is limited by capacity 
+c		   
+      if(lopr5.gt.0) then
+        divcap1=divcap(nd5) - divmon(nd5)
+        divmon(nd5) = amax1(divmon(nd5) + divact,0.0)
+        divcap2=divcap(nd5) - divmon(nd5)   
+c
+        if(iout5.eq.1) then
+          write(nlog,*) ' '           
+          write(nlog,*) 
+     1     ' DivResP2_6; lopr  nd5 divcap1  divact divcap2'
+          write(nlog,'(1x,a12,2i5, 20f8.0)')
+     1     ' DivResP2_6;', lopr5, nd5,
+     1                   divcap1*fac, divact*fac, divcap2*fac 
+        endif       
+      endif
+        
+c
+c _________________________________________________________
 c rrb 2007/07/03; 
-c               Step 26; Update monthly or annual plan limitations
+c               Step 26b; Update monthly or annual plan limitations
       if(iout.eq.1) write(nlog,*) ' DivResP2; ', iopsou(5,l2)
 c
 c rrb 2009/01/15; Revise to recognize ioprlim(l2)=3      
@@ -1791,11 +1912,8 @@ c
 c               Step 28; Detailed output at Exit
 c
 c rrb 2009/05/12; Reduce output for a daily model
-cx    if((iout.eq.1 .or. iout.eq.2) .and. iw.eq.ioutiw) then  
-c
-c rrb 2014-07-13; Revise exit point when monthly switch, etc 
-c                 cause no diversion to occurr
- 300  continue     
+cx    if((iout.eq.1 .or. iout.eq.2) .and. iw.eq.ioutiw) then       
+ 300  continue
       iprint=1
       if(iday.eq.1 .and. divact.lt.small) iprint=0
       

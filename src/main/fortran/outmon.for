@@ -60,9 +60,13 @@ c               qdiv(16  Used to remove carrier water from
 c			                   total diversion (qdiv(5))
 c               qdiv(17  Not used
 c               qdiv(18  Carried, Exchange or Bypass (column 11)
-c                        Carrier passing thru a structure (e.g. divcar)
+c                        Carrier passing thru a structure.  Note
+c                        qdiv(18 is not added to TotSup1 that is used
+c                        to calculate River Divert
 c               qdiv(19  From Carrier by Priority (e.g. divcar)
-c               qdiv(20  From Carrier by Storage or Exchange (e.g. carrpl)
+c               qdiv(20  From Carrier by Storage or Exchange.  Note:
+c                        qdiv(20 gets added to TotSup1 that is used
+c                        to calculate River Divert
 c               qdiv(21  From River by Exchange from a reservoir (e.g.
 c		                     carrpl)
 c               qdiv(22  From Storage to Carrier for Use 
@@ -73,7 +77,8 @@ c               qdiv(25  Depletion at river ID
 c               qdiv(26  From River by a Direct Flow, Exchange, or 
 c                        Bypass (see DirectEx and DirectBY)
 c                        or Carrier with loss (DirectL) or an alternate 
-c                        point (DivAlt)
+c                        point (DivAlt) or by a changed water right 
+c                        (Directwr)
 c               qdiv(27  Other source via a Direct Flow Exchange
 c                        or Bypass (see DirectEx and DirectBY)
 c		            qdiv(28  Carried, Exchange or Bypass (column 11)
@@ -93,11 +98,19 @@ c		            qdiv(34  From River by an Out of Priority Diversion
 c              
 c 		          qdiv(35  Water with a Reuse or Admin plan source 
 c		            	         tracked at the destination from the following:
-c			                     27-DivResP2, 28-DivrplP, 29-PowSeaP,
-c			                     46- divMultip, 48-PowResP, 49-DivRplP2
+c                          Operating rules: 26-DirectWR,
+c			                     27-DivResP2,     28-DivrplP, 29-PowSeaP,
+c			                     46-divMultip,    48-PowResP, 49-DivRplP2
 c              
 c		            qdiv(36  Water released to the river (report as
-c			                     return flow). Set in SetQdivC & DivResp2              
+c			                     return flow). Set in SetQdivC, DivResp2 &
+c                          PowseaP      
+c               qdiv(37  Not currently used.  Was used to represent
+c                          Water released to the river by a spill in 
+c                          PowseaP (type 29) Report as a negative  
+c                          diversion herein (OutMon) under Rivdiv   
+c               qdiv(38  Carried water not used in any calculations
+c                          used to report River Divert      
 c
 c		            ClossDC From Carrier Loss
 c		            ClossDR From River Loss
@@ -182,13 +195,13 @@ c	     iout=3 details on *.b43
 c      iout=4 print warning for multiple structures at a node
 c	     iout=5 print details about variable carry
 c      iout=6 print data to *.b43 to *.log
+c      ioutQ  print details of River Divert and qdiv calcs
 c	     ioutRtn = 1 Print return flow details by node & month
 c		             2 Print return flow details by month 
-c      ioutQ=1 = Print qdiv data
 c
       iout=0
-      ioutQ=0
       ioutRtn=0
+      ioutQ=0
    
       
       if(iout.eq.2) then
@@ -473,10 +486,6 @@ c
 c
 c rrb 2008/02/02; Adjust returns (Ret)for Return to River by a
 c         plan types 4 & 6 Reuse from a diversion & tmtn diversion
-c rrb 2014-05-05
-cx        write(nlog,*) ' '
-cx        write(nlog,*) ' Outmon; is, qdiv(36,is)*fac'
-cx        write(nlog,*) ' Outmon;', is, qdiv(36,is)*fac
         RET(IS)=Ret(is) + qdiv(36,is)
 c
 c rrb 01/05/95; I/O Addition Constrained shortage
@@ -539,18 +548,6 @@ cr  1   qdiv(26,179)*fac,qdiv(29,179)*fac, qdiv(30,179)*fac
 c
 c _________________________________________________________
 c               Step 12; Print data by Stream
-
-c rrb 2014-06-16; TEST
-c               
-c               Step 3 - Check Qdiv array
-cx 
-cx        write(nlog,*) ' '
-cx        write(nlog,*) ' OutMon; Qdiv report'
-cx        write(nlog,'(4x, 39i8)') (j, j=1,39)
-cx        do i=1, numsta
-cx          write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
-cx        end do
-
 c
       DO 290 IS=1,NUMSTA
       
@@ -565,6 +562,18 @@ c rrb 01/10/95; Additional Output
 c              Subtract qdiv(16,is) to remove carrier water totaled
 c                in qdiv(5,is)       
         RivPri  = qdiv(8,is)  + qdiv(14,is) + qdiv(5,is) - qdiv(16,is) 
+c
+c rrb 2015/01/16; Test
+c ______________________________________________________________
+        if(ioutQ.eq.1) then
+          write(nlog,*) ' '
+          write(nlog,*) 'Outmon;   is',
+     1      '    RivPri =  qdiv(8 + qdiv(14  + qdiv(5 - qdiv(16'
+         
+          write(nlog,'(a8, i5, 20f10.0)')
+     1    ' Outmon;', is, RivPri*fac, qdiv(8,is)*fac, qdiv(14,is)*fac, 
+     1     qdiv(5,is)*fac, qdiv(16,is)*fac
+        endif  
 c
 c rrb 01/12/07; Use Abs to get correct output from carrpl 
         RivSto  = amax1(0.0, 
@@ -608,7 +617,7 @@ c
 c rrb 2010/10/9; Revised approach to Plan Accounting 
 cx        Carried  = qdiv(18,is) + qdiv(27,is) + qdiv(28,is) 
 cx        CarriedX = qdiv(18,is)               + qdiv(28,is)
-        Carried  = qdiv(18,is) + qdiv(27,is)    
+        Carried  = qdiv(18,is) + qdiv(27,is) 
         CarriedX = qdiv(18,is)               
 c
 cx	if(carried.gt.0.001) then
@@ -616,10 +625,27 @@ cx          write(nlog,*) '  Outmon; is, carried', is, carried*fac
 cx          write(nlog,*) '  Outmon; 18,27,28', qdiv(18,is)*fac,
 cx     1      qdiv(27,is)*fac, qdiv(28,is)*fac
 cx        endif  
-c
+         
         TotSup1  = RivPri + RivSto + RivExPl + CarPri + well + CarStoEx
      1           + qfrsoil(is)-CarriedX - ClossDC - ClossDR 
 c
+c rrb 2015/01/16; Test
+c ______________________________________________________________
+        if(ioutQ.eq.1) then
+          write(nlog,*) ' '
+          write(nlog,*) 'Outmon;   is',
+     1      '   Totsup1 =  RivPri  + RivSto + RivExPl  + CarPri',
+     1      '    + well +CarStoEx  +qfrsoil -CarriedX - ClossDC',
+     1      ' - ClossDR'
+          
+          write(nlog,'(a8, i5, 20f10.0)')
+     1    ' Outmon;', is, Totsup1*fac, RivPri*fac,
+     1       RivSto*fac, RivExPl*fac, CarPri*fac, well*fac,
+     1       CarStoEx*fac, qfrsoil(is)*fac, 
+     1       CarriedX*fac, ClossDC*fac, ClossDR*fac        
+        endif
+c ______________________________________________________________
+ 
                  
         TotSup1  = amax1(0.0, TotSup1)        
         TotSup(is)=TotSup1-qfrsoil(is)
@@ -709,11 +735,40 @@ c rrb; 98/12/14; Wells
         RivDiv = TotSup1 - CarryY - well + ClossDR - qfrsoil(is) 
         RivDiv=amax1(RivDiv, 0.0)
 c
+c rrb 2015/01/16; Test
+c ______________________________________________________________
+        if(ioutQ.eq.1) then
+          write(nlog,*) 'Outmon;   is',
+     1      '    RivDiv = TotSup1  - CarryY    - well + ClossDR ',
+     1      ' - qfrsoil(is'
+         
+          write(nlog,'(a8, i5, 20f10.0)')
+     1      ' Outmon;', is, RivDiv*fac, TotSup1*fac, CarryY*fac,
+     1       well*fac, ClossDR*fac, qfrsoil(is)*fac
+        endif
+
+c ______________________________________________________________
+        
+c
+c rrb 2014/11/24; Adjust the diversion to remove a plan release qdiv(37
+c                 qdiv(37  Water released to the river by a spill in 
+c                          PowseaP (type 29)
+c rrb 2015/01/16; Do not adjust for qdiv(37 since diversions to
+c                 admin plans are not used in calculating
+c                 River Divert  
+cx        RivDiv1=RivDiv
+cx        RivDiv=Rivdiv-qdiv(37,is) 
+c
+c rrb 2015/01/16; Adjust the amount carried to include water diverted
+c                 to an Admin Plan by a type 26 rule after
+c                 River Divert has been calculated
+        Carried=Carried+qdiv(38,is)         
+c
 c _________________________________________________________
 c
 c		Step 14; Reservoir ID (if it exists)
 c rrb 01/15/95; Re calculate River Divert (RivDiv) if a reservoir
-c		made a release at this location
+c		            made a release at this location
 c               Store resid even for diversion printout
         do 252 nr=1,numres
           if(irssta(nr).eq.is) then
@@ -785,16 +840,11 @@ c 		Identify if a Plan plus a gage
 c
 c 		Adjust diversion to include spill from a plan (a negative value)
             RivDiv = RivIn - ofl(is) - RivWel
-c
-c rrb 2014-06-16 Identify why diversion to a plan is not shown as
-c                a river diversion
-            if(ioutQ.eq.1) then
-              write(nlog,*) 
-     1          'Outmon; np, is, cstaid(is), RivDiv, Rivin, ofl' 
-              write(nlog,*) 
-     1          'Outmon;', np, is, cstaid(is), RivDiv*fac, Rivin*fac,
-     1                        ofl(is)*fac      
-            endif
+cx             write(nlog,*) 
+cx     1        'Outmon; np, is, cstaid(is), RivDiv, Rivin, ofl' 
+cx             write(nlog,*) 
+cx     1        'Outmon;', np, is, cstaid(is), RivDiv*fac, Rivin*fac,
+cx     1                      ofl(is)*fac      
           endif
         end do  
 c
