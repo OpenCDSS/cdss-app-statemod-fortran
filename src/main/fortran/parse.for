@@ -143,7 +143,7 @@ c
 c               Step 3; Find control file name
 c                       (command is packed to left)
 c
-c rrb 2008/09/16; Allow operation without a control file namd
+c rrb 2008/09/16; Allow operation without a control file name
         if(command(1:1) .ne. '-') then
           filenc = ' '
           do i=1,maxcl

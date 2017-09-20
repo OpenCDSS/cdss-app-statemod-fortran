@@ -16,10 +16,10 @@ c _________________________________________________________
 c
 c               Update history
 c
-c	    2006/03/20 Revised to turn off variable efficiency
-c		       and include soil moisture in water use
-c		       depletion calculations
-c		       Added more detailed output
+c	          2006/03/20 Revised to turn off variable efficiency
+c		          and include soil moisture in water use
+c		          depletion calculations
+c		          Added more detailed output
 c           96/02/27 by R. Bethel so that if you want depletion 
 c             only release, code second source account as negative
 c             on Type 2 water right
