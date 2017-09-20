@@ -278,6 +278,7 @@ c		            iout=1  details
 c		            iout=2  summary output
 c		            iout=3  details on nRiver Adjustments
 c               iout=4  details on iteration limitation
+c               iout=5  details on divo(l2)
 c		            iout=99 summary independent of corid
 c               ioutIR  details on instream flow reach
 c
@@ -300,6 +301,8 @@ c
       noprS=0
       corid1=corid(l2)
       
+      monout=11   
+            
       if(iout.eq.1) write(nlog,*) '  DivResP2'
             
       if(ichk.eq.127) iout=2
@@ -1880,7 +1883,17 @@ c
 c               Step 23; Update operating rule output (DIVO)
 c		Note relact is the water released (a negative value)
 cx      divo(l2)=divo(l2)+divact
-      divo(l2)=divo(l2)-relact
+c
+c rrb 2015/09/06; TEST to keep small numbers from accumulating
+      if(divact.gt.small) then
+        divo(l2)=divo(l2)-relact
+      endif
+c
+c rrb 2015/09/06; Detailed output      
+      if(iout.eq.5 .and. mon.eq.monout .and. l2.eq.18) then
+        write(nlog,*) '  DivResP2; l2', l2, iyrmo(mon), corid1, 
+     1    xmonam(mon), divact*fac, divo(l2)*fac
+      endif
       
 c
 c _________________________________________________________

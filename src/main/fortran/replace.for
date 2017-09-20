@@ -101,6 +101,7 @@ c
 c _________________________________________________________
 c               Step 1;Initilize
 c
+c     iout=3 details for replacement results
       iout=0
       ioutiw=0
 
@@ -111,10 +112,13 @@ c
 cx      cDest1='510585      '
 cx      monout=1
       cDest1='500734      '
-      monout=12
+      monout=11
 c
 c rrb 2008/03/13; Initilize
-      divactx=0.0      
+      divactx=0.0     
+c
+c rrb 2015/09/06; Initilize
+      divacty=0.0 
 c
 c ---------------------------------------------------------
 c		Note:
@@ -252,10 +256,11 @@ c
 c _________________________________________________________
 c               Step X; Detailed printout
 c       if(iout.eq.1) then
-        if(iout.eq.3 .and. cDest.eq.cDest1 .and. mon.eq.monout) then      
+cx      if(iout.eq.3 .and. cDest.eq.cDest1 .and. mon.eq.monout) then    
+        if(iout.eq.3 .and. mon.eq.monout) then            
           write(nlog,122) cDest, cDest1, cSour,
      1    iyrmo(mon), xmonam(mon), n, n1, irepn, lr, nd, ioprsw(lr), 
-     1    ioBeg(lr), ioEnd(lr), ishort
+     1    ioBeg(lr), ioEnd(lr), ishort, 18, divo(18)*fac
         endif
         
 c
@@ -300,11 +305,17 @@ c    1       divactx,divacty,ncall(2))
            call divresP2(iw,lr,ishort,n,tranlim,dcrdivx,divdx,
      1       divactx,divacty,ncall(2))
      
-          if(iout.eq.3 .and. cDest.eq.cDest1 .and. mon.eq.monout) 
-     1      write(nlog,*) ' Replace; Direct Release for cdest, Res # ',
-     1       ' ishort ', cdest, n, ishort
-          
-          if(divacty*fac.gt.0.001) then
+cx         if(iout.eq.3 .and. cDest.eq.cDest1 .and.mon.eq.monout) then
+           if(iout.eq.3 .and. mon.eq.monout)  then
+cx            .and. divactx.gt.small) then        
+             write(nlog,*) ' Replace; Direct Release for cdest, Res # ',
+     1       ' ishort ', cdest, n, ishort, divactx*fac, divacty*fac,
+     1       18, divo(18)*fac
+           endif
+c
+c rrb 2015/09/06; Correction          
+cx        if(divacty*fac.gt.0.001) then
+          if(divactX.gt.small) then          
             reltot=reltot+divactx*fac
             divtot=divtot+divacty*fac
             divd(l2) = divd(l2)+divacty
@@ -335,13 +346,19 @@ cx        endif
           creptyp = 'Exchange'
           cDest=cdivid(nd)
           
-          if(iout.eq.3 .and. cDest.eq.cDest1 .and. mon.eq.monout) 
-     1      write(nlog,*) ' Replace; Exchange for cdest, Res # ', 
-     1      cdest, n
+cx        if(iout.eq.3 .and. cDest.eq.cDest1 .and. mon.eq.monout) then
+          if(iout.eq.3 .and. mon.eq.monout) then
+cx           .and. divactx.gt.small) then           
+            write(nlog,*) ' Replace; Exchange for cdest, Res # ', 
+     1      cdest, n, divactx*fac, divacty*fac, 18, divo(18)*fac
+          endif
 c
 c		Note divactx is the amount released
-c		     divacty is the amount diverted          
-          if(divacty*fac.gt.0.001) then
+c		     divacty is the amount diverted  
+c
+c rrb 2015/09/06; Correction                  
+cx        if(divacty*fac.gt.0.001) then
+          if(divactX.gt.small) then           
             reltot=reltot+divactx*fac
             divtot=divtot+divacty*fac
             divd(l2) = divd(l2)+divacty
@@ -388,8 +405,7 @@ c
 c _________________________________________________________
 c		Step 14; Detailed output to Detailed Replacement
 c		         Reservoir Output (File 51) 
-c
-        if(divactX.gt.small) then  
+      if(divactX.gt.small) then  
           if(ncall(10).eq.0) then
             write(51,282) 
             if(iout.eq.2 .or. iout.eq.99) write(nlog,280)
@@ -408,7 +424,7 @@ c
 c _________________________________________________________
 c		Step 15; Detailed output to Log File
 c
-c       if(iout.eq.2 .or. iout.eq.99) then      
+c     if(iout.eq.2 .or. iout.eq.99) then      
       if((iout.ge.1 .and. iw.eq.ioutiw) .or. iout.eq.99) then      
 cx      if(iout.eq.1 .and. cDest.eq.cDest1 .and. mon.eq.monout) then      
         
@@ -451,8 +467,10 @@ c _________________________________________________________
 c		Step 17; Exit if not short
 c
         if(ishort.eq.0) then
-          if(iout.eq.3 .and. cDest.eq.cDest1 .and. mon.eq.monout) then      
-            write(nlog,*) '  Replace; ishort = ', Ishort
+cx        if(iout.eq.3 .and. cDest.eq.cDest1 .and. mon.eq.monout) then    
+          if(iout.eq.3 .and. mon.eq.monout) then              
+            write(nlog,*) '  Replace; ishort = ', Ishort,
+     1       divactx*fac, divacty*fac, 18, divo(18)*fac
           endif
           goto 110
         endif  
@@ -484,8 +502,8 @@ c               Formats
      1 '  Replace_1; cDest       cDest1       cSour      ',
      1 '     iyr     mon       n      n1   irepn      lr',
      1 '      nd  ioprsw   ioBeg   ioEnd',
-     1 '  ishort',/
-     1 '  Replace_1; ', a12,a12,a12, i8, 4x, a4, 20i8)
+     1 '  ishort      18 divo(18)',/
+     1 '  Replace_1; ', a12,a12,a12, i8, 4x, a4, 10i8, 20f10.4)
 
   124   format(/,
      1 '  Replace_2;    # Dest ID      Source ID        iyr     mon',

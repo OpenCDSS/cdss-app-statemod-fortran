@@ -119,12 +119,14 @@ c		ioutR= details on call replacement
 c   ioutSP=details on South Platte Compact
 c		ioutSep=details on call sepsec (seepage)
 c   ioutGVC = details on Grand Valley Check
+c   ioutRep = details on replacement rule
       iout=0
       ioutR=0   
       ioutSP=0
       ioutSep=0
       ioutGVC=0
       noutGVC=0
+      ioutRep=0
 c jhb 2014/07/04 debugging
 c      ichk = 94
 
@@ -1076,11 +1078,23 @@ c           ireptyp =  0 off
 c                   =  1 100% replacement
 c                   = -1 depletion replacement
 	        if(ireptyp(nd).ne.0 .and. rdvnk(l2).le.reprnkx) then
-c             write(nlogx,*) '  Execut; calling replace'
-              call replace(iw,l2,nrepcall,divactx, ncall)
-	            nrepcall=nrepcall+1
-	            nrepcalt=nrepcalt+1
-c             write(nlog,*) ' Called by replace ', l1, l2
+c
+c rrb 2015/09/06; Test
+            if(ioutRep.eq.1) then
+              write(nlog,*) ' '
+              write(nlog,*) '  Execut; before replace',divo(18)*fac
+            endif
+c            
+            call replace(iw,l2,nrepcall,divactx, ncall)
+c
+c rrb 2015/09/06; Test
+            if(ioutRep.eq.1) then
+              write(nlog,*) '  Execut; after replace',divo(18)*fac
+            endif 
+c            
+	          nrepcall=nrepcall+1
+	          nrepcalt=nrepcalt+1
+c           write(nlog,*) ' Called by replace ', l1, l2
 	          goto 400
 	        endif
 	      endif
@@ -1224,10 +1238,10 @@ c                 Type 6 operating rule)
 c
 c rrb 2015/07/30; Add detailed output
       if(ichk.eq.94 .or. ichk.eq.4) then  
-            rec12b='Opr Rule    '
-            call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2),
-     1                   ishort, fac, uDem, divact2, divx, divsum,
-     1                   4, divact2, rec12b) 
+        rec12b='Opr Rule    '
+        call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2),
+     1               ishort, fac, uDem, divact2, divx, divsum,
+     1               4, divact2, rec12b) 
       endif       
         
 	    goto 410
@@ -1865,6 +1879,7 @@ c rrb 2011/04/25; Limit output for ichk=4
         call outIchk(14, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac,
      1               uDem, divact2, divx, divsum,
      1               0, iwx, rec12b)
+        write(nlog,*) 'Execut Type 5; 18, divo(18)', 18, divo(18)*fac
       endif
 c_______________________________________________________________________
 c rrb 04/22/96; 

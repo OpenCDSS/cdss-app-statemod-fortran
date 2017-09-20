@@ -21,25 +21,32 @@ c		  specified in another operating rule = iopsou(5,k)
 c _________________________________________________________
 c	Documentation
 c
-c	iopsou(1,l2)    source reservoir pointer
-c	iopsou(2,l2)    source reservoir account pointer
+c	       iopsou(1,l2)   Source reservoir pointer
+c	       iopsou(2,l2)   Source reservoir account pointer
+c        
+c	       iopsou(3,l2)	  Source 2 pointer. Based on iopsou(4,l2
+c	       		              Diversion pointer that limits bookover
+c	       		              Operating rule pointer that limits bookover
+c	       		              Plan pointer that limits the bookover
+c	       iopsou(4,l2)   Source 2 (iopsou(3,l2) type indicator
+c	       		            = 3 diversion
+c	       		            = 7 plan
+c	       		            = 14 operating rule
+
+c        iopsou(5,l2)   Operating rule with monthly and annual 
+c	       		              diverison limit data
 c
-c	iopsou(3,l2)	Source 2 pointer. Based on iopsou(4,l2
-c			Diversion pointer that limits bookover
-c			Operating rule pointer that limits bookover
-c			Plan pointer that limits the bookover
-c	iopsou(4,l2)    Source 2 (iopsou(3,l2) type indicator
-c			3=diversion
-c			7=plan
-c			14=operating rule
-c       iopsou(5,l2)    Operating rule with monthly and annual 
-c			diverison limit data
+c	       iopdes(1,l2)  destination reservoir pointer
+c	       iopdes(2,l2)  destination reservoir account pointer
 c
-c	iopdes(1,l2)    destination reservoir pointer
-c	iopdes(2,l2)    destination reservoir account pointer
+c        iresT1	        Type of account distribution in Accou
+c			                  = 0 Ownership Ratio 
+c                       = 1 Available Space 
+c                       = -1 One Account  
+
 c
 c       qres(29,nr)     Amount diverted within the same reservoir
-c		        used in Outbal2 for for basin balance
+c		                      used in Outbal2 for for basin balance
 c
 c _________________________________________________________
 c	Dimensions
@@ -183,14 +190,23 @@ c ---------------------------------------------------------
 c rrb 2006/09/25; Allow multiple destination accounts - Initilize
 cr    IDOW=NOWNER(ND)+IOPDES(2,L2)-1
       nro=1
+      
       if(iopdes(2,l2).lt.0) then
         nro=-iopdes(2,l2)
         idow=nowner(nd)
+c
+c rrb 2015/09/11; Correction set IresT1 based on 
+c                 number of accounts
+        iresT1=0        
       endif
 
       if(iopdes(2,l2).gt.0) then
         nro=1
         idow=nowner(nd)+iopdes(2,l2)-1
+c
+c rrb 2015/09/11; Correction set IresT1 based on 
+c                 number of accounts
+        iresT1=-1        
       endif
       
 c
@@ -445,7 +461,10 @@ cr    accr(4,idow)  = accr(4,idow)+divaf
 
       CURSTO(ND)=CURSTO(ND)+DIVAF      
       nrX=nd
-      iResT1=0
+c
+c rrb 2015/09/11; Correction set IresT1 above based on 
+c                 number of accounts     
+cx    iResT1=0
       nrown1=nro
       iownX=idow
       icx=134

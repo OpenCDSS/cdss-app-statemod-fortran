@@ -192,8 +192,9 @@ c				 7 includes new binary output format
 c		     yy has new functionality
 c		     zz is a bug fix
 c		
-        ver='14.02.23'
-        vdate = '2015/08/23'
+        ver='14.02.25'
+        vdate = '2015/09/11'
+c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -607,6 +608,19 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2015/09/11 (14.02.25)',/
+     1 '      Revised RsrSpu (type 6) and RsrSpuP (type 34) to ',/
+     1 '        correct variable IresT1 that is used by subroutine',/
+     1 '        Accou and was wrong when water is being distributed',/
+     1 '        to only 1 account'
+     1 '      Revised RsrSpu (type 6) to correct a problem that ',/
+     1 '        did not allow the logic that limits reoperaton once',/
+     1 '        per iteration to work properly',/    
+     1 '    - 2015/09/06 (14.02.24)',/
+     1 '      Revised DivResp2 (type 27) and DivRplP (type 28) to ',/
+     1 '        correct a roundoff issue that caused an inconsistency',/
+     1 '        associated with the Replacement rule (type 10)',/
+     1 '        reporting between the *.xop, *.xre & *.xrp reports',/     
      1 '    - 2015/08/23 (14.02.23)',/
      1 '      Revised DivResp2 (type 27) to correct a problem ',/
      1 '        associated with porting the routine to the',/
