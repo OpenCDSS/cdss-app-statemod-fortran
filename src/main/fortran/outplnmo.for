@@ -206,6 +206,22 @@ cx
 cx            write(nlog,*) '  OutPlnMo; setting psuplyT for type 12', 
 cx     1        np, psuplyT(np)*fac
           endif
+c
+c ---------------------------------------------------------
+c rrb 2015/03/07; Allow a Changed Water Right Plan (type 13)
+c		Type 13 Changed Water Right Plan
+          if(iplntyp(np).eq.13) then
+            ifound=1
+            iox=1
+c
+c rrb 2008/01/14; Qdiv(28 is from a reuse or admin plan            
+cx          dat2(1) = qdiv(28,is)
+            dat2(1) = psuplyT(np)
+            if(ioutP.eq.13) then
+              write(nlog,*) ' OutPlnMo_X; ', 
+     1         np, pid(np), psuplyT(np)*fac
+            endif
+         endif          
         
 c
 c ---------------------------------------------------------
@@ -275,12 +291,13 @@ c
 c --------------------------------------------------------
 c
 c		Use operating rules 
-c		Note associated with plan Types 3-7 and 11
+c		Note associated with plan Types 3-7, 11 and 13
           if(kU.gt.0 .and. kP.eq.0) then
             iox=iox+1
             iox=amin0(iox,mTot-1)                        
             dat2(iox) = dat2(iox) + divo(kU)
             dat2(mTot)  = dat2(mTot)    + divo(kU)
+c
             if(ioutP.eq.11 .and. iplntyp(np).eq.11) then
              write(nlog,*) ' '
              write(nlog,*) ' OutplnMo_1; Use; np, iox, KU, divo(ku)*fac'
@@ -424,10 +441,12 @@ c rrb 2006/06/07; Add OOP plans
 c
 c --------------------------------------------------------
 c		d. Non Reservoirs
-c        
+c 
+c rrb 2015/03/07; Allow a Changed Water Right Plan (type 13)
+cx   1     iplntyp(np).eq.12) then          
         if(iplntyp(np).eq.4 .or. iplntyp(np).eq.6 .or.
      1     iplntyp(np).eq.7 .or. iplntyp(np).eq.11.or.
-     1     iplntyp(np).eq.12) then      
+     1     iplntyp(np).eq.12.or. iplntyp(np).eq.13) then      
         
           write(68,rec=irec) pid(np), cstaid(is),
      1      iyrmo(mon), xmonam(mon), (dat2(i),i=1,maxresPX),

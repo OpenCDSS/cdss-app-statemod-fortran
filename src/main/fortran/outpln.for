@@ -300,9 +300,12 @@ c		c. Reservoir Plans
 c
 c ---------------------------------------------------------
 c
-c		d. Non reservoir and Accounting plans            
+c		d. Non reservoir and Accounting and Changed Water Right plans
+c
+c rrb 2015/03/07; Allow a Changed Water Right Plan (type 13)   
+cx   1         iplntyp(np).eq.11) then         
             if(iplntyp(np).eq.4  .or. iplntyp(np).eq.6 .or. 
-     1         iplntyp(np).eq.11) then
+     1         iplntyp(np).eq.11 .or. iplntyp(np).eq.13) then
               write(21,232) ' Supply', 'Total', (i, i=1,maxResPX)
             endif    
 c
@@ -385,9 +388,12 @@ c
 c ---------------------------------------------------------
 c
 c		d. Non reservoir and Transmountain
+c
+c rrb 2015/03/07; Allow a Changed Water Right Plan (type 13)   
+cx   1          iplntyp(np).eq.12) then 
              if(iplntyp(np).eq.4 .or. iplntyp(np).eq.6 .or.
      1          iplntyp(np).eq.7 .or. iplntyp(np).eq.11.or.
-     1          iplntyp(np).eq.12) then           
+     1          iplntyp(np).eq.12.or. iplntyp(np).eq.13) then           
                read(68,rec=irec1) pid(np), cstaid(is),
      1           iyrmo(im), xmonam(im), (dat2(i), i=1,maxResP), 
      1           psto1X, psto2X, pfail(np) 
@@ -507,9 +513,12 @@ c		c. Reservoir Output
 c
 c ---------------------------------------------------------
 c		d. Non Reservoir Output        
+c
+c rrb 2015/03/07; Allow a Changed Water Right Plan (type 13)   
+cx   1          iplntyp(np).eq.12) then 
               if(iplntyp(np).eq. 4 .or. iplntyp(np).eq.6 .or.
      1           iplntyp(np).eq. 7 .or. iplntyp(np).eq.11.or.
-     1           iplntyp(np).eq.12) then      
+     1           iplntyp(np).eq.12 .or. iplntyp(np).eq.13) then      
      
                 if(isigfig.eq.0) then
                   write(21,242) pid(np), cstaid(is),
@@ -628,10 +637,13 @@ c		c. Reservoirs
             endif
 c
 c ---------------------------------------------------------
-c		d. Non Reservoirs        
+c		d. Non Reservoirs     
+c
+c rrb 2015/03/07; Allow a Changed Water Right Plan (type 13) 
+cx   1          iplntyp(np).eq.12) then     
             if(iplntyp(np).eq. 4 .or. iplntyp(np).eq.6 .or.
      1         iplntyp(np).eq. 7 .or. iplntyp(np).eq.11.or.
-     1         iplntyp(np).eq.12) then      
+     1         iplntyp(np).eq.12 .or. iplntyp(np).eq.13) then      
 c
 c		For a Release limit Plan (type 12)
 c		Set annual total to beginning of year value      

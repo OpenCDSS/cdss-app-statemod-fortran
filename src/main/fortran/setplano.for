@@ -140,7 +140,10 @@ c
 c
 c ---------------------------------------------------------
 c rrb 2008/01/02; Set Use when Source 1 is an Accounting Plan (11)
-          if(iP1.eq.11) then  
+c                 or Changed Water Right Plan (13)
+c rrb 2015/03/07; Allow a Changed Water Right Plan (type 13)
+cx        if(iP1.eq.11) then  
+          if(iP1.eq.11 .or. iP1.eq.13) then
           if(iout.eq.1) write(nlog,*) '  SetPlanO', ip1, np, pid(np)
             if(ityopr(k).ne.46) then
               if(ciopsoX(1,k).eq.Pid(np)) then

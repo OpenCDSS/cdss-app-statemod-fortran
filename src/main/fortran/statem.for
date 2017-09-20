@@ -189,10 +189,10 @@ c				10 includes plans
 c				 9 inlcudes wells
 c				 8 includes daily capability
 c				 7 includes new binary output format			
-c		yy has new functionality
-c		zz is a bug fix
+c		     yy has new functionality
+c		     zz is a bug fix
 c		
-        ver='14.02.09'
+        ver='14.02.11'
         vdate = '2015/02/14'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -605,6 +605,19 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2015/02/14 (14.02.11)',/   
+     1 '      Revised Type 27 direct release (DivResP2.f) to correct',/
+     1 '      minor problems associaed with version 14.02.10',/
+     1 '    - 2015/03/07 (14.02.10)',/
+     1 '      Revised Oprinp.f to allow type 27 Direct Release and',/
+     1 '      type 28 Release by Exchange to allow variable',/
+     1 '      Oprlimit to be 5-9 not varaible creuse when the',/
+     1 '      source is a Changed Water Right Plan (type 13).',/
+     1 '      Revised type 27 Direct Release (DivResP2.f) and',/
+     1 '      type 28 Release by Exchange (DivRplP.f) to allow',/
+     1 '      OprLimit = 5-9 and not use varaible creuse.',/
+     1 '      Revised GetPln to allow a Changed Water Right Plan',/
+     1 '      (type 13)',/
      1 '    - 2015/02/03 (14.02.09)',/   
      1 '      Revised Type 27 direct release (DivResP2.f) and ',/
      1 '      Type 28 release by exchange (DivRplP.f) to allow',/
