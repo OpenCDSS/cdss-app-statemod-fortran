@@ -531,12 +531,6 @@ cx   1       iplntyp1.eq.11) then
      1      nps, psto21, psto2(npS)              
         endif  
 c
-c rrb 2014/11/24; Note (Qdiv(28 is not used in outmon.for
-c		              qdiv(28 Carried, Exchange or Bypass (column 11)
-c rrb 2015/01/10; Since not used, turn it off
-cx      qdiv(28,iscdP) = qdiv(28,iscdP) + divact 
-c	
-c
 c rrb 2010/10/09; Revise to treat a spill as a return flow
 c         4 is reuse to a diversion,
 c         6 is reuse to a diversion transmountain
@@ -545,27 +539,6 @@ c
 c rrb 2014/11/24; Correction
         if(iplntyp(npS).eq.4 .or. iplntyp(npS).eq.6 .or. 
      1     iplntyp(npS).eq.11) then 
-c
-cxx
-cxxc rrb 2014-05-05; Store a relase as a return flow in qdiv(36
-cxxc                 Allow a non downstream release
-cxx
-cxx          if(nspill.eq.0) then
-cxx            qdiv(36,iscdP) = qdiv(36,iscdP) + divact
-cxx          else
-cxx            qdiv(36,nspill) = qdiv(36,nspill) + divact         
-cxx          endif 
-c
-c rrb 2014-05-05; Store a release as a spill in qdiv(37 that
-c                 gets subtracted from River Divert in Outmon.f
-c rrb 2015/01/16; Do not adjust Qdiv since water diverted to an admin 
-c                 plan by DirectWr did not adjust any qdiv variables
-c                 used in calculating River Divert
-cx          if(nspill.eq.0) then
-cx            qdiv(37,iscdP) = qdiv(37,iscdP) + divact
-cx          else
-cx            qdiv(37,nspill) = qdiv(37,nspill) + divact 
-cx          endif 
 
         endif
                

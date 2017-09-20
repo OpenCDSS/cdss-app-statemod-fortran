@@ -743,10 +743,6 @@ c
 c
 c                 Adjust amount diverted at the source,(divmon), its 
 c		              carrier capacity (divcap2), and bypass decree (dcrdiv2)
-c
-c rrb 2014/11/24; Do not adjust Divmon for the diversion to a plan
-c                 until the water use used by a plan release by
-c                 a type 27 (DivResp2) or type 28 (DivRplP)
       dcrdiv2=amax1(0.0, dcrdiv2-divactE)      
 c
 c                 Allow Carrier Loss                       
@@ -770,7 +766,8 @@ c		                  	if not done in Rivrtn (nriver>0)
      
 c
 c
-c rrb 2014-11-24; Key revision to remove limitation associated
+c rrb 2014-11-24; Key revision to a ty;e 24 approach.
+c                 Remove limitation associated
 c                 with an exchange by calculating flow 
 c                 available from the source downstream 
 c                 by setting idcd3 and ndns3 to be at
@@ -913,27 +910,11 @@ c		              Update diversion by this structure and user
 c
 c		              Update diversion by this structure and user
 c		              Note divact1 is the source diversion
-c rrb 2015/01/16; Revise to not show as a diversion since
-c                water is being taken to an admin plan
       IF(IRTURN(iuse).ne.4) then
         QDIV(5,ISCD)=QDIV(5,ISCD)+divact1
       else
         QDIV(8,ISCD)=QDIV(8,ISCD)+divact1
       endif
-c
-c ******************************************************
-c rrb 2014-11-24; Unique to Changed WR (type 26)
-c                 At the source (iscd), report amount diverted 
-c                 by changed water right as Carried 
-c                 
-c                 qdiv(18  Carrier passing thru a structure
-c                 qdiv(38  Carried water not used in any calculations
-c                          to report River Divert
-cx    qdiv(18,iscd)=qdiv(18,iscd) + DivactE   
-c
-c rrb 2015/01/20; Do not report at source when diverting
-c                 Wait until released by Type 27 or 28
-cx    qdiv(38,iscd)=qdiv(38,iscd) + DivactE      
 c _________________________________________________________
 c
 c                 Step 20; Update data for a plan destination 
@@ -948,16 +929,7 @@ c
 c _________________________________________________________
 c               Step 22; Set Qdiv for the source and destination
       EffmaxT1=(100.0-OprLossC(l2,1))/100.0
-      
-      if(iout.eq.1) write(nlog,*) ' directwr; call SetQivC'
-c
-c                 qdiv(18 = Carrier passing thru a structure     
-c                 qdiv(20 = From Carrier by Storage or Exchange 
-c rrb 2015/01/16; Revise to be qdiv(18    
-c rrb 2015/01/24; Revise to report zero unless water is released
-c                 in DivresP2 (type 27) or DivRplP (type 28) 
-cx    qdiv(20,idcd2X)=qdiv(20,idcd2X) + divactE   
-cx    qdiv(18,idcd2X)=qdiv(18,idcd2X) + divactE       
+c      
       if(iout.eq.1) then
         write(nlog,*) '  Directwr; qdiv(20', idcd2X, iscd, 
      1                   qdiv(20,idcd2X)*fac

@@ -23,6 +23,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2015/01/20; Revised to handle a type 26 Changed Water right
+c
 c rrb 2011/08/05; Revised to allow an instream flow reach
 c     Note the same logic works for both an ISF point and a reach
 c
@@ -236,7 +238,7 @@ c
 c       qdiv(36         Water released to the system as return flow
 c                            plan types 4 & 6 reuse from a diversion or
 c                            tmtn diversion
-c      qdiv(38         Carried water reported as Carried, Exchange
+c       qdiv(38        Carried water reported as Carried, Exchange
 c                        or Bypassed but not used to calculaete
 c                        River Divert in Outmon.f
 c
@@ -273,7 +275,7 @@ c
       ioutE=0
       ioutA=0
       ioutIR=0
-      iout5=2
+      iout5=0
       ioutQ=0
       
       cDest1='NA'
@@ -742,7 +744,7 @@ c _________________________________________________________
 c               
 c rrb 2009/01/15;
 c               Step 4b; Limit to the amount diverted by another 
-c		  operating rule
+c		              operating rule
 c		
       if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then
         lopr=iopsou(5,l2)
@@ -948,7 +950,7 @@ cr      divreq1=amin1(ownmax(irow)-curown(irow),
         
         divreq1=amax1(0.0, divreq1)        
 c
-c rrb 207/12/04; Add Loss
+c rrb 2007/12/04; Add Loss
         divreq0=divreq1
         divreq1=divreq1/OprEffT        
         DIVALO=divreq1
@@ -1031,10 +1033,10 @@ c
 c _____________________________________________________________
 c
 c               Step 6; Destination is through a carrier
-c		         Adjust diversion location idcd and
-c			 number of downstream nodes (ndnd) but
-c			 not the actual diversion location (idcdX)
-c			 or actual number of downstream nodes (ndndX)
+c		              Adjust diversion location idcd and
+c			            number of downstream nodes (ndnd) but
+c			            not the actual diversion location (idcdX)
+c			            or actual number of downstream nodes (ndndX)
       if(intern(l2,1).gt.0) then      
         ncar=intern(l2,1)
         idcd=idvsta(ncar)
@@ -1071,15 +1073,15 @@ c _____________________________________________________________
 c
 c rrb 2007/12/04; 
 c               Step 10; Process carrier limitations
-c		ncarry is indicator at least 1 carrier
-c		ncnum is the number of carriers
-c		OprEff1 is the lost (oprlost(lw)
-c		Divalo gets reduced by carrier capacity
-c		DivCarry is the limitating carrier capacity
-c		noprS is the structure id of the structure
-c		 	that supplied water to the accounting
-c		        plan that already has a capacity 
-c			adjustment
+c	              	ncarry is indicator at least 1 carrier
+c	              	ncnum is the number of carriers
+c	              	OprEff1 is the lost (oprlost(lw)
+c	              	Divalo gets reduced by carrier capacity
+c	              	DivCarry is the limitating carrier capacity
+c	              	noprS is the structure id of the structure
+c	              	that supplied water to the accounting
+c	             	  plan that already has a capacity 
+c	             		adjustment
       if(ncarry.gt.0) then
         if(lopr.gt.0) then        
           loprR=iopsou(1,lopr)
@@ -1403,12 +1405,12 @@ c       cursto(nr)=cursto(nr)+divaf
 c
 c ---------------------------------------------------------
 c rrb 2006/09/25; Allow multiple accounts - Allocate
-c		  Note:
-c		   iResT1=0 distributes based on ownership ratio
-c		   nrown1=number of accounts in this reservoir
-c		   iown = first account associated with this reservoir  
-c		   icx  = subrouine calling accou.for       
-c		   ia   = account to adjust
+c		            Note:
+c		             iResT1=0 distributes based on ownership ratio
+c		             nrown1=number of accounts in this reservoir
+c		             iown = first account associated with this reservoir  
+c		             icx  = subrouine calling accou.for       
+c		             ia   = account to adjust
       
         nrX=ndR        
         iResT1=0
@@ -1507,55 +1509,29 @@ c
           psto2(nsp)=amax1(psto2(nsp)+relact*fac,0.0)                
         endif  
 c
-c
-c rrb 2015/01/16;  Not used in Outmon       
-cx        qdiv(28,iscd) = qdiv(28,iscd) + divact
-
-c
-c rrb 2010/10/09; Track plan types 4, 6 & 11 (diversion reuse)
-c                 as return flow 
 c rrb 2014/11/24; Revise the treatment of a plan release for a type 11         
 cx      if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
 cx   1     iplntyp(nsP).eq.11) then  
-        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6) then
 c
-c rrb 2010/10/15; Revise when operating in depletion mode
-c                 divact .ne. relact So at the source
-c                 the return is - relact              
-cx        qdiv(36,iscd)=qdiv(36,iscd) + divact
+        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6) then
           qdiv(36,iscd)=qdiv(36,iscd) - relact
           qdiv36=qdiv(36,iscd)
         endif    
-c
-c rrb 2014/11/24; Revise to release at the source water right location
-c                 when ioprlim(l2)=5.  Note: 
-c                 qdiv(37  Water released to the river (reported as
-c                 a release that is subtracted from RivDiv in outmon.f
-c rrb 2015/01/16; Revised approach to a diversion to an admin plan              
-cx         if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then
-cx           qdiv(37,iscd5)=qdiv(37,iscd5) - relact
-cx         endif 
-c 
-c rrb 2015/01/24; Report amount diverted at the 
-c                 the source plan node (iscd) and the
-c                 original source with the water right node (iscd5)
-        if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then 
-c
-          qdiv(38,iscd) = qdiv(38,iscd) - relact
-c         qdiv(38 Carried water reported as Carried, Exchange
-c                   or Bypassed but not used to calculaete
-c                   River Divert in Outmon.f
 c
 c rrb 2015/01/24; Report amount diverted as Carried... at the 
 c                 the source plan node (iscd), the original
 c                 source plan node befor a split (iscd1) and
 c                 if not a carrier, the water right node (iscd5)
-cx           if(iscd.ne.iscd1) then
-cx             qdiv(38,iscd1)= qdiv(38,iscd1) - relact
-cx           endif
-cx         endif
 c
-          qdiv(38,iscd1)=qdiv(38,iscd1) - relact
+c                 qdiv(38 Carried water reported as Carried, Exchange
+c                   or Bypassed but not used to calculaete
+c                   River Divert in Outmon.f
+c
+        if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then 
+c
+          qdiv(38,iscd) = qdiv(38,iscd) - relact
+          qdiv(38,iscd1)= qdiv(38,iscd1) - relact
+c
           if(nd5.ne.ncar) then
             qdiv(38,iscd5)=qdiv(38,iscd5) - relact     
           endif
@@ -1691,8 +1667,6 @@ c     Step 26a; Adjust the amount diverted (divmon) based on
 c               the amount released which is how
 c               a diversion is limited by capacity    
       if(lopr5.gt.0) then    
-c
-c rrb 2015/01/20; Do not adjust if the source is the primary carrier	
         if(nd5.ne.ncar) then
           divcap2=divcap(nd5) - divmon(nd5)         
           divmon(nd5) = amax1(divmon(nd5) + divact,0.0)

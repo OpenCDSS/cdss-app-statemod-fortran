@@ -21,6 +21,8 @@ c _________________________________________________________
 c
 c     Update history
 c
+c rrb 2015/01/20; Revised to handle a type 26 Changed Water right
+c
 c rrb 2011/08/05; Revised to allow an instream flow reach
 c     Note the same logic works for both an ISF point and a reach
 c
@@ -79,7 +81,7 @@ c        relact       = actual amount released from the plan
 c     	 flomax       = maximum flow downstream of the 
 c                       reservoir (e.g. current stream flow
 c                       plus the reservoir release (CFS)
-                    
+c                   
 c        icx          = subroutine call #
 c        
 c        ieff2        = 0 always use average efficiency
@@ -1165,15 +1167,15 @@ c
 c_____________________________________________________________
 c rrb 2007/12/04; 
 c               Step 10; Process carrier limitations
-c		ncarry is indicator at least 1 carrier
-c		ncnum is the number of standard carriers
-c		OprEff1 is the lost (oprlost(lw)
-c		Divalo gets reduced by carrier capacity
-c		DivCarry is the limitating carrier capacity
-c		noprS is the structure id of the structure
-c		 	that supplied water to the accounting
-c		        plan that already has a capacity 
-c			adjustment
+c	              	ncarry is indicator at least 1 carrier
+c	              	ncnum is the number of standard carriers
+c	              	OprEff1 is the lost (oprlost(lw)
+c	              	Divalo gets reduced by carrier capacity
+c	              	DivCarry is the limitating carrier capacity
+c	              	noprS is the structure id of the structure
+c	              	that supplied water to the accounting
+c	              	plan that already has a capacity 
+c	                adjustment
       if(ncarry.gt.0) then
         if(lopr.gt.0) then        
           loprR=iopsou(1,lopr)
@@ -1490,14 +1492,7 @@ cx      call rtnsec(icx,divactL,l2,iuse,IDCD,nd,ieff2)
           cx=-1.0/fac
           call chkAvail(nlog, icx, nchkA, maxsta, 
      1      AVAIL, divact, iscd, iscd, idcd, fac)
-          endif 
-           
-cx          if(l2.eq.237) then     
-cx            do ix=174,229
-cx              write(nlog,*) ' DivResP2; after Rtnsec',
-cx     1          ix, avail(ix)*fac, (avail(ix)-relact)*fac
-cx            end do    
-cx          endif    
+          endif           
       endif  
 c     write(nlog,*) ' DivresP2_4; idcd, Avinp ', idcd, avinp(7)*fac          
 c
@@ -1692,50 +1687,19 @@ c
         if(iplntyp(nsP).eq.3 .or. iplntyp(nsP).eq.5) then
           psto2(nsP)=amax1(psto2(nsP)+relact*fac, 0.0)                
         endif       
-c
-c rrb 2010/10/09; Track plan types 4, 6 & 11(diversion reuse)
-c         as return flow 
 c 
-c rrb 2014/11/24; Revise the treatment of a plan release for a type 11      
-cx      if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
-cx   1     iplntyp(nsP).eq.11) then  
         if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6) then    
-c
-c rrb 2010/10/15; Revise when operating in depletion mode
-c                 divact .ne. relact So at the source
-c                 the return is - relact              
-cx        qdiv(36,iscd)=qdiv(36,iscd) + divact
           qdiv(36,iscd)=qdiv(36,iscd) - relact          
           qdiv36=qdiv(36,iscd)
         endif      
-c
-c rrb 2014/11/24; Revise to release at the source water right location
-c                 when ioprlim(l2)=5 
-c                 qdiv(37  Water released to the river (reported as
-c                          a release that is subtracted from
-c                          RivDiv in outmon.f
+
 c 
-c rrb 2015/01/16; Revised approach for a diversion to an admin plan               
-cx         if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then
-cx           qdiv(37,iscd5)=qdiv(37,iscd5) - relact
-cx         endif 
-c
-c         qdiv(38 Carried water reported as Carried, Exchange
-c                   or Bypassed but not used to calculaete
-c                   River Divert in Outmon.f
-c
-c rrb 2015/01/24; Report amount diverted as Carried... at the 
-c                 the source plan node (iscd), the original
-c                 source plan node befor a split (iscd1) and
-c                 if not a carrier, the water right node (iscd5)
+c rrb 2015/01/24; Report amount diverted as Carried, Bypassed or 
+c                 Exchanged at the the source plan node (iscd),
+c                 the original source plan node befor a split (iscd1)
+c                 and, if not a carrier, the water right node (iscd5)
          if(iplntyp(nsP).eq.11 .and. lopr5.gt.0) then 
-           qdiv(38,iscd) = qdiv(38,iscd) - relact
-c           
-c rrb 2015/01/26           
-cx           if(iscd.ne.iscd1) then
-cx             qdiv(38,iscd1)= qdiv(38,iscd1) - relact
-cx           endif
-cx         endif   
+           qdiv(38,iscd) = qdiv(38,iscd) - relact  
            qdiv(38,iscd1)=qdiv(38,iscd1) - relact
            if(nd5.ne.ncar) then
              qdiv(38,iscd5)= qdiv(38,iscd5) - relact
@@ -1875,10 +1839,6 @@ c                 not a carrier loss) at the destination
         endif
       endif
 c
-cx      qdiv36b=qdiv(36,iscd)                                                
-cx      write(nlog,*) ' DivResP2; nd, iuse qdiv36 qdive6a, qdiv36b'         
-cx      write(nlog,*) ' DivResP2;', nd, iuse, qdiv36*fac, qdiv36a*fac,
-cx     1   qdiv36b*fac              
 c _________________________________________________________
 c
 c *************************************
@@ -1939,10 +1899,10 @@ c_____________________________________________________________
 c rrb 2007/07/09; Allow T&C return flow obligations to be assinged 
 c		  at the destination (herein)
 c               Step 27; Calculate return flow obligation
-c			 Note return patterns may be the default
-c			 structure (iuse1) or from plan data
-c			 see RtnsecP
-c                        iDep = 0 release to meet diversion demand
+c			           Note return patterns may be the default
+c			           structure (iuse1) or from plan data
+c			           see RtnsecP
+c                iDep = 0 release to meet diversion demand
 
 c
 c	
