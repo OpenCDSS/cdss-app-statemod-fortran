@@ -72,9 +72,9 @@ c _________________________________________________________
 c
 c               Step 3; Adjust monthly or annual release limits DOWN
 c
-c rrb 2011/10/15; Allow a type 4
+c rrb 2011/10/15; Allow a type 4 by a type 45 rule
 cx    if(iOprLimX.eq.2 .and. lopr.gt.0) then
-      if((iOprLimX.eq.2 .or. iOprLimX.eq.4).and. lopr.gt.0) then
+      if((iOprLimX.eq.2 .or. iOprLimX.eq.4).and. lopr.gt.0) then 
       
 cx      oprmaxM1=amin1(oprmaxMX, oprmaxAX)
 cx      oprmaxMX=amax1(oprmaxMX - divact*fac, 0.0)

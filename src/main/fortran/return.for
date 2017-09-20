@@ -87,7 +87,8 @@ cx       if(cdividx.eq.'0100513     ') iout=1
        qdivs=0.0
        cuact=0.0
        rettot=0.0
-       small=0.001
+c       small=0.001
+       small=0.005
 c
 c _________________________________________________________
 c
@@ -174,6 +175,11 @@ c
      1     divact*fac, effave,    effmax,    eff,        diwrx1*fac,
      1     cumax*fac,  cuact*fac, dcus*fac,  rettot*fac, effact, 
      1     dcux*fac,   diwrx*fac, soils1,    qdivs*fac,  soils, 
+     1     delta*fac
+         write(nlog,*)
+     1     divact*fac, effave,    effmax,    eff,        diwrx1*fac,
+     1     cumax*fac,  cuact*fac, dcus*fac,  rettot*fac, effact,
+     1     dcux*fac,   diwrx*fac, soils1,    qdivs*fac,  soils,
      1     delta*fac
 
          if(delta.gt.small) then

@@ -715,9 +715,9 @@ c               Formats
      1         ' to Total/days.',
      1                 ' Monthly data controls.')
  186  format(/,60('_'),/
-     1	' DayDist; cid1(is) = ',a12,/
+     1  ' DayDist; cid1(is) = ',a12,/
      1  '          im  = ',i10,   ' mthday = ', i10,/
-     1	'          mon = ',i10,   ' mthday = ', i10,/
+     1  '          mon = ',i10,   ' mthday = ', i10,/
      1  '          jb1 = ',i10,   ' je1    = ', i10,/
      1  '          x1  = ',f10.2, ' x2     = ', f10.2,/
      1  '          y1  = ',f10.2, ' y2     = ', f10.2)

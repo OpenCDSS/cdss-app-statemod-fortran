@@ -5,7 +5,7 @@ c
      
        dimension avail(maxsta)
 
-       iout=1
+       iout=0
 c      nchkA=nchkA+1
 cx     if(nchkA.eq.1) write(nlog,200) icx, nchkA
        if(iout.eq.1) write(nlog,200) icx, nchkA

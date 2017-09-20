@@ -9,7 +9,7 @@ c
 c       Chekav2; Similar to Chekava.
 c                It checks teh entire Avail array by finding the
 c                mininum value and warning if < 0.
-c		             But instead of stopping, it returns the most 
+c		 But instead of stopping, it returns the most 
 c                negative value. 
 c
 c _________________________________________________________

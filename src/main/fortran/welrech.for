@@ -665,7 +665,11 @@ c		a. Well data
       divdw(l2)  =divdw(l2)  +divact  
           
       divo(l2)=divo(l2)+DIVACT
-      pdem(ipAug)=pdem(ipAug)-DIVACT
+c jhb 2014/07/13 array bounds check
+c                handle the case when ipAug = 0
+      if (ipAug.gt.0) then
+        pdem(ipAug)=pdem(ipAug)-DIVACT
+      endif
       carryW(nWE) = carryW(nWE)+Divact
 c
 c rrb 2007/02/21; Add Wells to *.xdd        

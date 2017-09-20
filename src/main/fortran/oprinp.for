@@ -1,18 +1,12 @@
-c
-c *********************************************************
-c
-c
+c ______________________________________________________________________
       SUBROUTINE OPRINP(IIN)
-c
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c	Program Description
-c
 c       Oprinp; It reads operational right data
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c       Update History
-c
+c jhb 2014/10/31; skip reading secondary records if ioprsw()=0
+c                 only allow plan type 11 as a type 35 destination
 c rrb 2008/01/02; Move tie to operating rules to SetPlanO
 c rrb 2006/11/14; All rules are read by Oprfind
 c rrb 06/23/2006; Add type 39 Alternate Point and
@@ -24,7 +18,6 @@ c rrb 06/01/18; Add type 36 Seasonal Diversion
 c rrb 04/12/30; Add type 27 Plan to a Diversion and Type 28 Plan to a 
 c               diversion by exchange
 c rrb 04/11/28; Add type 23 Downstream Call (variable amount and admin date)
-c
 c rrb 04/08/24; Add type 23 Downstream Call (variable amount and admin date)
 c		idcall = 0 no Type 23 right (downstream call)
 c		idcall = k = pointer to the operating right that is a 
@@ -34,16 +27,12 @@ c                       Reservoir or carrier
 c rrb 04/06/20; Type 24 Direct Flow Exchange to a Diversion, 
 c                       Reservoir or carrier
 c rrb 04/06/20; Type 23 Downstream call
-c
 c rrb 03/08/18; Revise to allow random file read
-c
 c rrb 02/10/22; Allow type 10 to handle monthly on/off switches
-c
 c rrb 02/02/25; Revised to allow ieffmax = 2 
 c               which allows IWR data to be read and limit',/
 c               reservoir releases to occur only when an IWR',/
 c               exists if the reservoir release variable is > 0',/
-c
 c rrb 01/08/23; Began to use variable iopdes(6,k) as a code to 
 c               indicate type of release 
 c               =0 release to meet demand
@@ -56,8 +45,6 @@ c               sometimes used when reservoir releases are tied to
 c               another right (see type 6) or for depletion Vs
 c               diversion offset (see type 4) or for a second reservoir
 c               (see type 2?)
-c
-c		
 c rrb 01/12/26; Revmove equivlence & revised dumx = dumc & idumx=idumc
 c rrb 01/08/18; Reset iopdes(2,k) = 1 rather than stop
 c rrb 01/01/18; Type 22 Soil Moisture Use
@@ -74,9 +61,7 @@ c rrb 99/08/10; Type 14 Carrier with an annual limit on diversion
 c                       when iopsou(2,k) .gt. 1)
 c rrb 99/08/30; Began to simplify input with type 15 and 16 approach
 c                 to read data
-c
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c	Documentation               
 c               Read operational data
 c               Type 1  From Reservoir to Instream
@@ -118,15 +103,10 @@ c		            Type 28 ReUse Plan to a diversion by exchange for Reuse
 c		            Type 29 Plan or Plan and Reservoir spill
 c		            Type 30 Re Store water released for a T&C plan
 c		            Type 30 Carrier with reuse
-c
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c	Dimensions
-c
       include 'common.inc'
-
       real*8 rtem
-c
       character*12 cidvri,  ciopde,  ciopso1, ciopso2, ciopso3,
      1             ciopso4, ciopso5, blank,   czero,  cx
       character recin*256, creuse*12, rec12*12, rec2*2,
@@ -134,46 +114,38 @@ c
      1          cassoc*12, cdestyp*12
       dimension ntype(50), oprtype(50)      
       character oprtype*25
-c        
 c rrb 209/01/26; Correction; initilize ntype to a dimension of 50
       data ntype/50*0/
       data oprtype/
      1  'Res to ISF',                  'Res to Diversion, etc.',
-     1  'Res to Carrier',              'Res Exchange to a Diversion',
+     1  'Res to Carrier',              'Res Exch to a Diversion',
      1  'Res to Storage Exchange',     'Bookover',    
-     1  'Res to a Carrier by Exchange','OOP Bookover',  
+     1  'Res to a Carrier by Exch',    'OOP Bookover',
      1  'Release to Target',           'General Replacement Res',
-     
-     1  'Carrier to a Ditch or Res',    
+     1  'Carrier to Ditch or Res',
      1  'Reoperate',                   'La Plata Compact',
      1  'Carrier with Const Demand',   'Interruptable Supply',
      1  'Direct Flow Storage',         'Rio Grande Compact - RG',
      1  'Rio Grande Compact - CR',     'Split Channel',
      1  'San Juan RIP',            
-     
      1  'Wells with Sprikler Use',    
      1  'Soil Moisture Use',           'Downstream Call',
      1  'Direct Flow Exchange',        'Direct Flow Bypass',
      1  'NA',                          'Plan Use Direct',
      1  'Plan Use Exchange',           'Plan Spill',
      1  'Reservoir Re Diversion',      
-     
      1  'Carrier with Reuse',          'Reuse Plan Direct',  
      1  'Reuse Plan Exchange',         'Bookover with Reuse',     
      1  'Import with Reuse',           'Seasonal Water Right',  
      1  'Augmentation Well',           'OOP Diversion',
      1  'Alternate Point Diversion',   'South Platte Compact', 
-     
-     1  'Storage with Special Limits', 'Plan Reset',            
+     1  'Storage w/ Special Limits',   'Plan Reset',
      1  'In-Priority Well Supply',     'Recharge Well', 
      1  'Carrier with Loss',           'Multiple Ownership',
-     1  'Administration Plan Limits',  'Reuse to a Plan Direct', 
+     1  'Admin Plan Limits',           'Reuse to a Plan Direct',
      1  'Reuse to a Plan Exchange',    ' '/
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 1; Detailed Checks
-c
 c		iout = 0 no details
 c		       1 details
 c          2 summary (echo input and opr right type)
@@ -188,35 +160,25 @@ c		ioutSm 0 no details on small
 c		       1 details on small
 c		ioutLim 0 no details on diversion limit
 c		       1 details on diversion limit
-
       iout=0
       ioutSM=0  
       ioutLim=0
-      
       iecho=1
       iechoX=iecho
       rewind(ntmp)
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c		Step 1; Print Subroutine Name      
       write(nlog,102)
       write(6,102)      
   102   format(/,72('_'),/,
      1 '  Oprinp; Operational Right File (*.opr) ')
-      
-      
       if(iout.eq.1) write(nlog,*) ' Subroutine Oprinp'      
 c     write(nlog,*) '  Oprinp; iout = ', iout
-
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 2; Initilize      
-      
       blank = '            '                                            
       czero = '0           '          
       cx='NA'
- 
       nchk2=nlog                                       
       irepn = 0
       numrg = 0
@@ -227,99 +189,77 @@ c		Step 2; Initilize
       noprwr=0
       ideplete=0
       iexchang=0
-      
       iwarno=0
       koff=0
-      
       isp1=0
       irg1=0
       irg2=0
-      
       iops1=0
       iops2=0
       small=0.001
       smallN=-1.0*small
       if(ioutSm.eq.1) write(nlog,*) ' Oprinp_01; small ', small
-
       DO ND=1,NUMDIV
         IDRGST(ND)=0
       enddo  
-c
-c ---------------------------------------------------------      
+c ______________________________________________________________________
 c		Initilize every operating rule
 cx    write(nlog,*) ' Oprinp_0; maxopr ', maxopr
       do k=1,maxopr
 cx        write(nlog,*) ' '
 cx        write(nlog,*) ' Oprinp x1; k = ', k
-        
         divdS(k)=0.0
         divdE(k)=0.0
         ireuse1=0
         ireuse(k)=0
         oprmaxA(k)=0.0
         iSetOpr(k)=0
-        
         iopdesr(k)=0
         iopsour(k)=0
-        
         divreqa(k) = 0.0
         oprmaxM(k)=0.0
-        
+c jhb 2014/10/31 init ioprsw()
+        ioprsw(k) = 0
         ioBeg(k) = 0
         ioEnd(k) = 9999
-        
         divOpr(k)= 0
-        
         cdivtyp(k)='Diversion   '
-        
         oprPct(k)=0
-
         ciopdeX2(k)= 'NA'
         creuseX(k) = 'NA'
         ciopsoX2(k)= 'NA'
         ioprlim(k)=0
-c        
 c rrb 209/01/26; Correction; this variable is only dimensioned to 50
 cx      ntype(k)=0
-c
 c rrb 2011/11/25; Allow up to 10 destinations        
 cx      do i=1,5
         do i=1,maxopr2
           ciopsoX(i,k) = 'NA'
           ciopdeX(i,k) = 'NA'
         end do
-        
         do im=1,12
           imonsw(k,im)=1
         end do
-        
         do i=1,10                                                   
           intern(k,i)=0                                                 
           cntern(i)=blank
           ropdes(k,i)=0.0
           internT(k,i)=0          
         end do
-c
 c rrb 2012/05/25; Initilize destination and source arrays
         do i=1,maxopr2
           iopdes(i,k)=0
           iopsou(i,k)=0
         end do
-        
 cx        write(nlog,*) ' Oprinp; k = ', k
       end do  
-      
       if(ioutSm.eq.1) write(nlog,*) ' Oprinp_02; small ', small
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 3; Open file      
 c     write(nlog,200)
 c     write(6,200)
-
       iin2=iin
-c      
-c ---------------------------------------------------------      
-c
+c ______________________________________________________________________
 c rrb 2008/02/22; Read new or old response file formats (infile)
 c		  add path (fpath1), open file (filena), get
 c		  number of stations (numopr) and get 
@@ -330,19 +270,15 @@ c		  version number (ioprX)
      1   nlog, nchk, iin, infile, maxfile, maxfn, 
      1   nf, ioprX, numOpr, fileType(inf), fileSuf(inf), 
      1   fileName(inf), fpath1, filena)
-     
       if(ioutSm.eq.1) then
         write(nlog,*) ' Oprinp_03; small ', small
         write(nlog,*) ' Oprinp_03; numopr ', numopr
         write(nlog,*) ' Oprinp_03; ioprX  ', ioprX
       endif
-     
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c rrb 208/09/12; Exit if no file is provided
       if(numOpr.eq.0) goto 500      
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Check for old file format if not specified
 c		Note 13 (itype) is the file # in GetFn
       if(iOprX.eq.0) then
@@ -355,34 +291,24 @@ c		Note 13 (itype) is the file # in GetFn
         small=0.001
         if(ioutSm.eq.1) write(nlog,*) ' Oprinp_6; small ', small        
       endif  
-     
       if(ioutSM.eq.1) write(nlog,*) ' Oprinp_07; small ', small
-     
       maxops=maxopr*2
       k=0
       iwarn1=0
-c
-c ---------------------------------------------------------      
-c
+c ______________________________________________________________________
 c		Detalied headers
       if(iout.eq.1) write(nlog,1260)
       if(iecho.eq.1) write(nchk,1260)     
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c		Loop for the maximum number of rules
-      
       do 1190 k1=1,maxops
         call comment(55, nlog, iocode, nchk, iechoX)
 c       if(iout.eq.1) write(nlog,*) ' Oprinp; iocode ', iocode
         if(iocode.eq.2) goto 1210
         if(iocode.eq.3) goto 928
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c               Step 5a; Read data (new format)
-c
         k=k+1
-c
 c		Read New Format Only   
         if(iOprX.eq.2) then  
           if(iout.eq.1) write(nchk,*) ' Oprinp; k', k  
@@ -393,13 +319,17 @@ c		Read New Format Only
      1      ciopso1,     ciopso1x,    ciopso2, ciopso2x, 
      1      ITYOPR(K),   creuse,      cdivtyp(k), OprLoss(k),
      1      OprLimit(k), ioBeg(k),    ioEnd(k)
-c
 c rrb 2008/03/12; Initilize ioprlim     
           iOprLim(k) = int(oprlimit(k))     
-          if(iout.eq.1) write(nchk,*) ' Oprinp; New ioprX, k', ioprX, k  
+          if(iout.eq.1) then
+            write(nlog,*)
+     1      ' oprinp; k cdivtyp(k) OprLoss(k) OprLimit(k) iOprLim(k)',
+     1      k, cdivtyp(k), OprLoss(k), OprLimit(k), iOprLim(k)
+            write(nchk,*) ' Oprinp; New ioprX, k', ioprX, k  
+          endif
           goto 101
         endif
-c
+c ______________________________________________________________________
 c		Unknown Format, try to read new one
 c		If an error goto to 100 to read old one
         if(iOprX.eq.0) then    
@@ -410,17 +340,18 @@ c		If an error goto to 100 to read old one
      1      ciopso1,     ciopso1x,    ciopso2, ciopso2x, 
      1      ITYOPR(K),   creuse,      cdivtyp(k), OprLoss(k),
      1      OprLimit(k), ioBeg(k),    ioEnd(k)
-     
           if(iout.eq.1)write(nchk,*)
      1      ' Oprinp; cidvri ', cidvri, k,ioBeg(k),ioEnd(k)
-c
 c rrb 2008/03/12; Initilize ioprlim     
           iOprLim(k) = int(oprlimit(k))     
+          write(nlog,*)
+     1    ' oprinp; unknown format; k iOprLim(k) oprlimit(k)',
+     1    k, iOprLim(k), oprlimit(k)
           if(iout.eq.1) write(nchk,*) ' Oprinp; Unknown ioprX, k',
      1      ioprX, k  
           goto 101
         endif
-c
+c ______________________________________________________________________
 c		Read Old or Unknown Format
  100    continue
         if(iout.eq.1) write(nlog,*) ' Oprinp; backspace 55'
@@ -435,28 +366,25 @@ c		Read Old or Unknown Format
           creuse=    'NA          '
           OprLoss(k)=0.0
           OprLimit(k)=9999.
-c
 c rrb 2008/03/12; Correction          
 c         ioprlim(k) = 9999
           ioprlim(k) = 0
           cdivtyp(k) = 'Diversion   '
           if(iout.eq.1) write(nchk,*) ' Oprinp; Old ioprX, k', ioprX, k  
-          
+          write(nlog,*)
+     1    ' oprinp; old format; k iOprLim(k) oprlimit(k)',
+     1    k, iOprLim(k), oprlimit(k)
           goto 101
         endif
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c               Step 5b; Initilize selected variables        
 c		         Irregardless of the file type read
  101    continue
         if(cdivtyp(k).eq.'            ') cdivtyp(k)='Diversion   '
         if(iout.eq.1) write(nlog,*)'  Oprinp; cidvri = ', cidvri     
-c
         if(ioutSm.eq.1) write(nlog,*) ' Oprinp_11; small ', small
         small=0.001
         if(ioutSm.eq.1) write(nlog,*) ' Oprinp_12; small ', small
-        
         if(ityopr(k).eq.11) then             
           cz=small-oprlimit(k)
           if(ioutSm.eq.1) write(nlog,*) ' Oprinp_13; small ', 
@@ -466,58 +394,42 @@ c
           endif  
         endif    
         if(ioutSm.eq.1) write(nlog,*) ' Oprinp_14; small ', small
-        
-c
-
-c
 c rrb 2008/03/20; Initilize associated operating rule
         cAssoc= 'NA'        
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c               Step 6; Process Eof or End
-c
         if(cidvri.eq.blank .or. cidvri.eq.czero .or. 
      1     cidvri(1:3).eq.'End') then
            k=amax0(k-1,0)
            goto 1210
         endif   
-c
-c _________________________________________________________
-c 
+c ______________________________________________________________________
 c		Step 7; Set beginning and ending data if data is provided
 c           in the old format (w/o ioBeg and ioEnd)
 c           Note execut handles ioBeg and ioEnd during
 c           simulation
-c  
         if(ioBeg(k)+ioEnd(k).le.0) then
           if(ioprsw(k).eq.0) then
             ioBeg(k) = 0
             ioEnd(k) = 0
           endif
-        
           if(ioprsw(k).eq.1) then
             ioBeg(k) = 0
             ioEnd(k) = 9999
           endif
-        
           if(ioprsw(k).lt.0) then
             ioBeg(k) = 0
             ioEnd(k) = -1*ioprsw(k)
           endif
-            
           if(ioprsw(k).gt.1) then
             ioBeg(k) = ioprsw(k)
             ioEnd(k) = 9999
           endif
         endif
-c            
         if(iout.eq.3) then
           write(nlog,105) k, cidvri, ioprsw(k), iobeg(k), ioend(k)
         endif  
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c rrb 2006/03/20; 
 c		Step 8; Adjust character strings to left     
         cidvri=adjustl(cidvri)  
@@ -525,38 +437,28 @@ c       cgoto=adjustl(cgoto)
         ciopso1=adjustl(ciopso1)
         ciopso2=adjustl(ciopso2)
         creuse=adjustl(creuse)    
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 9; Set integer data     
         iopdes(2,k)=ifix(ciopdes)
         iopsou(2,k)=ifix(ciopso1x)
         iopsou(4,k)=ifix(ciopso2x)
         iops2=iopdes(2,k)
-        
         rec12=cdivtyp(k)
         if(rec12(1:9).eq.'Depletion') ideplete=1
-        
         if(ityopr(k).eq.24 .or. ityopr(k).eq.25) iexchang=1
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 10; Set NA data        
         NAuse=0
         if(creuse(1:3) .eq. 'N/A') creuse(1:12) = 'NA          '
         if(creuse(1:3) .eq. '   ') creuse(1:12) = 'NA          '
         if(creuse(1:2) .eq. 'NA') NAuse=1        
-        
         NAs2=0
         if(ciopso2(1:3).eq.'N/A') ciopso2(1:12) = 'NA         '
         if(ciopso2(1:2).eq.'0 ')  ciopso2(1:12) = 'NA         '
         if(ciopso2(1:2).eq.'  ')  ciopso2(1:12) = 'NA         '
         if(ciopso2(1:2).eq.'NA')  NAs2=1
-        
         if(ciopde(1:3).eq.'N/A') ciopde(1:12) = 'NA          '
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 10a; Detailed output to log     
       if(iout.eq.1) write(nlog,1324)
      1       cidvri,      nameo(k),    cgoto,                             
@@ -565,9 +467,7 @@ c		Step 10a; Detailed output to log
      1       ciopso1,     ciopso1x,    ciopso2, ciopso2x, 
      1       ITYOPR(K),   creuse,      cdivtyp(k), OprLoss(k),
      1       OprLimit(k), ioBeg(k),    ioEnd(k), k
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 10b; Detailed output to check
       if(iecho.eq.1) write(nchk,1324)
      1       cidvri,      nameo(k),    cgoto,                             
@@ -576,9 +476,7 @@ c		Step 10b; Detailed output to check
      1       ciopso1,     ciopso1x,    ciopso2, ciopso2x, 
      1       ITYOPR(K),   creuse,      cdivtyp(k), OprLoss(k),
      1       OprLimit(k), ioBeg(k),    ioEnd(k), k
-     
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c		Step 11; Set source and destination strings for 
 c                        plan reporting     
         ciopdeX(1,k) = ciopde
@@ -586,30 +484,22 @@ c                        plan reporting
         ciopsoX(1,k) = ciopso1
         creuseX(k) = creuse
         ciopsoX2(k)= ciopso2
-c
-c _________________________________________________________
-c       
+c ______________________________________________________________________
 c		Sep 12; Set Initilization for types 13, 14 and 15
         if(ityopr(k).eq. 13) iSetOpr(13)=1
         if(ityopr(k).eq. 14) iSetOpr(14)=1
         if(ityopr(k).eq. 15) iSetOpr(15)=1
         if(ityopr(k).eq. 47) iSetOpr(47)=1
-        
-c
-c _________________________________________________________
-c       
+c ______________________________________________________________________
 c rrb 01/08/23; Step 13; Set release type switch 
 c               iopsou(6,k) = iopsou(4,k) 
 c               Note use iopsou(6,k) because iopsou(4,k) may be 
 c               used for another purpose later.
-c       
         if(ityopr(k).eq. 2 .or. ityopr(k).eq.3 .or.        
      1     ityopr(k).eq. 7 .or. ityopr(k).eq.10) then
-
           iopsou(6,k) = iopsou(4,k)
           if(iopsou(6,k).gt.0) then 
             iopsou(4,k)=0
-c
 c rrb 02/02/25; Test to allow ieffmax = 2 (read IWR for daily running
 c               demand but do not use variable efficiency capability)
 c           if(ieffmax.ne.1) then
@@ -618,16 +508,10 @@ c           if(ieffmax.ne.1) then
             endif
           endif
         endif
-
-c
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c               Step 14; Estimate "End of File" if a blank is read
         if(cidvri.eq.blank .or. cidvri.eq.czero) goto 1210
-c
-c _________________________________________________________
-c
-c
+c ______________________________________________________________________
 c               Step 15; Set the ID (corid), right (rionk) and 
 c                        counter (idumc)
         corid(k)=cidvri
@@ -638,37 +522,46 @@ c                        counter (idumc)
           write(nlog,590) cidvri, ityopr(k), maxoprin
           goto 9999
         endif
-        
         ityopr1=ityopr(k)
         ntype(ityopr1)=ntype(ityopr1) + 1
-c
-c
-c _________________________________________________________
-c
-c               Step 16; Process a right that is off
-c                        Read misc data so checks can be skipped
+c ______________________________________________________________________
+c       Step 16; Process a right that is off
+c         Read misc data so checks can be skipped
         if(ioprsw(k).eq.0) then
+c ______________________________________________________________________
+c jhb 2014/10/31 start
+c         this block of secondary record processing code is not working
+c           so skip it, and require NO secondary records when
+c           op rule is turned off
+c         leave the code below so this block can be corrected and
+c           added back later if desired
+c ______________________________________________________________________
+c         added the records not inside if blocks below,
+c           in case they are needed
+          koff=koff+1
+          ioprloss=int(oprloss(k))
+c ______________________________________________________________________
+c         read the next record
+          goto 1190
+c ______________________________________________________________________
+c jhb 2014/10/31 end
 c         iout=1
           if(iout.eq.1) then
             write(nchk,*) ' Oprinp; Right Off', k, cidvri
             write(nlog,*) ' Oprinp; Right Off', k, cidvri        
           endif
-          
           koff=koff+1
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Read Monthly on/off          
           if(idumc.eq.12 .or. idumc.lt.-12) then
             if(iout.eq.1) write(nchk,*) ' Oprinp; Monthly on-off ',
      1       idumc
-          
             read(55,'(a256)',end=926,err=928) rec256
 c           write(nlog,*) ' Monthly on/off data'
 c           write(nlog,*) rec256
             if(iecho.eq.1) write(nchk,'(a256)') rec256
           endif  
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Read Carrier Data (without loss)
           ioprloss=int(oprloss(k))
           if(ioprloss.eq.0) then
@@ -676,7 +569,6 @@ c		Read Carrier Data (without loss)
      1          ioprloss, idumc
             idumy=idumc
             idumy=amax0(idumc, iabs(idumc)-12)
-c
 c rrb 2008/06/04; Correction            
             if(idumc.eq.12) idumy=0
             if(idumy.gt.0) then
@@ -687,19 +579,14 @@ c rrb 2008/06/04; Correction
               end do  
             endif  
           endif
-          
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Read Carrier Data (with loss)
           ioprloss=int(oprloss(k))
-          
           if(iabs(ioprloss).gt.0) then
             if(iout.eq.1) write(nchk,*) ' Oprinp; Carrier with Loss ',
      1          ioprloss, idumc
-     
             idumy=idumc
             idumy=amax0(idumc, iabs(idumc)-12)
-c
 c rrb 2008/06/04; Correction            
             if(idumc.eq.12) idumy=0
             if(idumy.gt.0) then
@@ -709,88 +596,71 @@ c rrb 2008/06/04; Correction
               end do  
             endif            
           endif  
-c          
 cr          if(iout.eq.1) write(nlog,*) rec256          
 cr          write(nlog,*) '  Oprinp; rec256 ', rec256
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Rio Grande Compact Treatment          
 c		Read extra stream gage data
           if(ityopr(k).eq.17 .or. ityopr(k).eq.18) then 
             read(55,'(a256)',end=926,err=928) rec256
             if(iecho.eq.1) write(nchk,'(a256)') rec256
           endif
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Type 24 and 25 Exchange to ....
 c		Read Exchnage limits          
-          
           if(ityopr(k).eq.24 .or. ityopr(k).eq. 25) then
             if(iout.eq.1)  write(nchk,*) ' Oprinp; Exchange Limits ', 
      1        k, ityopr(k)
-            
             read(55,'(a256)',end=926,err=928) rec256     
             if(iecho.eq.1) write(nchk,'(a256)') rec256           
           endif  
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c rrb 2008/02/21;  
 c		Type 27 and 28 Plan and 45 with an operating rule limit
-c
           if(ityopr(k).eq.27 .or. ityopr(k).eq. 28) then
             if(iout.eq.1) write(nchk,*) ' Oprinp; Associated Opr Rule ', 
      1        k, ityopr(k), oprlimit(k)
-     
-c
+c ______________________________________________________________________
 c		              Associated Operating Rule
             if(oprlimit(k).gt.small .and. oprlimit(k).lt.9999) then
               read(55,'(a256)',end=926,err=928) rec256     
               if(iecho.eq.1) write(nchk,'(a256)') rec256           
             endif
-c
+c ______________________________________________________________________
 c		              T&C CU factors            
 c rrb 2008/04/23; Revise to be more robust 
             if(iopsou(4,k) .gt. 0) then              
               if(iout.eq.1) write(nchk,*) ' Oprinp; T&C CU Factors ', 
      1          k, iopsou(4,k), nas2
-c
 c rrb 2008/11/25; Revise to warn and allow a bad iopsou(4 entry when 
 c		              Nas2=1 (ciopso2=NA)            
               if(nas2.eq.1) then
                 write(nlog,916) corid(k), ityopr(k),
      1            ciopso2, iopsou(4,k) 
               endif
-              
               if(nas2.eq.0) then
                 read(55,'(a256)',end=926,err=928) rec256     
                 if(iecho.eq.1) write(nchk,'(a256)') rec256           
               endif  
             endif
           endif 
-c            
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c rrb 2011/10/15; Update to type 45 operating rule
 c		Type 27 and 28 Plan and 45 with an operating rule limit
-c
           if(ityopr(k).eq.45) then
-
             if(iout.eq.1) write(nchk,*) ' Oprinp; Associated Opr Rule ', 
      1        k, ityopr(k), oprlimit(k)
-     
-c
 c		              Associated Operating Rule
             if(oprlimit(k).gt.small .and. oprlimit(k).lt.9999) then
               read(55,'(a256)',end=926,err=928) rec256     
               if(iecho.eq.1) write(nchk,'(a256)') rec256           
             endif
           endif       
-c
+c ______________________________________________________________________
 c rrb 2008/02/21;           
-c ---------------------------------------------------------
 c		Type 10 and 29 Spill
 c		Associated Operating Rule Data (5)
           if(ityopr(k).eq.10 .or. ityopr(k).eq.29) then
-c
 c		Monthly and Annual Limit Data
             if(oprlimit(k).gt.small .and. oprlimit(k).lt.9999) then
               read(55,'(a256)',end=926,err=928) rec256     
@@ -799,202 +669,139 @@ c             write(nlog,*) rec256
               if(iecho.eq.1) write(nchk,'(a256)') rec256           
             endif
           endif  
-          
+c ______________________________________________________________________
+c         finished processing secondary records when opr rule is OFF
           goto 1190
         endif
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c		Step 17; Branch for operating rule specific processing
-c
-c
 c               For type 1, Reservoir to a ISF 
         if (ityopr(k).eq.1) goto 1001
-c        
-c               For type 2, Reservoir to diversion or reservior 
-c                           or Carrier
+c               For type 2, Reservoir to diversion or reservior or Carrier
         if (ityopr(k).eq.2) goto 1002
-c        
 c               For type 2, Reservoir to a carrier
         if (ityopr(k).eq.3) goto 1003
-c        
 c               For type 4, Reservoir to a dversion by Exchange
         if (ityopr(k).eq.4) goto 1004
-c        
 c               For type 5, Reservoir storage by Exchange
         if (ityopr(k).eq.5) goto 1005
-c        
 c               For type 6, Reservoir to Reservoir Transfer
         if (ityopr(k).eq.6) goto 1006
-c        
 c               For type 7, Diversion by Carrier by Exchange
         if (ityopr(k).eq.7) goto 1007
-c
 c               For type 8, Out of Priority Bookover
         if (ityopr(k).eq.8) goto 1008
-c
 c               For type 9, Release to Target
         if (ityopr(k).eq.9) goto 1009
-c
 c               For type 10, Replacement Reservoir
         if (ityopr(k).eq.10) goto 1010
-c
 c               For type 11, Carrier
         if (ityopr(k).eq.11) goto 1011
-c
 c               For type 12, reoperation right, we're done
         if (ityopr(k).eq.12) goto 1190
-c
 c               For type 13, index River Flow
         if (ityopr(k).eq.13) goto 1013
-c
 c               For type 14, Carrier with a Constrained Demand
         if (ityopr(k).eq.14) goto 1014
-c
 c               For type 15, interruptable supply, process in 1 place
         if(ityopr(k).eq.15) goto 1015
-c
 c               For type 16, direct flow storage, process in 1 place
         if(ityopr(k).eq.16) goto 1016
-c
 c               For type 17, Rio Grande Compact-RG, process in 1 place
         if(ityopr(k).eq.17) goto 1017
-c
 c               For type 18, Rio Grande Compact-Co, process in 1 place
         if(ityopr(k).eq.18) goto 1018
-c
 c               For type 19, Split Channel, process in 1 place
         if(ityopr(k).eq.19) goto 1019                         
-c
 c               For type 20, San Juan RIP for Navajo 
         if(ityopr(k).eq.20) goto 1020                         
-c
 c               For type 21, Sprinkler Use
         if(ityopr(k).eq.21) goto 1021
-c
 c               For type 22, Soil Moisture Use
         if(ityopr(k).eq.22) goto 1022        
-c
 c               For type 23, Downstream Call Data
         if(ityopr(k).eq.23) goto 1023        
-c
 c               For type 24, Direct Flow Exchange 
         if(ityopr(k).eq.24) goto 1024                
-c
 c               For type 25, Direct Flow Bypass
         if(ityopr(k).eq.25) goto 1025        
-c
 c               For type 26, Reservoir or Plan to a Plan
         if(ityopr(k).eq.26) goto 1026        
-c
 c               For type 27, Plan to a Diversion Direct
         if(ityopr(k).eq.27) goto 1027        
-c
 c               For type 28, Plan to a Diversion by Exchange
         if(ityopr(k).eq.28) goto 1028        
-c
 c               For type 29, Plan spill
         if(ityopr(k).eq.29) goto 1029        
-c
 c               For type 30, Redivert T&C Plan release
         if(ityopr(k).eq.30) goto 1030
-c
 c               For type 31, Carrier with Reuse
         if(ityopr(k).eq.31) goto 1031
-c
 c               For type 32, Reuse Reservoir and Plan to Diversion, 
 c                            Reservoir or Carrier with Reuse Direct
         if(ityopr(k).eq.32) goto 1032
-c
 c               For type 33, Reuse Reservoir and Plan to a Diversion, 
 c                            Reservoir or Carrier with Reuse by Exchange
         if(ityopr(k).eq.33) goto 1033
-c
 c               For type 34, Bookover with Reuse
         if(ityopr(k).eq.34) goto 1034
-c
 c               For type 35, Import 
         if(ityopr(k).eq.35) goto 1035
-c
 c               For type 36, Meadow Rights
         if(ityopr(k).eq.36) goto 1036
-c
 c               For type 37, Well Augmentation
         if(ityopr(k).eq.37) goto 1037
-c
 c               For type 38, OOP Diversion
         if(ityopr(k).eq.38) goto 1038
-c
 c               For type 39, Alternate Point
         if(ityopr(k).eq.39) goto 1039
-c
 c               For type 40, South Platte Compact
         if(ityopr(k).eq.40) goto 1040
-c
 c               For type 41, Storage limited by an OOP Plan Volume
         if(ityopr(k).eq.41) goto 1041
-c
 c               For type 42, Plan Spill
         if(ityopr(k).eq.42) goto 1042
-c
 c               For type 43, In-Priority Supply
         if(ityopr(k).eq.43) goto 1043
-c
 c               For type 44, Recharge Well
         if(ityopr(k).eq.44) goto 1044
-c
 c               For type 45, Carrier with Losses
         if(ityopr(k).eq.45) goto 1045
-c
 c               For type 46, Multiple Ownership
         if(ityopr(k).eq.46) goto 1046
-c
 c               For type 47, Administratve Ownership
         if(ityopr(k).eq.47) goto 1047
-c
 c               For type 48, Plan or Res. reuse to a Plan Direct
         if(ityopr(k).eq.48) goto 1048
-c
 c               For type 49, Plan or Res. reuse to a Plan Exchange
         if(ityopr(k).eq.49) goto 1049
-c
 c               For type 50, South Platte compact Storage
         if(ityopr(k).eq.50) goto 1050
-        
         write(nlog,1277) ityopr(k),cidvri
         goto 9999
-        
-        
-c                                                                       
-c _________________________________________________________
-c
+c ______________________________________________________________________
  1001   continue 
-c 
+c ______________________________________________________________________
 c               Type 1; Reservoir to a ISF
-c
 c                  ion=1 means turn off opr right if right is off
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
-
         ion=1
         istop=0
         idcdd=0
         iss=0
-        
         idumc=ifix(dumc)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a. Read monthly constraints 
         istop=0
         call oprFind(ityopr(k), 20, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a2. Read intervening structures
         istop=0
         call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c1. Find destination ISF
 c                  Note itype=1 for a ISF structure
 c                       istop=0 stop if not found)
@@ -1005,11 +812,8 @@ c                       istop=0 stop if not found)
      1       ioprsw(k), cidvri)
         iopdes(1,k) = iops1
         iopdesr(k)=1
-        
         if(iops1.gt.0) idcdD=ifrsta(iops1)        
-c
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               d. Find source 1 a reservoir (type 2)
 c                  Note itype=2 for a ISF reservoir
 c		   Note istop=0 Stop if not found
@@ -1027,9 +831,7 @@ c		        ion=0 leaves the original water right on
      
         iopSouR(k)=itype     
         iopsou(1,k)=iops1
-        
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               e. Check that the source reservoir is upstream 
 c                  of the destination ISF
 c	           trying to find destination (idcdD)
@@ -1038,13 +840,10 @@ c                  downstream of  source (iscdS)
         ndns=ndnnod(iss)
         csource=cstaid(iss)
         cdest=cstaid(idcdD)
-                  
         call oprdown(nlog, maxsta, ndns, iss, idcdD, idncod,
      1       cidvri, csource, cdest)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		f. Detailed output
-     
         iout01=0
         if(iout01.eq.1) then
           write(nlog,2020) ityopr(k), cidvri, ityopr(k),
@@ -1054,38 +853,27 @@ c		f. Detailed output
      1      oprlimit(k), iopSou(5,k),
      1      cdivtyp(k), iopdesR(k)
         endif
-        
-c		
         goto 1190
-        
-c                                                                       
-c _________________________________________________________
-c
  1002   continue 
-c 
+c ______________________________________________________________________
 c               Type 2; Reservoir to a Diversion, Reservoir or Carrier
-c
 c                  ion=1 means turn off opr right if right is off
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
         ion=1
         istop=0
-        
         idumc=ifix(dumc)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a. Read monthly constraints 
         istop=0
         call oprFind(ityopr(k), 20, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a2. Read intervening structures
         istop=0
         call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c1. Find destination diversion 
 c                  Note itype=3 for a diversion 
 c		   Note istop=0 Stop if not found
@@ -1097,11 +885,8 @@ c		        istop=1 Do not Stop if not found
      1       ioprsw(k), cidvri)
         iopdes(1,k) = iops1
         iopdesr(k)=3
-        
         if(iops1.gt.0) idcdD=idvsta(iops1)        
-        
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c2. Find destination reservoir (type 2)
 c                  Note itype=2 for a reservoir
 c		   Note istop=0 Stop if not found
@@ -1117,25 +902,20 @@ c		        istop=1 Do not Stop if not found
           iopdesr(k)=2          
 c         write(nlog,*) '  Oprinp; #2 iopdes(1,k) = ',iopdes(1,k),idcdd
         endif
-
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c3. If a carrier then reset the destination location
         nc=intern(k,1)
         if(nc.gt.0) then
           idcdD=idvsta(nc)                  
 c         write(nlog,*) '  Oprinp; #3 iopdes(1,k) = ',iopdes(1,k),idcdd
         endif
-c
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               d. Find source 1 a reservoir (type 2)
 c		   Note ion=0 leaves the original water right on
 c		        iacc=0 allows account to be 0 (since 
 c                       it is ownership %)
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
-
         ion=0
         iacc=1
         istop=0
@@ -1143,8 +923,7 @@ c		        istop=1 Do not Stop if not found
         call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
      1       iopsou(1,k),iopsou(2,k), nx, ciopso1, 1, 
      1       istop, rops2, ioprsw(k), cidvri)
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               e. Check that the source reservoir is upstream 
 c                  of the destination diversion, reservoir or carrier
 c	           trying to find destination (idcdD)
@@ -1155,15 +934,10 @@ c                  downstream of  source (iscdS)
         ndns=ndnnod(iss)
         csource=cstaid(iss)
         cdest=cstaid(idcdD)
-                  
         call oprdown(nlog, maxsta, ndns, iss, idcdD, idncod,
      1       cidvri, csource, cdest)
-        
-c		
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		h. Detailed output
-     
         iout02=0
         if(iout02.eq.1) then
           write(nlog,2020) ityopr(k), cidvri, ityopr(k),
@@ -1173,38 +947,28 @@ c		h. Detailed output
      1      oprlimit(k), iopSou(5,k),     
      1      cdivtyp(k), iopdesR(k)
         endif  
-
         goto 1190
-
-c                                                                       
-c _________________________________________________________
-c
  1003   continue 
-c 
+c ______________________________________________________________________
 c               Type 3; Reservoir to a Carrier
-c
 c                  ion=1 means turn off opr right if right is off
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
         ion=1
         istop=0
-        
         idumc=ifix(dumc)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a. Read monthly constraints 
         istop=0
         call oprFind(ityopr(k), 20, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, 
      1       ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a2. Read intervening structures
         istop=0
         call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c1. Find destination diversion 
 c                  Note itype=3 for a diversion 
 c		   Note istop=0 Stop if not found
@@ -1217,9 +981,7 @@ c		        istop=1 Do not Stop if not found
         iopdes(1,k) = iops1
         iopdesr(k)=3        
         if(iops1.gt.0) idcdD=idvsta(iops1)        
-        
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c2. Find destination reservoir (type 2)
 c                  Note itype=2 for a reservoir
 c		   Note istop=0 Stop if not found
@@ -1235,33 +997,26 @@ c		        istop=1 Do not stop if not found
           iopdesr(k)=2          
 c         write(nlog,*) '  Oprinp; #2 iopdes(1,k) = ',iopdes(1,k),idcdd
         endif
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c rrb 2008/03/21; Revised warning when several destinations are possible        
         if(iops1.eq.0) then
           write(nlog,1300) cidvri, ityopr(k), ciopde
           goto 9999
         endif   
-        
-
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c3. If a carrier then reset the destination location
         nc=intern(k,1)
         if(nc.gt.0) then
           idcdD=idvsta(nc)                  
 c         write(nlog,*) '  Oprinp; #3 iopdes(1,k) = ',iopdes(1,k),idcdd
         endif
-c
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               d. Find source 1 a reservoir (type 2)
 c		   Note ion=0 leaves the original water right on
 c		        iacc=0 allows account to be 0 (since 
 c                       it is ownership %)
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
-
         ion=0
         iacc=1
         istop=0
@@ -1271,9 +1026,7 @@ c		        istop=1 Do not Stop if not found
      1       ioprsw(k), cidvri)
         iopsou(1,k) = iops1
         iopSouR(k)=itype
-        
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               e. Check that the source reservoir is upstream 
 c                  of the destination diversion, reservoir or carrier
 c	           trying to find destination (idcdD)
@@ -1286,10 +1039,8 @@ c       cdest=cstaid(idcdD)
 c          
 c       call oprdown(nlog, maxsta, ndns, iss, idcdD, idncod,
 c     1       cidvri, csource, cdest)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		h. Detailed output
-     
         iout03=0
         if(iout03.eq.1) then
           write(nlog,2020) ityopr(k), cidvri, ityopr(k),
@@ -1299,36 +1050,27 @@ c		h. Detailed output
      1      oprlimit(k), iopSou(5,k),     
      1      cdivtyp(k), iopdesR(k)
         endif  
-c		
         goto 1190
-c                                                                       
-c _________________________________________________________
-c
  1004   continue 
-c 
+c ______________________________________________________________________
 c               Type 4; Reservoir to a Diversion by Exchange
-c
 c                  ion=1 means turn off opr right if right is off
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
         ion=1
         istop=0
-        
         idumc=ifix(dumc)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a. Read monthly constraints 
         istop=0
         call oprFind(ityopr(k), 20, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a2. Read intervening structures
         istop=0
         call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c1. Find destination diversion 
 c                  Note itype=3 for a diversion 
 c		   Note istop=0 Stop if not found
@@ -1341,9 +1083,7 @@ c		        istop=1 Do not Stop if not found
         iopdes(1,k) = iops1
         idcdD=idvsta(iops1)        
         iopdesr(k)=3
-        
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c2. Find destination diversion water right iopdes(3,k)
 c		                and assign destination (iopdes(1,k) appropriately
 c                   Note itype=13 for a diversion water right
@@ -1354,17 +1094,14 @@ c			                   ion=0 leave the water right on
           itype=13
           istop=1
           ion=0
-c
 c rrb 2012/05/23; set iopdes(3,lr) to be the water right limit           
 cx        call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
 cx   1       iops1, iopdes(2,k), nx,ciopde, 1, istop, rops2,
 cx   1       ioprsw(k), cidvri)
 cx        iopdesr(k) = iops1
-
           call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
      1       iops1, iopdes(2,k), nx,ciopde, 1, istop, rops2,
      1       ioprsw(k), cidvri)
-          
 cx        iopdesr(k) = iops1
           iopdes(3,k)=iops1
           nd=idivco(1,iops1)
@@ -1372,32 +1109,26 @@ cx        iopdesr(k) = iops1
           iopdesr(k)=3
           if(iops1.gt.0) idcdD=idvsta(nd)        
         endif  
-c        
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c rrb 2008/03/21; Revised warning when several destinations are possible        
         if(iops1.eq.0) then
           write(nlog,1300) cidvri, ityopr(k), ciopde
           goto 9999
         endif   
-        
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c3. If a carrier then reset the destination location
         nc=intern(k,1)
         if(nc.gt.0) then
           idcdD=idvsta(nc)                  
 cx         write(nlog,*) '  Oprinp; #3 iopdes(1,k) = ',iopdes(1,k),idcdd
         endif
-c
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               d. Find source 1 a reservoir (type 2)
 c		   Note ion=0 leaves the original water right on
 c		        iacc=0 allows account to be 0 (since 
 c                       it is ownership %)
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
-
         ion=0
         iacc=1
         istop=0
@@ -1714,8 +1445,11 @@ c
 c ---------------------------------------------------------
 c               a2. Read intervening structures
         istop=0
+c jhb 11/20/2014 fix a missing arg error causing intermittent runtime data crashes
+c        call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,
+c     1       ix, ix, nx, cx, 1, istop, rops2, cidvri)
         call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,
-     1       ix, ix, nx, cx, 1, istop, rops2, cidvri)
+     1       ix, ix, nx, cx, 1, istop, rops2, ioprsw(k), cidvri)
 c
 c ---------------------------------------------------------
 c               b1. Find destination operational right 
@@ -4109,7 +3843,7 @@ c
 c ---------------------------------------------------------
 c		l. Detailed output
 c     
-        iout24=1
+        iout24=0
         if(iout24.eq.1) then
           call OprinOut(nlog, maxopr, k, 
      1      ityopr(k), cidvri, 
@@ -4518,12 +4252,142 @@ c _________________________________________________________
 c
 c         
  1026   continue 
-c               Type 26; Not Active (replaced with type 47)
 c
-        write(nlog,1276) ityopr(k),cidvri
-        goto 9999
-
-c       goto 1190
+c rrb 2014-11-24; Add Type 26
+c               Type 26; Water Right to a Diversion, Reservoir or Plan
+c
+cx        write(nlog,1276) ityopr(k),cidvri
+cx        goto 9999
+c                destination = diversion ID
+c                source 1 = water right that is used as an Alt point
+c                source 2 = not used
+c		             source 3 = plan ID for a T&C Plan (return flow oblig.)
+c                source 4 = CU switch 0=no, 1=yes limit to CU
+c                source 5 = operating rule water right where the
+c                           percent of water right exchanged is stored
+c                           and operated upon during allocation
+c		             source 7 = reuse switch 0=none, >0=reuse plan
+c
+c		   Note istop=0 Stop if not found
+c		        istop=1 Do not Stop if not found
+c                  ion=1 means turn off opr right if right is off
+c       write(nlog,*) '  Oprinp; Operating type 26'
+        ion=1
+        istop=0
+        ndP=0
+        
+        idumc=ifix(dumc)
+c
+c ---------------------------------------------------------
+c               a1. Read monthly constraints 
+        istop=0
+        call oprFind(ityopr(k), 20, idumc,k,ion,iprinto,
+     1       ix, ix, nx, cx, 1, istop, rops2,ioprsw(k), cidvri)
+c
+c ---------------------------------------------------------
+c               b1. Read Monthly plus Annual maxima (oprmax)
+        call oprFind(ityopr(k), 22, idumc,k,ion,iprinto,
+     1       ix, ix, nx, cx, 1, istop, rops2,ioprsw(k), cidvri)
+        
+c
+c ---------------------------------------------------------
+c
+c rr 2006/04/25; Plan destination
+c               c2. Find destination plan
+c		istop=0 Stop if a structure is not found
+c		istop=1 Do not stop if a structure is not found
+        write(nlog,*) ' '
+        write(nlog,*) '  Oprinp; type 26, iops1 = ', iops1
+        write(nlog,*) ' '
+c
+        istop=0
+        call oprFind(ityopr(k), 7, idumc,k,ion,iprinto,
+     1       iops1, iopdes(2,k), nx,ciopde, 1, 
+     1       istop, rops2,ioprsw(k), cidvri)
+        if(iops1.gt.0) then
+c
+          iopdes(1,k) = iops1
+          ndD=iops1
+          ndP=iops1
+          idcdD=ipsta(ndP) 
+          idcdX=idcdD        
+          iopdesr(k)=7
+c
+c		Check Plan type T&C or Aug Plan         
+          iok=1          
+          if(iplntyp(ndP).eq.11) iok=0
+          if(iok.eq.1) then
+            write(nlog,1382) ityopr(k),cidvri, ciopde,  
+     1       iplntyp(ndP)
+            goto 9999
+          endif            
+        endif 
+c ---------------------------------------------------------       
+        if(iops1.eq.0) then
+          write(nlog,1300) cidvri, ityopr(k), ciopde
+          goto 9999
+        endif   
+        
+c
+c ---------------------------------------------------------
+c               d1. Find source 1 a diversion water right
+c		               and source account ownership %
+c		   Note ion=0 leaves the original water right on
+c		        iacc=0 allows account to be 0 (since 
+c                       it is ownership %)
+c rrb 05/06/15; Leave original right on
+c       ion=1
+c rrb 2005/08/11; Turn original right off (ion=1)
+cr      ion=0
+        ion=1
+        iacc=0
+        istop=1
+        itype=13
+        call oprFind(ityopr(k), 13, idumc,k,ion,iprinto,
+     1       iopsou(1,k),iopsou(2,k), nx, ciopso1, iacc, 
+     1       istop, rops2,ioprsw(k), cidvri)
+     
+        iopSouR(k)=itype          
+c
+c
+c ---------------------------------------------------------
+c		d2. Set and check percent value provided     
+c		    as the second source variable
+        oprpct(k)=ciopso1x
+        if(oprPct(k).lt.0.0 .or. oprpct(k).gt.100.0) then
+          write(nlog,1207) cidvri, ityopr(k), oprpct(k)
+          goto 9999
+        endif
+c
+c ---------------------------------------------------------
+c		d3. Set source structure ndS and
+c		    decree limit to source (dcrdivS) and changed WR
+c       destination (dcrdivE)        
+        if(nx.gt.0) then
+          ndS=idivco(1,nx)     
+          idcdS=idvsta(ndS)
+          dcrdivS(k)=dcrdiv(nx)*(1.0-oprPct(k)/100.0)
+          dcrdivE(k)=dcrdiv(nx)*oprPct(k)/100.0
+        else
+          write(nlog,1194) cidvri, ityopr(k), ciopso1 
+          goto 9999
+        endif       
+c
+c ---------------------------------------------------------
+c		l. Detailed output
+c     
+        iout26=0
+        if(iout26.eq.1) then
+          call OprinOut(nlog, maxopr, k, 
+     1      ityopr(k), cidvri, 
+     1      ciopde, iopdes(1,k), iopdes(2,k), 
+     1      ciopso1, iopSou(1,k),iopsou(2,k),
+     1      ciopso2, iopsou(3,k),iopsou(4,k), creuse, ireuse1,
+     1      oprloss(k), oprlimit(k), iopSou(5,k),
+     1      cdivtyp(k), intern, cntern, cAssoc)
+        endif  
+c
+        goto 1190
      
 c _________________________________________________________
 c
@@ -4537,6 +4401,8 @@ c			            Plan should be a type 9 (OOP Plan)
 c			          If the source is a Plan the 
 c			            Plan should be a Reuse plan (type 4 or 6) or
 c                 OOP plan (type 9) or an Accounting Plan (type 11)
+c rrb 2014/11/24 If the source is an admin plan, variable creuse
+c                 should be the water right source
 c
 c rrb 2006/07/26; Revised to allow the source to be a reservoir
 c rrb 2007/08/17; Revised to allow the destination to be a plan
@@ -4605,6 +4471,15 @@ c		              amount diverted by another operating rule
           if(ioprlim(k).eq.1 .or. ioprlim(k).eq.2) then
             ip5=iopsou(1,nx)
             ciopsoX5(k)=pid(ip5)
+          endif
+c
+c rrb 2014/11/24; Set ciospoX5 to the diversion associated with the
+c                 operating rule source (should be a water right)
+          if(ioprlim(k).eq.5) then
+            ip5=iopsou(1,nx)
+cx            write(nlog,*) '  Oprinp; type 27; nx, ip5, cdivid(ip5)'
+cx            write(nlog,*) '  Oprinp; type 27', nx, ip5, cdivid(ip5)
+            ciopsoX5(k)=cdivid(ip5)
           endif
         endif     
 c
@@ -4721,6 +4596,7 @@ c                   is a Reuse Plan (type 4 or 6), an OOP plan
 c                   (type 9) or an Accounting Plan (type 11)
 c                    Note: istop=1 OK if not found)
 c			                     itype=7 Plan structure
+        iopsouP=0
         istop=1
         itype=7
         iacc=1
@@ -4733,6 +4609,9 @@ c			                     itype=7 Plan structure
           iopSouR(k)=itype             
           iopsou(1,k)=-iops1
           idcdS=ipsta(iops1)        
+c
+c rrb 2014/12/14; Set the plan type for checking
+          iopsouP=iplntyp(iops1)
 c
 c		Set Plan Ownership 
           oprpct(k)=ciopso1x
@@ -4819,9 +4698,9 @@ c		to the first carrier
         if(nc.gt.0) idcdX=idvsta(nc)
 c
 c ---------------------------------------------------------
-c		f. Check the source is upstream of the destination 
-c		   where idcdX is the destination diversion, reservoir,
-c		   plan or carrier   
+c		            f.Check the source is upstream of the destination 
+c		              where idcdX is the destination diversion, reservoir,
+c		              plan or carrier   
         ndns=ndnnod(idcdS)
         iss=idcdS
         csource=cstaid(iss)
@@ -4850,7 +4729,7 @@ c		               and store in ireuse(k)
         endif
 c
 c ---------------------------------------------------------
-c		i. Check proper type of reuse plan 
+c		            i. Check proper type of reuse plan 
 c                  Note iplntyp 3 & 5 are reservoir, 
 c                       iplntyp 4 & 6 are diversion
         if (ireuse1.gt.0) then
@@ -4865,7 +4744,7 @@ c         if(iopsou(1,k).lt.0 .and. iopdes(1,k).lt.0) then
           endif  
 c
 c		If the source is a plan and the destination is a diversion 
-c               the reuse plan shuld be type 4 or 6          
+c               the reuse plan should be type 4 or 6          
 c         if(iopsou(1,k).lt.0 .and. iopdes(1,k).gt.0) then
           if(iopsou(1,k).lt.0 .and. iopdesr(k).eq.3) then
             if(iplntyp(ireuse1).eq.4 .or. iplntyp(ireuse1).eq.6) iok=0
@@ -4901,7 +4780,7 @@ c		   Note a destination reservoir is always a diversion
         endif    
 c        
 c ---------------------------------------------------------
-c		j. Check the return type matches the data provided
+c		            j. Check the return type matches the data provided
        if(NAs2.eq.0 .and. iopsou(4,k).gt.0) then
          ipTC=iopsou(3,k)
          call chkPrf(nlog, ipTC, iprf(ipTC), ityopr(k), iopsou(4,k), 
@@ -4911,22 +4790,35 @@ c		j. Check the return type matches the data provided
            goto 9999
          endif
        endif    
-c        
+        
 c ---------------------------------------------------------
-c		k. Check a return to the river is located properly
-c		   Note idcdD=destination diversion, reservoir or plan
-c		   but not carrier
-c		   itypeR=0 Served directly,
+c		            l. Check a return to the river is located properly
+c		               Note idcdD=destination diversion, reservoir or plan
+c		               but not carrier
+c		               itypeR=0 Served directly,
 c                        =1 Served by Exchange
 cx       if(NAs2.eq.0) then
 cx         itypeR=0
 cx         call ChkRivRF(nlog, 27, k, fac, maxopr, maxsta,  
 cx     1    intern,  idcdD,  itypeR, idncod, ndnnod, cstaid,ioprsw(k), cidvri)
 cx       endif    
-       
+c        
+c ---------------------------------------------------------
+c rrb 2014/12/14;  Check if the source is an admin plan 
+c                  the source operating rule has been specified
+c                  by setting ioprlim(k)=5.
+c		            m. Check if the source is an admin plan that the variable
+c                   ioprlim(k)=5 to require the user to specify
+c                   the source of the water to be delivered 
+       if(iopsouR(k).eq.7 .and. iopsouP.eq.11) then
+         if(ioprlim(k).ne.5) then
+           write(nlog,937)  corid(k), ityopr(k), ciopso1, ioprlim(k)
+           goto 9999
+         endif
+       endif        
 c
 c ---------------------------------------------------------
-c		l. Detailed output
+c		            n. Detailed output
 c     
         iout27=0
         if(iout27.eq.1) then
@@ -4954,7 +4846,7 @@ c                source 1 (iopsou(1,k) = a plan
 c                source 2 (iopsou(3,k) = N/A
 c                  ion=1 means turn off opr right if right is off
         ion=1
-        idumc=ifix(dumc)
+        idumc=ifix(dumc)  
 c
 c ---------------------------------------------------------
 c               a1. Read monthly constraints 
@@ -4996,8 +4888,8 @@ c rrb 2007/07/03;
 c		            a4. Read the operating rule associated with
 c		               a monthly or annual plan limit adjustment
 c		               when Oprlimit(k) > 0
-c		istop=0  Stop if not found
-c		itype=24 Operating Rule with monthly and annual
+c		               istop=0  Stop if not found
+c		               itype=24 Operating Rule with monthly and annual
 c                        plan limits
 
         if(ioprlim(k).gt.0) then
@@ -5016,7 +4908,17 @@ c		              amount diverted by another operating rule
             ip5=iopsou(1,nx)
             ciopsoX5(k)=pid(ip5)          
           endif
-        endif     
+        endif  
+c
+c rrb 2014/11/24; Set ciospoX5 to the diversion associated with the
+c                 operating rule source that should be a water right
+          if(ioprlim(k).eq.5) then
+            ip5=iopsou(1,nx)
+cx            write(nlog,*) '  Oprinp; type 28; nx, ip5, cdivid(ip5)'
+cx            write(nlog,*) '  Oprinp; type 28', nx, ip5, cdivid(ip5)
+            ciopsoX5(k)=cdivid(ip5)
+          endif
+
 c
 c ---------------------------------------------------------
 c               b1. Find the destination, a diversion ID (type 3)
@@ -5110,6 +5012,7 @@ c
 c ---------------------------------------------------------
 c               c1. Find source 1 a plan (type 7)
 c                       istop=1 OK if not found
+        iopsouP=0
         istop=1
         itype=7
         iacc=1
@@ -5121,7 +5024,10 @@ c                       istop=1 OK if not found
         
           iopSouR(k)=itype        
           iopsou(1,k)=-iops1
-          idcdS=ipsta(iops1)       
+          idcdS=ipsta(iops1)  
+c
+c rrb 2014/12/14; Set the plan type for checking
+          iopsouP=iplntyp(iops1)     
 c
 c		Set Ownership 
           oprpct(k)=ciopso1x
@@ -5240,12 +5146,12 @@ c                       iplntyp 4 & 6 are diversion
           ireuse(k)=ireuse1        
           iok=1
 c
-c		Diversion destination (3)
+c		              Diversion destination (3)
           if(iopdesr(k).eq.3) then
             if(iplntyp(ireuse1).eq.4 .or. iplntyp(ireuse1).eq.6) iok=0
           endif  
 c
-c		Reservoir destination (2)          
+c		              Reservoir destination (2)          
           if(iopdesr(k).eq.2) then
             if(iplntyp(ireuse1).eq.3 .or. iplntyp(ireuse1).eq.5) iok=0
           endif
@@ -5295,10 +5201,25 @@ cx       if(NAs2.eq.0) then
 cx         itypeR=1
 cx         call ChkRivRF(nlog, 28, k, fac, maxopr, maxsta,  
 cx     1    intern,  idcdD,  itypeR, idncod, ndnnod, cstaid,ioprsw(k), cidvri)
-cx       endif    
+cx       endif 
+c        
+c ---------------------------------------------------------
+c rrb 2014/12/14;  Check if the source is an admin plan 
+c                  the source operating rule has been specified
+c                  by setting ioprlim(k)=5.
+c		            l. Check if the source is an admin plan that the variable
+c                   ioprlim(k)=5 to require the user to specify
+c                   the source of the water to be delivered 
+       if(iopsouR(k).eq.7 .and. iopsouP.eq.11) then
+         if(ioprlim(k).ne.5) then
+           write(nlog,937)  corid(k), ityopr(k), ciopso1, ioprlim(k)
+           goto 9999
+         endif
+       endif         
+c   
 c
 c ---------------------------------------------------------
-c		l. Detailed output
+c		m. Detailed output
 c     
         iout28=0
         if(iout28.eq.1) then
@@ -5350,7 +5271,10 @@ c		   when Oprlimit(k) > 0
         endif
 c rrb ***************
 c
-c rrb_2014-04-26; Allow the destination to be specified
+c rrb 2014-04-26; Allow the destination to be specified
+c rrb 2014/12/14; Revise logic to require the destination
+c                 be specified when the source is an admin plan
+c   
 c ---------------------------------------------------------
 c               b1. Find the destination, a river ID (type 0)
 c		   set istop=1 (OK if not found)
@@ -5447,8 +5371,7 @@ c         write(nlog,*) '  Oprinp 4; type 29 nr, np1, np2', nr, np1, np2
 c
 c ---------------------------------------------------------
 c
-c		f. Check if a source 1 reservoir plan is a reservoir 
-c                  when source 2 is a plan
+c		f. Check if a source 1 is a plan when source 2 is a plan
         if(np1.gt.0 .and. np2.gt.0) then
           write(nlog,938) corid(k), ityopr(k), ciopso1, ciopso2          
           goto 9999
@@ -5471,9 +5394,21 @@ cr        if(iplntyp(np1).eq. 3 .or. iplntyp(np2).eq.5) then
         endif
 c
 c ---------------------------------------------------------
-c		h. Detailed output
+c rrb 2014/12/14; Require the destination to be specified when
+c                 source 1 is an admin plan
+c		h. Check if source 1 is an admin plan that the destination 
+c                 has been specified.
+        if(np1.gt.0) then      
+          if(iplntyp(np1).eq. 11 .and. iopdes(1,k).eq.0) then
+            write(nlog,935) corid(k), ityopr(k), ciopso1, ciopde          
+            goto 9999
+          endif
+        endif
+c
+c ---------------------------------------------------------
+c		i. Detailed output
      
-        iout29=1
+        iout29=0
         if(iout29.eq.1) then
           call OprinOut(nlog, maxopr, k, 
      1      ityopr(k), cidvri, 
@@ -5483,13 +5418,12 @@ c		h. Detailed output
      1      oprloss(k), oprlimit(k), iopSou(5,k),
      1      cdivtyp(k), intern, cntern, cAssoc)
         endif  
-c       write(nlog,*) '  Oprinp 6; type 29 nr, np1, np2', nr, np1, np2        
+c       write(nlog,*) '  Oprinp 6; type 29 nr, np1, np2', nr, np1, np2
+c       exit the type 29 block
         goto 1190
 c _________________________________________________________
-c
-c         
- 1030   continue 
 c               Type 30; Re Store T&C release
+ 1030   continue 
 c rrb 05/02/01; 
         ion=1
         istop=0
@@ -6361,10 +6295,8 @@ c rrb 2006/10/17; Allow destination to be an OOP plan
             goto 9999
           endif  
         endif        
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		e. Detailed output
-     
         iout34=0
         if(iout34.eq.1) then
           write(nlog,2020) ityopr(k), cidvri, ityopr(k), 
@@ -6374,37 +6306,60 @@ c		e. Detailed output
      1      oprlimit(k), iopSou(5,k),
      1      cdivtyp(k), iopdesR(k)
         endif  
-        
         goto 1190
-
-
-c        
-c _________________________________________________________
-c
-c         
+c ______________________________________________________________________
  1035   continue 
 c               Type 35; Transmountain import
 c                destination = a diversion or a reservoir or carrier
+c jhb 2014/08    or an acct plan (plan type 11)
 c                source 1 (iopsou(1,k) = a diversion (import)
 c                source 2 (iopsou(3,k) = N/A
 c                  ion=1 means turn off opr right if right is off
         ion=1
         idumc=ifix(dumc)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a1. Read monthly constraints 
         istop=0
         cx='NA'
         call oprFind(ityopr(k), 20, idumc,k,ion,iprinto,ix, ix,
      1               nx, cx, 1, istop, rops2,ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a2. Read intervening structures
         istop=0
         call oprFind(ityopr(k), 21, idumc,k,ion,iprinto,ix, ix,
      1               nx, cx, 1, istop, rops2,ioprsw(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
+c jhb 2014/10/31 change the following logic so that the ONLY
+c         allowed destination type is a type 11 plan, but leave as
+c         much functionality from before so additional types can be
+c         (re)added later without too much work
+c       do this by copying the plan type search here first,
+c         set istop=0 to exit if a plan destination is not found
+c         and jump over the old code...
+c ______________________________________________________________________
+c       destination MUST be a plan when reaching here...
+        istop=0
+        itype=7
+        iacc=1
+        call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
+     1    iops1,iopdes(2,k), nx, ciopde, iacc,
+     1    istop, rops2,ioprsw(k), cidvri)
+        iopdes(1,k)=iops1
+        idcdD=ipsta(iops1)
+        iopdesr(k)=7
+c ______________________________________________________________________
+c       Check proper type
+c jhb 2014/08 for now the only plan type that is allowed is a plan type 11
+        iok=1
+        if(iplntyp(nx).eq.11) iok=0
+        if(iok.eq.1) then
+          write(nlog,1256) ityopr(k),cidvri, ciopso1, iplntyp(nx)
+          goto 9999
+        endif
+c ______________________________________________________________________
+c jhb 2014/10/31 old code start...jump over this
+        goto 1111
+c ______________________________________________________________________
 c               b1. Find the destination, a diversion ID (type 3)
 c		   set istop=1 Do not Stop if not found
         istop=1
@@ -6426,25 +6381,75 @@ c                       istop=1 (OK if not found)
           call oprFind(ityopr(k), 2, idumc,k,ion,iprinto,
      1         iops1, iopdes(2,k), nx,ciopde, 1, istop, rops2,
      1         ioprsw(k), cidvri)
-          iopdes(1,k)=-iops1
-          idcdD=irssta(iops1)
-          iopdesr(k)=2
-c         write(nlog,*) '  Oprinp; Type 28 iopdes(1,k) = ', iopdes(1,k)
+c         this is a gnu fortran precompiler thing
+c         but sometimes the whole if block is evaluated at once
+c         causing array bounds runtime errors even though the
+c         if statement in theory would avoid it...
+c         so pop an empty block in front...
+          if(iops1.eq.0) then
+c           can not get here, but put a fake block anyway. see above.
+            istop=1
+          else
+            iopdes(1,k)=-iops1
+            idcdD=irssta(iops1)
+            iopdesr(k)=2
+c           write(nlog,*) '  Oprinp; Type 28 iopdes(1,k) = ', iopdes(1,k)
+          endif
         endif
 c        
+c ---------------------------------------------------------
+c jhb 2014/08 added another transbasin import destination type,
+c             an accounting plan (type 11)
+c             note: this should be the default and possibly only
+c                   mode for a type 35 rule in the future
+c                   according to the state's statemod modeling experts
+c                   but leave it as is for backward compatibility,
+c                   and just remove the documentation of the other modes
+c ---------------------------------------------------------
+c               b2.5 Find destination = an acct plan (plan type 11)
+c          Note istop=0 Stop if not found
+c               istop=1 Do not Stop if not found
+c jhb 2014/08 note that itype=7 means find any plan type,
+c             not just a type 7 plan!
+        if(iops1.eq.0) then
+c         destination MUST be a plan when reaching here...
+          istop=0
+          itype=7
+          iacc=1
+          call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
+     1       iops1,iopdes(2,k), nx, ciopde, iacc,
+     1       istop, rops2,ioprsw(k), cidvri)
+
+          iopdes(1,k)=iops1
+          idcdD=ipsta(iops1)
+          iopdesr(k)=7
+c
+c         Check proper type
+c jhb 2014/08 for now the only plan type that is allowed is a plan type 11
+          iok=1
+          if(iplntyp(nx).eq.11) iok=0
+          if(iok.eq.1) then
+            write(nlog,1256) ityopr(k),cidvri, ciopso1, iplntyp(nx)
+            goto 9999
+          endif
+        endif
 c ---------------------------------------------------------
 c rrb 2008/03/21; Revised warning when several destinations are possible        
         if(iops1.eq.0) then
           write(nlog,1300) cidvri, ityopr(k), ciopde
           goto 9999
         endif   
-        
-c
+c ______________________________________________________________________
+c jhb 2014/10/31 old code end...jump over this
+ 1111   continue
+c ______________________________________________________________________
+c jhb 2014/08 the following is a problem since intern(k,1) has not been
+c             set and is still = 0 (the initialized value)
+c             but it doesn't break anything, so leave it alone for now
 c ---------------------------------------------------------
 c               b3. If a carrier then reset the destination location
         nc=intern(k,1)
         if(nc.gt.0) idcdD=idvsta(nc)
-     
 c
 c ---------------------------------------------------------
 c               c. Find source 1 a transmountain import plan (type 7)
@@ -6469,38 +6474,41 @@ c		Check proper type
         endif  
 c
 c ---------------------------------------------------------
+c jhb 2014/08 don't deal with reuse plans if the destination is a type 11 plan
+c ---------------------------------------------------------
 c               d. Find destination reuse plan named Creuse, if any, and
 c		   Store in ireuse(k)
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
-
-        iacc=0
-        ion=-1
-        istop=0
-        ireuse1=0
-cr      if(creuse(1:3).ne.'N/A') then
-        if(NAuse.eq.0) then                
-          call oprFind(ityopr(k), 7, idumc,k,ion,iprinto,
+        if(iopdesr(k).eq.7) then
+        else
+          iacc=0
+          ion=-1
+          istop=0
+          ireuse1=0
+cr        if(creuse(1:3).ne.'N/A') then
+          if(NAuse.eq.0) then
+            call oprFind(ityopr(k), 7, idumc,k,ion,iprinto,
      1         ireuse1,iops2, nx, creuse, iacc, istop, rops2,
      1         ioprsw(k), cidvri)     
-        endif
+          endif
 c
 c ---------------------------------------------------------
-c		f. Check proper type of plan for a TransMountain Import
+c         f. Check proper type of plan for a TransMountain Import
 c                  Note iplntyp 3 & 5 are reservoir, 
 c                       iplntyp 4 & 6 are diversion
-        if (ireuse1.gt.0) then
-          ireuse(k)=ireuse1        
-          
-          iok=1          
-          if(iopdes(1,k).lt.0 .and. iplntyp(ireuse1).eq.5) iok=0
-          if(iopdes(1,k).gt.0 .and. iplntyp(ireuse1).eq.6) iok=0
-          if(iok.eq.1) then
-            write(nlog,1255) ityopr(k),cidvri, ciopde, creuse, 
-     1        iplntyp(ireuse1)
-            goto 9999
-          endif  
-        endif        
+          if (ireuse1.gt.0) then
+            ireuse(k)=ireuse1
+            iok=1
+            if(iopdes(1,k).lt.0 .and. iplntyp(ireuse1).eq.5) iok=0
+            if(iopdes(1,k).gt.0 .and. iplntyp(ireuse1).eq.6) iok=0
+            if(iok.eq.1) then
+              write(nlog,1255) ityopr(k),cidvri, ciopde, creuse,
+     1          iplntyp(ireuse1)
+              goto 9999
+            endif
+          endif
+        endif
 c
 c ---------------------------------------------------------
 c		e. Detailed output
@@ -7204,7 +7212,7 @@ c         write(nlog,*) ' Oprinp; Type 41 limiting Plan ID ', ciopso5
 c
 c		Check the plan specified is an OOP Plan          
           iok=1
-          if(iplntyp(iops1).eq.9 .or. iplntyp(iopd1).eq.10) iok=0
+          if(iplntyp(iops1).eq.9 .or. iplntyp(iops1).eq.10) iok=0
           if(iok.eq.1) then
             write(nlog,1263) ityopr(k),cidvri, creuse, iplntyp(iops1)
             goto 9999
@@ -7640,8 +7648,8 @@ c		            a4. Read the operating rule associated with
 c		                a monthly or annual plan limit adjustment
 c		                when Oprlimit(k) > 0
 c		                istop=0  Stop if not found
-c	                 	itype=24 Operating Rule ID with monthly and annual
-c                             plan limits
+c	                 	itype=24 find monthly and annual plan limits
+c                                within the operating rule
 c               
 cx    write(nlog,*) ' Oprinp; type 45 ioprlim ', ioprlim(k)
       if(ioprlim(k).eq.4) then
@@ -8106,7 +8114,6 @@ c        left on (iopsou(2,k) = 0
 c
 c ---------------------------------------------------------
 c		r. Detailed output
-     
       iout45=0
       if(iout45.eq.1) then
         write(nlog,2020) ityopr(k), cidvri, ityopr(k),
@@ -8723,17 +8730,13 @@ cx     1        ciopso2
 cx            goto 9999          
 cx          endif
         endif   
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               h. Find the exchange point (iopsouX)
 c                  for the source and destination
-        
         call oprExp(nlog, maxsta, idcdD, iscdS, idncod, ndnnod, 
      1                    iExPoint(k), cidvri)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		l. Detailed output
-c     
         iout49=0
         if(iout49.eq.1) then
           call OprinOut(nlog, maxopr, k, 
@@ -8744,18 +8747,13 @@ c
      1      oprloss(k), oprlimit(k), iopSou(5,k),
      1      cdivtyp(k), intern, cntern, cAssoc)
         endif  
-c
         goto 1190
-c        
 c _________________________________________________________
-c
-c         
  1050   continue 
-c 
+c ______________________________________________________________________
 c               Type 50; South Platte Compact Storage
 c		   Instream flow tied to a stream gage
 c		   Demand = max(0, min(ifa, qindex-q@ifa))
-c
 c      ion=1 means turn off opr right if right is off
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
@@ -8763,17 +8761,13 @@ c		        istop=1 Do not Stop if not found
         istop=0
         idcdd=0
         iss=0
-        
         idumc=ifix(dumc)
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               a. Read monthly constraints 
         istop=0
         call oprFind(ityopr(k), 20, idumc,k,ion,iprinto,
      1       ix, ix, nx, cx, 1, istop, rops2,ioprsw(k), cidvri)      
-c
-c ---------------------------------------------------------
-c
+c ______________________________________________________________________
 c rr 2006/03/29; Plan destination
 c               b. Find the destination, a plan
 c		istop=0 Stop if a structure is not found
@@ -8785,22 +8779,18 @@ c		itype=7= plan structure
         call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
      1         iops1, iopdes(2,k), nx,ciopde, iacc, 
      1         istop, rops2,ioprsw(k), cidvri)
- 
          iopdes(1,k) = iops1
          ndD=iops1
          idcdD=ipsta(ndD) 
          idcdX=idcdD            
          iopDesR(k)=itype
-c
 c		Check Plan type is an Admin Plan         
          if(iplntyp(ndD).ne.11) then
            write(nlog,1255) ityopr(k),cidvri, ciopde, creuse, 
      1      iplntyp(ndD)
            goto 9999
          endif   
-c
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c               c. Find source 1 an ISF Right
 c                  Note itype=0 for a stream ID
 c		   Note istop=0 Stop if not found
@@ -8817,13 +8807,10 @@ c			  itype=11 = ISF Right
         call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
      1       iops1,iopsou(2,k), nx, ciopso1, 1, istop, rops2,
      1       ioprsw(k), cidvri)
-        
         iopSouR(k)=itype
         iopsou(1,k)=iops1
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		            d. Detailed output
-     
         iout50=0
         if(iout50.eq.1) then
           write(nlog,2020) ityopr(k), cidvri, ityopr(k),
@@ -8833,33 +8820,22 @@ c		            d. Detailed output
      1      oprlimit(k), iopSou(5,k),
      1      cdivtyp(k), iopdesR(k)
         endif
-        
         goto 1190
-        
-c
-c *********************************************************
-c _________________________________________________________
+c ______________________________________________________________________
 c          End operation file loop                                      
-c
  1190 CONTINUE
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Print warning if the dimension is exceeded
-C
       write(nlog,1200) cidvri, MAXOPR, maxops
       goto 9999                                                         
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Normal Exit from reading data
 c		Set number of rules read
-      
  1210 NUMOPR=K                                                      
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Print warning regarding Admin number
       if(iprinta.gt.0) then
         rewind(ntmp)
-c
 c rrb revise to read comments plus operating rule data
 cs      do i=1,numopr
         do i=1,maxopr
@@ -8868,12 +8844,10 @@ cs      do i=1,numopr
         end do
  902    rewind(ntmp)
       endif         
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Print warning to review check file 
 c     if(iwarno.gt.0) write(nlog,1281)  'Operating Rights'
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Print number of rights read      
       write(nlog,640)
       i1=0
@@ -8884,12 +8858,9 @@ c		Print number of rights read
         endif  
       end do
       write(nlog,644) i1, numopr
-      
       write(nlog,*) 
       write(nlog,630) 'Operating   ', numopr, koff, numopr-koff                                                       
- 
-c 
-c _________________________________________________________
+c ______________________________________________________________________
 c               Step C1; 
 c               Check that all out of priority water rights
 c               are tied to a type 8 operation right
@@ -8901,8 +8872,7 @@ c               are tied to a type 8 operation right
           endif
         end do
       endif
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c               Step C2; 
 c               Check if simulating sprinkler use with Max Supply
 c                 but no operating rule
@@ -8911,22 +8881,18 @@ c                 but no operating rule
         do k=1,numopr
           if(ityopr(k).eq.21 .and. ioprsw(k).ge.1) ifound=1
         end do
-
         if(ifound.eq.0 .and. isprink.eq.1) then
           write(nlog,1201) cidvri, ityopr(k), isprink
           goto 9999
         endif
-c
 c rrb 2009/04/24; Allow isprink=2 to be mutual approach
 cx      if(ifound.eq.1 .and. isprink.eq.0) then
         if(ifound.eq.1 .and. isprink.ne.1) then
           write(nlog,1204) cidvri, ityopr(k), isprink
           ioprsw(k)=0
         endif
-
       endif
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c               Step C3; 
 c               Check if simulating Soil Moisture use 
 c                 but no operating rule
@@ -8935,12 +8901,10 @@ c                 but no operating rule
         do k=1,numopr
           if(ityopr(k).eq.22 .and. ioprsw(k).ge.1) ifound=1
         end do
-
         if(ifound.eq.0 .and. isoil.eq.1) then
           write(nlog,1202) cidvri, ityopr(k), isoil
           goto 9999
         endif
-c
 c rrb01/04/01; Allow -1 code
 c       if(ifound.eq.1.and. isoil.eq.0) then
         if(ifound.eq.1.and. isoil.le.0) then
@@ -8948,8 +8912,7 @@ c       if(ifound.eq.1.and. isoil.eq.0) then
           ioprsw(k)=0
         endif
       endif
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c               Step C4; 
 c               Check if simulating a diversion reuse plan (type 4 or 6)
 c               but no operating rule to spill (type 29) is specified
@@ -8957,20 +8920,16 @@ c               but no operating rule to spill (type 29) is specified
       ifound=0
       do k=1,numopr
 c       write(nlog,*) ' Oprinp; Test k', k
-      
         creuse = creuseX(k)        
         if(creuse(1:2).ne.'NA' .and. ioprsw(k).ne.0) then
-          
           ip=ireuse(k)
           if(ip.gt.0) then       
             if(iPlntyp(ip).eq.4 .or. iPlntyp(ip).eq.6) then
-
               ifound=0
               do k2=1,numopr
                 if(creuse.eq.ciopsoX(1,k2) .and. 
      1            ityopr(k2).eq.29) ifound=1
               end do
-              
               if(ifound.eq.0) then
                 write(nlog,932) corid(k), ityopr(k), creuseX(k)
                 iwarnp=iwarnp+1
@@ -8979,9 +8938,8 @@ c       write(nlog,*) ' Oprinp; Test k', k
           endif  
         endif            
       end do 
-c           
       if(iwarnp .gt. 0) goto 9999
-c
+c ______________________________________________________________________
 c rrb 2011/07/28; the following logic is no longer required since
 c                 logic is added to check all destinations including
 c                 those assigned to a type 46,multi user, rule      
@@ -9026,8 +8984,7 @@ c rrb        endif
 c rrb      end do 
 c rrbc                                          
 c rrb      if(iwarnp .gt. 0) goto 9999            
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c rrb 2011/07/28
 c               Step C6; 
 c               Check if simulating an Accounting Plan (type 11)
@@ -9037,32 +8994,26 @@ c               check is done separately (just below)
       iwarnp=0
       ifound=0
       do k=1,numopr
-c
 c               Check if the destination is a plan
         if(iopdesR(k).eq.7) then      
-          write(nlog,*) ' Oprinp; Plan spill check k', k
-c
+c          write(nlog,*) ' Oprinp; Plan spill check k', k
 c rrb 2014-06-15; Revise to allow a negative value to be used
 c                 to indicate a plan
 cx        ip=iopdes(1,k)
           ip1=iopdes(1,k)
           ip=amax0(ip1, -1*ip1)
           ciopde=ciopdeX(1,k)     
-              
           if(ip.gt.0) then       
             if(iPlntyp(ip).eq.11) then
-c
 c               Check if a type 29 rule has been specified      
               ifound=0       
               do k2=1,numopr
                 if(ciopde.eq.ciopsoX(1,k2) .and. 
      1            ityopr(k2).eq.29) ifound=1
               end do
-c
 c              Special treatment when the Accounting plan is
 c              the South Platte Compact  
               if(ityopr(k).eq.50) ifound=1
-      
               if(ifound.eq.0) then
                 write(nlog,933) corid(k), ityopr(k), ciopdeX(1,k)
                 iwarnp=iwarnp+1
@@ -9071,10 +9022,8 @@ c              the South Platte Compact
           endif  
         endif  
       end do 
-c                                          
       if(iwarnp .gt. 0) goto 9999          
-c
-c _________________________________________________________
+c ______________________________________________________________________
 c rrb 2011/07/28
 c               Step C7; 
 c               If simulating a type 46 multi user rule check
@@ -9083,11 +9032,8 @@ c               has a type 29 spill rule specified.
       iwarnp=0
       ifound=0
       do k=1,numopr
-c
 c               Check if the destination is a plan
         if (ityopr(k).eq.46) then
-c        
-c ---------------------------------------------------------
 c 		c1b; Loop for number of destinations
           n1=0
           n2=0 
@@ -9097,20 +9043,16 @@ c 		c1b; Loop for number of destinations
             n2=n1+1 
             ciopde=ciopdeX(n,k)                  
             ip=iopdes(n1,k)
-            
 cx            write(nlog,*) '  Oprinp;', k, ityopr(k),n, n1, n2, ip, 
 cx     1        iplntyp(ip), ciopde  
-c                                
             if(ip.gt.0) then       
               if(iPlntyp(ip).eq.11) then
-c           
 c                 Check if a type 29 rule has been specified      
                 ifound=0       
                 do k2=1,numopr
                   if(ciopde.eq.ciopsoX(1,k2) .and. 
      1              ityopr(k2).eq.29) ifound=1
                 end do
-c           
                 if(ifound.eq.0) then
                   write(nlog,933) corid(k), ityopr(k), ciopdeX(n,k)
                   iwarnp=iwarnp+1
@@ -9120,27 +9062,20 @@ c
           end do
         endif  
       end do 
-c                                          
       if(iwarnp .gt. 0) goto 9999          
-c                           
-c _________________________________________________________
-c
+c ______________________________________________________________________
 c   		        Step C8; Check every reservoir plan is tied to a 
 c                 reservoir
 c		              Note copied from PlanEva on 6/5/06 to allow 
 c                 other checks to occurr here
 c                 Note Type 3=Reuse_Reservoir and 
 c                 Type 5=Reuse_Reservoir_Tmtn      
-c                           
-c ---------------------------------------------------------
 c		Initilize check
       do i=1,maxown
         iwarn(i)=0
         idum(i)=0
       end do
-            
-c
-c ---------------------------------------------------------
+c ______________________________________________________________________
 c		Warn if more that one reservoir plan 
 c               is tied to the same reservoir and owner
       do i=1,maxown
@@ -9150,20 +9085,17 @@ c               is tied to the same reservoir and owner
           goto 9999
         endif
       end do
-c ____________________________________________________
-c
+c ______________________________________________________________________
 c 		          Step C9; Check if the same plan (source 3) 
 c                 is tied to a different reservoir and account
       do np=1,nplan
         idum(np)=0
       end do
-        
       do k1=1,numopr
         if(ityopr(k1).eq.32 .or. ityopr(k1).eq.33) then      
           np1=iopsou(3,k1)
           nr1=iopsou(1,k1)
           na1=iopsou(2,k1)
-          
           do k2=k1+1,numopr
             if(ityopr(k2).eq.32 .or. ityopr(k2).eq.33) then      
               np2=iopsou(3,k2)
@@ -9178,9 +9110,7 @@ c                 is tied to a different reservoir and account
           end do  
         endif
       end do    
-
-c ____________________________________________________
-c
+c ______________________________________________________________________
 c rrb 2007/07/09; 
 c 		          Step C10; Check conflicting direct flow exchange (24)
 c			            and direct flow bypass (25) operating rules
@@ -9198,7 +9128,7 @@ c			            and direct flow bypass (25) operating rules
             end do  
           endif  
         endif
-c
+c ______________________________________________________________________
 c		Check if the same source right is used by multiple
 c		operating rules
         if(ityopr(k1).eq.24 .or. ityopr(k1).eq.25) then  
@@ -9213,23 +9143,11 @@ cx          if((k1.ne.k2) .and. (iopsou(1,k1).eq.iopsou(1,k2))) then
           end do  
         endif
       end do    
-
-c
-c ____________________________________________________
-c
-c		Close
+c ______________________________________________________________________
  901  close(55)
-c
-c ____________________________________________________
-c
-c		Return                                                                       
-
  500  return
-c
-c ____________________________________________________
-c
+c ______________________________________________________________________
 c		Warnings
-c
   916 format(/
      1 '  Oprinp; Warning *.opr rule ID ', a12 ' Type ', i5,/  
      1 '          has source 2 (ciopso(2) = ',a12,/
@@ -9237,47 +9155,37 @@ c
      1 '          which is not allowed. ',/
      1 '          recommend you revise the operating rule file.',/
      1 '          StateMod is continuing to operate as if it is zero')
-     
   918 format(/
      1 '  Oprinp; Warning *.opr rule ID ', a12,/  
      1 '          has a release type (iopdes(4,k)) = ', i5,/
      1 '          which means make a reservoir release only if a', /
      1 '          ditch has a CIR.  Since you have the variable'/
      1 '          efficiency off in the *.ctl file this has no effect')
-  
   919 format(/
      1 '  Oprinp; Warning *.opr rule ID ', a12,  
      1          ' has a destination account = ', i5,/
      1 '          which means the opr rule treats the reservoir', 
      1          ' as a total, not by an account')
-
   925 format(/
      1 72('_'),/  
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, / 
      1 '          destination account = ', i5, ' Reset to 1')
-     
-
-c ____________________________________________________
-c
-c
+c ______________________________________________________________________
 c               Error Handling         
-c
   926 write(nlog,927) iin2, filena
   927 format(/, 72('_'),/
      1 '  Oprinp; Problem. End of file # ', i4, ' encountered',/,
      1       '   File name: ', a256)
       goto 9999
-c        
+c ______________________________________________________________________
   928 write(nlog,929) iin2, filena, cidvri
   929 format(/, 72('_'),/
      1 '  Oprinp; Problem reading file # ', i4,/,
      1 '          File name    = ', a256,/
      1 '          Last ID read = ', a12,/
-     1 '          Last record read:')
-
-c ---------------------      
-c
-
+     1 '          ():')
+c     1 '          Last record read:')
+c ______________________________________________________________________
       backspace(iin2)
       recin=' '
       read (iin2, '(a256)',end=926,err=926) recin
@@ -9287,16 +9195,15 @@ c
      1 '        Check input data of *.opr',/      
      1 '        Also be sure Names and IDs have no blanks',/
      1 '        (e.g. revise "My Name" to "My_Name").')
-  
       goto 9999
-     
+c ______________________________________________________________________
  2000 write(nlog,2010) cidvri, ITYOPR(K)      
  2010 format(
      1 ' Oprinp; Problem with *.opr rule ID = ', a12,
      1 ' itype ', i5, / 
-     1 10x,'Cannot read destination water right',)
+     1 10x,'Cannot read destination water right')
       goto 9999
-
+c ______________________________________________________________________
  2020   format(/,60('_'),/
      1  '  Oprinp; Detailed output for type ', i5,/
      1  10x, 'ID and Type      = ', a12, i5,/
@@ -9314,14 +9221,13 @@ c
      1  10x, 'Junior Right     = ', a12, i5)
  2022   format(    
      1  10x, 'Opr Right        = ', a12, i5)
-  
  2040 write(nlog,2042) cidvri, ITYOPR(K)      
  2042 format(/,72('_'),/
      1 '  Oprinp; Problem with *.opr rule ID = ', a12,' type ', i5,/  
      1 9x,'Cannot read the data associated with the ownership %',/
      1 9x,'recommend you revise the Operating rule (*.opr) file data')
       goto 9999
-      
+c ______________________________________________________________________
  2044 write(nlog,2046) cidvri, ITYOPR(K), iopsou(2,k)      
  2046 format(/,72('_'),/
      1 '  Oprinp; Problem with *.opr rule ID = ', a12,' type ', i5,/  
@@ -9330,7 +9236,7 @@ c
      1 9x,'reset. For example 1= January, 2=March, etc.',/
      1 9x,'Recommend you revise the Operating rule (*.opr) file data')
       goto 9999      
-      
+c ______________________________________________________________________
  2048 write(nlog,2049) cidvri, ITYOPR(K), ioprlim(k)
  2049 format(/, 72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12,' type ', i5,/  
@@ -9344,7 +9250,7 @@ c
      1 10x,'  diversion and a diversion demand limit is expected.',/
      1 10x,'Recommend you revise the operating rule data.')  
       goto 9999    
-      
+c ______________________________________________________________________
  2050 write(nlog,2051) cidvri, ITYOPR(K)
  2051 format(/,72('_'),/
      1 '  Oprinp; Problem with *.opr rule ID = ', a12,' type ', i5,/  
@@ -9355,30 +9261,24 @@ c
      1 10x, '  and provide carrier with loss data. Note if there',/
      1 10x, '  is no loss, set variable OprLossC = 0')
       goto 9999
-      
-      
+c ______________________________________________________________________
  9999 write(6,1250)
       write(nlog,1250)
       write(6,*) 'Stop 1'
       call flush (6)
       call exit(1)
-
       stop 
-c
-c              Formats
-c _________________________________________________________
+c ______________________________________________________________________
+c     Formats
   200 format(/, 72('_'), /,'  Oprinp; Operational File (*.opr) ')
-  
   201 format(/,
      1 '  Oprinp; Old operational right (*.opr) file provided',/
      1 '          That DOES NOT INCLUDE variable OprLoss and OprLimit'/
      1 '          Start Date and End Date')         
-     
   202 format(/,
      1 '  Oprinp; New operational right (*.opr) file provided',/
      1 '          That DOES INCLUDE variable OprLoss and OprLimit'/
      1 '          Start Date and End Date')         
-          
   203 format(/,
      1 '  Oprinp; Warning a possible mixture of new and old ',/
      1 '          operarating right formats determined',/
@@ -9390,7 +9290,6 @@ c _________________________________________________________
      1 '             and ioEnd with your data.',/
      1 '          Note the *.chk file includes data in the new',/
      1 '          format including any comments in the original file')
-     
   104 format(/,
      1  '  Oprinp; Warning StateMod Version 11.46 and greater revised',/
      1  '          the input data used by a Carrier (Type 11) and ',/
@@ -9405,7 +9304,6 @@ c _________________________________________________________
      1  '          (*.opr) and results accordingly.')
      
   105 format('  Oprinp; Operating Rule dates ',i5, 1x, a12, 1x, 3i5)           
-     
   110 FORMAT(A256)                                                       
   120 format(4x, a256)
   131 format('  Oprinp; k, cidvri, nameo ', i5, 1x, a12, 1x, a24)
@@ -9413,59 +9311,47 @@ c _________________________________________________________
      1         1x,a12)             
   140 format(/, 
      1 '  Oprinp; k, ityopr(k) = ', 2i5)
-     
  1321   format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,f8.0), i8,
      1         1x,a12, 1x,a12, 1x, 2f8.0, 2i8)      
  1322   format(        a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,f8.0), i8)
  1324   format(a12,a24,a12,f16.5,f8.0,i8, 3(1x,a12,f8.0), i8,
      1         1x,a12, 1x,a12, 1x, 2f8.0,2i8, i5)             
-            
   133   format(i5, 1x, a12, 1x, i5)
   134   format(12x,24x,12x,16x,  f8.0,f8.0, 3(1x,a12,i8), 20i8)  
-
-
   590 format(/, 72('_'),/
      1  '  Oprinp; Problem with Operation right = ', a12,/                 
      1 10x,'Operation type  = ', i5,/
      1 10x,'Allowable range = ', i5)
-     
   592 format(/, 72('_'),/
      1 '  Oprinp; Problem with Operation right = ', a12,/                 
      1 10x,'Do not expect ', f8.0, ' structures or',                 
      1 10x,' month codes for this type of operating rule.'/
      1 10x,' Note: a negative value indicates 12 monthly codes will',
      1 10x,' be provided plus some n-12 intervening structures')             
-     
   630 format(/,72('_'),/  
      1  '  Oprinp; Number of ', a12,    ' Rights = ', i5,/
      1  '          Number turned off             = ', i5,/
      1  '          Number active                 = ', i5)
-     
   640  format(/,72('_'),//
      1 '  OprinP; Number of Operating Rule Types '/,
      1 '    # Type Description                Number',/
      1 ' ____ ____ _________________________ _______' )
-     
   642  format(2i5, 1x, a25, i8)      
   644  format(
      1 ' ____ ____ _________________________ _______' ,/
      1 i5,  '   NA Total                    ',i8)
-  
-  
   672  FORMAT(/,     
      1  '  Oprinp; Warning for Operation right = ', a12,/,
      1 10x,'It is carrying water from source ', a12, 
      1 10x,'through itself ', a12,/
      1 10x,'To fix: 1. Delete carrier ', a12, /,
      1 10x,'        2. Revise # of carriers')
-
   720 format(/, 72('_'),/
      1  '  Oprinp; Problem with Operation right = ', a12,/
      1 10x,'Cannot find source ID  ',a12, 'at location ', i5,/
      1 10x,'Note if the source is a operating right',/,
      1 10x,'that right must be on and occur in the *.opr',/
      1 10x,'file befor this right')
-     
   721 format(/, 72('_'),/
      1  '  Oprinp; Problem with Operation right = ', a12,/
      1 10x,'Cannot find source ID  ',a12,' or source account ', i8)
@@ -9645,6 +9531,18 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Recommend you revise source 1 to be a Reservoir ID',/
      1 '          and source 2 a plan ID')
      
+  935 format(/,
+     1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
+     1 '          Operation type                       = ',i5,/     
+     1 '          Your source 1 is Administration Plan = ',a12,/
+     1 '          and the destination specified        = ',a12,/
+     1 '          When the source is an administrative plan, ',/
+     1 '          the Type 29 rule requires the destinaion ',/
+     1 '          be the location of the source water right',/
+     1 '          used to divert water to the administration plan.',/
+     1 '          Recommend you revise the destination to be the ',/
+     1 '          location of the source water right.') 
+     
   936 format(/,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
      1 '          Operation type                     = ', i5,/          
@@ -9652,6 +9550,18 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Cannot be found',/
      1 '          Recommend you revise the source 1 ID')
      
+  937 format(/,
+     1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
+     1 '          Operation type                     = ', i5,/          
+     1 '          Source 1 an administration plan ID = ', a12,/
+     1 '          and the miscellaneous limit (OprLimit) = ', i5,/
+     1 '          When the source is an admin plan, oprlimit',/
+     1 '          must be 5 and the operating rule used to divert',/
+     1 '          the source water must be specified as the ',/
+     1 '          associated operating rule in row 4.',/
+     1 '          Recommend you revise Oprlimit and specify the',/
+     1 '          associated operating rule in row 4.')
+          
   938 format(/,
      1 '  Oprinp; Problem with *.opr rule ID         = ', a12, /
      1 '          Operation type                     = ', i5,/     
@@ -10159,7 +10069,7 @@ c    1 10x,'   at the source or destination structure',/
      1 10x,'rule file (*.opr)')
      
  1300 format(/,72('_'),/                                                          
-     1 '  Oprinp; Problem with Operating Right ', a12,, ' Type = ',i2,/
+     1 '  Oprinp; Problem with Operating Right ', a12, ' Type = ',i2,/
      1 '          The destination ID = ',a12, ' cannot be found',/
      1 '          Recommend you confirm it exists and is a structure',/
      1 '          type supported by this operating rule')
@@ -10206,7 +10116,7 @@ c    1 10x,'   at the source or destination structure',/
      1 '          the operating rule data')
      
  1370  format(/, 72('_'),/, 
-     1 '  Oprinp; Problem with Operating right type     = ', i2,,/
+     1 '  Oprinp; Problem with Operating right type     = ', i2,/
      1 '          Operating right ID                    = ', a12,/
      1 '          has a T&C requirement with the source = ', a12,/
      1 '          but operating rule ID                 = ', a12,/
@@ -10228,9 +10138,18 @@ c    1 10x,'   at the source or destination structure',/
      1 '          Recommend you exchange or bypass the water',/
      1 '          right to an Administration Plan, then release',/
      1 '          from that plan to as many users as necessary.')
+c
+ 1382 format(/, 72('_'), /,'  Oprinp; ',
+     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+     1 10x,'The destination (Plan) = ', a12,' and the',/
+     1 10x,'Plan type              = ',i1,11x,' are inconsistent.',/
+     1 10x,'Note: The only destination plan type allowed for a',/
+     1 10x,'      type 26 operating rule is 11')
+    
 
 c
 c _________________________________________________________
 c
 
       END
+

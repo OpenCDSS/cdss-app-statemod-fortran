@@ -25,15 +25,15 @@ c _______________________________________________________
        dimension avail(maxsta)
 
        ifirst=ifirst+1
-       if(ifirst.eq.1) write(nlog,200) icx, nchkA, (n, n=1,10)
+       if(ifirst.eq.1) write(nlog,200) icx, nchkA, (n, n=1,20)
 
        write(nlog,210) ifirst, icx, nchkA, (avail(n)*fac, n=1,numsta) 
      
  200   format(/,
      1 ' ChkAvail2; Called by subroutine ', i5,' nchkA = ', i5,/,
-     1 '    #  icx     nchkA', 10('  Avail-',i2),/
-     1 ' ____  ___ _________', 10(' _________'))
- 210   format(2i5, i10, 10f10.2(/,10x10f8.2))
+     1 '    #  icx     nchkA', 20('  Avail-',i2),/
+     1 ' ____  ___ _________', 20(' _________'))
+ 210   format(2i5, i10, 20f10.2(/,20x10f8.2))
 
        return
        stop

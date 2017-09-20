@@ -167,7 +167,9 @@ c               Daily StreamGage_Base (*.xgy)
         open(79,FILE=filena,STATUS='Unknown')
 c
 c               Daily StreamEstimage_Base (*.xey)
-        call namext(maxfn, filenc, 'xgy', filena) 
+        !jhb May 2014 typo in file name extension
+        !call namext(maxfn, filenc, 'xgy', filena)
+        call namext(maxfn, filenc, 'xey', filena)
         open(80,FILE=filena,STATUS='Unknown')
       
       endif

@@ -281,7 +281,7 @@ c
      1   'DivChk = reoperaton control, DivSum = reoperaton ',
      1   'sum (if > DivChk reoperate)',//
      1 '                                                     ',
-     1 '                                    ',
+     1 '                               ',
      1 '    Divert    DivSum    DivChk',/
      1 '    # Year Mon Day Reop   l2 Reason       ',
      1 'Opr Type Right ID    ',

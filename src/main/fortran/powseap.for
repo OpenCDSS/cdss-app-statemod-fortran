@@ -3,7 +3,6 @@ c *********************************************************
 c
       subroutine PowseaP(iw,l2,divact,ncallX)
 c
-c
 c _________________________________________________________
 c	Program Description
 c
@@ -11,27 +10,73 @@ c	 Type 29; Plan spill
 c       PowseaP; It simulates a type 29 operating rule that
 c               makes a plan releases (spill) from a plan
 c	            	or a reservoir and a plan
-c	            
-c	            iopsou(1, ) 	> 0 Source 1 is a reservoir
-c	            iopsou(1, ) 	< 0 Source 1 is a plan
-c	            iopsou(3, ) 	> 0 Source 2 is a plan
-c             
-c	            iopsou(5, ) 	> 0 Operating rule that will have its
-c			                          monthly and annual limits adjusted
 c
-c	            nr  > 0 	Reservoir pointer
-c	            npS > 0 	Source 1 or Source 2 plan pointer
-c	            np2 > 0		Source 2 plan pointer
-c
-c	
+c           Passing arguments:
+c	              iw          the index of the water rights loop in
+c                           execut.for where this routine is called
+c                           used as index in water rights arrays
+c               l2          the index of the operating rule loop in
+c                           execut.for where this routine is called
+c                           used as index in operating rule arrays
+c               divact      the diversion or reservoir release amount
+c                           that requires reoperation
+c               ncallx      a counter for the number of times this
+c                           routine has been called
 
+c           Global variables:
+c               iopsou(1,l2)    the integer INDEX of the source 1 structure in the
+c                                list of structures of that type (e.g. reservoirs or plans)
+c                               the ID of the structure is found in the
+c                                opr input file, source id field, ciopso(1)
+c                               the ID ciopso(1) is converted to the INDEX iopsou(1,l2)
+c                                with a call to oprfind routine (the iops1 arg)
+c                               Supply reservoir index or ReUse plan index or Acct plan index
+c                               > 0 Source 1 is a reservoir
+c                               < 0 Source 1 is a plan
+c               iopsou(2,l2)    the integer value of the source 1 account
+c                                field, iopsou(2,1), in the opr input file
+c                               integer index of Supply reservoir account or ReUse account (0 if not applicable)
+c               iopsou(3,l2)    the integer INDEX of the source 2 structure in the
+c                                list of structures of that type (e.g. plans)
+c                               the ID of the structure is found in the
+c                                opr input file, source id field, ciopso(2)
+c                               the ID ciopso(2) is converted to the INDEX iopsou(3,l2)
+c                                with a call to oprfind routine (the iops1 arg)
+c                               > 0 => Source 2, ciopso(2), is a plan ID
+c                               Source 2, ciopso(2) = "NA" if not applicable
+c               iopsou(4,l2)    the integer value of the source 2 account
+c                                field, iopsou(4,1), in the opr input file
+c                               always = 0
+c	              iopsou(5,l2) 	  if > 0 it is the integer INDEX of the
+c                                 operating rule that will have its
+c			                            monthly and annual limits adjusted
+c                                 ...many more need to be documented...
+c
+c               qdiv(18  	      Carrier passing thru a structure
+c		            qdiv(28         Carried, Exchange or Bypass (column 11)
+c                               Released from a reuse plan or Admin plan
+c                               !! Not currently used in outmon.for
+c		            qdiv(36         Water released to the river (report as
+c			                          return flow).
+c               qdiv(37         Water released to the river (report as
+c                               a release (negative diversion) that is
+c                               subtracted in outmon.f
+c               qdiv(38         Carried water not used to calculate
+c                               River Divert in Outmon
+c                       
+c
+c               local variables:
+c	                nr  > 0 	Reservoir pointer
+c	                npS > 0 	Source 1 or Source 2 plan pointer
+c	                np2 > 0		Source 2 plan pointer
+c                   ...many more need to be documented...
 c _________________________________________________________
 c       Update History
 c
 c rrb 2007/07/03; Revise to adjust monthly and annual limits
 c		  
 c rrb 2006/04/05; Allow source 3 to be a reservoir and spill 
-c		  from both a plan and a reservoir
+c		              from both a plan and a reservoir
 c rrb 2005/01/07; Copy Powsea (spill release) and update accordingly
 c _________________________________________________________
 c	Dimensions
@@ -43,11 +88,16 @@ c
 c
 c _________________________________________________________
 c
-c		iout = 0 No detailed printout
-c		     = 2 Summary printout
-c   ioutQ= 1 Print detailed Qdiv results
+c		              iout = 0 No detailed printout
+c		                   = 2 Summary printout
+c                 ioutQ= 1 Print detailed Qdiv results
+c                 ioutA= 1 Print avail befor & after Takout
       iout=0
       ioutQ=0
+      ioutA=0
+c
+      icx=29
+      
       if(ichk.eq.94) then
         write(nlog,*) ' PowseaP; Type 29'
         iout=1
@@ -61,7 +111,7 @@ cx      if(iout.ge.1 .and. ncallx.eq.0) then
         write(nlog,102) corid(l2)
  102    format(/, 72('_'),/ '  PowSeaP; ID = ', a12)
       endif             
-c
+  
       divact = 0.0
       iw = iw
 c
@@ -75,7 +125,18 @@ c rrb 98/03/03; Daily capability
       else
         fac=factor
       endif
-      
+c
+c
+c rrb 2014/01/15; Print Qdiv data
+      if(ioutQ.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) ' PowSeaP  in; Qdiv report'
+        write(nlog,'(4x, 39i8)') (j, j=1,39)
+        do i=1, numsta
+          write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
+        end do
+      endif
+            
       iwhy=0
       cwhy='NA'
       cdestyp='NA'
@@ -129,13 +190,17 @@ c               Step 1.5; Set Destination Data to allow the user to
 c                         control where the spill enters the stream
 c
 c rrb 2014-04-26
-        nspill  =Iopdes(1,L2)
+        nspill  =Iopdes(1,L2)     
+        cstaSP ='NA          '
         
         if(nspill.gt.0) then
           NdSP=NDNNOD(nspill)     
           cstaSP = cstaid(nspill) 
-cx        write(nlog,*) ' '  
-cx        write(nlog,*) ' PowseaP; test ', cstaSP, nspill, ndSP
+c
+          if(iout.eq.1) then
+            write(nlog,*) ' '  
+            write(nlog,*) ' PowseaP;', nspill, ndSP, cstaSP
+          endif
         endif         
 c      
 c _________________________________________________________
@@ -144,9 +209,9 @@ c		Step 2; Set Source Data
 c              Find reservoir (nr), owner (iown), river location (iscd)
 c                and # of downstream nodes (ndns)
 C
-      NR  =IOPSOU(1,L2)
-      if(nr.lt.0) npS=-nr      
-      NP2 =iopsou(3,l2)      
+      NR = IOPSOU(1,L2)
+      if(nr.lt.0) npS=-nr
+      NP2 = iopsou(3,l2)
       if(iout.eq.1) write(nlog,*) '  PowseaP; nr, npS, np2',
      1   nr,npS,np2
 c
@@ -156,29 +221,36 @@ c		2a; Exit if source 1 reservoir is off
 c
 c rrb 2006/05/01; Correction
 cr    if(ir.gt.0 .and. iressw(nr).eq.0) then
-      if(nr.gt.0 .and. iressw(nr).eq.0) then
-        iwhy=2
-        cwhy='Reservoir source is off'
-        goto 120
+c     if(nr.gt.0 .and. iressw(nr).eq.0) then
+      if(nr.gt.0) then
+        if (iressw(nr).eq.0) then
+          iwhy=2
+          cwhy='Reservoir source is off'
+          goto 120
+        endif
       endif
 c
 c
 c ---------------------------------------------------------
 c
 c		2b; Exit if source 1 plan is off            
-      IF(nps.gt.0 .and. pon(npS).LE.small) then
-        iwhy=3
-        cwhy='Source 1 Plan is off'                  
-        Goto 120
+      IF(nps.gt.0) then
+        if (pon(npS).LE.small) then
+          iwhy=3
+          cwhy='Source 1 Plan is off'
+          Goto 120
+        endif
       endif  
 c
 c ---------------------------------------------------------
 c
 c		2c; Exit if source 2 plan is off            
-      IF(np2.gt.0 .and. pon(np2).LE.small) then
-        iwhy=4
-        cwhy='Source 1 Plan is off'                  
-        Goto 120
+      IF(np2.gt.0) then
+        if (pon(np2).LE.small) then
+          iwhy=4
+          cwhy='Source 1 Plan is off'
+          Goto 120
+        endif
       endif  
       
 c      
@@ -315,6 +387,7 @@ c		4b; Exit if Plan Source 2 is zero
           cwhy='Source 2 Plan Supply is zero'        
           Goto 120        
         endif  
+        
         if(iout.eq.1) write(nlog,*) '  PowseaP; nr, npS, np2 ravcfs4',
      1    nr,npS,np2, ravcfs4*fac
         
@@ -332,24 +405,33 @@ c           depending on the supply source
 c
 c rrb 2014-05-05; allow spill to occurr downstream of plan when nspill>0
 c 
+c
+c rrb 2014/11/24 Check Avail         
+      if(ioutA.eq.1) then    
+        write(nlog,*) ' '   
+        write(nlog,*) ' PowseaP;', nspill, iscd,ndSP,cstaSP,divact*fac        
+        ifirst=0
+        nchkA=1
+        call ChkAvail2(nlog, ifirst, icx, nchkA, maxsta, numsta, 
+     1       fac, avail)
+      endif   
+
       if(nspill.eq.0) then
         TEMP=-DIVACT   
         CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              TEMP  , NDNS,  ISCD  )
-        AVAIL (ISCD)=AVAIL (ISCD)-DIVACT
-        
       else     
-cx        write(nlog,*) ' '
-cx        write(nlog,*) ' PowseaP; divact', divact*fac
-cx        WRITE(nlog,290) (AVAIL(ISS)*fac,ISS=1,NUMSTA)      
         TEMP=-DIVACT    
         CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              TEMP  , Ndsp,  nspill  )
-cx        AVAIL (ndsp)=AVAIL (ndsp)-DIVACT   
-cx         WRITE(nlog,290) (AVAIL(ISS)*fac,ISS=1,NUMSTA)  
-      
       endif
-C
+c
+c rrb 2014/11/24 Check Avail         
+      if(ioutA.eq.1) then
+        call ChkAvail2(nlog, ifirst, icx, nchkA, maxsta, numsta, 
+     1       fac, avail) 
+      endif           
+c
 c _________________________________________________________
 c
 c		Step 7; REDUCE SUPPLY RESERVOIR STORAGE BY RELEASE 
@@ -448,8 +530,11 @@ cx   1       iplntyp1.eq.11) then
           if(iout.eq.1) write(nlog,*) '  PowSeaP;',
      1      nps, psto21, psto2(npS)              
         endif  
-
-        qdiv(28,iscdP) = qdiv(28,iscdP) + divact 
+c
+c rrb 2014/11/24; Note (Qdiv(28 is not used in outmon.for
+c		              qdiv(28 Carried, Exchange or Bypass (column 11)
+c rrb 2015/01/10; Since not used, turn it off
+cx      qdiv(28,iscdP) = qdiv(28,iscdP) + divact 
 c	
 c
 c rrb 2010/10/09; Revise to treat a spill as a return flow
@@ -457,15 +542,31 @@ c         4 is reuse to a diversion,
 c         6 is reuse to a diversion transmountain
 c        11 is an accounting plan
 c				
+c rrb 2014/11/24; Correction
         if(iplntyp(npS).eq.4 .or. iplntyp(npS).eq.6 .or. 
      1     iplntyp(npS).eq.11) then 
 c
-c rrb 2014-05-05; Allow a non downstream release
-          if(nspill.eq.0) then
-            qdiv(36,iscdP) = qdiv(36,iscdP) + divact
-          else
-            qdiv(36,nspill) = qdiv(36,nspill) + divact         
-          endif 
+cxx
+cxxc rrb 2014-05-05; Store a relase as a return flow in qdiv(36
+cxxc                 Allow a non downstream release
+cxx
+cxx          if(nspill.eq.0) then
+cxx            qdiv(36,iscdP) = qdiv(36,iscdP) + divact
+cxx          else
+cxx            qdiv(36,nspill) = qdiv(36,nspill) + divact         
+cxx          endif 
+c
+c rrb 2014-05-05; Store a release as a spill in qdiv(37 that
+c                 gets subtracted from River Divert in Outmon.f
+c rrb 2015/01/16; Do not adjust Qdiv since water diverted to an admin 
+c                 plan by DirectWr did not adjust any qdiv variables
+c                 used in calculating River Divert
+cx          if(nspill.eq.0) then
+cx            qdiv(37,iscdP) = qdiv(37,iscdP) + divact
+cx          else
+cx            qdiv(37,nspill) = qdiv(37,nspill) + divact 
+cx          endif 
+
         endif
                
       endif  
@@ -528,10 +629,10 @@ c
 
       endif
 c
-c rrb 2014-06-15; Print Qdiv data
+c rrb 2014/01/15; Print Qdiv data
       if(ioutQ.eq.1) then
         write(nlog,*) ' '
-        write(nlog,*) ' PowSeaP; Qdiv report'
+        write(nlog,*) ' PowSeaP out; Qdiv report'
         write(nlog,'(4x, 39i8)') (j, j=1,39)
         do i=1, numsta
           write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
@@ -561,7 +662,7 @@ c               Formats
      1  '   Year  Mon'     
      1  '     Psuply1      Divact      Divo     Psuply2',/
      1  ' _____ _____', 
-     1  ' ___________ ___________ ___________ ___________',)
+     1  ' ___________ ___________ ___________ ___________')
      
  150  format(           
      1  ' PowseaP; n1, relaf, curown(n1), cursto1, c, ct',/
@@ -602,4 +703,4 @@ c               Print warning
 
       stop 
       end
-     
+

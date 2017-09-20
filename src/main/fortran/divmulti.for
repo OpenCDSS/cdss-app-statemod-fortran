@@ -108,7 +108,6 @@ c
 c       ndnnod(iscd)    Number of downstream nodes from source
 c       ndns            Number of downstream nodes from well location
 c                       
-c
 c       qdiv(18  	      Carrier passing thru a structure 
 c       qdiv(24,iscd) 	Pumping (diversion) by a well to a user at iscd
 c       qdiv(25,iscd) 	Depletion (From River by Well) at river ID iscd
@@ -118,6 +117,8 @@ c       qdiv(31        	From River by Exc or Plan
 c	
 c 	    qdiv(35        	Water with a Reuse or Admin plan source 
 c			                  tracked at the destination.
+c       qdiv(38         Carried water not used in any calculations
+c                       to report River Divert
 c	
 c       retx            Immediate (this day or month) return.
 c                       Used for reoperation control along with
@@ -140,12 +141,9 @@ c       Step 1 Common Initilization
 c
 c		iout = 0 No details
 c		       1 Details
-c          2 Summary      
+c                      2 Summary      
 c		       3 Well Augmentation details
 c		       4 Sum
-c   ioutQ = 1 Print detailed qdiv data                  
-c
-      ioutQ=0
 c
 c ---------------------------------------------------------
 c		a. OutPut control
@@ -193,7 +191,7 @@ c               d. Check Avail array
 c
 c ---------------------------------------------------------
 c               e. Initilze temp array to store current 
-c		   depletions and returns
+c		               depletions and returns
       do is=1,numsta
         avtemp(is)=0.0
       end do
@@ -275,11 +273,13 @@ cx      write(nlog,*) ' '
 cx      write(nlog,*) ' DivMulti; ',iyrmo(mon),xmonam(mon), iscd, ndns
 cx      write(nlog,*) ' DivMulti; X Avail(80) = ', 0.0, Avail(80)*Fac
        
-      
-      CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
-     1              divAdd, NDNS,  ISCD  )  
-cx      write(nlog,*) ' DivMulti; Y Avail(80) = ', 
-cx     1  DivAdd*fac, Avail(80)*Fac
+c
+c rrb 2014/11/24; Transfer water by carrier, not the river      
+cx      CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
+cx     1              divAdd, NDNS,  ISCD  )  
+c
+c      write(nlog,*) ' DivMulti; Y Avail(80) = ', 
+c      1  DivAdd*fac, Avail(80)*Fac
 c      
 c _________________________________________________________
 c               Step 3; Allocate Supplies to each plan
@@ -306,24 +306,38 @@ c rrb 2007/08/17; Limit to ownership %
 c       write(nlog,*) ' '
 c       write(nlog,*) ' DivMulti; ', mon, n, ndp, idcdD, pct, 
 c    1    alocfs*fac, divact*fac, divactT*fac
-        
-        CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,  
-     1              divact, ndnsD,  idcdD  )                             
+c                                                                   
+c rrb 2014/11/24; Transfer water by carrier, not the river
+cx          CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,  
+cx     1              divact, ndnsD,  idcdD  )                             
      
 
-c		         qdiv(31 is From River by Exc Pln
-        qdiv(31,idcdD) = qdiv(31,idcdD) + divact
+c		         qdiv(31 is From River by Exc Pln    
+c            qdiv(20 is From Carrier by Other
+c
+c rrb 2014/11/24
+cx      qdiv(31,idcdD) = qdiv(31,idcdD) + divact     
+c
+c rrb 2015/01/16; Correction use qdiv(38, not 20 or 18
+c                 qdiv(38 = Carried water not used in any calculations
+c                           to report River Divert
+cx      qdiv(20,idcdD) = qdiv(20,idcdD) + divact       
+cx      qdiv(18,idcdD) = qdiv(18,idcdD) + divact        
+        qdiv(38,idcdD) = qdiv(38,idcdD) + divact         
 c        
 c rrb 2008/01/15; qdiv(35 Water with a Reuse or Admin plan source 
-c			            at the destination.     
-        qdiv(35,idcdD) = qdiv(35,idcdD) + divact
+c			  at the destination.     
+c rrb 2015/01/16; Revise  diversion to a admin plan accounting
+cx      qdiv(35,idcdD) = qdiv(35,idcdD) + divact
+        if(iplntyp(ndP).ne.11) then
+          qdiv(35,idcdD) = qdiv(35,idcdD) + divact
+        endif
 c
 c rrb 2008/01/15; If a T&C destination set qdiv(30 an
 c		  adjustment to total diversion in outbal2
         if(iplntyp(ndP).eq.1) then
           qdiv(30,idcdD)=qdiv(30,idcdD)+divact
         endif         
-c        
         pdrive(ndP) =pdrive(ndP) +divact
         psuply(ndP) =psuply(ndP) +divact
         psuplyT(ndP)=psuplyT(ndp)+divact
@@ -341,8 +355,8 @@ c rrb 00/05/03; Check entire array, not just downstream
       
       IF(AVAIL(IMCD).le.(-1.*small)) then
         write(nlog,318) imcd, avail(imcd)*fac 
-c       write(nlog,320) (avail(iss),iss=1,numsta)
-c       write(nlog,330) (river(iss),iss=1,numsta)
+        write(nlog,320) (avail(iss),iss=1,numsta)
+        write(nlog,330) (river(iss),iss=1,numsta)
         goto 9999
       endif
 c       
@@ -353,17 +367,6 @@ c               Step 14; Update Source a plan
 c			 Note do not set psuplyT, it is total inflow
       psuply1=psuply(nsP)
       psuply(nsP)=amax1(0.0, psuply(nsP)-divactT)
-c
-c rrb 2008/01/14; Qdiv(28 has a reuse or Admin plan source
-
-cx       write(nlog,*) ' '
-cx       write(nlog,*) ' DivMulti Supply Data;',iyr, mon, nsp, 
-cx     1  psuply1*fac, divactT*fac, psuply(nsP)*fac
-c
-      qdiv(28,iscd)=qdiv(28,iscd)+ divactT
-      
-c     write(nlog,*) ' DivMulti;',iyr, mon, 
-c    1  iscd, divactT*fac, qdiv(28,iscd)*fac
 c      
 c _________________________________________________________
 c               
@@ -406,17 +409,6 @@ c _________________________________________________________
 c
 c               Step 16; Check Avail for Roundoff issues
       call chekava(46, maxsta, numsta, avail)
-c rrb 2014-06-16; TEST
-c               
-c               Step 3 - Check Qdiv array
-      if(ioutQ.eq.1) then
-        write(nlog,*) ' '
-        write(nlog,*) 'DivMulti; Qdiv report'
-        write(nlog,'(4x, 39i8)') (j, j=1,39)
-        do i=1, numsta
-          write(nlog,'(i5, 39f8.0)') i, (qdiv(j,i)*fac, j=1,39)
-        end do   
-      endif   
 c
 c _________________________________________________________
 c

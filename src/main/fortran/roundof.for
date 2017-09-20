@@ -14,7 +14,7 @@ c
 c _________________________________________________________
 c	Dimensions
 c
-       dimension avail(1), ccall(10)
+       dimension avail(*), ccall(10)
        character ccall*8 
        data ccall/
      1   'Bomsec  ', 'Execut  ', 'Divres  ', 'Welrig  ', 'DivresP', 

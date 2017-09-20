@@ -121,7 +121,7 @@ c
      
      
       data cunitX/
-     1 ' AF/M', ' ACFT ', '   AF', '  CFS', '   FT', '   IN', '   NA',
+     1 ' AF/M', ' ACFT', '   AF', '  CFS', '   FT', '   IN', '   NA',
      1 ' ', ' ', ' '/
     
 c

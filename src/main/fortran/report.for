@@ -1415,7 +1415,7 @@ c               Formats
      1            ' 2 : Average',/,
      1            ' 3 : Both'/)
  1640 format(/,72('-'),/
-     1 '  Mdainp; WARNING FILE ', A5,,/ 
+     1 '  Mdainp; WARNING FILE ', A5,/ 
      1 '          HAS A UNIT CONVERSION FACTOR         = ', F10.4,/
      1 '          WHILE THE CONTROL FILE HAS A FACTOR  = ', F10.4,/
      1 '          THE TIME SERIES DATA CONTROLS FACTOR = ', F10.4,/

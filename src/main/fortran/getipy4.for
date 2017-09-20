@@ -98,8 +98,14 @@ c
          write(nlog,*)'  GetIpy4; reading *.ipy ' ,
      1              numdiv, numdivw, numdiv+numdivw,  maxdivw
       endif
-      
-	      do nd = 1, numdiv+numdivw
+
+c jhb 2014/06/26 make the do loop limit arbitrarily large (5000)
+c                so it always works no matter how many records are
+c                in the IPY, STR, DDC files.  This is OK, because
+c                there is code below to jump out of this loop when the
+c                last record is read (the year changes)
+C          do nd = 1, numdiv+numdivw
+	      do nd = 1, 5000
 	        ifound=0
           read(10,954,end=1700,err=928) idyr,cistat, (x(i), i=1,3),
      1	      AreaSF1, AreaSS1, AreaGF1, AreaGS1, Qmax, gwmode1, Atot
@@ -590,7 +596,7 @@ c 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
      1 10x, 'cannot be tied to a diversion or well this data is ',/
      1      'not used',/
      1   '    # ID            Year',/
-     1   ' ____ ____________ _____',)
+     1   ' ____ ____________ _____')
      
  1316 format(i5, 1x, a12, 1x, i5)
        
@@ -612,7 +618,7 @@ c 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
      1  '    # Year ID             Spr Area   GW Area     Delta',
      1                          '   GW Area  Tot Area     Delta'/
      1  ' ____ ____ _____________ _________ _________ _________',
-     1                          ' _________ _________ _________',)     
+     1                          ' _________ _________ _________')     
      
  1322 format(i5, i5, 1x, a12,1x 20f10.2)
  

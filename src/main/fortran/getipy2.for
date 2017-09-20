@@ -81,7 +81,13 @@ c ---------------------------------------------------------
 c               Read numdiv+numdivw since file has diversions and wells
       if(ichk.eq.4) write(nlog,*)'  GetIpy2; reading *.ipy '
 
-	do nd = 1, numdiv+numdivw
+c jhb 2014/06/26 make the do loop limit arbitrarily large (5000)
+c                so it always works no matter how many records are
+c                in the IPY, STR, DDC files.  This is OK, because
+c                there is code below to jump out of this loop when the
+c                last record is read (the year changes)
+c	do nd = 1, numdiv+numdivw
+      do nd = 1, 5000
 	  ifound=0
           read (10,954,end=1700,err=928) idyr,cistat, (x(i), i=1,3),
      1	      Agw, Asp, Qmax, gwmode1, Atot
@@ -572,7 +578,7 @@ c               Formats
      1      'not used',/
      1 10x, 'Non Fatal Error Analysis Proceeding',//
      1   '    # ID            Year',/
-     1   ' ____ ____________ _____',)
+     1   ' ____ ____________ _____')
      
  1316 format(i5, 1x, a12, 1x, i5)
        
@@ -594,7 +600,7 @@ c               Formats
      1  '    # Year ID             Spr Area   GW Area     Delta',
      1                          '   GW Area  Tot Area     Delta'/
      1  ' ____ ____ _____________ _________ _________ _________',
-     1                          ' _________ _________ _________',)     
+     1                          ' _________ _________ _________')     
      
  1322 format(i5, i5, 1x, a12,1x 20f10.2)
  

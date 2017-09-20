@@ -179,7 +179,9 @@ c
 c _________________________________________________________
 c
 c		Print Data Check Data
-      CALL OUTDEB(1)
+c jhb 2014/07/21 include second outdeb argument, nreach
+c      CALL OUTDEB(1)
+      CALL OUTDEB(1,nreach)
 c 
 c
 c _________________________________________________________

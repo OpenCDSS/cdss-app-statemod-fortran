@@ -148,7 +148,7 @@ c
 c               Step 6; Read diversion station file (*.dds)
 c
         inC=inS
-      do 650 nd=1,maxdiv+1
+      do 650 nd=1,maxdiv-1
  100    read(inS,*,end=210,err=210) cistat
         if(iout.eq.1) write(nlog,*) '  GetDiv2; Station for ', cistat
         if(cistat(1:1) .eq. '#') goto 100
@@ -372,7 +372,7 @@ c
 c ---------------------------------------------------------
 c		Read Efficiency Data        
         inC=inE          
-        Do n=1,maxdiv+1
+        Do n=1,maxdiv-1
  220      read(inE,*,end=300,err=928) cistat
         if(ioutE.eq.1) write(nlog,*)'  GetDiv2; Efficiency for ',cistat
  

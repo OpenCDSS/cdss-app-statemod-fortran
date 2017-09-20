@@ -25,7 +25,7 @@ c       ifcd=ifrsta(nf)         river location of instream structure
 c       dcrifr(l2)              water right from riginp.f
 c
 c       divi(l2)                amount diverted by this right 
-c       divir(i)                amount diverted by this right 
+c       divir(l2,i)             amount diverted by this right
 c                                 at reach node i
 c
 c       flowrq(nf)              demand remaining this time step
@@ -124,7 +124,7 @@ c
 c _________________________________________________________
 c
 c               Step 2. Demand
-        aloifr=amin1(dcrifr(l2)-divir(i),florqr(i))
+        aloifr=amin1(dcrifr(l2)-divir(l2,i),florqr(i))
         if(aloifr.lt.small) then
           iwhy=1
           cwhy='Decree or Demand=0'
@@ -151,10 +151,10 @@ c _________________________________________________________
 c
 c               Step 5. Update 
         flowrq1 = florqr(i)    
-        divi1 = divir(i)      
+        divi1 = divir(l2,i)
         florqr(i) = florqr(i) - actwrq
         qdivr1=qdivr(i)
-        divir(i) = divir(i)   + actwrq
+        divir(l2,i) = divir(l2,i)   + actwrq
         qdivr(i) = qdivr(i)   + actwrq
 cr      write(nlog,*) ' Ifrrig2;', i, qdivr1*fac, qdivr(i)*fac
 c
@@ -182,7 +182,7 @@ c       if((iout.eq.2 .and. iw.eq.ioutiw) .or. ioutX.eq.1) then
      1      iyrmo(mon),xmonam(mon), iday, iwx, 
      1      i,nf,ifcd,imcd,iss,
      1      cstaid1,
-     1      dcrifr(l2)*f,  divir(i)*f, florqr(i)*f, aloifr*f,
+     1      dcrifr(l2)*f,  divir(l2,i)*f, florqr(i)*f, aloifr*f,
      1      avail(iss)*f, actwrq*f, iwhy, cwhy
         endif
 c

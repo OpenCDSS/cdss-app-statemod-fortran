@@ -9,21 +9,21 @@ c _________________________________________________________
 c      Update History
 c
 c rrb 1997/10/15; Added daily model capability (see facdly) &
-c                 Miscellaneous clean up
+c               Miscellaneous clean up
 c rrb 2000/12/02; Miscellaneous clean up (added steps)
 c rrb 2000/12/09; Added variable efficiency capability by revising
-c                 rtnsec and adding rtnmax
+c               rtnsec and adding rtnmax
 c rrb 2000/12/18; Removed duplicate logic included in rtnmax
 c rrb 2000/12/26; Added ieff2 to call rtnsec for variable efficiency
-c                 control (e.g. divrig.f can use variable n, divres.f 
-c                 cannot)
+c               control (e.g. divrig.f can use variable n, divres.f 
+c               cannot)
 c rrb 2001/02/23; Added demand types 4 & 5 that does not allow SW
-c                 demands to be constrained by supplies from other 
-c                 sources (e.g. wells)
+c               demands to be constrained by supplies from other 
+c               sources (e.g. wells)
 c rrb 2002/06/27; Revised logic for maximum efficiency to limit
-c                 diversion to demand via divalo
+c               diversion to demand via divalo
 c rrb 2004/09/08; Add ability to distribute a diversion to owners
-c		              based on ownership fraction
+c		based on ownership fraction
 c
 c rrb 2005/07/22; Began to add call information
 c
@@ -52,7 +52,7 @@ c        idvsta(l2)     STATION WHERE DIV. RIGHT L2 LOCATES
 c
 c        ieff2          =0 always use average efficiency
 c                       =1 let ieffmax control variable efficiency 
-c	       idemtyp	      Switch for demand data type 
+c	  idemtyp	   Switch for demand data type 
 c                       (See Section 7.10 of Doc)
 c			   1 Historic Demand Approach
 c				demands for structures with both SW 
@@ -108,11 +108,11 @@ c        qstern         ???
 c        small          a small value for roundoff (0.0) concerns
 c
 c        DivownP(n)     Ownership fraction
-c	       DivnamO(n)     Owner name
-c	       NdOwn(n)       Pointer to ID of owner
-c	       DivOwn(n)      Diversion by owner n
+c	 DivnamO(n)     Owner name
+c	 NdOwn(n)       Pointer to ID of owner
+c	 DivOwn(n)      Diversion by owner n
 c
-c	       imcd           Call information
+c	 imcd           Call information
 c
 c _____________________________________________________________
 c	Dimensions

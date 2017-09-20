@@ -1,16 +1,10 @@
-C
       SUBROUTINE EXECUT
-c
-c
-c _________________________________________________________
+c_______________________________________________________________________
 c	Program Description
 c
-
 c       Execut; It is the main subroutinte that controls
 c               a StateMod simulation
-c
-c _________________________________________________________
-c
+c_______________________________________________________________________
 c       Documentation
 c
 c      iw       = water right loop counter
@@ -91,7 +85,7 @@ c		   	  1 called this reoperation
 c
 c		
 c    
-c _________________________________________________________
+c_______________________________________________________________________
 c	Dimensions       
       include 'common.inc'
       real*8 dcallx, cpri
@@ -99,7 +93,7 @@ c	Dimensions
      1          nameX*24, cstaid1*12, rec2*2
       dimension idatx(3), itim1(4), itim2(4), ncall(200)
 c    
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step 1; Initilize      
 c
 c rrb 2006/08/21; Test      
@@ -125,7 +119,9 @@ c   ioutGVC = details on Grand Valley Check
       ioutSep=0
       ioutGVC=0
       noutGVC=0
-      
+c jhb 2014/07/04 debugging
+c      ichk = 94
+
       iwxt = 0
 cx    iwxlimit=500
 c     iwxlimit=2500
@@ -160,7 +156,7 @@ c      goto 480
       
 c     write(nlogx,'(4i2)') (itim1(j),j=1,4)
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Open Files
 c
 c               Open scratch file
@@ -209,7 +205,7 @@ cx      open(66,file=filena,  status='Replace',access='direct',recl=96)
 c
 c rrb 01/01/20; Structure Summary (*.b67) (33*4=128)
       call namext(maxfn, filenc, 'b67', filena) 
-      open(67,file=filena,  status='Replace',access='direct',recl=132) 
+      open(67,file=filena,status='replace',access='direct',recl=132)
 
       call namext(maxfn, filenc, 'xdd', filena) 
       open(33,FILE=filena,STATUS='replace')
@@ -280,7 +276,7 @@ C
       IIN=20
       numstax=maxsta
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Read control & station data
 c
       CALL DATINP(IIN,0,numstax)
@@ -293,7 +289,7 @@ c     goto 480
 c     write(nlog,*) ' Execut_0; icall =', icall   
       
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Set factors Monthly (iday=0) or Daily (iday=1)
       if(ichk.eq.94) write(nlogx,*) ' Execut; Setting factors'      
       f = factor*31
@@ -305,7 +301,7 @@ c		Step X; Set factors Monthly (iday=0) or Daily (iday=1)
 	      fac=factor
       endif
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c rrb 96/06/06; Write header info to binary files
 c		Note 	43=monthlydiversion, 
 c			44=monthly reservoir
@@ -325,7 +321,7 @@ c      call bintop(47,0,nlog,ichk)
       
       if(ichk.eq.94) write(nlogx,*) ' Execut; Back from bintop'      
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c               Open daily output files if appropriate 
       if(iday.eq.1) then
         call namext(maxfn, filenc, 'xdy', filena) 
@@ -352,7 +348,7 @@ c               Open file *.b50; Binary Daily Reservoir
       if(ichk.eq.94) write(nlogx,*) ' Execut; Back from daily namext'      
       
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c               Open well output files if appropriate 
       if(iwell.gt.0) then
 c
@@ -377,7 +373,7 @@ c               Open file *.b65; Binary Daily Wells
         endif          
       endif
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c               Open plan output files if appropriate 
       if(nplan.gt.0) then
 c rrb; 05/01/07; Plan report
@@ -388,12 +384,12 @@ c rrb; 05/01/07; Plan report
         open(68,file=filena,status='replace',access='direct',recl=180)             
       endif
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c               Open San Juan Files if appropriate 
       if(isjrip.ge.1) then                          
       endif                                         
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c               Set irymo based on starting year type
       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling year'      
       call year(iystr, iyrmo, imomo, cyr1)
@@ -407,7 +403,7 @@ cx    if(ichk.eq.8) then
         open(96,file=filena, status='unknown', err=9997)
       endif
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c rrb 96/06/06; Write header info to binary files
 cx      iystr0=iystr
 cx      iyend0=iyend
@@ -425,7 +421,7 @@ cxcx      call outtop(53,1,51)
 
 c
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c rrb 04/20/96; set data for variable reoperation capability
 c rrb 05/06/29; Revise convergence check for daily model
 c		Note:
@@ -454,7 +450,7 @@ c		  0.01 cfs = 0.61 af/mo (0.01*3600*24*31/43560=0.61)
      1 '  Execut; FYI Reoperation check = ',f10.3,' cfs',/
      1 '                                = ',f10.3,' af/mo')
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Print call data header if requested
 c
 c     write(nlog,*) ' Execut_1; icall =', icall   
@@ -467,7 +463,7 @@ c rrb Test
 cr                write(nlogx,*) 'Execut; 8 qdiv(14,17)', qdiv(14,17)
       
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Read all water rights
 c
       maxwrx=maxwr
@@ -481,7 +477,7 @@ cx    CALL RIGINP(IIN,maxwrx)
 c      
       if(ichk.eq.94) write(nlogx,*) ' Execut; Out of riginp'
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Open Rio Grande Output Files
 c rrb 99/12/16; Rio Grande Compact
       if(irg1+irg2.ge.1) then
@@ -494,7 +490,7 @@ c               Open file *.b66; Binary Rio Grande Compact
         open(66,file=filena,status='Replace',access='direct',recl=96) 	
       endif  
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Open Replacement Reservoir Output Files
 c
       if(irepn.ge.1) then   
@@ -503,7 +499,7 @@ c
         call outtop(51,2,32)              
       endif  
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Sort Water Rights
 
       maxnwrx=maxnwr
@@ -517,7 +513,7 @@ c		Step X; Call SetPlanO to tie plans to operating rules
  
       call SetPlanO      
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Get Plan Well Data 
 c			Note call after Riginp because
 c                       well rights must be known 
@@ -534,7 +530,7 @@ c                       well rights must be known
         if(ichk.eq.94) write(nlogx,*) ' Execut; Out of GetPlnW'
       endif  
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Get Plan Reservoir Data 
 c			Note call after Datinp because
 c                       resrvoir stations & plan stations must be known 
@@ -553,7 +549,7 @@ c                       resrvoir stations & plan stations must be known
 c
 c
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Check demands
 
 c rrb 01/05/95; I/O Addition
@@ -563,7 +559,7 @@ c TEST
 c     goto 480      
       
 c          
-c ____________________________________________________________
+c_______________________________________________________________________
 c               Step x; Find the starting point in all monthly files
 C
       I12=0
@@ -588,10 +584,9 @@ c     end do
 
 c     write(6,*) ' Execut; out of mdainp'
 c          
-c ____________________________________________________________
-c               Step x;  Open daily files
+c_______________________________________________________________________
+c     Step x;  Open daily files
       if(iday.eq.1) then
-c
 c		Open *.out for daily
         if(infile.eq.1) then
 c rrb 04/08/31
@@ -607,227 +602,169 @@ c         ifn=29
           endif
           read(iin,'(a72)',err=9996,end=9996) filena
         endif
-c
 c rrb 99/06/20
-	      call putpath(maxfn, filena, fpath1)
-	      fileOpen='Output Request File (*.out or *.xou)'
-	      write(nlogx,101) fileOpen, filena
-c	      write(6,101) fileOpen, filena
-	      open(22, file=filena,status='old',err=9997)
-	      ioutx=1
-c
+	    call putpath(maxfn, filena, fpath1)
+	    fileOpen='Output Request File (*.out or *.xou)'
+	    write(nlogx,101) fileOpen, filena
+c	    write(6,101) fileOpen, filena
+	    open(22, file=filena,status='old',err=9997)
+	    ioutx=1
 c rrb 99/08/20; Daily needs to know the year type       
         call year(iystr, iyrmo, imomo, cyr1)
-	
         if(ichk.eq.94) write(nlogx,*) ' Execut; Calling Dayest'	
       	call dayest(iin,i12)
         if(ichk.eq.94) write(nlogx,*) ' Execut; Out of Dayest'
-	
       endif
-c
-c _________________________________________________________
-c		Begin year loop
+c_______________________________________________________________________
+c	  Begin year loop
       I12=12
       IYR=IYSTR-1
       IMO=0
-c
 c rrb 98/03/17; Daily capability
       ido=0
-C
 C-------------------------------------------------------------------
-C
-C------               YEAR LOOP
-C
+C-----YEAR LOOP
 C-------------------------------------------------------------------
-C
 C------  STEP 1: THE DATA OF CURRENT YEAR IN ALL DATA FILES IS READ
 C------          IN.
-C
 C------       2: DIVERSIONS, INSTREAM FLOW REQUIREMENTS, AND RESER.
 C------          WATER RIGHTS ARE PROCESSED AGAINST EACH MONTH OF
 C------          RIVER FLOW. 
-C
 C------       3: THE STATUS OF WATER IN THE BASIN IS PRINTED OUT
 C------          TO TEMPARARY FILES FOR EACH MONTH
-C
 C------       4: START AGAIN AT STEP 1
-C
 C------   WHEN ENDING YEAR OF THE SIMULATION IS COMPLETED, PRINT
 C------   OUT FINAL REPORT USING DATA IN THE TEMPARARY FILES
-C
 C-------------------------------------------------------------------
-C          
       write(6,*) ' Subroutine Execut'
       write(6,*)
-      
-c
-c TEST
-c     goto 480      
-      
   130 IYR=IYR+1
       iwxmaxY=0
-  
-c
-c
-c _________________________________________________________
-c               Set irymo based on year type
+c_______________________________________________________________________
+c     Set irymo based on year type
       call year(iyr, iyrmo, imomo, cyr1)
-c
-c TEST
-c     goto 480      
-      
-C
+c_______________________________________________________________________
       IF(IYR.GT.IYEND) GOTO 480
-      
+c_______________________________________________________________________
       write(nlogx,131) iyr
- 131  format(/, 72('_'),/
-     1   '  Execut; Year = ', i5)
-     
-c
-c _________________________________________________________
+ 131  format(/, 72('_'),/'  Execut; Year = ', i5)
+c_______________________________________________________________________
 c		Call Mdainp for Time Series Data
-c	
       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling Mdainp ', iyr
       CALL MDAINP(IIN,I12)
-      
       if(ichk.eq.94) write(nlogx,*) ' Execut; Out of Mdainp ', iyr
-c
 c rrb 00/11/11; Set Sjrip (san juan recovery implementation plan
 c               variable that controls operation for 1x year stuff
       isjon=0
-c
 c rrb 01/05/95; I/O Addition
-C
-c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Call Demcons for constrained demand
-c		
       if(ichk.eq.94) 
      1  write(nlogx,*) ' Execut; Calling Demcons ', iyr
       call demcons(1)
-      
       if(ichk.eq.94) 
      1  write(nlogx,*) ' Execut; Out of Demcons ', iyr
-      
-c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Month Loop
 c     write(6,*) ' '
       DO 1100 MON=1,12
-        if(ichk.ge.90) then
-        write(nlogx,540) iyrmo(mon), xmonam(mon)
-        endif  
-              
+        if(ichk.ge.90) write(nlogx,540) iyrmo(mon), xmonam(mon)
         ioutc=0
         ioutcR=0
         ioutcS=0
-        
-cr        if(ioptio.eq.8) then
-cr          write(6,106) iyrmo(mon), xmonam(mon)
-cr        endif 
-c
-c _________________________________________________________
+cr      if(ioptio.eq.8) then
+cr        write(6,106) iyrmo(mon), xmonam(mon)
+cr      endif 
+c_______________________________________________________________________
 c		Step X; Print call information
-	      nrepcall=0
-C
-	      IMO=IMO+1
-	      IF(IMO.GT.ndlymx) IMO=1
-c
-c _________________________________________________________
+	    nrepcall=0
+	    IMO=IMO+1
+c jhb 2014/07/23 IMO can't get any bigger than maxdlm (240)
+c                because it is used in the first dimension of retur() and depl()
+c                which are declared as retur(240,) and depl(240,)
+c                but ndlymx is the number of days in the dld file time series
+c                which can be much larger.
+c                ran into errors in bomsec on a daily model
+c                when the bounds check compiler flag is turned on.
+c                Try changing this to maxdlm.
+c jhb 2014/08/19 This change broke the return flow calculations in monthly models
+c                Revert it back and find another way to solve the array bounds problem
+	    IF(IMO.GT.ndlymx) IMO=1
+c       IF(IMO.GT.maxdlm) IMO=1
+c_______________________________________________________________________
 c		Step X; Set factors Monthly (iday=0) or Daily (iday=1)
-
-	      f= factor*mthday(mon)
-	      IF(iday.eq.0) then
-	        imd=1
-	        fac=f
-	      else
-	        imd=mthday(mon)
-	        fac=factor
-	      endif      
-	      
-cx	      write(nlogx,*) ' '
-cx        write(nlogx,*) '  Execut; iyr, mon ', iyr, mon, fac	      
-c
-c
-c _________________________________________________________
+	    f= factor*mthday(mon)
+	    IF(iday.eq.0) then
+	      imd=1
+	      fac=f
+	    else
+	      imd=mthday(mon)
+	      fac=factor
+	    endif      
+cx	    write(nlogx,*) ' '
+cx      write(nlogx,*) '  Execut; iyr, mon ', iyr, mon, fac	      
+c_______________________________________________________________________
 c		Step X; Monthly initilization
-        if(ichk.eq.94) write(nlogx,*) 
-     1 ' Execut; Calling Bomsec', iyr, mon
+        if(ichk.eq.94) write(nlogx,*)' Execut; Calling Bomsec',iyr,mon
         CALL BOMSEC
-c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Daily  initilization
         if(iday.eq.1) call dayest(iin,i12)
-c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Print call and reoperation headers
-c
-c               Print call information header
+c         Print call information header
 c       write(nlog,*) ' Execut_2; icall =', icall         
         if(icall.gt.0) call calldat(0, l1, l2, icallx, ishort, fac)
-c
-c rrb 97/10/16; Set switch to print call information at first
-c               reoperation only
+c rrb 97/10/16; Set switch to print call information at first reoperation only
         icallx=0
-c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Daily Loop
-	      do 1000 idy=1,imd
-c
-c		Print reoperation information header        
+	    do 1000 idy=1,imd
+c	      Print reoperation information header        
           if(ioutR.ge.1) ioutR=1
           ipReop=0
-            
-	        ido=ido+1
-	        if(ido.gt.ndlymx) ido=1
-c
-c _________________________________________________________
-c		Step X; Daily Initilization 1x/day
+          ido=ido+1
+	      if(ido.gt.ndlymx) ido=1
+c         Step X; Daily Initilization 1x/day
           if(iday.eq.1) then
 cr          write(nlogx,*) ' Execut; Calling DaySet'  
-	          call dayset
+	        call dayset
 cr          write(nlogx,*) ' Execut; Out of Dayset'
           endif  
-	  
-	        iw  = 0
-	        iwx = 1
-	        iwxo= 0
-	        iretsw = 0
-	        ireop=0
-	        divsum=0.0
-	        ireop12=0
-c
+          iw  = 0
+          iwx = 1
+          iwxo= 0
+          iretsw = 0
+          ireop=0
+          divsum=0.0
+          ireop12=0
 c rrb 2006/09/18;	 
-	        divactX=0.0
-c
+          divactX=0.0
 c rrb 99/10/07; Rio Grande Compact stuff
-	        nrg1 = 0
-	        nrg2 = 0 
-	        l2rgrg=0
-	        l2rgco=0
-c
+          nrg1 = 0
+          nrg2 = 0 
+          l2rgrg=0
+          l2rgco=0
 c rrb 01/02/19; Set reoperation return flow check
-	        divchkr=0.0
+          divchkr=0.0
           icallsp=0
           icallsm=0
           idcallx=0
 c
+c rrb 2014-11-24; Set icall26 to insure its called only once per time step
+          icall26=0
 c rrb 05/05/12; Set call to subroutine counter
           do i=1,200
             ncall(i)=0
           enddo
-c
 c rrb 2006/11/20; Replacement counter every time step          
-	        nrepcall=0
-c
+          nrepcall=0
 c rrb 2011/07/11; Set Call OutIchk counter
           ichk4n=0
-c
 c rrb 2008/05/07; Set reservolir seepage indicator iseep) 
 c		              and total seepage (seepT) every time step	  
 cx        iseep=0
           seepT=0.0    
-c
 c rrb 2011/01/02; Set S Platte compact controls
 c         isp2 = Number of times SPlatte is called per time step
 c         ispK = SPlatte compact operating rule
@@ -835,486 +772,395 @@ c                set below when a S platte compact (type 40)
 c                is called
           isp2=0
           ispK=0
-c
-c _________________________________________________________
-c
-c rrb 		Exit if Testing only
+c_______________________________________________________________________
+c rrb 	  Exit if Testing only
 c         if(ichk.eq.6) goto 339
-c
           if(ioutGVC.eq.1) then 
             call outGVC(nlogx, 1, divact1, divsum, gvCot,
      1            noutGVC, fac,-1, 'NA          ', 
-     1            -1, 'NA          ',
-     1            'NA                      ')                 
+     1            -1, 'NA          ','NA                      ')                 
           endif
-          
-c _________________________________________________________
+c_______________________________________________________________________
 c		Step X; Water Right Loop
  135      iw = iw+1
-c
-c
-c ---------------------------------------------------------
-c               Save maximum reoperation by year		 
-	    if(iwx.ne.iwxo) then
-	      iwxo=iwx
-	      iwxmax=max0(iwxmax, iwx)
-	      if(iwxmax.eq.iwx) then
-	        monmax=mon
-	        iyrmax=iyrmo(mon)
-	        idymax=idy
-	      endif
-	      
-c       if(ioptio.ne.8) then
+c_______________________________________________________________________
+c         Save maximum reoperation by year		 
+          if(iwx.ne.iwxo) then
+            iwxo=iwx
+            iwxmax=max0(iwxmax, iwx)
+            if(iwxmax.eq.iwx) then
+              monmax=mon
+              iyrmax=iyrmo(mon)
+              idymax=idy
+            endif
+c           if(ioptio.ne.8) then
 	        write(6,103) iyrmo(mon), xmonam(mon), idy, iwx, iwxmaxY
-c       endif
-	    endif
-c	  
-c ---------------------------------------------------------
-c
+c           endif
+          endif
+c_______________________________________________________________________
 c rrb 2006/11/01; Initilized inside water right loop		
-	    divchkR=0.0
-	    divactx = 0.0
-	    ireop=0
-	    GVCot=0.0  
-	    uDem=0.0
-	    divx=0.0
-	    ispOpr=0
-	    rec12b='NA          '
-C               
-	    L1=NWRORD(1,IW)
-	    L2=NWRORD(2,IW)
-	  
-c ******************	  
-      ityoprX=0
-      if(l1.eq.5) ityoprX=ityopr(l2)
-      
-      if(ichk.eq.94) then
-        write(nlog,*) ' Execut; iwx, iw, l1, l2, iretSW, ityopr',
-     1    iwx, iw, l1,l2, iretSW, ityoprX, divsum, divactx, divx
-      endif
-     
-     
-     
-	    if(l1.eq.0) then
-cx	      write(nlog,*) ' Execut; problem l1 =0, l1, l2, iw',l1,l2,iw
-cx	      stop
-	    endif
-c
-c _________________________________________________________
+          divchkR=0.0
+          divactx = 0.0
+          ireop=0
+          GVCot=0.0  
+          uDem=0.0
+          divx=0.0
+          ispOpr=0
+          rec12b='NA          '
+          L1=NWRORD(1,IW)
+          L2=NWRORD(2,IW)
+c_______________________________________________________________________
+          ityoprX=0
+          if(l1.eq.5) ityoprX=ityopr(l2)
+          if(ichk.eq.94) then
+            write(nlog,*) ' Execut; iwx, iw, l1, l2, iretSW, ityopr',
+     1        iwx, iw, l1,l2, iretSW, ityoprX, divsum, divactx, divx
+          endif
+c         if(l1.eq.0) then
+c           write(nlog,*) ' Execut; problem l1 =0, l1, l2, iw',l1,l2,iw
+c           stop
+c         endif
+c_______________________________________________________________________
 c		Step X; Check Avail for Roundoff
           if(ichk.eq.94) write(nlogx,*) ' Execut; Calling RoundOf'
-	        call roundof(avail, numsta, 2, 1, nbug)
+          call roundof(avail, numsta, 2, 1, nbug)
           if(ichk.eq.94) write(nlogx,*) ' Execut; Out of RoundOf'
-c
 c         write(nlogx,*) 'Execut;', iyr,mon,iw,iwx,l1,l2
 c         write(nlogx,*) 'Execut; 0, RRivpri', qres(1,1)*fac 	  
-          
           if(ichk.eq.94) then
             write(nlogx,*) ' '
 c           write(nlog,*) 'Execut;', iyr,mon
             write(nlogx,*) 'Execut;  iyr  mon   iw  iwx   l1   l2'
             write(nlogx,'(a8, 20i5)') 'Execut;', iyr,mon,iw,iwx,l1,l2            
           endif  
-          
-	    if(nbug.eq.1) then
-	      write(nlogx,*) 'Execut; Problem ',iyr,mon,iw,iwx,l1,l2
-	      goto 9999
-	    endif
-c
-c _________________________________________________________
-c		Step X; INSTREAM FLOW RIGHT
-c
-	    if(l1.eq.1) then
-c
-c rrb 99/03/22
-c
-c               Skip if the water right is not active for this year
-c               iifrsw     =  1; on
-c                          =  0; off
-c                          = -n; simulate until year n (e.g. -1980)
-c                          =  n; begin to simulate in year n (e.g. 1980)
-	    if(iifrsw(l2).ne.1) then
-	      if(iifrsw(l2).eq.0) goto 410
-	      if(iifrsw(l2).gt.0 .and. iyr-iifrsw(l2).lt.0) goto 410
-	      if(iifrsw(l2).lt.0 .and. iyr+iifrsw(l2).gt.0) goto 410
-	    endif
-c
-c ---------------------------------------------------------
-c		Test for a downstream call before an instream flow
-c		Note dcall1 is set in bomsec or dayest
-      if(idcall.ne.0) then
-        dcallx=rfrnk(l2)
-        
-        if(rfrnk(l2).gt.dcall1 .and. idcallx.eq.0) then
-          if(iout.eq.2) then
-            write(nlogx,188) 'Isf',IYRmo(mon), xmonam(mon), idy,
-     1      dcall1, rfrnk(l2)                  
+          if(nbug.eq.1) then
+            write(nlogx,*) 'Execut; Problem ',iyr,mon,iw,iwx,l1,l2
+            goto 9999
           endif
-
-          idcallx=1
-          iwtemp=iw             
-          l2Temp = idcall
-          ncloc=1
-          call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
-c
+c_______________________________________________________________________
+c	      Step X; INSTREAM FLOW RIGHT
+          if(l1.eq.1) then
+c rrb 99/03/22
+c         Skip if the water right is not active for this year
+c         iifrsw     =  1; on
+c                    =  0; off
+c                    = -n; simulate until year n (e.g. -1980)
+c                    =  n; begin to simulate in year n (e.g. 1980)
+	        if(iifrsw(l2).ne.1) then
+	          if(iifrsw(l2).eq.0) goto 410
+	          if(iifrsw(l2).gt.0 .and. iyr-iifrsw(l2).lt.0) goto 410
+	          if(iifrsw(l2).lt.0 .and. iyr+iifrsw(l2).gt.0) goto 410
+	        endif
+c_______________________________________________________________________
+c           Test for a downstream call before an instream flow
+c           Note dcall1 is set in bomsec or dayest
+            if(idcall.ne.0) then
+              dcallx=rfrnk(l2)
+              if(rfrnk(l2).gt.dcall1 .and. idcallx.eq.0) then
+                if(iout.eq.2) then
+                  write(nlogx,188) 'Isf',IYRmo(mon), xmonam(mon), idy,
+     1              dcall1, rfrnk(l2)                  
+                endif
+                idcallx=1
+                iwtemp=iw             
+                l2Temp = idcall
+                ncloc=1
+                call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
 c rrb               
-cr        write(nlogx,*) 'Execut; 1 qdiv(14,17)', qdiv(14,17)
-        endif
-      endif    
-c
-c ---------------------------------------------------------
-c               Instream Flow Operation with or without reach option
-	    if(ireach.eq.0) then
-	      CALL IFRRIG(IW,L2,ncall(101))
-	    else
-	      call ifrrig2(iw,l2,ncall(101))
-	    endif
-c
-c ---------------------------------------------------------
+cr              write(nlogx,*) 'Execut; 1 qdiv(14,17)', qdiv(14,17)
+              endif
+c             endif (rfrnk(l2).gt.dcall1 .and. idcallx.eq.0)
+            endif
+c           endif (idcall.ne.0)
+c_______________________________________________________________________
+c           Instream Flow Operation with or without reach option
+            if(ireach.eq.0) then
+              CALL IFRRIG(IW,L2,ncall(101))
+            else
+              call ifrrig2(iw,l2,ncall(101))
+            endif
+c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output        
-      if(ichk.eq.94 .or. ichk.eq.4) then
-        call outIchk(1, ichk4n, l1, l2, iw, 0, ishort, fac,
-     1               uDem, divactx, divx, divsum,
-     1               0, iwx, rec12b)
-      endif  	    
-c
+            if(ichk.eq.94 .or. ichk.eq.4) then
+              call outIchk(1, ichk4n, l1, l2, iw, 0, ishort, fac,
+     1                     uDem, divactx, divx, divsum,
+     1                     0, iwx, rec12b)
+            endif  	    
 c rrb Test                
-cr                write(nlogx,*) 'Execut; 1 qdiv(14,17)', qdiv(14,17)
-	    
-	    GOTO 410
-	  endif
-c	  
-c__________________________________________________
+cr          write(nlogx,*) 'Execut; 1 qdiv(14,17)', qdiv(14,17)
+	        GOTO 410
+	      endif
+c	      endif INSTREAM FLOW RIGHT (l1.eq.1)
+c_______________________________________________________________________
 c               Step X; RESERVOIR RIGHTS
-
-c
-	    if(l1.eq.2) then
+	      if(l1.eq.2) then
 c rrb 99/03/22
-c
-c               Skip if not active for this year
-c               irsrsw     =  1; on
-c                          =  0; off
-c                          = -n; simulate until year n (e.g. -1980)
-c                          =  n; begin to simulate in year n (e.g. 1980)
-	      if(irsrsw(l2).ne.1) then
-c               write(nlogx,*) '  Execut;',
-c    1            l2, iyr, irsrsw(l2), iyr-irsrsw(l2)
-c               IF(irsrsw(L2).LE.0) GOTO 410
-	        if(irsrsw(l2).eq.0) goto 410
-	        if(irsrsw(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 410
-	        if(irsrsw(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 410
-	      endif
-c
-c ---------------------------------------------------------
-c		Test for a downstream call befor a reservoir
-c		Note dcall1 is set in bomsec or dayest
-
-        if(idcall.ne.0) then
-          dcallx=rrsnk(l2)
-          
-          if(rrsnk(l2).gt.dcall1 .and. idcallx.eq.0) then
-            if(iout.eq.2) then
-              write(nlogx,188) 'Res',IYRmo(mon), xmonam(mon), idy,
-     1          dcall1, rrsnk(l2)                  
+c            Skip if not active for this year
+c              irsrsw     =  1; on
+c                         =  0; off
+c                         = -n; simulate until year n (e.g. -1980)
+c                         =  n; begin to simulate in year n (e.g. 1980)
+            if(irsrsw(l2).ne.1) then
+c             write(nlogx,*) '  Execut;',
+c    1          l2, iyr, irsrsw(l2), iyr-irsrsw(l2)
+c             IF(irsrsw(L2).LE.0) GOTO 410
+              if(irsrsw(l2).eq.0) goto 410
+              if(irsrsw(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 410
+              if(irsrsw(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 410
             endif
-            
-            idcallx=1
-            iwTemp=iw             
-            l2Temp = idcall
-            ncloc=2
-            call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
-          endif
-        endif    
-c
-c ---------------------------------------------------------
-c
-	      CALL RESRG1(IW,L2,divx,short,ncall(102))
-c
-c ---------------------------------------------------------
+c_______________________________________________________________________
+c           Test for a downstream call befor a reservoir
+c           Note dcall1 is set in bomsec or dayest
+            if(idcall.ne.0) then
+              dcallx=rrsnk(l2)
+              if(rrsnk(l2).gt.dcall1 .and. idcallx.eq.0) then
+                if(iout.eq.2) then
+                  write(nlogx,188) 'Res',IYRmo(mon), xmonam(mon), idy,
+     1              dcall1, rrsnk(l2)                  
+                endif
+                idcallx=1
+                iwTemp=iw             
+                l2Temp = idcall
+                ncloc=2
+                call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
+              endif
+            endif    
+c_______________________________________________________________________
+	        CALL RESRG1(IW,L2,divx,short,ncall(102))
+c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output        
-        if(ichk.eq.94 .or. ichk.eq.4) then
-           udem=short/fac
-           call outIchk(2, ichk4n,  l1, l2, iw, o, ishort,
-     1                 fac, udem, divx, divx, divsum,
-     1                 0, iwx, rec12b)
-        endif 
-c 	    
-	      GOTO 410
-	    endif
-c
-c__________________________________________________
-c               Step X; DIRECT DIVERSION RIGHTS
-c
-	    if(l1.eq.3) then
-c
+            if(ichk.eq.94 .or. ichk.eq.4) then
+              udem=short/fac
+              call outIchk(2, ichk4n,  l1, l2, iw, o, ishort,
+     1                     fac, udem, divx, divx, divsum,
+     1                     0, iwx, rec12b)
+            endif 
+c_______________________________________________________________________
+	        GOTO 410
+          endif
+c         endif RESERVOIR RIGHTS (l1.eq.2)           
+c_______________________________________________________________________
+c         Step X; DIRECT DIVERSION RIGHTS
+	      if(l1.eq.3) then
 c rrb 99/03/22
-c
-c               Skip if not active for this year
-c               idvrsw     =  1; on
-c                          =  0; off
-c                          = -n; simulate until year n (e.g. -1980)
-c                          =  n; begin to simulate in year n (e.g. 1980)
-	      if(idvrsw(l2).ne.1) then
-          if(ichk.eq.94) write(nlogx,*)' Execut; Check Diversion on/off'
-	      
-c         write(nlogx,*) '  Execut;',
-c    1        l2, iyr, idvrsw(l2), iyr-idvrsw(l2)
-c         IF(IDVRSW(L2).LE.0) GOTO 410
-
-	        if(idvrsw(l2).eq.0) goto 410
-	        if(idvrsw(l2).gt.0 .and. iyr-idvrsw(l2).lt.0) goto 410
-	        if(idvrsw(l2).lt.0 .and. iyr+idvrsw(l2).gt.0) goto 410
-	      endif
-c
-c
-c ---------------------------------------------------------
-c		Test for a downstream call before a diversion
-c		Note dcall1 is set in bomsec or dayest
-        if(idcall.ne.0) then
-          if(ichk.eq.94) write(nlogx,*) 
-     1     ' Execut; Check downstream call'
-          dcallx=rdvnk(l2)
-          
-          if(rdvnk(l2).gt.dcall1 .and. idcallx.eq.0) then
-            if(iout.eq.2) then
-              write(nlogx,188) 'Div',IYRmo(mon), xmonam(mon), idy,
-     1          dcall1, rdvnk(l2)                  
-            endif
-            
-            idcallx=1
-            iwTemp=iw             
-            l2Temp = idcall
-            ncloc=3
-            call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
-          endif
-        endif    
-c
-c ---------------------------------------------------------
-c  Call Divrig to divert water
-        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling Divrig ', ireop
-        
-        CALL DIVRIG(IW,L2,ISHORT,divx,ncall(103))
-        
-        if(ichk.eq.94) write(nlogx,*) ' Execut; Back From Divrig', ireop
-c
-c ---------------------------------------------------------
+c           Skip if not active for this year
+c             idvrsw     =  1; on
+c                        =  0; off
+c                        = -n; simulate until year n (e.g. -1980)
+c                        =  n; begin to simulate in year n (e.g. 1980)
+            if(idvrsw(l2).ne.1) then
+              if(ichk.eq.94) write(nlogx,*)
+     1          ' Execut; Check Diversion on/off'
+c             write(nlogx,*) '  Execut;',
+c    1          l2, iyr, idvrsw(l2), iyr-idvrsw(l2)
+c             IF(IDVRSW(L2).LE.0) GOTO 410
+	          if(idvrsw(l2).eq.0) goto 410
+	          if(idvrsw(l2).gt.0 .and. iyr-idvrsw(l2).lt.0) goto 410
+	          if(idvrsw(l2).lt.0 .and. iyr+idvrsw(l2).gt.0) goto 410
+	        endif
+c_______________________________________________________________________
+c		    Test for a downstream call before a diversion
+c		      Note dcall1 is set in bomsec or dayest
+            if(idcall.ne.0) then
+              if(ichk.eq.94) write(nlogx,*) 
+     1          ' Execut; Check downstream call'
+              dcallx=rdvnk(l2)
+              if(rdvnk(l2).gt.dcall1 .and. idcallx.eq.0) then
+                if(iout.eq.2) then
+                  write(nlogx,188) 'Div',IYRmo(mon), xmonam(mon), idy,
+     1              dcall1, rdvnk(l2)                  
+                endif
+                idcallx=1
+                iwTemp=iw             
+                l2Temp = idcall
+                ncloc=3
+                call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
+              endif
+            endif    
+c_______________________________________________________________________
+c           Call Divrig to divert water
+            if(ichk.eq.94) write(nlogx,*)
+     1        ' Execut; Calling Divrig ', ireop
+            CALL DIVRIG(IW,L2,ISHORT,divx,ncall(103))
+            if(ichk.eq.94) write(nlogx,*)
+     1        ' Execut; Back From Divrig', ireop
+c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output        
-        if(ichk.eq.94 .or. ichk.eq.4) then
-          call outIchk(3, ichk4n, l1, l2, iw, 0, ishort, fac,
-     1                udem, divx, divx, divsum,
-     1                0, iwx, rec12b)
-        endif        
-c
-c
-c ---------------------------------------------------------
+            if(ichk.eq.94 .or. ichk.eq.4) then
+              call outIchk(3, ichk4n, l1, l2, iw, 0, ishort, fac,
+     1                     udem, divx, divx, divsum, 0, iwx, rec12b)
+            endif
+c_______________________________________________________________________
 c rrb 2011/01/02; South Platte Compact
 c                 isp1 is the operating right pointer for the Splatte 
 c                 operating rule set in Oprinp
-       
-        if(isp1.ge.1 .and. ishort.eq.1) then
-	        nd = idivco(1,l2)    
-          IUSE=NDUSER(ND)+IDIVCO(2,L2)-1   	        
-          divreq1=divreq(iuse)
-          if(ichk.eq.94) write(nlogx,*) ' Execut; Calling SPlatte'
-
-          rec12=cdivid(nd)
-c
+            if(isp1.ge.1 .and. ishort.eq.1) then
+	          nd = idivco(1,l2)    
+              IUSE=NDUSER(ND)+IDIVCO(2,L2)-1   	        
+              divreq1=divreq(iuse)
+              if(ichk.eq.94) write(nlogx,*) ' Execut; Calling SPlatte'
+              rec12=cdivid(nd)
 c rrb 2011/05/04; Limit calls to diverson rights junior to the compact          
-          if(rec12(1:2).ne.'64' .and. divreq1.gt.small .and.
-     1      rdvnk(l2).gt.ropnk(isp1)) then        
-
-cx          write(nlogx,*) ' Execut; Calling SPlatte ',nd, iuse, 
-cx   1      divreq1*fac, l2, rdvnk(l2),  isp1, ropnk(isp1)           
-            CALL SPlatte(IW, isp1, l2, ISHORT, nd, divactx,ncall(140))  
-c
-c ---------------------------------------------------------
+              if(rec12(1:2).ne.'64' .and. divreq1.gt.small .and.
+     1          rdvnk(l2).gt.ropnk(isp1)) then        
+cx              write(nlogx,*) ' Execut; Calling SPlatte ',nd, iuse, 
+cx   1          divreq1*fac, l2, rdvnk(l2),  isp1, ropnk(isp1)           
+                CALL SPlatte(IW,isp1,l2,ISHORT,nd,divactx,ncall(140))  
+c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output  
-            if(ichk.eq.94 .or. ichk.eq.4) then 
-              divsum1=divsum+divactx*fac
-              call outIchk(4, ichk4n, 5, isp1, iw, ityopr(isp1),
-     1                   ishort, fac,
-     1                   uDem, divactx, divx, divsum1,
-     1                   0, iwx, rec12b)
-            endif                
-c
+                if(ichk.eq.94 .or. ichk.eq.4) then 
+                  divsum1=divsum+divactx*fac
+                  call outIchk(4, ichk4n, 5, isp1, iw, ityopr(isp1),
+     1                         ishort,fac,uDem, divactx, divx, divsum1,
+     1                         0, iwx, rec12b)
+                endif                
 c rrb 2011/04/25; Allow reoperaton
 c rrb 2011/05/12; Correction
-            if(divactx.gt.small) then
-              ispOpr=1
-              goto 400
+                if(divactx.gt.small) then
+                  ispOpr=1
+                  goto 400
+                endif
+                goto 410
+              endif               
+c_______________________________________________________________________
+c             Print detailed Compact Data
+              if(ioutSP.ge.1) then     
+                isp2=isp2+1                  
+                write(nlogx,590)
+                write(nlogx,592) isp2, cdivid(nd), ciopdeX(1,isp1), 
+     1            isp1, nd, iuse,ishort,
+     1            divmon(nd)*fac, divreq(iuse)*fac  
+              endif
             endif
-            goto 410
-          endif               
-c
-c ----------------------------------------------------------
-c Print detailed Compact Data
-          if(ioutSP.ge.1) then     
-            isp2=isp2+1                  
-            write(nlogx,590)
-            write(nlogx,592) isp2, cdivid(nd), ciopdeX(1,isp1), 
-     1        isp1, nd, iuse,ishort,
-     1        divmon(nd)*fac, divreq(iuse)*fac  
-          endif
-        endif          
-c
-c ---------------------------------------------------------
+c           endif South Platte Compact (isp1.ge.1 .and. ishort.eq.1)  
+c_______________________________________________________________________
 c rrb 02/26/96; Replacement reservoir logic (completely revised)
-c         Type 10 operating rule
-c         irepn  = number of replacement reservoirs
-c         ishort = 0 water right is not shorted
-c                = 1 water right is shorted
-c         ireptyp(nd) from datinp.for
+c           Type 10 operating rule
+c           irepn  = number of replacement reservoirs
+c           ishort = 0 water right is not shorted
+c                  = 1 water right is shorted
+c           ireptyp(nd) from datinp.for
 c                     = 1 replace 100% (diversion)
 c                     = -1 replace depletion
 c                     = -999 does not get replacement 
-c         reprnkx     = from getrep.for
-c                       most senior replacement res Admin#
-c         rdvnk       = water right Admin#
-
-c       write(nlogx,*) ' '
-c       write(nlogx,*) '  Execut; iyr, mon, l2, ishort',
-c    1                              iyr,mon,l2,ishort
-c
-	      nd = idivco(1,l2)
-c
-c Print detailed Replacement Data
-        if(ioutR.ge.1) then
-          if(ioutR.ge.1) write(nlogx,560)
-          write(nlogx,570) ioutR, cdivid(nd), l2,nd,irepn,
-     1       ireptyp(nd),  ishort,rdvnk(l2),reprnkx
-          ioutR=ioutR+1
-        endif
-c
-c
-c
-c ---------------------------------------------------------
-c		Do not call replace if the structure is not short
-	      if(irepn.eq.0 .or. ishort.eq.0) goto 410
-        
+c           reprnkx     = from getrep.for most senior replacement res Admin#
+c           rdvnk       = water right Admin#
+c           write(nlogx,*) ' '
+c           write(nlogx,*) '  Execut; iyr, mon, l2, ishort',
+c    1                     iyr,mon,l2,ishort
 	        nd = idivco(1,l2)
-c
-c ---------------------------------------------------------
-c
+c           Print detailed Replacement Data
+            if(ioutR.ge.1) then
+              if(ioutR.ge.1) write(nlogx,560)
+              write(nlogx,570) ioutR, cdivid(nd), l2,nd,irepn,
+     1          ireptyp(nd),  ishort,rdvnk(l2),reprnkx
+              ioutR=ioutR+1
+            endif
+c_______________________________________________________________________
+c		    Do not call replace if the structure is not short
+	        if(irepn.eq.0 .or. ishort.eq.0) goto 410
+	        nd = idivco(1,l2)
+c_______________________________________________________________________
 c rrb 04/31/96; Revised interpetation of ireptyp(nd)
-c               ireptyp =  0 off
-c                       =  1 100% replacement
-c                       = -1 depletion replacement
-c
-	      if(ireptyp(nd).ne.0 .and. rdvnk(l2).le.reprnkx) then
-c         write(nlogx,*) '  Execut; calling replace'
-          call replace(iw,l2,nrepcall,divactx, ncall)
-	        nrepcall=nrepcall+1
-	        nrepcalt=nrepcalt+1
-c         write(nlog,*) ' Called by replace ', l1, l2
-	        goto 400
+c           ireptyp =  0 off
+c                   =  1 100% replacement
+c                   = -1 depletion replacement
+	        if(ireptyp(nd).ne.0 .and. rdvnk(l2).le.reprnkx) then
+c             write(nlogx,*) '  Execut; calling replace'
+              call replace(iw,l2,nrepcall,divactx, ncall)
+	          nrepcall=nrepcall+1
+	          nrepcalt=nrepcalt+1
+c             write(nlog,*) ' Called by replace ', l1, l2
+	          goto 400
+	        endif
 	      endif
-	    endif
-c
-c__________________________________________________
-c               Step X; OTHER WATER RIGHTS (POWER DEMAND, ETC.)
-c		NOT Active
-c
-	    if(l1.eq.4) then
-c
+c         endif DIRECT DIVERSION RIGHTS (l1.eq.3) 
+c_______________________________________________________________________
+c         Step X; OTHER WATER RIGHTS (POWER DEMAND, ETC.)
+c		    NOT Active
+          if(l1.eq.4) then
 c rrb 99/03/22
-c
-c               Skip if not active for this year
-c               ipowsw     =  1; on
-c                          =  0; off
-c                          = -n; simulate until year n (e.g. -1980)
-c                          =  n; begin to simulate in year n (e.g. 1980)
-c                          =  1; on for all practical purposes
-	      if(ipowsw(l2).ne.1) then
-c               write(nlogx,*) '  Execut;',
-c    1            l2, iyr, ipowsw(l2), iyr-ipowsw(l2)
-c               IF(IPOWSW(L2).LE.0) GOTO 410
-	        IF(ipowsw(L2).eq.0) GOTO 410
-	        if(ipowsw(l2).gt.0 .and. iyr-ipowsw(l2).lt.0) goto 410
-	        if(ipowsw(l2).lt.0 .and. iyr+ipowsw(l2).gt.0) goto 410
+c           Skip if not active for this year
+c           ipowsw     =  1; on
+c                      =  0; off
+c                      = -n; simulate until year n (e.g. -1980)
+c                      =  n; begin to simulate in year n (e.g. 1980)
+c                      =  1; on for all practical purposes
+	        if(ipowsw(l2).ne.1) then
+c             write(nlogx,*) '  Execut;',
+c    1          l2, iyr, ipowsw(l2), iyr-ipowsw(l2)
+c             IF(IPOWSW(L2).LE.0) GOTO 410
+	          IF(ipowsw(L2).eq.0) GOTO 410
+	          if(ipowsw(l2).gt.0 .and. iyr-ipowsw(l2).lt.0) goto 410
+	          if(ipowsw(l2).lt.0 .and. iyr+ipowsw(l2).gt.0) goto 410
+	        endif
+c_______________________________________________________________________
+c		    Test for a downstream call
+c           if(idcall.ne.0 .and. idcallx.eq.0) then
+c             dcallx=rdvxxx(l2)
+c             idcallx=1
+c             iwTemp=iw             
+c             l2Temp = idcall
+c             ncloc = 4
+c             call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
+c           endif    
+c_______________________________________________________________________
+	        CALL POWRIG(IW,L2)
+	        GOTO 410
 	      endif
-c
-c
-c ---------------------------------------------------------
-c		Test for a downstream call
-c       if(idcall.ne.0 .and. idcallx.eq.0) then
-c
-c         dcallx=rdvxxx(l2)
-c         idcallx=1
-c         iwTemp=iw             
-c         l2Temp = idcall
-c         ncloc = 4
-c         call ifrdown(iwTemp,l2Temp,l1,fac,ncloc,dcallx)
-c       endif    
-c
-c
-c ---------------------------------------------------------
-c		
-	      CALL POWRIG(IW,L2)
-	      GOTO 410
-	    endif
-c
-c__________________________________________________
-c               Step X; OPERATION Rights
-	    if(l1.eq.5) then
-cr	    write(nlogx,*) '  Execut; l1, l2, ityopr = ', l1,l2,ityopr(l2)
-c
-c
-c ---------------------------------------------------------
-c               Skip if not active for this year
-c               ioprsw     =  1; on
-c                          =  0; off
-c                          = -n; simulate until year n (e.g. -1980)
-c                          =  n; begin to simulate in year n (e.g. 1980)
-c
-cr
-        IF(ioprsw(l2).eq.0) GOTO 410
-        ioff=0
-        if(iyr.lt.ioBeg(l2)) ioff=1
-        if(iyr.gt.ioEnd(l2)) ioff=1
-        
-        if(ioff.eq.1) then
-cr          write(nlogx,107)iyr,imo,iwx, corid(l2),
-cr   1        iobeg(l2),ioend(l2),ioprsw(l2)
-            goto 410
-        endif
-  107   format('  Execut; FYI Rule turned off in year, month, iter ',
-     1       3i5, 1x, a12, 1x, 3i8)                       
-c
-c
-c ---------------------------------------------------------
-c               Step X; Branch for Operation Type
-
-        if(ityopr(l2).le.0 .or. ityopr(l2).gt.maxOprin) then
-          write(nlogx,550) ityopr(l2), maxOprin
-          goto 9999
-        endif
-          
-	      go to (190,200,200,220,230,240,250,252,300,410,
-     1           311,312,313,314,315,316,317,318,319,320,
-     1           321,322,323,324,325,326,327,328,329,330,
-     1           331,332,333,334,335,336,337,338,339,340,
-     1           341,342,343,344,345,346,347,348,349,350) ityopr(l2)
-c
-c ---------------------------------------------------------
-c		           Step X; Problem if the operating rule does not exist
-        write(nlogx,*) 
-     1   ' Problem operating rule type not defined = ',ityopr(l2)
-        goto 9999
-               
-c
-c _________________________________________________________         
+c         endif OTHER WATER RIGHTS (POWER DEMAND, ETC.) (l1.eq.4)
+c_______________________________________________________________________
+c         Step X; OPERATION Rights
+	      if(l1.eq.5) then
+cr	        write(nlogx,*) '  Execut; l1, l2, ityopr = ', l1,l2,ityopr(l2)
+c_______________________________________________________________________
+c           Skip if not active for this year
+c           ioprsw     =  1; on
+c                      =  0; off
+c                      = -n; simulate until year n (e.g. -1980)
+c                      =  n; begin to simulate in year n (e.g. 1980)
+            IF(ioprsw(l2).eq.0) GOTO 410
+            ioff=0
+            if(iyr.lt.ioBeg(l2)) ioff=1
+            if(iyr.gt.ioEnd(l2)) ioff=1
+            if(ioff.eq.1) then
+cr            write(nlogx,107)iyr,imo,iwx, corid(l2),
+cr   1          iobeg(l2),ioend(l2),ioprsw(l2)
+cr  107       format('  Execut; FYI Rule turned off in year, month, iter ',
+cr   1               3i5, 1x, a12, 1x, 3i8)                       
+              goto 410
+            endif
+c_______________________________________________________________________
+c           Step X; Branch for Operation Type
+            if(ityopr(l2).le.0 .or. ityopr(l2).gt.maxOprin) then
+              write(nlogx,550) ityopr(l2), maxOprin
+              goto 9999
+            endif
+c_______________________________________________________________________
+            go to (190,200,200,220,230,240,250,252,300,410,
+     1             311,312,313,314,315,316,317,318,319,320,
+     1             321,322,323,324,325,326,327,328,329,330,
+     1             331,332,333,334,335,336,337,338,339,340,
+     1             341,342,343,344,345,346,347,348,349,350) ityopr(l2)
+c_______________________________________________________________________
+c		    Step X; Problem if the operating rule does not exist
+            write(nlogx,*) 
+     1        ' Problem operating rule type not defined = ',ityopr(l2)
+            goto 9999
+c_______________________________________________________________________
 c               Type 1. Reservoir to Instream flow
 c
   190   if(ireach.eq.0) then
           if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 1-PowRes'   
-	        call powres(iw,l2,divactx,ncall(1))
-	      else
+	      call powres(iw,l2,divactx,ncall(1))
+	    else
           if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 1-PowRes2' 	    
           call powres2(iw,l2,divactx,ncall(1))
-	      endif
-	      goto 400
+	    endif
+	    goto 400
 c
-c _________________________________________________________                
+c_______________________________________________________________________
+                
 c               Type 2 or Type 3. Reservoir release to diversion 
 c                 or reservoir via the river or to a carrier
 c
@@ -1328,7 +1174,8 @@ c
      1   divactx,divacty,ncall(2))
 	     goto 400
 c
-c _________________________________________________________                      
+c_______________________________________________________________________
+                      
 c
 c               Type 4. Diversion by Exchange with a reservoir                  
 c
@@ -1342,7 +1189,8 @@ c
      1   divactx,divacty,ncall(4))
 	     goto 400
 c 
-c _________________________________________________________              
+c_______________________________________________________________________
+              
 c
 c              Type 5. Reservior storage by Exchange with a reservoir
 c
@@ -1351,7 +1199,8 @@ c
       call resrpl(iw,l2,divactx,ncall(5))
 	    goto 400
 c
-c _________________________________________________________             
+c_______________________________________________________________________
+             
 c
 c              Type 6. Transfer from reservoir to reservoir by carrier
 c               (aka bookover)   Note: No returns !
@@ -1360,7 +1209,8 @@ c               (aka bookover)   Note: No returns !
       CALL RSRSPU(IW,L2,ncall(6))
 	    goto 410
 c
-c _________________________________________________________                      
+c_______________________________________________________________________
+                      
 c
 c               Type 7. Exchange to a Carrier System
 c
@@ -1369,7 +1219,7 @@ c
       call carrpl(iw,l2,divactx, ncall(7))
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c               Type 8. Reservoir to reservoir bookover with      
 c                       additional constraints (e.g. Blue River Decree)
@@ -1379,7 +1229,8 @@ c
       call OopBook2(iw,l2,divactx, ncall(8))            
 	    goto 400
 c
-c _________________________________________________________                                                      
+c_______________________________________________________________________
+                                                      
 c
 c              Type 9. Target release for power or whatever
 c
@@ -1388,11 +1239,12 @@ c
       call powsea(iw,l2,divactx,ncall(9))
 	    goto 400
 c
-c _________________________________________________________                      
+c_______________________________________________________________________
+                      
 c               Type 10. Not called in the operational Right loop
 c               called after each direct flow water right 
 c               Currently sent to 410 to allow variable year option
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c               Type 11. Diversions by demand through carrier 
 c
@@ -1407,7 +1259,7 @@ c           call divcar(iw,l2,ishort,divx,ncall(11))
 c     write(nlog,*) ' Execut; Out divsum ', divactx*fac, divsum 
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c rrb 01/31/95; Code Addition
 c               Type 12. Reoperation
 c
@@ -1453,7 +1305,7 @@ c
 c		Go to 400 to aviod resetting variable ireop12	    
 	    goto 410
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c rrb 01/17/96; 
 c               Type 13. Index flow constraint (La Plata Compact)
 c               	 Note Execute on first reoperation per time
@@ -1463,7 +1315,7 @@ c                        step (iwx = 1)
       call ifrrigx(iw,l2, ncall(13))
 	    goto 400
 c	    
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c               Type 14. Diversions by demand through carrier 
 c                        ditch system with an annual limit on the carrier
@@ -1476,7 +1328,7 @@ c           call divcar1(iw,l2,ishort,divx,ncall(14))
       call divcar1(iw,l2,ishort,divactx,ncall(14))            
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 99/06/23; Type 15. Interruptable Supply
 c
@@ -1485,7 +1337,7 @@ c
       call intersup(iw,l2,1)
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 99/06/23; Type 16. Direct Flow Storage
 c
@@ -1494,7 +1346,7 @@ c
       call directfs(iw,l2,ishort,divx,ncall(16))
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 99/06/23; Type 17. Rio Grande Compact for Rio Grande
 c
@@ -1504,7 +1356,7 @@ c
 	    l2rgrg=l2
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 99/06/23; Type 18. Rio Grande Compact for Conejos
 c
@@ -1514,7 +1366,7 @@ c
 	    l2rgco=l2
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 99/06/23; Type 19. Split Channel
 c
@@ -1524,7 +1376,7 @@ c
 	    goto 400
 c
 
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 00/11/05; Type 20. San Juan RIP
   320 continue  
@@ -1532,19 +1384,19 @@ c rrb 00/11/05; Type 20. San Juan RIP
       call sjrip(iw,l2,isjon,divactx)
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 00/11/05; Type 21. Sprinkler Use 1x/time step
 c
   321 continue
       if(icallsp.eq.0) then
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 21-Spruse'       
-	    call spruse(iw,l2,divx,ncall(21))
-	    icallsp=1
+        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 21-Spruse'       
+	      call spruse(iw,l2,divx,ncall(21))
+	      icallsp=1
 	    endif
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 00/11/05; Type 22. Soil Moisture Use 1x/time step
 c
@@ -1557,7 +1409,7 @@ c
 	    endif
 	    goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 04/08/24; Type 23. Downstream Call
 c		Note the Downstream operating rule has a variable
@@ -1570,33 +1422,40 @@ c               junior right per documenation.
 c		Note dcall1 is set in bomsec or dayest
 c
   323 dcallx=-1.0
-    
       if(idcall.gt. 0 .and. idcallx.eq.0) then
-      if(iout.eq.2) then
-        write(nlogx,580) IYRmo(mon), xmonam(mon), idy, 
-     1   rdvnk(l2),dcall1
-      endif
-
-      idcallx=1
-      ncloc=5
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 23-IfrDown'               
-      call ifrDown(iw,l2,l1,fac,ncloc,dcallx)
+        if(iout.eq.2) then
+          write(nlogx,580)IYRmo(mon),xmonam(mon),idy,rdvnk(l2),dcall1
+        endif
+        idcallx=1
+        ncloc=5
+        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 23-IfrDown'               
+        call ifrDown(iw,l2,l1,fac,ncloc,dcallx)
       endif  
       goto 410
-c _________________________________________________________
-c
+c_______________________________________________________________________
 c rrb 99/06/23; Type 24. Direct Flow Exchange (Alt. Point)
-c
   324  continue
 c      write(nlog,*) ' Execut; type 24 In Avail(8) ', avail(8)*fac,
 c    1   avinp(8)*fac         
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 24-DirectEX' 
-       call directEX(iw,l2,ishort,divactX,ncall(24))
-       
+       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 24-DirectEX'
+cx       write(nlog,*)
+cx     1   ' Execut; type 24; iw iwx l2 iOprLim(l2) oprlimit(l2)',
+cx
+c jhb 2014/10/27 check for the reop step limit for type 24 rules
+       if (iOprLim(l2).lt.0) then
+c        the oprlimit value in the opr file is less than 0
+c        this indicates the modeler wants to freeze this rule's result
+c        after a number of reop steps, almost certainly after ONE reop step
+         if(iwx.le.-iOprLim(l2))then
+           call directEX(iw,l2,ishort,divactX,ncall(24))
+         endif
+       else
+         call directEX(iw,l2,ishort,divactX,ncall(24))
+       endif
 c      write(nlog,*) ' Execut; type 24 Out Avail(8)', avail(8)*fac,
 c    1   avinp(8)*fac       
-	     goto 400
-c _________________________________________________________
+       goto 400
+c_______________________________________________________________________
 c
 c rrb 05/01/28; Type 25. Direct Flow Bypass (Alt. Point)
 c
@@ -1610,14 +1469,31 @@ c    1   avinp(8)*fac
 c      write(nlog,*) ' Execut; type 25 Out Avail(8)', avail(8)*fac,
 c    1  avinp(8)*fac   
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
-c rrb 05/01/28; Type 26. Reservoir or Reuse Plan to a Plan Direct
+c rrb 2014-11-24; Type 26. Changed Water Right
+cx
+cx 326       call PowResP(iw,l2,divactX,ncall(26))
+cx rrb 2007/12/26; Move to type 48	
+cx  326	    goto 400
+  326  continue
+
+      if(icall26.eq.0) then
+c     
+c        write(nlogx,*) ' Execut; Calliing directWR, icall26 ', icall26 
+c        write(nlogx,*) ' Execut; type 26 In Avail(8) ', avail(8)*fac,
+c     1                avinp(8)*fac 
+        if(ichk.eq.94) write(nlogx,*) ' Execut; Calliing 26 directWR'
 c
-c 326       call PowResP(iw,l2,divactX,ncall(26))
-c rrb 2007/12/26; Move to type 48	
-  326	    goto 400
-c _________________________________________________________
+c	         
+        call directWR(iw,l2,ishort,divactX,ncall(26))
+        icall26=1
+       endif    
+c          
+c      write(nlog,*) ' Execut; type 26 Out Avail(8)', avail(8)*fac,
+c    1               avinp(8)*fac   
+	     goto 400  
+c_______________________________________________________________________
 c
 c rrb 05/01/30; Type 27. Reservoir or ReUse Plan to a Diversion,
 c                        Reservoir, or Carrier with Reuse Direct
@@ -1629,18 +1505,18 @@ c rrb 2007/10/26; Add ability to be called by Replace
 	     tranlim=0.0
 	     dcrdivx=0.0
 	     divdx=0.0  
-c      write(nlog,*) ' Execut; type 27 In Avail(8) ', avail(8)*fac,
-c    1   avinp(8)*fac        	    
+cx       write(nlog,*) ' Execut; type 27 In Avail(8) ', avail(8)*fac,
+cx     1   avinp(8)*fac        	    
 cx       write(nlog,*)'  Execut; Warning type 27 off'   
 cx
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 27-DivResP2' 
        call DivResP2(iw,l2,ishort,irep,tranlim,dcrdivx,divdx,
-     1 divactx,divacty,ncall(27))	    
+     1   divactx,divacty,ncall(27))	    
        
 c      write(nlog,*) ' Execut; type 27 Out Avail(8)', avail(8)*fac,
 c    1   avinp(8)*fac       	    
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/29; Type 28. ReUse Plan to a Diversion by Exchange
 c
@@ -1657,7 +1533,7 @@ cx      write(nlog,*)'  Execut; Warning type 28 off'
       call divRplP(iw,l2,ishort,irep,tranlim,dcrdivx,divdx,
      1             divactx,divacty,ncall(28))   
 	    goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/30; Type 29. Plan Spill
 c
@@ -1671,7 +1547,7 @@ cx       write(nlog,*)'  Execut; Warning type 29 off'
 c      write(nlog,*) ' Execut; type 29 Out Avail(8)', avail(8)*fac,
 c    1    avinp(8)*fac     
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/02/01; type 30 Re store a T&C Plan release
 c
@@ -1679,7 +1555,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 30 ResRglP'   
        call Resrg1P(iw,l2,ncall(30))
        goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/03/29; type 31 Import with Reuse via a carrier 
 c
@@ -1687,7 +1563,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 31-DivCarR'   
        call divCarR(IW,L2,ISHORT,divactx,ncall(31))
 	     goto 400           
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/03/29; type 32 Res and ReUse Plan to a Div, Res or Carrier
 c               with reuse Direct
@@ -1696,7 +1572,7 @@ c               with reuse Direct
 cx     write(nlog,*)'  Execut; Warning type 32 off'       
        call divResR(iw,l2,ishort,divactx, ncall(32))  
 	     goto 400           
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/29; Type 33. Res and ReUse Plan to a Div, Res or Carrier
 c		with reuse Exchange	
@@ -1705,14 +1581,15 @@ c		with reuse Exchange
        call divRplR(iw,l2,ishort,divactx,divacty, ncall(33))
 	     goto 400
 c
-c _________________________________________________________             
+c_______________________________________________________________________
+             
 c
 c              Type 34. Bookover reservoir to reservoir with Reuse
   334  continue
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 43-RsrSpuP'   
        call RsrSpuP(IW,L2,ncall(34))
 	     goto 410
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/03/29; Type 35 Import with Reuse (NO CARRIER)
 c
@@ -1720,7 +1597,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 35-DivIMpR'   
        call divImpR(iw,l2,ishort,divactx,ncall(35))  
 	     goto 400   
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 06/01/18; Type 36 Diversion with seasonal constraint
 c
@@ -1728,7 +1605,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 36-DivRigS'   
        call divRigS(iw,l2,ishort,ncall(36))
 	     goto 400   
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 06/01/18; Type 37 Augmentation Well
 c
@@ -1736,7 +1613,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 37-WelAugP'   
        call WelAugP(iw,l2,retx,divx,ncall(37))
 	     goto 400   
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 06/01/18; Type 38 Out-of-Priority Diversion
 
@@ -1744,7 +1621,7 @@ c rrb 06/01/18; Type 38 Out-of-Priority Diversion
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 38-OopDiv'   
        call OopDiv(iw,l2,ishort,divactx, ncall(38)) 
 	     goto 400   
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 06/01/18; Type 39 Alternate Point
 
@@ -1753,7 +1630,7 @@ c rrb 06/01/18; Type 39 Alternate Point
        call DivAlt(iw,l2,ishort,divactx, ncall(39)) 
 	     goto 400   
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 2006/08/24; Type 40. South Platte Compact release to Compact
 c
@@ -1768,7 +1645,7 @@ cx       write(nlogx,*) ' Execut; Calling SPlatte to release'
        endif    
 	     goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 2006/08/24; Type 41. Reservoir Storage with Limits
 
@@ -1776,7 +1653,7 @@ c rrb 2006/08/24; Type 41. Reservoir Storage with Limits
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 41-DivRgP'   
        call ResRgP(iw,l2, ncall(41))
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/30; Type 42. Plan Reset
 c
@@ -1784,7 +1661,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 42-PowSeaR'   
        call powseaR(iw,l2,ncall(42))  
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/30; Type 43. In-Priority Supply
 c
@@ -1792,7 +1669,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 43-WelPrity'   
        call WelPrity(iw,l2,ncall(43))  
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/30; Type 44. Recharge Well to a Reservoir
 c
@@ -1800,7 +1677,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 44-WelRech'   
        call WelRech(iw,l2,ncall(44))  
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/30; Type 45. Carrier with Loss
 c
@@ -1810,7 +1687,7 @@ c
 c      write(nlog,*) '  Execut; ID = ',corid(l2)
        
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 2007/08/20; Type 46. Multiple Ownership
 c
@@ -1820,14 +1697,14 @@ cx     write(nlog,*)'  Execut; Warning type 46 off'
        call DivMulti(iw,l2,ncall(46))  
       
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 2007/08/20; Type 47. Release Limit
 c		  This rule only sets limits
 c
   347  continue
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/28; Type 48. Reservoir or Reuse Plan to a T&C Plan  direct
 c
@@ -1835,7 +1712,7 @@ c
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 48-PowResP'   
        call PowResP(iw,l2,divactX,ncall(48))
 	     goto 400
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 05/01/28; Type 49. Reservoir or Reuse Plan to a T&C Plan exchange
 c
@@ -1849,7 +1726,7 @@ c
        endif
 	     goto 400
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c rrb 2006/08/24; Type 50. South Platte Compact Storage
 c
@@ -1860,10 +1737,10 @@ c
 	     goto 400
 	    
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
             goto 9999            
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c               Endif for Operational Rights
 	    endif
@@ -1929,138 +1806,112 @@ c       goto 400
 	      goto 410
       endif
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c		Step X; Reoperation Check for operating rules
 c			(new flows)
 c		        Note divsum is in af
  400  continue
 
-c _________________________________________________________
+c_______________________________________________________________________
 c
 c		Step X; Reoperation Check for (new flows) from operating rules	
 c		        Note divsum is in af 
       divact2=divactx
       if(ireopx.ge.0) then
-	      divact1=divactx*fac
-	      divsum=divactx*fac
+	    divact1=divactx*fac
+	    divsum=divactx*fac
         divactx=0.0	    
-	    else
-	      divact1=divactx*fac
-	      divsum=divsum+divactx*fac
-	      divactx=0.0
-	    endif
+      else
+        divact1=divactx*fac
+        divsum=divsum+divactx*fac
+        divactx=0.0
+      endif
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c
-c		Step X; Detailed Operating Data (ichk=4 or 94)
+c	  Step X; Detailed Operating Data (ichk=4 or 94)
 c rrb 2011/04/25; Limit output for ichk=4  
       if(l1.eq.5 .and. (ichk.eq.94 .or. ichk.eq.4)) then   
         call outIchk(14, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac,
      1               uDem, divact2, divx, divsum,
      1               0, iwx, rec12b)
       endif
-c
-c
-c _________________________________________________________
-c
+c_______________________________________________________________________
 c rrb 04/22/96; 
-c		Step X; Global control on reoperations (ireopx) 
+c	  Step X; Global control on reoperations (ireopx) 
 c		Reoperation check regarding an operating rule
-c                 (e.g. res release, exchange, etc.)
+c         (e.g. res release, exchange, etc.)
 cx    write(nlog,*) ' Execut; ireopx, divsum, divchk, iwx', 
 cx   1  ireopx, divsum, divchk*fac, iwx
-      
-	    if(ireopx.le.0 .and. divsum.gt.divchk*fac .and.
-     1      iwx.lt.iwxlimit) then
-     
-	      iw = 0
-	      iwx=iwx+1
-	      iwxmaxY=iwxmaxY+1
+      if (ireopx.le.0 .and. divsum.gt.divchk*fac .and.
+     1   iwx.lt.iwxlimit) then
+	    iw = 0
+	    iwx=iwx+1
+	    iwxmaxY=iwxmaxY+1
     
 cx      write(nlog,*) ' Execut; Operating Rule ', 
 cx	    iout=1  
         if(iout.eq.1 .or. ichk.eq.9 .or. ichk.eq.109) then
-          
-
-c
 c ____________________________________________
 c rrb 2008/03/13; Check if replace was called; else an operating rule
-
-c		Detailed Reoperaton Output - Diversion return Flow 
-c             Note ispOut =0 indicates Splatte was NOT called after
-c             divrig          
-	        if(l1.eq.3 .and. ispOpr.eq.0) then    
+c		  Detailed Reoperaton Output - Diversion return Flow 
+c           Note ispOut =0 indicates Splatte was NOT called after divrig          
+	      if(l1.eq.3 .and. ispOpr.eq.0) then    
             rec12b='Div Return  '     
             call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2), 
-     1                   ishort, fac,
-     1                   uDem, divact2, divx, divsum,
+     1                   ishort, fac, uDem, divact2, divx, divsum,
      1                   2, divchkR, rec12b)  
-c
-c ---------------------------------------------------------
+c_______________________________________________________________________
 c rrb 20100123; OMID Check for Return Flows caused by Replace   
             if(ioutGVC.eq.1) then
               call outGVC(nlog, 3, divact1, divsum, gvCot,
-     1          noutGVC, fac, l2, rec12b, 
-     1          l1, rec12, nameX)   
+     1                    noutGVC, fac, l2, rec12b, l1, rec12, nameX)   
             endif            
           endif
-c
-c ____________________________________________
+c_______________________________________________________________________
 c rrb 2011/05/17; Print when Splatte is called after divert
-c             Note ispOut =1 indicates Splatte was called after
-c             divrig     
-	        if(l1.eq.3 .and. ispOpr.eq.1) then              
+c         Note ispOut =1 indicates Splatte was called after divrig     
+	      if(l1.eq.3 .and. ispOpr.eq.1) then              
             rec12b='Opr Rule    '
             call outIchk(ichkX, ichk4n, l1, isp1, iw, ityopr(l2),
-     1                  ishort, fac,
-     1                  uDem, divact2, divx, divsum,
-     1                  3, divact2, rec12b)   
+     1                   ishort, fac, uDem, divact2, divx, divsum,
+     1                   3, divact2, rec12b)   
           endif                
-c
-c ____________________________________________                
-c		Detailed Reoperaton Output - Operating Rule 
-	        if(l1.eq.5) then    
+c_______________________________________________________________________
+c		  Detailed Reoperaton Output - Operating Rule 
+	      if(l1.eq.5) then    
             rec12b='Opr Rule    '
             call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2),
-     1                  ishort, fac,
-     1                  uDem, divact2, divx, divsum,
-     1                  4, divact2, rec12b)
-      
-c
-c ---------------------------------------------------------
+     1                   ishort, fac, uDem, divact2, divx, divsum,
+     1                   4, divact2, rec12b)
+c_______________________________________________________________________
 c rrb 20100123; OMID Check for an Operating Rule
             if(ioutGVC.eq.1) then
               call outGVC(nlog, 4, divact1, divsum, gvCot,     
      1          noutGVC, fac, l2, 'Opr Rule    ', 
      1          ityopr(l2)+100, corid(l2), nameo(l2))                  
             endif
-c
           endif
-c
-c endif ichk=9
+c         endif (l1.eq.5)
         endif
-c
-c _________________________________________________________
-c
-c         Step X; Initilize for reoperation        
+c       endif (iout.eq.1 .or. ichk.eq.9 .or. ichk.eq.109)
+c_______________________________________________________________________
+c       Step X; Initilize for reoperation        
 cx	    iout=0 
-	                    
-	      divsum = 0.0
-	      ireop12=0
-c
+	    divsum = 0.0
+	    ireop12=0
 c rrb 2008/03/13; Addition	    
-	      divactx=0.0
-	      iretsw = 0
-	      ireop  = 0
-	      idcallx=0
-c
-c ---------------------------------------------------------
+	    divactx=0.0
+	    iretsw = 0
+	    ireop  = 0
+	    idcallx=0
+c_______________________________________________________________________
 c		Step X; Reset call indicator	    
         do i=1,numsta
           imcdL(i)=-1
         end do
-c
+c_______________________________________________________________________
 c		Initilize operating limit for shared water right
 c		associated with a type 45            
         do k=1,numopr
@@ -2071,16 +1922,13 @@ c		associated with a type 45
 c           write(nlog,*) '  Execut;  oprmax reset k=', k
           endif
         end do  
-c
-c endif reoperation                
-	    endif
-c
+c_______________________________________________________________________
+	  endif
+c     endif reoperation  (ireopx.le.0 .and. divsum.gt.divchk*fac .and. iwx.lt.iwxlimit)              
+c_______________________________________________________________________
  410  continue
-c
-c
-c _________________________________________________________
-c              Step x: 
-c              Reoperation Check for maximum iterations allowed
+c_______________________________________________________________________
+c     Step x: Reoperation Check for maximum iterations allowed
       if(iwx.ge.iwxlimit) then
         write(nlogx,*) 
      1   '  Execut; warning reoperation limit of ',
@@ -2089,94 +1937,65 @@ c              Reoperation Check for maximum iterations allowed
         iw = ntorig+1           
         goto 9999           
       endif
-
-c
-c _________________________________________________________
-c              Step X; 
-c		           Reoperation Check for return flows (ireop=1)
-c              from non operating rules (l1.ne.5)
-c		           Note if reoperation is necessary iw is set to 0
-c		           which triggers a goto 135 below
-c 
+c_______________________________________________________________________
+c     Step X; Reoperation Check for return flows (ireop=1)
+c         from non operating rules (l1.ne.5)
+c		Note if reoperation is necessary iw is set to 0
+c		  which triggers a goto 135 below
 c rrb 2006/11/17; Isolate to non operating rules
 cr    if(ireopx.le.0 .and. ireop.eq.1 .and.
       if(ireopx.le.0 .and. ireop.eq.1 .and. l1.ne.5 .and. 
-     1   iwx.lt.iwxlimit) then
-	      iw = 0
+     1      iwx.lt.iwxlimit) then
+	    iw = 0
         iwx = iwx+1
         iwxmaxY=iwxmaxY+1      
 cx      write(nlog,*) ' Execut; Return Flow ', iwx	    
-	      ireop  = 0
-	      idcallx=0
-c
+        ireop  = 0
+        idcallx=0
 c rrb 2006/09/18	    
-	      divsum=divchkR*fac
-c
-c ---------------------------------------------------------
+        divsum=divchkR*fac
 c		Print detailed call data
-	      if(iout.eq.1 .or. ichk.eq.9 .or.ichk.eq.109) then
+        if(iout.eq.1 .or. ichk.eq.9 .or.ichk.eq.109) then
           rec12b='XXX Return  '
           call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2), 
-     1               ishort, fac,
-     1               uDem, divact2, divx, divsum,
-     1               5, divchkR, rec12b)        
+     1                 ishort, fac, uDem, divact2, divx, divsum,
+     1                 5, divchkR, rec12b)        
         endif
-c
-c ____________________________________________
-c
 c		Reset call indicator and Divsum	    
         do i=1,numsta
           imcdL(i)=-1
         end do
-        
         divsum = 0.0
         ireop12=0
-         
-c
 c rrb 2011/05/11; Correction reset divsum
 cx      endif
-            
-c
-c ____________________________________________
 c rrb 20100123; OMID Check   
         if(ioutGVC.eq.1) then
           call outGVC(nlog, 5, divact1, divsum, gvCot,      
-     1        noutGVC, fac, l2, rec12b,
-     1        l1, rec12, nameX)                
+     1                noutGVC, fac, l2, rec12b, l1, rec12, nameX)                
         endif    
-	    endif
-	  
-c          
-c _________________________________________________________
-c               Step x; Print Detailed Call Data 
-c
-c         write(nlog,*) ' Execut_3; icall =', icall   
+	  endif
+c_______________________________________________________________________
+c     Step x; Print Detailed Call Data 
+c       write(nlog,*) ' Execut_3; icall =', icall   
       if(icall.gt.0) call calldat(1, l1, l2, icallx, ishort, fac)
-c
-c _________________________________________________________
-c
-c *********************************************************
-c		Test for end of Water right and reoperation loop
-c *******	Note if reoperating iw is set to 0 above
-c		note ntorig is the number of water rights from riginp
-c
-c
+c_______________________________________________________________________
+c	  Test for end of Water right and reoperation loop
+c       Note if reoperating iw is set to 0 above
+c		Note ntorig is the number of water rights from riginp
 c rrb 2011/05/12; Correction
 cx    if(iw.le.ntorig) goto 135 
       if(iw.lt.ntorig) goto 135      
 c        
-c               End of Water Right and Reoperation Loop
-c		            Because  the number of rights simulated (iw) 
-c		            is greater than the total number of rights (ntorig) 
-	              iwxt = iwxt + iwx
-c               
-c _________________________________________________________
-c
-c		Step X; Reservoir Seepage at  at end of time step 
+c     End of Water Right and Reoperation Loop
+c       Because the number of rights simulated (iw) 
+c       is greater than the total number of rights (ntorig) 
+      iwxt = iwxt + iwx
+c__________________________________________________________
+c	  Step X; Reservoir Seepage at  at end of time step 
 c rrb 2006/10/18; Moved from beginning of time step
-c rrb 2008/05/07; Reporerate because of seepage returns once
+c rrb 2008/05/07; Re-operate because of seepage returns once
 c		  (when iseep=0) if total seepage (seepT) > 0
-c
 c
 c rrb 2008/09/28; REvise to be called multiple times per iteration
 cx    IF(NUMRES.ne.0 .and. iseep.eq.0) then
@@ -2186,30 +2005,23 @@ c rrb 2008/09/30; Use iall = 0 do all reservoirs, =n do reservoir n only
         iall=0
 cx      write(nlog,*) '  Execut; Call SepSec;', iyr, imo, idy, iwx
         CALL SEPSEC(SeepT,iall,'Execut      ')    
-        
-                          
 cx      iseep=iseep+1
         iw = 0
         iwx=iwx+1
-	      iwxmaxY=iwxmaxY+1
-	     
+        iwxmaxY=iwxmaxY+1
         iretsw= 0
-	      ireop= 0
+        ireop= 0
 cx	    iout=1	    
   	    if(iout.eq.1 .or. ichk.eq.9 .or. ichk.eq.109) then	
           rec12b='Res Seepage '
           call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2), 
-     1            ishort, fac,
-     1            uDem, divact2, divx, divsum,
-     1            6, SeepT, rec12b)
+     1                 ishort, fac, uDem, divact2, divx, divsum,
+     1                 6, SeepT, rec12b)
         endif
-          
-	      divsum=0.0
+        divsum=0.0
 cx      endif
 cx	    iout=0	
-
-c
-c ____________________________________________
+c__________________________________________________________
 c rrb 20100123; OMID Check  
         if(ioutGVC.eq.1) then            
           call outGVC(nlog, 6, divact1, divsum, gvCot,     
@@ -2217,69 +2029,52 @@ c rrb 20100123; OMID Check
      1        -1, 'NA          ',
      1        'NA                      ')
         endif              
-c
+c__________________________________________________________
 c rrb 2008/09/29; Check	        
         if(ioutSep.eq.1) then
           iplan1=41
-	        nr1=18      
-	        write(nlog,*) ' '
-                write(nlog,*) ' Execut inside SepSec '
-                write(nlog,*) ' Execut; ', 
-     1            nr1, iplan1, pid(iplan1), iyr, mon, 
-     1            psuply(iplan1)*fac, psuplyT(iplan1)*fac     
-            
-            
+          nr1=18      
+          write(nlog,*) ' '
+          write(nlog,*) ' Execut inside SepSec '
+          write(nlog,*) ' Execut; ', 
+     1      nr1, iplan1, pid(iplan1), iyr, mon, 
+     1      psuply(iplan1)*fac, psuplyT(iplan1)*fac     
 	      c=0.0
 	      write(nlog,270)
-	      
-        write(nlog,280) '  Execut    ',
-     1    iyrmo(mon),xmonam(mon), idy,
-     1    cresid(nr1),pid(iplan1),iwx,nr1, iplan1, 
-     1    cursto(nr1), cursto(nr1), 
-     1    sepact(nr1), c, rlossR(nr1)*fac,
-     1    psuply(iplan1)*fac, psuplyT(iplan1)*fac,
-     1    pdrive(iplan1)*fac, seepT    
+          write(nlog,280) '  Execut    ',
+     1      iyrmo(mon),xmonam(mon), idy,
+     1      cresid(nr1),pid(iplan1),iwx,nr1, iplan1, 
+     1      cursto(nr1), cursto(nr1), 
+     1      sepact(nr1), c, rlossR(nr1)*fac,
+     1      psuply(iplan1)*fac, psuplyT(iplan1)*fac,
+     1      pdrive(iplan1)*fac, seepT    
         endif
-c
-c ---------------------------------------------------------
+c__________________________________________________________
 c		Return to 135 to allow water rights to benefit
 c		from reservoir seepage once per time step	    
         if(SeepT.gt.small) goto 135
       endif  
-          
-c
+c__________________________________________________________
 c rrb 2008/09/29; Check	        
       if(ioutSep.eq.1) then
         iplan1=45
-	      nr=18      
-	  
+        nr=18      
         write(nlog,*) ' Execut outside SepSec '
         write(nlog,*) ' Execut; ', 
      1    nr, iplan1, pid(iplan1), iyr, mon, 
      1    psuply(iplan1)*fac, PsuplyT(iplan1)*fac
       endif
-          
 c__________________________________________________________
-c
-c               Task X; Reservoir Evaporation at end of time step 
-c
+c     Task X; Reservoir Evaporation at end of time step 
 	  IF(NUMRES.ne.0) call evasec
-	  
-c
-c ---------------------------------------------------------
-c               Distribute Evaporation to a Plan
-c		Once per time step only
-c
-	  IF(NUMRES.ne.0 .and. nplan.gt.0) call planeva
-c
 c__________________________________________________________
-c               Task X; Calculate monthly totals for daily model
-c                       and print daily results
-c
-         if(iday.eq.1) then
-	    call daymon(0)
-	  endif                             
-c
+c     Distribute Evaporation to a Plan
+c		Once per time step only
+	  IF(NUMRES.ne.0 .and. nplan.gt.0) call planeva
+c__________________________________________________________
+c     Task X; Calculate monthly totals for daily model
+c       and print daily results
+      if(iday.eq.1) call daymon(0)
 c__________________________________________________________
 c rrb 99/10/06; Rio Grande Compact
 c               At end of day (month) set index and delivery
@@ -2660,7 +2455,7 @@ c __________________________________________________
 c
 c		Formats      
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c		Exit with an error
  9999 write(6,9992)  
       write(nlogx,9992)
@@ -2670,7 +2465,7 @@ c		Exit with an error
       call exit(1)
       stop
 c
-c _________________________________________________________
+c_______________________________________________________________________
 c               Formats
  101  format(/,72('_'),/
      1 '  Execut; ', a40, /
@@ -2762,7 +2557,7 @@ c               Formats
  
  9000 format(/,72('_'),/,
      1 '  Execut; Warning at least one EXCHANGE or BYPASS ',/
-     1 '          (Type 24 or 25) Operating rule was specified.',)
+     1 '          (Type 24 or 25) Operating rule was specified.')
 
  9002 format(/,72('_'),/,
      1 '  Execut; Warning at least one operating rule specified a ',/

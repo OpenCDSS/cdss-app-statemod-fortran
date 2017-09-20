@@ -110,6 +110,8 @@ c               Print call data for a direct diversion
 c
 c _________________________________________________________
 c               Print call data for an instream flow
+c jhb 2014/07/07 array index checking
+        if(l2.ge.1 .and. l2.le.241) then
 	    if(l1.eq.1 .and. cisfwr(l2).eq.ccall) then
 	      icallx=icallx+1
 	      nf  = iifrco(L2)
@@ -158,6 +160,7 @@ c               Print call data for an instream flow
 		      endif
 	      endif
 	    endif
+	    endif
 
 
 c
@@ -168,6 +171,8 @@ c               Note concept of ishort not applied to resrvoirs
 c           write(io99,*) '  Execut; l1, l2, creswr ccall', 
 c    1        l1, l2, cresid(l2), ccall
 
+c jhb 2014/07/07 array index checking
+        if(l2.ge.1 .and. l2.le.351) then
 	    if(l1.eq.2 .and. creswr(l2).eq.ccall) then 
 c             write(nchkx,*) '  Execut; l1, ccall', l1, ccall
 	      icallx=icallx+1
@@ -207,6 +212,7 @@ c             write(nchkx,*) '  Execut; l1, ccall', l1, ccall
      1              'Reservoir   '
 		      endif
 	      endif
+	    endif
 	    endif
 c
 c _________________________________________________________
@@ -258,7 +264,7 @@ c		Formats
      1  ' limitation at the structure itself')
      
  327  format(10x, 2i5, 1x,a4, i5,1x, a12, i5, 4f12.2, 1x,2(1x,a12),
-     1  1x,a24,' Called out and limited by flow at station ',) 
+     1  1x,a24,' Called out and limited by flow at station ') 
      
 
 c _________________________________________________________

@@ -39,8 +39,8 @@ c            0 Destination is not a reservoir
 c            
 c		iscd     Source location
 c	  idcdX =  Destination Diversion, Reservoir,
-c			       or but not a CARRIER
-c            idcdC = stream ID of the first carrier
+c			       or Plan but not a CARRIER
+c   idcdC =  stream ID of the first carrier
 c		idcdC    0 if no carrier
 c
 c		divactX  amount bypassed (cfs)
@@ -61,7 +61,7 @@ c		qdiv(5	 From River by Priority
 c		qdiv(18  Carrier passing through a structure
 c   qdiv(19  From Carrier by Priority (e.g. divcar)
 c            
-c   qdiv(20  From Carrier by Storage or Exchange
+c   qdiv(20  From Carrier by Other (Storage, Exchange or Changed)
 c		qdiv(32  From Carrier Loss
 c
 c		qdiv(26  From River by Exc_Pln (Exc_Pln)
@@ -125,16 +125,23 @@ c		qdiv(30  From River by direct from a Res or Reuse Plan
 c        to a T&C Plan. Note non consumptivec
 c		qdiv(31 From River by Sto/Exc/Plan by type 27 or 28
 c
-c		Note For type 24 or 25 Nsou=26
-c		        type 27 or 28  Nsou=31
-c           type 40        Nsou=31
-c           type 45        Nsou=5
-c           type 49        Nsou=29
+c		Note For type 24 or 25  Nsou=26
+c            type 26        Nsou=20
+c		         type 27 or 28  Nsou=31
+c            type 40        Nsou=31
+c            type 45        Nsou=5
+c            type 49        Nsou=29
 c
 c ---------------------------------------------------------
         nSou=0
         if(icx.eq.24) nSou=26
         if(icx.eq.25) nSou=26
+c
+c rrb 2014-11-24; Set control for type 26 Changed WR 
+c rrb 2014-01-16; Note type 26 (DirectWR) no longer calls
+c                 this subrouting
+        if(icx.eq.26) nSou=20
+c
         if(icx.eq.27) nSou=31
         if(icx.eq.28) nSou=31
         if(icx.eq.40) nSou=31
@@ -143,6 +150,15 @@ c
 c rrb 2010/09/15 Revise to qdiv(30)
 cr        if(icx.eq.49) nSou=26
         if(icx.eq.49) nSou=30
+c
+c rrb 2014-11-24
+        if(iout.eq.1) then
+          write(nlog,250)
+          write(nlog,*) 
+     1     ' SetQdiv;       icx  ncarry    iscd   idcdX   idcdC    nSou'
+          write(nlog,'(12x,20i8)') icx, ncarry, iscd, idcdX,idcdC, nSou
+          call flush(nlog)          
+        endif  
                 
         if(nsou.eq.0) goto 400
 c
@@ -155,14 +171,16 @@ c	      qdiv(31 From River by Sto/Exc/Plan by type 27 or 28
 c		    qdiv(33 From River Loss
 c
 c		    qdiv(18 Carrier passing through a structure
-c                   qdiv(19 From Carrier by Priority (e.g. divcar, divcarL)
-c                   qdiv(20 From Carrier by Storage or Exchange
+c       qdiv(19 From Carrier by Priority (e.g. divcar, divcarL)
+c       qdiv(20 From Carrier by Storage or Exchange
 c
 c
 c ---------------------------------------------------------
 c
 c rrb 2011/02/25; Upgrade to not adjust diversions to a reservoir
-c                 in the *.xdd reporting
+c                 in the *.xdd reporting       
+c                 isccd = source node
+c                 idcdC = carrier node (0 if no carrier)
 cx      if(iscd.eq.idcdC) then
 cx      if(iscd.eq.idcdC .and. nr2.eq.0) then
         if(iscd.eq.idcdC .and. nd2.ne.0) then        
@@ -234,11 +252,9 @@ c
         if(nCarry.le.2) then
           icase=3    
 c
-c rrb; Clarify the source from a type 45 as From Carrier by Priority (20)          
+c rrb; Clarify the source from a type 45 as From Carrier by Priority (10)          
 cx        qdiv(20,idcdX) = qdiv(20,idcdX)+divactT
-c rrb 2014-07-29; correction
-cx        qdiv(ndest,idcdX) = qdiv(20,idcdX)+divactT
-          qdiv(ndest,idcdX) = qdiv(ndest,idcdX)+divactT
+          qdiv(ndest,idcdX) = qdiv(20,idcdX)+divactT
           goto 100
         endif
           

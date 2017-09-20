@@ -1,6 +1,6 @@
 c
 c ---------------------------------------------------------
-      subroutine SPlatte(iw, l2, l2D, ishort, nd, divactx,ncallX)      
+      subroutine SPlatte(iw, l2, l2D, ishort, nd, divactx,ncallX)
 c
 c
 c _________________________________________________________
@@ -55,7 +55,7 @@ c		                   if > 0 source reservoir
 c                      if < 0 source plan
 c
 c       iopsou(2,l2)   iown   N/A
-c       iopsou(3,l2)   ßource Plan (source 2 for Splatte only)
+c       iopsou(3,l2)   Source Plan (source 2 for Splatte only)
 c			  associated with a release
 c       iopsou(5,l2)	1 Diversion limits are adjusted for the
 c		                    operatng rule = iopsou(5,l2).
@@ -212,6 +212,7 @@ c	Dimensions
      1  cDest*12,    cSour*12, cDest1*12, cRiver*12,
      1  corid1*12, cStaMin*12, cstaid1*12, cdivtyp1*12
      
+c      character corid1*12, ccallby*12, cwhy*48
       character ccallby*12
 
 c
@@ -834,7 +835,11 @@ c _________________________________________________________
 c               Step 21; Update shortage (ishort) and
 c                        amount associated with this operation
 c                        rule (divalo)
- 300  if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
+c jhb 2014/07/13 move line label 300 down to step 28
+c                to avoid occasional array bound issue when
+c                idcdx is undefined
+c 300  if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
+      if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
 c
 c rrb 2007/10/29; Set ishort for a quick exit. Reset initilized
 c		  divact to 0 from -1
@@ -869,9 +874,9 @@ c               Step 24; Update Qdiv for Source and Destination
 c ---------------------------------------------------------
 c               Destination is a diversion
 c               qdiv(31 = From the river via a reuse or Admin Plan
-      if(iopDesR(l2).eq.3) then  
+      if(iopDesR(l2).eq.3) then
 cx      qdiv(31,idcdX) = qdiv(31,idcdX) + divact
-        qdiv(30,idcdX) = qdiv(30,idcdX) + divact        
+        qdiv(30,idcdX) = qdiv(30,idcdX) + divact
       endif
 c ---------------------------------------------------------
 c               Destination is an ISF     
@@ -910,6 +915,9 @@ c               Step 28 - Final printout befor exit
 c
 c     if(iout.ge.1) then
 c     if(iout.gt.0 .and. ioutiw.eq.iw) then
+c jhb 2014/07/13 change line label 300 to here
+c                jump to here when op rule is not active
+ 300  continue
       iprint=1
 c
 c rrb 2011/04/04; turn off detailed printout      
@@ -960,9 +968,20 @@ c rrb 2011/05/12; Correction
 c
 c ---------------------------------------------------------
 c		Detailed Header            
+c jhb 2014/07/04 added the if block so the code will run without crashing
+c                need to figure out what SHOULD happen when
+c                  imcd = -1 !!
+        if (imcd.ge.1) then
+          if(divact*fac.gt.small .and. avail(imcd)*fac.lt.smalln)
+     1      write(nlogx,*) ' ***** Problem avail is less than 0'
+        else
+c          if(iout.eq.1) then
+            write(nlogx,*)
+     1      ' SPlatte; avail(imcd) error:  imcd = ',
+     1      imcd
+c          endif
+        endif
         
-        if(divact*fac.gt.small .and. avail(imcd)*fac.lt.smalln)
-     1    write(nlogx,*) ' ***** Problem avail is less than 0' 
 c
 c rrb 2011/04/18; Update
        if(ndtype.eq.3 .and. divact+small.lt.divalo) then     

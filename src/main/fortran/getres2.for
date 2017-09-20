@@ -769,7 +769,7 @@ c		Formats
      1  '    Too MANY EVAPO. COMBINATIONS ',I5,' MAXIMUM = ',I5)
      
  1140  format(/,
-     1 '  GetRes2; Warning Reservoir ID ', a12, ' has no evap data',)
+     1 '  GetRes2; Warning Reservoir ID ', a12, ' has no evap data')
      
  1150  FORMAT(24x, a12,F8.0)
  

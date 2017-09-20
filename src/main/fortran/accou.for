@@ -42,7 +42,7 @@ c
 c       icx    		subroutine call ID
 c                             111=divcar,   114=divcar1,  116=DirectFS,
 c                             119=divcar2,  124=directEx, 125=directBy,
-c			      127=DivresP,  202=resrg1   
+c			                        126=directWR, 127=DivresP,  202=resrg1   
 
 c _________________________________________________________
 c
@@ -267,6 +267,5 @@ c               Error Processing
       call exit(1)
       stop 
       end
-
 
 

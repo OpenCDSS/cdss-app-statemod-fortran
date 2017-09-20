@@ -102,7 +102,9 @@ c		Dimensions
       character rec3*3, rec40*40, rec12*12, rec12b*12, rec132*132
 c
       character cistat*12, cista2*12, blank*12, recin*256, rec72*72,
-     1  cCallBy*12 
+     1  cCallBy*12
+c jhb 2014/06/26
+      character(len=256) rec256x
 c _________________________________________________________
 c		Step 1; Initilize
 c
@@ -220,7 +222,7 @@ c		Branch if reading every month
         
 c
 c               1x/run Set warning on negative diversions (imports)
-	    do nu=1,maxuse
+	  do nu=1,maxuse
         iwarn(nu) = 0
       end do
 c
@@ -784,7 +786,7 @@ C
 C-------------------------------------------------------------------
 C
       write(nlog,107)
-c     write(nscrn,,107)
+      write(nscrn,107)
   107 format(/,72('_'),/
      1 '  Mdainp; Instream flow Demand file - Annual (*.ifa) ')
       close(55)
@@ -812,21 +814,39 @@ c rrb 98/11/09; Branch if in baseflow mode
 c rrb 01/01/03; Recognize other baseflow options   
 c     if (ioptio.eq.1) goto 800 
       if (ibasef.eq.1) goto 800
+
 c
 c----------------------------------------------------------
 c
 c		Read annual IFS (*.ifa) data
       if(monisf.eq.1 .or. monisf.eq.3) then
+
         if(iouti.eq.1) write(nlog,*) ' Annual (*.ifa) ISF data'
 c
 c rrb 2006/06/02; Correction; Loop for maximum        
 cr	  do nf=1,nisfin
+
+c jhb need to explain this a bit more
+c     the idea (i think) is to keep reading lines from the ifa file
+c     until an event happens that kicks it out of this loop
+c     comment() reads and skips lines that are comments and then
+c       it returns when it reaches a EOF (iocode=2)
+c         in which case we should jump out of this loop
+c         (see code changes below)
+c       or an error (iocode=3)
+c         in which case we should stop the program
+c       or a data line,
+c         in which case comment() has backspaced the file
+c         and the line is read again below
 	    do 730 nf=1,maxifr
 c
 c		Checck for comments in dat
 c		Exit if EOF (2) or Error (3)	
         call comment(55, nlog, iocode, nchk, 0)
-        if(iocode.eq.2) goto 730
+c jhb this is a mistake should jump OUT of the loop
+c        if(iocode.eq.2) goto 730
+c     jump to newly added 740 continue statement...
+        if(iocode.eq.2) goto 740
         if(iocode.eq.3) goto 928
 c
 	      read (55,532,end=760,err=928) cistat,(diverm(i),i=1,12)
@@ -894,6 +914,8 @@ c
 	          endif
 c	        endif
  730    continue
+c jhb corrected the iocode=2 case...
+ 740    continue
       endif
 c
 c
@@ -1559,15 +1581,15 @@ c
 cr   endif
 
       if(isoil.eq.1) then
-	     close(55)
-       
-	     iin2=55 
-	     call putpath(maxfn, filena, fpath1)
-	     open(55, file=filena, status='old',err=928)       
+	    close(55)
+
+	    iin2=55
+	    call putpath(maxfn, filena, fpath1)
+	    open(55, file=filena, status='old',err=928)
 c
 c               Print to log file and skip header
-       write(nlog,'(5x, a256)') filena
-       call skipn(55)
+        write(nlog,'(5x, a256)') filena
+        call skipn(55)
 c        
 c               Read and process soil data 1x/year
         if(ioutsm.eq.1) then
@@ -1575,79 +1597,85 @@ c               Read and process soil data 1x/year
           write(nlog,*) ' Mdainp; numdiv, numdivw, isoilfn',
      1              numdiv, numdivw, isoilfn
           
-        endif  
-        do i=1,numdiv+numdivw
+      endif
+
+c jhb 2014/06/26 make the do loop limit arbitrarily large (5000)
+c                so it always works no matter how many records are
+c                in the IPY, STR, DDC files.  This is OK, because
+c                there is code below to jump out of this loop when the
+c                last record is read (the end of file is reached)
+c      do i=1,numdiv+numdivw
+      do i=1,5000
 c
 c rrb 2004/08/23; Allow a StateCu structure file to provdide AWC data			
 c		Note isoilfn=1 for *.par and isoilfn=2 for *.str
-	        if(isoilfn.eq.1) then
-	          read(55,'(a12, 1x, f6.1)',end=940,err=940) cistat, awcrx
-	        else
+	    if(isoilfn.eq.1) then
+	      read(55,'(a12, 1x, f6.1)',end=940,err=940) cistat, awcrx
+	    else
 c
 c		Read a *.str file	  
-	          read(55,'(a12, 71x,i4,f8.0)',end=940,err=940)
-     1        cistat,ncli,awcrx
-            if(ioutSM.eq.1) then
-              write(nlog,*) ' Mdainp; *.str file'
-              write(nlog,'(8x, i5, 1x, a12, 71x,i4,f8.0)')
-     1        i, cistat,ncli,awcrx
-            endif
+	      read(55,'(a12, 71x,i4,f8.0)',end=940,err=940)
+     1    cistat,ncli,awcrx
+          if(ioutSM.eq.1) then
+            write(nlog,*) ' Mdainp; *.str file'
+            write(nlog,'(8x, i5, 1x, a12, 71x,i4,f8.0)')
+     1      i, cistat,ncli,awcrx
+          endif
 c
 c rrb 2006/05/09; Move from below
-	          if(cistat.eq.'            ') goto 940
+	      if(cistat.eq.'            ') goto 940
      
 cr          write(nlog,*) '  Mdainp; cistat,ncli, awcrx ', 
 cr   1        cistat, ncli, awcrx
 
-	          do ic=1,ncli
-	            read(55,*,end=940,err=940) ix
-	          end do  
-	        endif  
+	      do ic=1,ncli
+c jhb 2016/06/26 fix this - some station ids are not integers...
+c	        read(55,*,end=940,err=940) ix
+            read(55,*,end=940,err=940) rec256x
+	      end do
+	    endif
 c
 c rrb 2006/03/20; Adjust character string to left     
-          cistat=adjustl(cistat)
+        cistat=adjustl(cistat)
           	  
 cr        write(nlog,*)  '  Mdainp; cistat, awcrx ', cistat, awcrx
-	        if(cistat.eq.'            ') goto 940
+	    if(cistat.eq.'            ') goto 940
 c
 c rrb 00/12/04; Find diversion station associated with this data
-	        ifound=0
+	    ifound=0
 	        
-	        cCallBy='Mdainp D.str'	  
-	        call stafind(nlog,1,3,numdiv,ix,cistat,cdivid,cCallBy)
-	        if(ix.ne.0) then
-	          ifound=1
-	          awcr(ix)=awcrx * area(ix) * soild
-	          awcr1(ix)=awcrx
-	          if(ichk.eq.92) then
-              write(nlog,*) '  Mdainp; ix, cdivid, area, awcr'
-              write(nlog,*) '     ',ix, cdivid(ix), area(ix), awcr(ix)
-            endif
-	        endif
+	    cCallBy='Mdainp D.str'
+	    call stafind(nlog,1,3,numdiv,ix,cistat,cdivid,cCallBy)
+	    if(ix.ne.0) then
+	      ifound=1
+	      awcr(ix)=awcrx * area(ix) * soild
+	      awcr1(ix)=awcrx
+	      if(ichk.eq.92) then
+            write(nlog,*) '  Mdainp; ix, cdivid, area, awcr'
+            write(nlog,*) '     ',ix, cdivid(ix), area(ix), awcr(ix)
+          endif
+	    endif
 c
 c               IF necessary, Find well station 
-	        if(ifound.eq.0) then
-	        
-	          cCallBy='Mdainp W.str'	  
-	          call stafind(nlog,1,6,numdivw,ix,cistat,cdividw,cCallBy)  
-	          if(ix.ne.0) then
-	            ifound=1
-	            awcrw(ix)=awcrx * areaw(ix) * soild
-	            awcrw1(ix)=awcrx
+	    if(ifound.eq.0) then
+	      cCallBy='Mdainp W.str'
+	      call stafind(nlog,1,6,numdivw,ix,cistat,cdividw,cCallBy)
+	      if(ix.ne.0) then
+	        ifound=1
+	        awcrw(ix)=awcrx * areaw(ix) * soild
+	        awcrw1(ix)=awcrx
 c
 c rrb 2009/04/29; 	Do not include soil moisture on well only lands
 c			to coincide with StateCU
-             if(iStateCU.eq.1) then
-	             awcrw(ix)=0.0
-	             awcrw1(ix)=0.0              
-             endif		
-              	      
+            if(iStateCU.eq.1) then
+	          awcrw(ix)=0.0
+	          awcrw1(ix)=0.0
+            endif
             if(ichk.eq.92) then
               write(nlog,*) '  Mdainp; Well     , ix, cdividw, awcr ',
      1        ix, cdividw(ix), areaw(ix), awcrw(ix)
             endif
-	      
-	        endif  
+	      endif
   	    endif  
   	  end do
 c
@@ -1657,18 +1685,16 @@ c               Warn if soil data is not found for diversions
 
  940    continue
         if(ichk.eq.94) write(nlog,*)'  Mdainp; Set Diversion soilM'
-         
         
-	      do nd=1,numdiv          
+	    do nd=1,numdiv
           if(ioutSM.eq.1) then
             write(nlog,*) ' Mdainp; nd, id, acwr(nd)'          
             write(nlog,'(i5,1x,a12,20f10.2)') nd, cdivid(nd),awcr(nd) 
           endif
 	
-	        if(awcr(nd).le.small) then
+	      if(awcr(nd).le.small) then
 cr	        awcr(nd) = 0.0
 
-c
 c rrb 2007/11/16; Warn only if acres > 0
             if(area(nd).gt.small) then
               if(ipIpy.eq.0) then
@@ -1676,13 +1702,12 @@ c rrb 2007/11/16; Warn only if acres > 0
                 write(nlog,1281) iyr, rec40
                 ipIpy=1
               endif  
-	    
-	            iprints=iprints+1
+	          iprints=iprints+1
               if(iprints.eq.1) write(nchk,1636)
               write(nchk,1639) iprints, -1, cdivid(nd), 'Div ',
-     1          divnam1(nd), awcr(nd), area(nd)
+     1        divnam1(nd), awcr(nd), area(nd)
             endif
-	        endif
+	      endif
 c
 c rrb 2006/09/18; Test initial soil moisture = 0
           soils(nd)=awcr(nd) * 0.5
@@ -1690,17 +1715,17 @@ cx	      soils(nd)=awcr(nd) * 0.2
 cx	      write(nlog,*) ' Mdainp; Warning initial Soil M = 0.2'
 cx	      write(nscrn,*) ' Mdainp; Warning initial Soil M = 0.2'
 c
-	        if(ioutSM.eq.2) write(nlog,1324)
-     1      'Diversion', idyr, nd, cdivid(nd), 
-     1       area(nd), awcr(nd), soils(nd)
+	      if(ioutSM.eq.2) write(nlog,1324)
+     1    'Diversion', idyr, nd, cdivid(nd),
+     1    area(nd), awcr(nd), soils(nd)
 	    end do
 c
 c _________________________________________________________
 c               1x/Run Set Initial Soil Storage (soilsw) af at 50% and
 c               Warn if soil data is not found for well only
 
-       if(ichk.eq.94) write(nlog,*)'  Mdainp; Set Well soilM'
-	     do nw=1,numdivw
+        if(ichk.eq.94) write(nlog,*)'  Mdainp; Set Well soilM'
+	    do nw=1,numdivw
 	       nd=idivcow2(nw)
 cr     	  write(nlog,*) '  Mdainp; nw, nd,', nw, nd
 	       if(nd.eq.0) then
@@ -2002,7 +2027,7 @@ c
 c rrb 2005/10/07; Allow stream data to be provided in any order
 cr	if(cistat.ne.crunid(npx)) go to 1610
 	  
-	 cCallBy='Mdainp *.ris'
+	      cCallBy='Mdainp *.ris'
         call stafind(nlog,1,0,numrun,ix,cistat,crunid,cCallBy)
         
 cr      if(ix.eq.0) goto 1610
@@ -3161,7 +3186,13 @@ c               Note allows variable nummber of station to be read
         if(ichk.eq.94 .or. ichk.eq.4)
      1     write(nlog,*)'  Mdainp; reading *.ddc nx ' ,nx
      
-       	do nd=1,nx
+c jhb 2014/06/26 make the do loop limit arbitrarily large (5000)
+c                so it always works no matter how many records are
+c                in the IPY, STR, DDC files.  This is OK, because
+c                there is code below to jump out of this loop when the
+c                last record is read (the year changes)
+c        do nd=1,nx
+        do nd=1,5000
 
 c
  1701     read (14,951,end=1710,err=928) idyr,cistat,
@@ -3826,7 +3857,7 @@ c
      1 10x, 'data is not used',/     
      1 10x, 'Non Fatal Error Analysis Proceeding',//
      1   '    # ID            Year',/
-     1   ' ____ ____________ _____',)
+     1   ' ____ ____________ _____')
      
  1316 format(i5, 1x, a12, 1x, i5)
      
@@ -3848,7 +3879,7 @@ c
      1  '    # Year ID             Spr Area   GW Area     Delta',
      1                          '   GW Area  Tot Area     Delta'/
      1  ' ____ ____ _____________ _________ _________ _________',
-     1                          ' _________ _________ _________',)
+     1                          ' _________ _________ _________')
  1322 format(i5, i5, 1x, a12,1x 20f10.2)
 
  1321 FORMAT(/,
@@ -3940,7 +3971,7 @@ c
  1639 format(1x, i5, i5, 1x, a12, 1x, a4, 1x, a24, f8.2, f8.0)     
  
  1640 format(/,72('-'),/
-     1 '  Mdainp; WARNING FILE ', A5,,/ 
+     1 '  Mdainp; WARNING FILE ', A5,/ 
      1 '          HAS A UNIT CONVERSION FACTOR         = ', F10.4,/
      1 '          WHILE THE CONTROL FILE HAS A FACTOR  = ', F10.4,/
      1 '          THE TIME SERIES DATA CONTROLS FACTOR = ', F10.4,/

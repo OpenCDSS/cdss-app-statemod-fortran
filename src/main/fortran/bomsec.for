@@ -623,7 +623,9 @@ c grb add initialization for water right diversions
       end do
 
       do nd=1,maxrea
-	      divir(nd)=0.
+        do l2=1,MAXIFR
+	      divir(l2,nd)=0.
+	    end do
       end do
 
       do nd=1,numrsr
@@ -1259,7 +1261,7 @@ c               Formats
      1    '  riverx  cp (%)  demmax  demlim  avindx',
      1    ' Name                     ',     /8x,
      1    ' ____ ____ ____ ____ ____ ____ ____ ____ ____',
-     1    5(' _______'),' ________________________ ',)
+     1    5(' _______'),' ________________________ ')
      
  280  format(
      1 '  BomSec', i5, 1x, a4, 7i5, 5f8.0,1x, a24)

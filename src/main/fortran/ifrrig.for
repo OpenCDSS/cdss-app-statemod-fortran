@@ -7,8 +7,6 @@ C
 c
 c _________________________________________________________
 c	      Program Description
-c       IfrrigSP; It calculates a diversion to a plan
-c         by an instream flow water right
 c
 c _________________________________________________________
 c

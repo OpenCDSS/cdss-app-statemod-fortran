@@ -38,7 +38,7 @@ c
      1  'Divcar',   'Reoper',   'Ifrrigx', 'Divcar1', 'Sjrip',
      1  'Evasec',   'DivResP2', 'DivRplP', 'Welrig',  'DirectEx',
      1  'DirectBy', 'PowResP',  'OopDiv',  'Divrig',  'DivrplP2',
-     1  'DivCarL',  'RivRtn',   'DivRplR', 'DivResR ',       ' '/
+     1  'DivCarL',  'RivRtn',   'DivRplR', 'DivResR ','DirectWR'/
 c
 c _________________________________________________________
 c

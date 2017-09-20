@@ -27,7 +27,7 @@ c
 c               ichk =  0 do not print detail;
 c                       -n do at river id ichk,
 c                       + print detailed information (datinp)
-c		                   	1 Network and downstream data (datinp)
+c			                  1 Network and downstream data (datinp)
 c                       4 Calls from Execut (execut)
 c                       5 Demand & sprinkler (demand)
 c                       6 Daily data (daydist)
@@ -138,9 +138,9 @@ c     ioutS = River Station (*.ris)
 c     ioutI = Instream Flow (*.ifs)
 c     ioutN = 1 Network Data (*.rin)
 c		        = 2 Network plus idncod and ndnnod
-      iout=1
+      iout=0
       ioutS=0
-      ioutN=1
+      ioutN=0
       ioutC=0
       ioutI=0
       
@@ -1447,11 +1447,14 @@ c               ifrst2(nf) = downstream reach id
           ifrst2(nf) = is                                 
 c
 c rrb 08/14/96 Check for Instream Flow Station Overlap
-          if(idum(is).ne.0) then
-              write(nlog,1370) cifrid(nf), cifrid(idum(is))
-              goto 9999   
-            endif       
-            idum(is) = nf
+c jhb 2014/07/24 experimental branch isfoverlap
+c                remove this check, might work now with overlapping reaches
+c                because v14.00.02 now allows multiple isf rights per node
+c          if(idum(is).ne.0) then
+c              write(nlog,1370) cifrid(nf), cifrid(idum(is))
+c              goto 9999
+c          endif
+          idum(is) = nf
           goto 880
         else       
 c        
@@ -1471,10 +1474,13 @@ c         if(ireach.eq.0) then
             endif
 c
 c rrb 08/14/96 Check for Instream Flow Reach Overlap
-            if(idum(iss).ne.0) then
-              write(nlog,1370) cifrid(nf), cifrid(idum(iss))
-              goto 9999   
-            endif       
+c jhb 2014/07/24 experimental branch isfoverlap
+c                remove this check, might work now with overlapping reaches
+c                because v14.00.02 now allows multiple isf rights per node
+c            if(idum(iss).ne.0) then
+c              write(nlog,1370) cifrid(nf), cifrid(idum(iss))
+c              goto 9999
+c            endif
             idum(iss) = nf
 
             if(crtnid.eq.cstaid(iss)) then
@@ -1895,7 +1901,7 @@ c ___________________________________________________
      1  '  Datinp; Problem. Too MANY EVAPO. COMBINATIONS ',I5,
      1  '     MAXIMUM = ',I5)
  1140  format(/,
-     1 '  Datinp; Warning Res. ', i4, ' has no evap data',)
+     1 '  Datinp; Warning Res. ', i4, ' has no evap data')
  1150  FORMAT(24x, a12,F8.0)
  1160  FORMAT(/,
      1  ' Datinp; Problem. Too MANY RAINFALL COMBINATIONS ',I5,

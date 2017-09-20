@@ -125,8 +125,8 @@ cx     if(corid1(1:9) .eq. 'RkyMtn.07')   iout=4
       if(iout.ge.1) write(nlog,210) 'RivRtn      ',corid1,iout,navail,
      1 relact*fac, divact*fac    
  210  format(//, 60('_'),/, 2(2x, a12), /
-     1 '    iout   = ', i5, ,/
-     1 '    navail = ', i5 ' where:',/
+     1 '    iout   = ', i5, /
+     1 '    navail = ', i5, ' where:',/
      1 '                 0 Do not adjust the array Avail',/
      1 '	               1 Do adjust the array Avail',/
      1 '    Relact = ', f8.0,/

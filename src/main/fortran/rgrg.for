@@ -1,3 +1,4 @@
+
 c
       SUBROUTINE Rgrg(IW,L2,IRG,nrg,icarry,irgout)
 c
@@ -223,8 +224,8 @@ cx	WRITE(nlog,*) '  Rgrg.for iyr, mon, idy ', iyr, mon, idy
 c
 c rrb 00/11/02; Need to save between iterations like qneed1             
       if(nrg.eq.1) then
-	qneed1(irg) = 0.0
-	aloifr1(irg) = 0.0
+	      qneed1(irg) = 0.0
+	      aloifr1(irg) = 0.0
       endif
       ntbl=31
 c
