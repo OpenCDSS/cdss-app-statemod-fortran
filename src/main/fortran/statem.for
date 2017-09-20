@@ -192,8 +192,8 @@ c				 7 includes new binary output format
 c		yy has new functionality
 c		zz is a bug fix
 c		
-        ver='14.02.07'
-        vdate = '2015/01/26'
+        ver='14.02.08'
+        vdate = '2015/02/03'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -276,7 +276,6 @@ c
       maxrtnPP = 1444
 cx    maxPlnO=100
       maxPlnT=12
-      
       maxOprin=50
       maximprt=15
       nimport=0
@@ -606,6 +605,12 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2015/02/03 (14.02.08)',/    
+     1 '      Revised Oprinp.f and OprInOut.f to allow a Type 27 ',/
+     1 '      direct release (DivResP2.f) and Type 28 release by ',/
+     1 '      exchange (DivRplP.f) to read the source operating',/
+     1 '      rule as variable cReuse and implemented oprlimit = 4',/
+     1 '      that is a combination of types 2 and 3',/
      1 '    - 2015/01/24 (14.02.07)',/    
      1 '      Revised *.xdd reporting for a release by Divresp2',/
      1 '     (type 27) or by exchange by DivRplP (type 28)',/

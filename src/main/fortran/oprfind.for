@@ -74,8 +74,7 @@ c                       20      read monthly switches
 c                       21      read intervening structures
 c		                    22      read monthly and annual maxima
 c			                  23      read intervening structures with loss %
-c			                  24      read Operating Rule ID for a
-c		                              monthly or annual plan adjustment
+c			                  24      read Operating Rule ID 
 c			                  25      read multiple destinations and percent
 c			                  26      read 12 efficiency values (for a T&C
 c                                 obligation)
@@ -1102,9 +1101,6 @@ c               Warn user source water right or opr rule not found
             write(nlog,1500) 'Problem', cidvri, cx
             goto 9999
           endif
-          
-          
-          
 c
 c _________________________________________________________ 
 c
@@ -1296,7 +1292,9 @@ c __________________________________________________________
      1'  Oprfind; ', a8, ' Operating Right ', a12,/                      
      1 11x,' Cannot find an Operating Right',
      1     ' = ', a12,/
-     1 11x,' in the Operating Right (*.opr) file above this opr rule')
+     1 11x,' in the Operating Right (*.opr) file above this opr rule.'
+     1 11x,' This error often occurs when oprlimit is greater',/
+     1 11x,' than zero')
      
  3000 format(/,72('_'),/
      1 '  Oprfind; ', a8, ' Case ', i5, ' not available')
