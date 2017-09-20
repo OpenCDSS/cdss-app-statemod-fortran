@@ -4288,7 +4288,7 @@ c		             source 7 = reuse switch 0=none, >0=reuse plan
 c
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
-c                  ion=1 means turn off opr right if right is off
+c           ion=1   means turn off opr right if right is off
 c       write(nlog,*) '  Oprinp; Operating type 26'
         ion=1
         istop=0
@@ -4469,44 +4469,58 @@ c
 c ---------------------------------------------------------
 c rrb 2007/07/03; 
 c		            a4. Read the operating rule associated with
-c		    a monthly or annual plan limit adjustment
-c		    when Oprlimit(k) > 0
-c		    istop=0  Stop if not found
-c	     	itype=24 Operating Rule ID with monthly and annual
-c                 plan limits
+c		                a monthly or annual plan limit adjustment
+c		                when Oprlimit(k) > 0
+c		                istop=0  Stop if not found
+c	     	            itype=24 Operating Rule ID with monthly and annual
+c                   plan limits
 c
 c       write(nlog,*) ' Oprinp; type 27 ioprlim ', ioprlim(k)
-        if(ioprlim(k).gt.0) then
+c
+c rrb 2015/02/03; Allow type 4 to be type 2 & 3
+cx      if(ioprlim(k).gt.0) then 
+        if(ioprlim(k).eq.1 .or. ioprlim(k).eq.2 .or. 
+     1     ioprlim(k).eq.4) then
           istop=0
           itype=24          
           call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
      1      ix, ix, nx, cAssoc, 1, istop, rops2,ioprsw(k), cidvri)
           nx5=nx
-          iopsou(5,k)=nx5 
+          iopsou(5,k)=nx5         
+c
+c rrb 2015/02/03X; Check a type 2 or 4 is an administration plan
+          if(ioprlim(k).eq. 2 .or. ioprlim(k).eq. 4) then
+            lopr5=iopsou(5,k)
+            if(ityopr(lopr5).ne.47) then
+              write(nlog,12662) ityopr(k),cidvri, ioprlim(k), cAssoc 
+              goto 9999           
+            endif
+          endif
+        endif
 c
 c ________________________________________________________________
 c rrb 2015/02/03; Allow two conditions to be specified when 
 c                  ioprlim(k)=4 
 c            
-          if(ioprlim(k).eq.4) then
-            istop=0
-            itype=24          
-            call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
-     1        ix, ix, nx, cAssoc2, 1, istop, rops2,ioprsw(k), cidvri)
-            nx6=nx
-            iopsou(6,k)=nx6             
-          endif
+        if(ioprlim(k).eq.3 .or. ioprlim(k).eq.4) then
+          istop=0
+          itype=24          
+          call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
+     1      ix, ix, nx, cAssoc2, 1, istop, rops2,ioprsw(k), cidvri)
+          nx6=nx
+          iopsou(6,k)=nx6             
+        endif
 c ______________________________________________________                    
 c
 c rrb 2009/01/15; Revise to allow iopsou(k)=3 to limit to the
 c		              amount diverted by another operating rule
-          if(ioprlim(k).eq.1 .or. ioprlim(k).eq.2) then
+        if(ioprlim(k).eq.1 .or. ioprlim(k).eq.2 .or.
+     1     ioprlim(k).eq.4) then
 c
 c rrb 2015/02/03; Add additional functionality
-cx          ip5=iopsou(1,nx)
-            ip5=iopsou(1,nx5)
-            ciopsoX5(k)=pid(ip5)
-          endif
+cx        ip5=iopsou(1,nx)
+          ip5=iopsou(1,nx5)
+          ciopsoX5(k)=pid(ip5)
         endif     
 c
 c ---------------------------------------------------------
@@ -4766,7 +4780,7 @@ cx      istop=0
         endif
 c
 c ---------------------------------------------------------
-c		            i. Check proper type of reuse plan 
+c		            j. Check proper type of reuse plan 
 c                  Note iplntyp 3 & 5 are reservoir, 
 c                       iplntyp 4 & 6 are diversion
 c                       iplntyp 7 is an admin plan
@@ -4803,7 +4817,7 @@ c             (OOP Plan)
 c
 c ------------------------------------------------------------------
 c rrb 2015/02/03X; Read source water right from variable Creuse
-c               h2. If the source is an admin plan, find 
+c                k. If the source is an admin plan, find 
 c                   a source operating rule named Creuse, if any, 
 c		                and store in ireuse(k)
 c
@@ -4845,7 +4859,7 @@ c rrb 25/02/03X; Check the source is a type 26 plan
         endif
 c
 c ---------------------------------------------------------
-c               j. Set the release type demand or depletion
+c               l. Set the release type demand or depletion
 c		   Note a destination reservoir is always a diversion
         rec12=cdivtyp(k)
         iok=1
@@ -4861,7 +4875,7 @@ c		   Note a destination reservoir is always a diversion
         endif    
 c        
 c ---------------------------------------------------------
-c		            j. Check the return type matches the data provided
+c		            m. Check the return type matches the data provided
        if(NAs2.eq.0 .and. iopsou(4,k).gt.0) then
          ipTC=iopsou(3,k)
          call chkPrf(nlog, ipTC, iprf(ipTC), ityopr(k), iopsou(4,k), 
@@ -4947,8 +4961,11 @@ c		               when Oprlimit(k) > 0
 c		               istop=0  Stop if not found
 c		               itype=24 Operating Rule with monthly and annual
 c                        plan limits
-
-        if(ioprlim(k).gt.0) then
+c
+c rrb 2015/02/03; Allow type 4 to be type 2 & 3
+cx      if(ioprlim(k).gt.0) then
+        if(ioprlim(k).eq.1 .or. ioprlim(k).eq.2 .or. 
+     1     ioprlim(k).eq.4) then
           istop=0
           itype=24
           call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
@@ -4956,31 +4973,41 @@ c                        plan limits
           nx5=nx
           iopsou(5,k)=nx5
 c
-c ________________________________________________________________
-c rrb 2015/02/03; Allow two conditions to be specified when 
-c                  ioprlim(k)=4 
-c            
-          if(ioprlim(k).eq.4) then
-            istop=0
-            itype=24          
-            call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
-     1        ix, ix, nx, cAssoc2, 1, istop, rops2,ioprsw(k), cidvri)
-            nx6=nx
-            iopsou(6,k)=nx6             
+c rrb 2015/02/03X; Check a type 2 or 4 is an administration plan
+          if(ioprlim(k).eq. 2 .or. ioprlim(k).eq. 4) then
+            lopr5=iopsou(5,k)
+            if(ityopr(lopr5).ne.47) then
+              write(nlog,12662) ityopr(k),cidvri, ioprlim(k), cAssoc 
+              goto 9999           
+            endif
           endif
+          
+        endif
+c
+c ________________________________________________________________
+ 
+c            
+        if(ioprlim(k).eq.3 .or. ioprlim(k).eq.4) then
+          istop=0
+          itype=24          
+          call oprFind(ityopr(k), itype, idumc,k,ion,iprinto,
+     1      ix, ix, nx, cAssoc2, 1, istop, rops2,ioprsw(k), cidvri)
+          nx6=nx
+          iopsou(6,k)=nx6             
+        endif
 c ______________________________________________________          
 c
 c rrb 2008/01/15; Revise to allow iopsou(k)=3 to limit to the
 c		              amount diverted by another operating rule
-          if(ioprlim(k).eq.1 .or. ioprlim(k).eq.2) then
+c rrb 2015/02/03; Allow type 4 to be type 2 & 3
+        if(ioprlim(k).eq.1 .or. ioprlim(k).eq.2 .or.
+     1     ioprlim(k).eq.4) then
 c 
 c rrb 2015/02/03;                 
-cx          ip5=iopsou(1,nx)
-            ip5=iopsou(1,nx5)
-            ciopsoX5(k)=pid(ip5)          
-          endif
-        endif  
-
+cx        ip5=iopsou(1,nx)
+          ip5=iopsou(1,nx5)
+          ciopsoX5(k)=pid(ip5)          
+        endif 
 c
 c ---------------------------------------------------------
 c               b1. Find the destination, a diversion ID (type 3)
@@ -5305,7 +5332,7 @@ c
 c ---------------------------------------------------------
 c		m. Detailed output
 c     
-        iout28=1
+        iout28=0
         if(iout28.eq.1) then
           call OprinOut(nlog, maxopr, k, 
      1      ityopr(k), cidvri, 
@@ -10053,7 +10080,16 @@ c    1 10x,'   at the source or destination structure',/
      1 10x,'  Type 10 for a Special Well Augmentation Plan',/
      1 10x,'  Type 11 for an Accounting Plan',/
      1 10x,'Recommend you revise the plan type')
-          
+     
+12662 format(/, 72('_'),/, '  Oprinp; ',
+     1'Problem with Operating right type = ',i2,'ID = ', a12,/
+     1 10x,'The variable Oprlimit             = ',i2,' and',/
+     1 10x,'The operating rule specified in row 4    = ', a12,/
+     1 10x,'When the variable Oprlimit = 2 or 4',/
+     1 10x,'The operating rule specified in row 4 should be',/
+     1 10x,'a type 47 operating rule',/
+     1 10x,'Recommend you revise the operating rule provided in row 4') 
+              
  1267 format(/, 72('_'),/, '  Oprinp; ',
      1'Problem with Operating right type = ',i2,' ID = ', a12,/
      1 10x,'The source plan specified = ', a12,' is a type = ', i3, 

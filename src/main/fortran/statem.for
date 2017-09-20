@@ -192,8 +192,8 @@ c				 7 includes new binary output format
 c		yy has new functionality
 c		zz is a bug fix
 c		
-        ver='14.02.08'
-        vdate = '2015/02/03'
+        ver='14.02.09'
+        vdate = '2015/02/14'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -605,6 +605,12 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2015/02/03 (14.02.09)',/   
+     1 '      Revised Type 27 direct release (DivResP2.f) and ',/
+     1 '      Type 28 release by exchange (DivRplP.f) to allow',/
+     1 '      OprLimit = 1, 2, 3 and 4.  Also fixed ',/
+     1 '      a problem with version 14.02.08 that did not allow ',/
+     1 '      return flows to be calculated. ',/ 
      1 '    - 2015/02/03 (14.02.08)',/    
      1 '      Revised Oprinp.f and OprInOut.f to allow a Type 27 ',/
      1 '      direct release (DivResP2.f) and Type 28 release by ',/
