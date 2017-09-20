@@ -31,8 +31,11 @@ c		       1 Plan data Details
 c		       2 Plan data Summary
 c		       5 Plan Return flow summary
       iout=0
+c
+c rrb 2013/02/03; Allow type 13 = Changed Water Right     
+cx    maxPlnT1=12
+      maxPlnT1=13
       
-      maxPlnT1=12
       ibad=0
       small=0.001
       
@@ -53,8 +56,7 @@ c		       5 Plan Return flow summary
       plntypX(9) = 'Out-of-Priority_Reservoir'
       plntypX(10)= 'Special_Well_Augmentation'
       plntypX(11)= 'Accounting_Plan'
-      plntypX(12)= 'Release_Plan_Limit'
-      
+      plntypX(12)= 'Release_Plan_Limit'     
 
       ifn=53
       filena=fileName(ifn)

@@ -464,17 +464,35 @@ c		f. Carrier
       endif  
 c
 c ---------------------------------------------------------
-c		g. ReUse Plan  
-c		ipUse = Reuse plan    
+c		g. ReUse Plan 
+c rrb 2015/02/03X; Revise to initilize when the source is a 
+c                  reservoir (nsR>0) in order to allow ireuse(k) 
+c                  to sometimes be the source plans operating rule
+c                  when the source is a type 11 (admin plan) 
+c		               ipUse = Reuse plan    
       cpuse='No'
       cplntyp='NA '
-      ipUse=ireuse(l2)
-      if(ipUse.gt.0) then
-        cpuse='Yes'
-        if(iplntyp(ipUse).ne.9) cplntyp='Reuse_Plan'
-        if(iplnTyp(ipuse).eq.9) cPlnTyp='OOP_Plan'
-        if(iplnTyp(ipuse).eq.11)cPlnTyp='Acct_Plan'
-      endif  
+c
+c rrb 2015/02/03X; Set ipUse when the source is a reservoir
+      if(nsR.gt.0) then     
+        ipUse=ireuse(l2)
+        
+        if(ipUse.gt.0) then
+          cpuse='Yes'
+          if(iplntyp(ipUse).ne.9) cplntyp='Reuse_Plan'
+          if(iplnTyp(ipuse).eq.9) cPlnTyp='OOP_Plan'
+          if(iplnTyp(ipuse).eq.11)cPlnTyp='Acct_Plan'
+        endif  
+      endif
+c
+c rrb 2015/02/03X; Set ipuse when the source is a Reuse Plan
+      if(nsP.gt.0 .and. iplntyp(nsP).ne.11) then
+        ipUse=ireuse(l2)
+        if(ipUse.gt.0) then
+          cpuse='Yes'
+          cplntyp='Reuse_Plan'
+        endif  
+      endif      
 c      
 c ---------------------------------------------------------
 c               h. T&C Plan
@@ -514,8 +532,7 @@ c		l. Called by Replace
         cReplace='No'
       else
         cReplace='Yes'
-      endif        
-      
+      endif            
 c      
 c ---------------------------------------------------------
 c		m. Variable Efficiency
@@ -561,10 +578,8 @@ c		p. Check Avail Array
      1 ' ID = ', corid1
 c
 c ---------------------------------------------------------
-c rrb 2014/11/14;
-c   q. Set location of original source of water
-c     Currently only used if source 1 is a 
-c     Type 11 plan
+c rrb 2014/11/14; n. Set location of the operating right that
+c                    provided source of water to a type 11 plan
       lopr5=0
       lr5=0
       nd5=0
@@ -576,9 +591,14 @@ c
         write(nlog,*) ' DivRplP_1; l2, ioprlim(l2), iopsou(5,l2)'   
         write(nlog,*) ' DivRplP_1;', l2, ioprlim(l2), iopsou(5,l2)         
       endif
-c      
-      if(ioprlim(l2).eq.5 .and. iopsou(5,l2).gt.0) then
-        lopr5=iopsou(5,l2)
+c  
+c     
+c                                      
+c rrb 2015/02/03X; Revise to use Creuse 
+cx      if(ioprlim(l2).eq.5 .and. iopsou(5,l2).gt.0) then
+cx      lopr5=iopsou(5,l2)
+      if(nsP.gt.0 .and. iplntyp(nsP).eq.11) then        
+        lopr5=ireuse(l2)
         lr5=iopsou(1,lopr5)
         nd5=idivco(1,lr5)
         iscd5=IDVSTA(nd5)          
