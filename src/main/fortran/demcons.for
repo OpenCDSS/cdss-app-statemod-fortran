@@ -52,7 +52,7 @@ cx    istart=0
 cx    if(iyr.eq.iystr .and. mon.eq.1) istart = 1
 cx    if(istart.eq.1) iprint=0
       if(ioptiox.eq.0) iprint=0
-      iprint=0
+      iprint=1
 c      
       small=0.1
 

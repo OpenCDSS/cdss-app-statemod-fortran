@@ -168,7 +168,7 @@ c        Formats
      1  ' Deplete,',
      1  ' GW Stor,  Inflow,  Divert, by Well, Outflow,    Flow,',/
      1  2('___________ ,'),2(' ____,'), 30(' _______,'))
-  200  format(2(a12,','),i5,',', 2x, a3, ',', 30(f8.0,','))
+  200  format(2(a12,','),i5,',', 2x, a3, ',', 40(f8.0,','))
   210  return
   220  write(6,*)  '   Outdiv; Requested data exceeds binary file size'
        write(99,*) '   Outdiv; Requested data exceeds binary file size'

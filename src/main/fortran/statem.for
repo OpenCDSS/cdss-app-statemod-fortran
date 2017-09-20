@@ -180,7 +180,9 @@ c _________________________________________________________
 c		Step 1; Initilize
 c
 c		ver = xx.yy.zz; where
-c		xx is the major version 
+c		     xx is the major version 
+c		     yy has new functionality
+c		     zz is a bug fix
 c		   For example:
 c			  12 has new *.ipy file
 c     
@@ -189,11 +191,9 @@ c				10 includes plans
 c				 9 inlcudes wells
 c				 8 includes daily capability
 c				 7 includes new binary output format			
-c		     yy has new functionality
-c		     zz is a bug fix
 c		
-        ver='14.02.25'
-        vdate = '2015/09/11'
+        ver='15.00.00'
+        vdate = '2015/10/18'
 c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -359,7 +359,14 @@ c
 c _________________________________________________________
 
 c               -help option
-  92  if(ioptio.eq.6) goto 190
+  92  if(ioptio.eq.6) then
+        write(6,200) ver, vdate
+        write(6,206)
+  206   format(
+     1 72('_'),//
+     1 '        For help with StateMod see documentation and examples')         
+        goto 190
+      endif
 c
 c
 c _________________________________________________________
@@ -608,6 +615,31 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2015/10/18 (15.00.00)',/
+     1 '      Copied version 14.02.27 to version 15.00.00',/
+     1 '        to signify testing and comparison to historic',/
+     1 '        results following the transfer to GitHub and',/
+     1 '        addition of the Changed Water Right (typw 26)',/
+     1 '        operating rule.',/
+     1 '      Minor clean up to DirectWR (type 26), DivResP2',/
+     1 '        (type 27) and DivrplP (type 28) to remove some',/
+     1 '        confusing notes',/
+     1 '    - 2015/10/10 (14.02.27)',/
+     1 '      Revised DirectWR (type 26) to correct a problem',/
+     1 '        associated with the one operation per time step',/
+     1 '        implementation',/
+     1 '      Revised PowSeaP (type 29) to correct a typo to qdiv',/
+     1 '        that impacts reporting',/
+     1 '    - 2015/10/04 (14.02.26)',/
+     1 '      Revised DirectEX (type 24), DirectBy (type 25),'/ 
+     1 '        DivResP2 (type 27) and DivrplP (type 28) to report'/
+     1 '        water bypassed or exchanged as at the source as',/
+     1 '        Carried (qdiv(38,__) that does not enter into the',/
+     1 '        water budget reporting',/
+     1 '      Revised PowSeaP to report water spilled from a',/
+     1 '        reuse plan to a Diversion (type 4), Reuse Plan to a',/
+     1 '        diversion from Tmtn and an Admin Plan (11) as a',/
+     1 '        Return flow for water budget reporting',/
      1 '    - 2015/09/11 (14.02.25)',/
      1 '      Revised RsrSpu (type 6) and RsrSpuP (type 34) to ',/
      1 '        correct variable IresT1 that is used by subroutine',/

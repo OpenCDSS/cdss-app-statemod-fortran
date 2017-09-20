@@ -118,7 +118,7 @@ c
 c				       Detalied data for a seleted structure   
       cStrOut= 'NA'
 c     cstrOut= '01_AWP031   '  
-      cstrOut= '6400503     '
+c     cstrOut= '6400503     '
 
       if(cstaid1.eq.cStrOut) then
         iout=3

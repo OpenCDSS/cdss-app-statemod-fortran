@@ -593,7 +593,7 @@ c 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
      1 10x, 'The following Structures are in the annual time series',/ 
      1 10x, 'file (*.ipy or *.tsp) but are not in a diversion',/
      1 10x, '(*.dds) or a well (*.wes) station file. Since it ',/
-     1 10x, 'cannot be tied to a diversion or well this data is ',/
+     1 10x, 'cannot be tied to a diversion or well this data is ',
      1      'not used',/
      1   '    # ID            Year',/
      1   ' ____ ____________ _____')

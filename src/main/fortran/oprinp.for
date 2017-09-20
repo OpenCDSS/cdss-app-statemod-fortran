@@ -134,7 +134,7 @@ c rrb 209/01/26; Correction; initilize ntype to a dimension of 50
      1  'Wells with Sprikler Use',    
      1  'Soil Moisture Use',           'Downstream Call',
      1  'Direct Flow Exchange',        'Direct Flow Bypass',
-     1  'NA',                          'Plan Use Direct',
+     1  'Direct Water Right',          'Plan Use Direct',
      1  'Plan Use Exchange',           'Plan Spill',
      1  'Reservoir Re Diversion',      
      1  'Carrier with Reuse',          'Reuse Plan Direct',  
@@ -158,11 +158,11 @@ c		       1 do echo *.opr input to *.chk
 c		iechoX=0 do not echo *.opr input to *.chk
 c		       1 do echo *.opr input to *.chk
 c		iechoX 2 do echo *.opr and include a header (____)
-c			 above a comment
+c			       above a comment
 c		ioutSm 0 no details on small
 c		       1 details on small
 c		ioutLim 0 no details on diversion limit
-c		       1 details on diversion limit
+c		        1 details on diversion limit
       iout=0
       ioutSM=0  
       ioutLim=0
@@ -7971,11 +7971,11 @@ c rrb 2008/03/21; Revised warning when several destinations are possible
 c
 c ---------------------------------------------------------
 c               d1. Find source 1 a diversion structure (3)
-c 		    Note ion=0 leaves the original water right on
-c		        iacc=0 allows account to be 0 (since 
-c                       it is ownership %)
-c		   Note istop=0 Stop if not found
-c		        istop=1 Do not Stop if not found
+c 		    Note ion=0  leaves the original water right on
+c		           iacc=0 allows account to be 0 (since 
+c                     it is ownership %)
+c		      Note istop=0 Stop if not found
+c		           istop=1 Do not Stop if not found
 c rrb 05/06/15; Note turn original right off (ion=1)
       ion=1
       iacc=0
@@ -8059,9 +8059,9 @@ c
 c ---------------------------------------------------------
 c               e. Find source 2 the location where water is 
 c                   diverted. Note:
-c		    ion=0 leaves the original water right on
+c		                ion=0 leaves the original water right on
 c                   iacc=1 Check the account varaible (iops2) > 0
-c		    iacc=0 Do not check the account variable
+c		                iacc=0 Do not check the account variable
 c                   itype=3 a diversion
 c                   istop = 1 Do not Stop if not found
       if(NAs2.eq.1) then        

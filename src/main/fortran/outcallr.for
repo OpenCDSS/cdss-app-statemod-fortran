@@ -53,7 +53,7 @@ c _________________________________________________________
         imcd1=imcdL(is)
 c
 c		Determine if there is a downstream call
-c		Note if imcd1=is the min flow is at the headgate        
+c		Note if imcd1=is, the min flow is at the headgate        
 cr      if(imcd1.gt.0) then
         if(imcd1.gt.0 .and. imcd1.ne.is) then
 c

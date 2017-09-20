@@ -8,7 +8,7 @@ c	Program Description
 c
 c     SPlatte; Type 40
 c       It releases water from the S Platte Compact plan
-c         When teh destination is a diversion iopdesR=3 its by exchange
+c         When the destination is a diversion iopdesR=3 its by exchange
 c         When the destination is an instream flow iopdesR=1 its direct
 c       It allows an exchange from a plan that was filled
 c       by the South Platte Compact via call IfrrigSP
@@ -16,7 +16,7 @@ c       to a diversion located upstream of the Washington County line
 c       (Upstream of WD 40)
 c _________________________________________________________
 c
-c       Called b:
+c       Called by:
 c         Execut
 c _________________________________________________________
 c
@@ -212,7 +212,7 @@ c	Dimensions
      1  cDest*12,    cSour*12, cDest1*12, cRiver*12,
      1  corid1*12, cStaMin*12, cstaid1*12, cdivtyp1*12
      
-c      character corid1*12, ccallby*12, cwhy*48
+c     character corid1*12, ccallby*12, cwhy*48
       character ccallby*12
 
 c
@@ -741,7 +741,8 @@ c
       CALL TAKOUT(maxsta,AVAIL,RIVER,AVINP,QTRIBU,IDNCOD,
      1            relact,ndns,iscd)
 c     
-c rrb 2011/01/06; Adjust the source
+c rrb 2011/01/06; Do not set source value to original (e.g.
+c                 adjust avail at the source
 cx    avail(iscd)=availR     
 c
 c rrb 2011/05/19; Move above
@@ -838,8 +839,12 @@ c                        rule (divalo)
 c jhb 2014/07/13 move line label 300 down to step 28
 c                to avoid occasional array bound issue when
 c                idcdx is undefined
-c 300  if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
-      if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
+c
+c rrb 2015/09/25; Back to original and add logic to address
+c                 issue when idcdX is undefined.  Note its
+c                 only undefined if there is no diversion
+ 300  if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
+cx    if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
 c
 c rrb 2007/10/29; Set ishort for a quick exit. Reset initilized
 c		  divact to 0 from -1
@@ -874,20 +879,23 @@ c               Step 24; Update Qdiv for Source and Destination
 c ---------------------------------------------------------
 c               Destination is a diversion
 c               qdiv(31 = From the river via a reuse or Admin Plan
-      if(iopDesR(l2).eq.3) then
-cx      qdiv(31,idcdX) = qdiv(31,idcdX) + divact
-        qdiv(30,idcdX) = qdiv(30,idcdX) + divact
-      endif
-c ---------------------------------------------------------
-c               Destination is an ISF     
-      if(iopDesR(l2).eq.1) then
-c
-c rrb 2011/02/13; Show the diversion to ISF as:
-c                 qdiv(31 From the river via a reuse or Admin Plan
-c                 qdiv(36 return flow
-c
-        qdiv(31,idcdX) = qdiv(31,idcdX) + divact   
-        qdiv(36,idcdX) = qdiv(36,idcdX) + divact      
+c rrb 2015/09/25; Revision in case idcdX =0 
+      if(idcdX.gt.0) then
+        if(iopDesR(l2).eq.3) then
+cx        qdiv(31,idcdX) = qdiv(31,idcdX) + divact
+          qdiv(30,idcdX) = qdiv(30,idcdX) + divact
+        endif
+c ----  -----------------------------------------------------
+c                 Destination is an ISF     
+        if(iopDesR(l2).eq.1) then
+c       
+c rrb   2011/02/13; Show the diversion to ISF as:
+c                   qdiv(31 From the river via a reuse or Admin Plan
+c                   qdiv(36 return flow
+c       
+          qdiv(31,idcdX) = qdiv(31,idcdX) + divact   
+          qdiv(36,idcdX) = qdiv(36,idcdX) + divact      
+        endif
       endif
       
       if(iout.eq.1) then
@@ -917,7 +925,11 @@ c     if(iout.ge.1) then
 c     if(iout.gt.0 .and. ioutiw.eq.iw) then
 c jhb 2014/07/13 change line label 300 to here
 c                jump to here when op rule is not active
- 300  continue
+c
+c rrb 2015/09/25; Back to original since logic was added for
+c                 issue when idcdX is undefined.  Note its
+c                 only undefined if there is no diversion
+cx300  continue
       iprint=1
 c
 c rrb 2011/04/04; turn off detailed printout      
@@ -974,13 +986,17 @@ c                  imcd = -1 !!
         if (imcd.ge.1) then
           if(divact*fac.gt.small .and. avail(imcd)*fac.lt.smalln)
      1      write(nlogx,*) ' ***** Problem avail is less than 0'
-        else
-c          if(iout.eq.1) then
-            write(nlogx,*)
-     1      ' SPlatte; avail(imcd) error:  imcd = ',
-     1      imcd
-c          endif
-        endif
+c
+c rrb 2015/09/25; Remove warning since imcd is only < 0 if there
+c                 is no diversion
+        endif     
+cx        else
+cxc          if(iout.eq.1) then
+cx            write(nlogx,*)
+cx     1      ' SPlatte; avail(imcd) error:  imcd = ',
+cx     1      imcd
+cxc          endif
+cx        endif
         
 c
 c rrb 2011/04/18; Update
