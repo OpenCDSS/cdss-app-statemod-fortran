@@ -39,12 +39,13 @@ c
 c rrb 2007/10/26; Add ability to be called by Replace
 c
 c rrb 2007/10/12; Revised to limit a release to an annual limit
-c		  Note if iOprLim = 1, diversion limits are adjusted
+c		  Note if iOprlim = 1 & 6 are not currently operational
+c		  Note if iOprlim = 2, 4 7 or 9 release limits are adjusted
 c		    for the operatng rule in iopsou(5,l2).
-c		  Note if iOprLim = 2, release limits are adjusted
-c		    for the operatng rule in iopsou(5,l2).
-c		  Note if iOprlim = 3, diversions are limited to the 
-c		    amount simulated by another operaating rule 
+c		  Note if iOprlim = 3, 4, 8 or 9 diversions are limited to the 
+c		    amount simulated by another operating rule iopsou(6,l2).
+c     Note if IOprlim = 5 or 7-9 the source is a Changed Water 
+c       Right Plan (type 13) that has special reporting capability
 c                 (iopsou(5,l2).
 c
 c rrb 2007/08/22; Revised to allow the return flow calculation for 
@@ -102,11 +103,21 @@ c
 c       iopsou(2,l2)   iown   N/A
 c       iopsou(3,l2)   T&C Plan id (for return flow obligation)
 c			                  associated with a release
-c       iopsou(5,l2)	1 Diversion limits are adjusted for the
-c		                    operatng rule = iopsou(5,l2).
-c		                  2 Release limits are imposed for the
-c		                    operatng rule = iopsou(5,l2).
-c       iopsou(6,l2)    Reservoir release type and efficiency
+c
+c       iopsou(5,l2) = A Plan ID containing monthly Diversion limits
+c                      Read in Oprinp when Oprlimit = 2, 4 or 7
+c
+c       iopsou(6,l2) = A Operating rule ID whos diversion will
+c                      limit diversions by this operating rule
+c                      Read in Oprinp when Oprlimit = 3, 4 or 8
+c
+c       iopsou(7,l2) = Type 26 Operating rule that provided water to a
+c                      Changed Water Right Plan (type 13)
+c                      Read in Oprinp when Oprlimit = 5 or 9
+c
+c       ireltyp         Not operational
+c                       For other operating rules this is the
+c                       Reservoir release type and efficiency
 c                       0 = release to meet demand
 c                       +n = release only if a CIR (IWR) exists
 c                       and limit release to not exceed IWR/n,  
@@ -118,7 +129,6 @@ c                       0 release to meet diversion demand
 c                       1 release to meet depletion
 c
 c       iExPoint(l2)    exchange node
-c       ireltyp         Same as iopsou(6,l2)
 c
 c	      ipUse           Reuse plan for return flows
 c                       Note ipUse=ireuse(l2)
@@ -600,9 +610,13 @@ c
 c rrb 2015/02/03X; Revise to use Creuse to identify the type 26 rule
 cx      if(ioprlim(l2).eq.5 .and. iopsou(5,l2).gt.0) then
 cx      lopr26=iopsou(5,l2)
-      if(nsP.gt.0 .and. iplntyp(nsP).eq.11) then        
-        lopr26=ireuse(l2)
-        lr26=iopsou(1,lopr26)
+c
+c rrb 2015/03/07; Revise to use Oprlimit 1-9
+cx      if(nsP.gt.0 .and. iplntyp(nsP).eq.11) then        
+cx      lopr26=ireuse(l2)
+      if(nsP.gt.0 .and. iplntyp(nsP).eq.13) then 
+        lopr26=iopsou(7,l2)
+        lr26=iopsou(1,lopr26)              
         nd26=idivco(1,lr26)
         iscd26=IDVSTA(nd26)          
         ndns26=NDNNOD(iscd26)
@@ -746,20 +760,26 @@ c
 c               Step 4; Limit to monthly and annual limits
 c rrb 2007/10/23;    
 c rrb 2015/02/03X; Allow type 4 that is a type 2 + type 3  
+c rrb 2015/03/07; Allow ioprlim to be 1-9
 cx    if(iOprLim(l2).eq.2 .and. iopsou(5,l2).gt.0) then
-      if(iOprLim(l2).eq.2 .or. iOprLim(l2).eq.4) then
+      if(iOprLim(l2).eq.2 .or. iOprLim(l2).eq.4 .or.
+     1   iOprLim(l2).eq.7 .or. iOprLim(l2).eq.9) then
         if(iopsou(5,l2).gt.0) then
           lopr5=iopsou(5,l2)
           oprmaxM1=amin1(oprmaxM(lopr5), oprmaxA(lopr5))
+c         
+c rrb 2015/03/07; Revise to limit to diversions in prior iterations          
+          oprmaxM1=amax1(0.0, oprmaxM1-divo(l2)*fac)          
           ALOCFS=AMIN1(ALOCFS, oprmaxM1/fac)
           alocfs3=alocfs
-          
+c          
           if(iout.eq.1) then 
-            write(nlog,*) ' DivRplP; lopr5,oprmaxM(),oprmaxA()'
-            write(nlog,*) ' DivRplP;',lopr5,oprmaxM(lopr5),
-     1        oprmaxA(lopr5)          
-          endif          
-         
+            write(nlog,*) ' DivResP2; ',
+     1        'lopr5, oprmaxM(),oprmaxA() divo(l2)'
+            write(nlog,*) ' DivResP2;',
+     1         lopr5,oprmaxM(lopr5), oprmaxA(lopr5), divo(l2)*fac
+          endif
+c         
           if(alocfs.le.small) then
             iwhy=5
             cwhy='Monthly or Annual Limit (OprMaxM1) = zero'          
@@ -775,8 +795,10 @@ c               Step 4b; Limit to the amount diverted by another
 c		              operating rule
 c		
 c rrb 2015/02/03X; Allow type 4 that is a type 2 + type 3 
+c rrb 2015/03/07; Allow ioprlim to be 1-9
 cx    if(ioprlim(l2).eq.3 .and. iopsou(5,l2).gt.0) then    
-      if(ioprlim(l2).eq.3 .or. ioprlim(l2).eq.4) then
+      if(ioprlim(l2).eq.3 .or. ioprlim(l2).eq.4 .or.
+     1   ioprlim(l2).eq.8 .or. ioprlim(l2).eq.9) then
         if(iopsou(6,l2).gt.0) then      
           lopr6=iopsou(6,l2)
           oprmaxM1=amax1(0.0, divo(lopr6)*fac)        
@@ -812,7 +834,7 @@ c
 c _________________________________________________________
 c               
 c rrb 2014/11/24;
-c     Step 4c; Limit to the capacity in the original source
+c                 Step 4c; Limit to the capacity in the original source
 c		
       if(lopr26.gt.0) then
         divcap1 = amax1(0.0, divcap(nd26) - divmon(nd26))     
@@ -879,7 +901,7 @@ cx      DIVALO=AMIN1(DIVREQ(IUSE),divcap(Nd)-divmon(nd))
 c
 c ---------------------------------------------------------
 c rrb 2007/10/26; Add ability to be called by Replace
-c                Demand for a diversion called by Replace
+c                 Demand for a diversion called by Replace
 c                  (irep=1). Limit diversion to the remaing 
 c                  decree (dcrdivx-divdx)	
         if(irep.gt.0) then  
@@ -894,7 +916,7 @@ c                  decree (dcrdivx-divdx)
         endif 
 c
 c ---------------------------------------------------------
-c		Exit if no demand        
+c		              Exit if no demand        
         if(divreq(iuse).lt.small) then
           iwhy=7
           cwhy='Destination Demand (divreq1) is 0'
@@ -902,7 +924,7 @@ c		Exit if no demand
         endif 
 c
 c ---------------------------------------------------------
-c		Exit if no capacity        
+c		              Exit if no capacity        
         if((DIVCAP(ND)-DIVMON(ND)).lt.small) then
           iwhy=8
           cwhy='Destination Capacity (divcap-divmon) is 0'
@@ -912,7 +934,11 @@ c
 c ---------------------------------------------------------
 c               If release type code is on
 c                  Limit release to occur only if an IWR exists
-        ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+c rrb 2015/03/07; Revised use of iopsou(6,l2).  Note this use of 
+c                 iopsou(6 was never operational for a type 27 rule 
+cx      ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+        ireltyp=0
+        
 c
         divmax=divreq(iuse)
 
@@ -1581,7 +1607,10 @@ c                 qdiv(38 Carried water reported as Carried, Exchange
 c                   or Bypassed but not used to calculaete
 c                   River Divert in Outmon.f
 c
-        if(iplntyp(nsP).eq.11 .and. lopr26.gt.0) then 
+c rrb 2015/03/07; Wource is a Changed Water Right (type 13)   
+cx      if(iplntyp(nsP).eq.11 .and. lopr26.gt.0) then 
+        if(iplntyp(nsP).eq.13 .and. lopr26.gt.0) then 
+        
 c
           qdiv(38,iscd) = qdiv(38,iscd) - relact
           qdiv(38,iscd1)= qdiv(38,iscd1) - relact
@@ -1750,11 +1779,11 @@ c               Step 27; Adjust monthly or annual plan limitations
 c
 c rrb 2009/01/15; Revise to recognize ioprlim(l2)=3      
 cx    if(iOprLim(l2).gt.1 .and. iopsou(5,l2).gt.0) then
-c
 c rrb 2015/02/03; Revise to recognize ioprlim(l2)=4
+c rrb 2015/03/07; Allow Ioprlim to be 1-9
 cx    if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2) then
-      if(iOprLim(l2).eq.1 .or. iOprlim(l2).eq.2 .or.
-     1   iOprLim(l2).eq.4) then
+      if(iOprlim(l2).eq.2 .or. iOprLim(l2).eq.4 .or.
+     1   iOprlim(l2).eq.7 .or. iOprLim(l2).eq.9) then
 c     
         if(iopsou(5,l2).gt.0) then
       

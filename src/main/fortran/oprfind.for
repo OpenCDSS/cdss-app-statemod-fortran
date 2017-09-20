@@ -1188,11 +1188,13 @@ c __________________________________________________________
      1 11x,' is not in the Well station file (*.wes)') 
      
   170 format(/,72('_'),/                                                         
-     1'  Oprfind; ', a8, ' Finding ID = ', a12,/                       
-     1 11x,' The Structure type = ', a12, /
-     1 11x,' with ID = ',a12,/
-     1 11x,' is not in the ',a12, ' file ',a8,/
-     1 11x,' Remember enter NA if none are required',/ 
+     1'  Oprfind; ', a8, ' Reading Operating Rule ID = ', a12,/                       
+     1 11x,' The Structure type specified for a source, destination',/
+     1 11x,' reuse plan, etc. is = ', a12, ' with ID = ',a12,/
+     1 11x,' But this ID cannot be found in the ',a12, ' file ',a8,/   
+     1 11x,' Recommend you confirm it is the appropriate',
+     1     ' structure type.',/
+     1 11x,' Remember enter NA if none are required.',/ 
      1 11x,' Number of entries read from the file = ', i5)
 
   180 format(/,
@@ -1341,7 +1343,7 @@ c _________________________________________________________
      1 ' Oprfind; Problem with *.opr rule ID = ', a12,' type ', i5,  
      1 ' Data Type ',i4,/     
      1 10x,'Cannot read the operating rule associated with a monthly',/
-     1 10x,'or annual limitation adustment')
+     1 10x,'or annual limitation adjustment')
       goto 9999
       
  2006 write(nlog,2016) cidvri, ityopr1, itype      
