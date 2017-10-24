@@ -1,0 +1,3 @@
+# Ignore the dynamically generated site folder
+
+site/
