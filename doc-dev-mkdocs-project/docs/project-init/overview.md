@@ -12,8 +12,8 @@ This documentation includes the following sections:
 
 * [Background on Code Versions](#background-on-code-versions) - recent code history
 * [Development Folder Structure](#development-folder-structure) - overview of the development files
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 * [Eclipse File Location Overview](#eclipse-file-location-overview) - locations of various Eclipse files
 * [Project Initialization Steps](#project-initialization-steps) - steps to initialize the StateMod software project,
 done once and thereafter [New Developer](../dev-new/overview/) instructions apply
@@ -109,7 +109,7 @@ builds upon [Maven Java Standard Directory Layout](https://maven.apache.org/guid
 **TODO smalers 2016-12-31 need to flesh out how automated testing could work using Python pytest and Fortran unit tests - will
 perhaps result in "fortran" and "python" folders under "test" or a separate repository.**
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 The Linux development environment relies on compilers being installed on the operating system (whereas Windows development environment
 relies on additional layer of MinGW or Cygwin).
@@ -144,7 +144,7 @@ The following folder structure is similar to the Windows version other than diff
                                 *.py
 ```
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 The following assumes that MinGW is used to provide the compilers.
 

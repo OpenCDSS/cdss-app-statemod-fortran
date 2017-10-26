@@ -12,18 +12,18 @@ Therefore, Java 8 will be used with Eclipse/Photran.
 This documentation includes the following sections:
 
 * [Install Java 8](#install-java-8)
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 
 ---------------------
 
 ## Install Java 8 ##
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 complete this after Windows environment has been fully documented**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 First, check whether Java 8 needs to be installed:
 

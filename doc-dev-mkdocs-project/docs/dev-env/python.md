@@ -9,11 +9,11 @@ software.
 This documentation contains the following sections:
 
 * [Install Python](#install-python)
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 * [Install `pip`](#install-pip)
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 
 -------------------------- 
 
@@ -22,11 +22,11 @@ This documentation contains the following sections:
 It is recommended that Mkdocs is installed with Python 3.5 (or latest stable version), as described below.
 This will ensure that it is up to date and will not interfere with Python that may be used by GIS tools.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 fill this out after Windows documentation is complete**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 Download Python 3.5.2 (or latest available) for Windows from the [Python Download site](https://www.python.org/downloads/windows/),
 selecting the ***Windows x86-64 executable installer***,
@@ -119,11 +119,11 @@ In summary:
 * It is possible to use `pip` to install modules when multiple versions of Python are installed.
 See the examples below for specific operating systems.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 fill this out after Windows documentation is complete**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 The following uses a Windows Command Shell.  To check for whether pip is already installed,:
 

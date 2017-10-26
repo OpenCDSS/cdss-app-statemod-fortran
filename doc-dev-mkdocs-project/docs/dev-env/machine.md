@@ -26,18 +26,18 @@ The following sections are included in this documentation.
 **The choice of development environment by the software developer will drive many other configuration steps.
 AGAIN, MinGW IS THE INITIAL FOCUS.**
 
-* ![Linux](../../images/linux-32.png) [Linux](#linux)
-* ![Windows](../../images/windows-32.ico) [Windows](#windows)
+* ![Linux](../images/linux-32.png) [Linux](#linux)
+* ![Windows](../images/windows-32.ico) [Windows](#windows)
 	+ [Install MinGW - Native Windows 32-bit](#install-mingw-native-windows-32-bit) - for 32-bit StateMod executables
 	+ [Install Cygwin](#install-cygwin) - seems to be more current than above Native Windows build
 
 -------------------
 
-## ![Linux](../../images/linux-32.png) Linux ##
+## ![Linux](../images/linux-32.png) Linux ##
 
 **TODO smalers 2016-12-31 will fill this in after initial Windows development environment is fully deployed.**
 
-## ![Windows](../../images/windows-32.ico) Windows ##
+## ![Windows](../images/windows-32.ico) Windows ##
 
 The use of `gfortran` somewhat constrains the development environment, especially on Windows,
 requiring that either MinGW or Cygwin are used for development,

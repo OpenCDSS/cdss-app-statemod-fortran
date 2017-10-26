@@ -6,8 +6,8 @@ The following sections are included in this documentation:
 
 * [Prerequisites](#prerequisites)
 * [Create Home Folder for Development Files](#create-home-folder-for-development-files)
-	+ [Linux](#linux)
-	+ [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 
 ----------
 
@@ -29,7 +29,7 @@ and software files are added, as per other documentation sections.
 If documentation refers to a folder that has not been created, it is generally OK to create it manually
 because few if any of the top-level folders are created with scripts.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 Execute the following commands in a shell such as `bash`.
 
@@ -43,7 +43,7 @@ $ # Create a folder for the StateMod software project development files
 $ mkdir StateMod
 ```
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 Execute the following commands in a Windows command prompt window, or use File Explorer to create folders,
 or perform the equivalent steps in a Git Bash window.

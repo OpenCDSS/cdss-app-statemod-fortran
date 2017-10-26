@@ -15,9 +15,9 @@ This documentation contains the following sections:
 
 ## Compile StateMod on Command Line ##
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
-### ![Windows](../../images/windows-32.ico) Windows - MinGW ###
+### ![Windows](../images/windows-32.ico) Windows - MinGW ###
 
 To compile StateMod on the command line it is first necessary to configure the environment to run the compiler.
 Open a Windows command prompt window and change to the folder where the setup script exists.
@@ -43,11 +43,11 @@ The executable `statemod.exe` is created in the same folder and can be run with 
 
 ## Compile StateMod in Eclipse ##
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2017-10-24 need to complete this section**
 
-### ![Windows](../../images/windows-32.ico) Windows - MinGW ###
+### ![Windows](../images/windows-32.ico) Windows - MinGW ###
 
 To compile StateMod in Eclipse, start Eclipse with the run script `run-eclipse-statemod-mingw.bat` as shown below.
 This script automatically runs the MinGW setup script described in the previous section,

@@ -3,8 +3,8 @@
 The Eclipse workspace folder should be created as per
 the [development folder structure](overview#development-folder-structure):
 
-* ![Linux](../../images/linux-32.png) Linux: `~/cdss-dev/StateMod/eclipse-workspace`
-* ![Windows](../../images/windows-32.ico) Windows: `C:\Users\user\cdss-dev\StateMod\eclipse-workspace`
+* ![Linux](../images/linux-32.png) Linux: `~/cdss-dev/StateMod/eclipse-workspace`
+* ![Windows](../images/windows-32.ico) Windows: `C:\Users\user\cdss-dev\StateMod\eclipse-workspace`
 
 Note that if Eclipse is not the IDE that is used (future consideration), then this discussion still applies in concept.
 
@@ -47,14 +47,14 @@ also be created as follows and then selected in Eclipse.
 It is assumed that the parent folders were created in previous steps.
 The workspace folder will not be saved in the Git repository because it contains developer-specific files.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 ```bash
 $ cd ~/cdss-dev/StateMod
 $ mkdir eclipse-workspace
 ```
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 ```com
 > C:

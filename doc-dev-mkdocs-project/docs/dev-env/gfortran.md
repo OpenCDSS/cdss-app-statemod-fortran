@@ -9,9 +9,9 @@ This documentation contains the following sections:
 
 * [Prerequisites](#prerequisites)
 * [Install `gfortran`](#install-gfortran)
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows - Cygwin](#windows-cygwin)
-	+ ![Windows](../../images/windows-32.ico) [Windows - MinGW](#windows-mingw)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows - Cygwin](#windows-cygwin)
+	+ ![Windows](../images/windows-32.ico) [Windows - MinGW](#windows-mingw)
 
 -----------------
 
@@ -24,14 +24,14 @@ The initial focus of this documentation is the MinGW approach.
 
 The `gfortran` compiler is installed differently depending on the operating system, as described below.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 fill this out when there is time - focus on Windows MinGW first.**
 
-### ![Windows](../../images/windows-32.ico) Windows - Cygwin ###
+### ![Windows](../images/windows-32.ico) Windows - Cygwin ###
 
 **TODO smalers 2016-12-31 fill this out when there is time - focus on Windows MinGW first.**
 
-### ![Windows](../../images/windows-32.ico) Windows - MinGW ###
+### ![Windows](../images/windows-32.ico) Windows - MinGW ###
 
 The `gfortran` compiler is installed as part of the [MinGW installation](machine#install-mingw).

@@ -12,8 +12,8 @@ See the following resources:
 This documentation includes the following sections:
 
 * [Install Doxygen](#install-doxygen)
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 * [Install GraphViz](#install-graphviz)
 * [Configure Doxygen Project](#configure-doxygen-project)
 
@@ -21,11 +21,11 @@ This documentation includes the following sections:
 
 ## Install Doxygen ##
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 this documentation will be completed once the Windows documentation is complete.**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 Download the Doxygen Windows installer from the download page, which will have a name similar to `doxygen-1.8.13-setup.exe`.
 Run the installer as administrator and complete the following steps.

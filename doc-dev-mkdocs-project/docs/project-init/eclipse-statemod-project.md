@@ -29,7 +29,7 @@ This documentation contains the following sections:
 The important prerequisites for this step are:
 
 * [GitHub Git Repository](github/) should have been set up because it will be imported as a project
-* ![Windows](../../images/windows-32.ico) Windows:
+* ![Windows](../images/windows-32.ico) Windows:
 	+ [MinGW](../dev-env/machine/) should have been set up to provide compilers and `make` program
 
 ## Import Git Repository as Project ##
@@ -107,11 +107,11 @@ Steve will check with OTS to get their input**.
 Eclipse must be made aware of where `gfortran`, `make`, etc. are located.
 Project properties are one way to do this.
 
-### ![Linux](../../images/linux-32.png) Linux ##
+### ![Linux](../images/linux-32.png) Linux ##
 
 **TODO smalers 2017-10-24 need to complete.**
 
-### ![Windows](../../images/windows-32.ico) Windows ##
+### ![Windows](../images/windows-32.ico) Windows ##
 
 It appears that Eclipse/Photran is relatively intelligent in this regard, assuming that the MingGW software is in the `PATH`,
 as configured by the setup batch file.

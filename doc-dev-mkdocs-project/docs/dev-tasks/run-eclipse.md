@@ -16,11 +16,11 @@ This documentation contains the following sections:
 
 The development environment must be configured properly in order for Eclipse to find the compilers and other software.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 fill in when there is time to test on Linux**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 **This step is included by default if the Eclipse run script is used, as described in the next section.**
 

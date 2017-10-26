@@ -64,7 +64,7 @@ Tools such as Git rely on a unique identity for developers in order to properly 
 and working in a shared space can be problematic.
 After the folder is created, additional instructions describe how to install development files into the folder.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 Do the following using a terminal window. Note that the syntax `~` indicates the home folder and is equivalent to the `$HOME` environment
 variable location.
@@ -76,7 +76,7 @@ $ cd ~/cdss-dev/
 $ mkdir StateMod
 ```
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 Do the following in a Windows command shell, Git CMD, or perform the equivalent actions in file explorer, or Git Bash.
 
@@ -98,7 +98,7 @@ It also contains the most recent version of this documentation.
 
 If Eclipse/Photran is used, the repository will be imported into the Eclipse/Photran workspace as a Fortran project.
 
-### ![Linux](../../images/linux-32.png) Clone the repository files (Linux) ###
+### ![Linux](../images/linux-32.png) Clone the repository files (Linux) ###
 
 ```bash
 $ cd ~/cdss-dev/StateMod
@@ -107,7 +107,7 @@ $ cd git-repos
 > git clone https://github.com/OpenWaterFoundation/cdss-app-statemod-fortran.git
 ```
 
-### ![Windows](../../images/windows-32.ico) Clone the repository files (Windows) ###
+### ![Windows](../images/windows-32.ico) Clone the repository files (Windows) ###
 
 ```com
 > C:
@@ -128,8 +128,8 @@ The resulting files should match the [Development Files Structure](../project-in
 
 This step is the same as the [Initial Project Setup](../project-init/eclipse-workspace/) so follow those instructions with the following input:
 
-* ![Linux](../../images/linux-32.png) Linux:  the workspace folder is `~/cdss-dev/StateMod/eclipse-workspace`
-* ![Windows](../../images/windows-32.ico) Windows: the workspace folder is `C:\Users\user\cdss-dev\StateMod\eclipse-workspace`
+* ![Linux](../images/linux-32.png) Linux:  the workspace folder is `~/cdss-dev/StateMod/eclipse-workspace`
+* ![Windows](../images/windows-32.ico) Windows: the workspace folder is `C:\Users\user\cdss-dev\StateMod\eclipse-workspace`
 
 Start Eclipse by running the [Eclipse run script](../project-init/eclipse-run-script) as shown below.
 This script can be used any time to run Eclipse for this project.
@@ -138,14 +138,14 @@ If it is necessary to modify this script,
 
 Open the workspace in Eclipse in preparation of adding the code project from the Git repository in the next step.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 ```bash
 $ cd ~/cdss-dev/StateMod/git-repos/cdss-app-statemod-fortran/build-util/eclipse
 $ ./run-eclipse-statemod.sh
 ```
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 ```bash
 > C:
