@@ -14,8 +14,8 @@ This documentation includes the following sections:
 
 * [Prerequisites](#prerequisites)
 * [Install MkDocs](#install-mkdocs)
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 
 ----------------------
 
@@ -25,11 +25,11 @@ Before installing MkDocs, it is necessary that [Python is installed](python) and
 
 ## Install MkDocs ##
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 Linux documenation will be completed after Windows version**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 To install MkDocs, open a Windows Command Shell and run the following.
 This assumes that Python was installed and Python environment variables were set.

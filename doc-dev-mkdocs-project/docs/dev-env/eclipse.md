@@ -12,8 +12,8 @@ This documentation includes the following sections:
 
 * [Prerequisites](#prerequisites)
 * [Install Eclipse and Photran](#install-eclipse-and-photran)
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 * [Next Steps](#next-steps)
 
 -------------
@@ -46,11 +46,11 @@ Then click on the ***Download*** link to see:
 
 Select the ***Eclipse for Parallel Application Developers*** link for the appropriate operating system.
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 add this documentation after Windows environment has been fully documented.**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 The Windows installer will have a filename similar to `eclipse-parallel-mars-2-win32-x86_64.zip` and will save to the `Downloads` folder.
 

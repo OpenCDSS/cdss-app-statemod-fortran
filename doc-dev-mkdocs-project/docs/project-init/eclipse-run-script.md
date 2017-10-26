@@ -9,8 +9,8 @@ The following sections are included in this documentation:
 
 * [Prerequisites](#prerequisites)
 * [Default Eclipse Run Script](#default-eclipse-run-script) - run script provided in repository for standard project configuration
-	+ ![Linux](../../images/linux-32.png) [Linux](#linux)
-	+ ![Windows](../../images/windows-32.ico) [Windows](#windows)
+	+ ![Linux](../images/linux-32.png) [Linux](#linux)
+	+ ![Windows](../images/windows-32.ico) [Windows](#windows)
 * [Developer-specific Run Script](#developer-specific-run-script) - modify the default for a specific user
 * [Next Step](#next-step)
 
@@ -22,11 +22,11 @@ This step requires that Eclipse/Photran was previously installed as per the [Dev
 
 ## Default Eclipse Run Script ##
 
-### ![Linux](../../images/linux-32.png) Linux ###
+### ![Linux](../images/linux-32.png) Linux ###
 
 **TODO smalers 2016-12-31 need to complete this - the initial focus has been on Windows.**
 
-### ![Windows](../../images/windows-32.ico) Windows ###
+### ![Windows](../images/windows-32.ico) Windows ###
 
 The following batch file was created to run Eclipse and is suitable if the project
 is configured as per this documentation.
