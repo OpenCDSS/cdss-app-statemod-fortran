@@ -525,13 +525,17 @@ c rrb 2015/02/03X; Set ipUse when the source is a reservoir
       endif
 c
 c rrb 2015/02/03X; Set ipuse when the source is a Reuse Plan
-      if(nsP.gt.0 .and. iplntyp(nsP).ne.11) then
-        ipUse=ireuse(l2)
-        if(ipUse.gt.0) then
-          cpuse='Yes'
-          cplntyp='Reuse_Plan'
-        endif  
-      endif      
+C smalers 2017-11-06 Split the statement to ensure valid index value
+C     if(nsP.gt.0 .and. iplntyp(nsP).ne.11) then
+      if(nsP.gt.0) then
+        if (iplntyp(nsP).ne.11) then
+          ipUse=ireuse(l2)
+          if(ipUse.gt.0) then
+            cpuse='Yes'
+            cplntyp='Reuse_Plan'
+          endif  
+        endif
+      endif
 c      
 c ---------------------------------------------------------
 c               h. T&C Plan
@@ -636,22 +640,26 @@ c
 c rrb 2015/03/07; Revise to use Oprlimit 1-9
 cx      if(nsP.gt.0 .and. iplntyp(nsP).eq.11) then        
 cx      lopr26=ireuse(l2)
-      if(nsP.gt.0 .and. iplntyp(nsP).eq.13) then 
-        lopr26=iopsou(7,l2)
-        lr26=iopsou(1,lopr26)              
-        nd26=idivco(1,lr26)
-        iscd26=IDVSTA(nd26)          
-        ndns26=NDNNOD(iscd26)
+C smalers 2017-11-06 Split the statement to ensure valid index value
+C     if(nsP.gt.0 .and. iplntyp(nsP).eq.13) then 
+      if(nsP.gt.0) then
+        if(iplntyp(nsP).eq.13) then 
+          lopr26=iopsou(7,l2)
+          lr26=iopsou(1,lopr26)              
+          nd26=idivco(1,lr26)
+          iscd26=IDVSTA(nd26)          
+          ndns26=NDNNOD(iscd26)
 c
 c rrb 2015/01/24; Additional reporting approach. 
-        nsp1=iopdes(1,lopr26)
-        iscd1=ipsta(nsp1)   
-        iok=0
-        if(lopr26.eq.0 .or. lr26.eq.0  .or. nd26.eq.0 .or.
-     1     iscd26.eq.0 .or. nsp1.eq.0 .or. iscd1.eq.0) then
-          iout26=1
-          iok=1     
-        endif       
+          nsp1=iopdes(1,lopr26)
+          iscd1=ipsta(nsp1)   
+          iok=0
+          if(lopr26.eq.0 .or. lr26.eq.0  .or. nd26.eq.0 .or.
+     1      iscd26.eq.0 .or. nsp1.eq.0 .or. iscd1.eq.0) then
+            iout26=1
+            iok=1     
+          endif       
+        endif
       endif    
 c   
       if(iout26.eq.1) then
