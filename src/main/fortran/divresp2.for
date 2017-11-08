@@ -1261,8 +1261,12 @@ c	                adjustment
 c
 c rrb 2015/02/03X; Correction to specify source of lopr
 cx      if(lopr.gt.0) then       
+c smalers 2017-11-07 Steve added Jim's change
+c jhb 2016/10/17 prevent lopr = 0 from creating array error
+c                looks like typo -
         if(lopr6.gt.0) then        
-          loprR=iopsou(1,lopr)
+c          loprR=iopsou(1,lopr)
+          loprR=iopsou(1,lopr6)
           noprS=idivco(1,loprR)        
         endif  
       
@@ -1936,9 +1940,15 @@ c		   for the carrier(s)
 c		   Also calculate return flows for carrier losses
 c		   using the structure properties of the carrier	
 c
-      qdiv36a=qdiv(36, iscd)
-      if(ncarry.gt.0) then      
+c smalers 2017-11-07 Steve added Jim's change
+c jhb 2016/10/17 prevent the array error when iscd=-1
+c                but why iscd=-1 has not been fixed
+c     qdiv36a=qdiv(36, iscd)
+      if(iscd.gt.0) then
+        qdiv36a=qdiv(36, iscd)
+      endif
 c
+      if(ncarry.gt.0) then      
         call setQdivC(
      1    nlog, ncarry, ncnum, nd, ndD, l2, iscd, idcdX, idcdC, 
 c

@@ -370,7 +370,15 @@ c               CHECK AVAILABLE WATER AT CURRENT STATION
 c 140 IF(AVTEMP(ISCD).GT.0.00001) GO TO 150
   140 IF(AVTEMP(ISCD).GT.small) GO TO 150
 C
-      IF(iresw.eq.0.and.IRTURN(IUSE).LE.3) ISHORT=1
+C smalers 2017-11-05 add Jim's changes because comment in statem.for indicated
+C     the change fixes array bound issues
+c jhb split to two if statements
+c      IF(iresw.eq.0.and.IRTURN(IUSE).LE.3) ISHORT=1
+      IF (iresw.eq.0) then
+        if (IRTURN(IUSE).LE.3) then
+          ISHORT=1
+        endif
+      endif
         iwhy=7
         cwhy='Available flow (AvailX) is zero'
         goto 380

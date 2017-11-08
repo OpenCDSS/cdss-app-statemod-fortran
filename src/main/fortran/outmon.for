@@ -403,22 +403,24 @@ c		Note iplntyp=1 for T&C, 2 for well augmentation, 3 CU reuse
 c               4 for Tmtn reuse
         IF(pon(np).gt.0) then
           is=ipsta(np)
-c
+c smalers 2017-11-07 Add checks to avoid array index out of bounds
          
-          IF(iplntyp(np).eq.1 .or. iplntyp(np).eq.2) then
-            demx(is)=demx(is) + pdemT(np)        
-            qdiv(11,is)=qdiv(11,is)+Pdem(np)
-            QDIV(12,IS)=pdemT(np)
-          endif
+	  if(is.gt.0) then
+            IF(iplntyp(np).eq.1 .or. iplntyp(np).eq.2) then
+              demx(is)=demx(is) + pdemT(np)        
+              qdiv(11,is)=qdiv(11,is)+Pdem(np)
+              QDIV(12,IS)=pdemT(np)
+            endif
 c
 c rrb 2006/04/18; do not adjust for reservoir recharge since it
 c		  is included in return flow          
             
-          if(iplntyp(np).ge.3 .and. iplntyp(np).ne.8) then
-c           write(nlog,*) ' Outmon; Plan data for node (is) = ', is
-            qdiv(11,is)=qdiv(11,is)+Psuply(np)
-cr          demx(is)=demx(is) + PsuplyT(np)        
-            QDIV(12,IS)=psuplyT(np)     
+            if(iplntyp(np).ge.3 .and. iplntyp(np).ne.8) then
+c             write(nlog,*) ' Outmon; Plan data for node (is) = ', is
+              qdiv(11,is)=qdiv(11,is)+Psuply(np)
+cr            demx(is)=demx(is) + PsuplyT(np)        
+              QDIV(12,IS)=psuplyT(np)
+            endif
           endif  
         endif
       end do    

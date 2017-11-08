@@ -1945,7 +1945,11 @@ c	 	   ia   = account to adjust (27=From Carrier Loss)
          nrown1=nro
          iownX=irow
          ia=27
-         cresid1=cresid(nrX)
+c smalers 2017-11-07 pull in Jim's edit
+c jhb 2016/10/17 prevent array out of bounds error
+         if(nrX.gt.0) then
+           cresid1=cresid(nrX)
+         endif
          OprLosAF=OprLost*fac
 c      
 
