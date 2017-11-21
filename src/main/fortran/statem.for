@@ -177,7 +177,7 @@ c jhb 2014/07/21 initialize this variable passed to xdebug and report
 c
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
 c		ver = xx.yy.zz; where
 c		     xx is the major version 
@@ -188,12 +188,12 @@ c			  12 has new *.ipy file
 c     
 c 			11 includes carrier loss, 
 c				10 includes plans
-c				 9 inlcudes wells
+c				 9 includes wells
 c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
-        ver='15.00.01'
-        vdate = '2015/10/28'
+        ver = '15.00.02'
+        vdate = '2017/10/20'
 c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -298,7 +298,7 @@ c rrb 2006/12/22; Maximum reach (maxrch) & maximum years (maxyrs)
       maxrch=150
       maxyrs=200  		
 c
-c rrb 2011/04/04;  Initilize some daily array counters      
+c rrb 2011/04/04;  Initialize some daily array counters      
       numbas=0
       numdld=0 
       numgrp=0 
@@ -615,6 +615,24 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2017/10/20 (15.00.02)',/
+     1 '      Revised DirectWR to turn off detailed output',/
+     1 '      Revised DivResp2 typo (lopr =lopr6)',/
+     1 '      Revised DivResp2 to include variable Resloss',/
+     1 '      Revised the following identified by a detailed',/
+     1 '        compilation',/
+     1 '        a) Directwr initialized ipuse',/
+     1 '        b) Directwr initialized iuse2x',/
+     1 '        c) Divrpl   initialized monout',/
+     1 '        d) Dnmfso   initialized nlog and nlogx',/
+     1 '        e) Ifrrigsp initialized idcd2',/
+     1 '        f) Splatte  revised an output to be < 72 characters',/
+     1 '      Revised Outmon to initialize rlossc & rlossr when',/
+     1 '        when printing reservoir account data',/
+     1 '      Revised Divresp2(type 27) to add loss to diversion',/
+     1 '        by other (accr(4 and loss (accr(27',/
+
+     1 '      Miscellaneous Revisions 1-10',/
      1 '    - 2015/10/18 (15.00.01)',/
      1 '      Revised qdiv reporting for Type 32, DivresR.f',/
      1 '    - 2015/10/18 (15.00.00)',/
@@ -1204,7 +1222,7 @@ c     Formats
      1 '        (Accounting Plan Limit) rule source 2 variable',/
      1 '        (iopsou(2,1) to be the month limits are reset',/
      1 '      Revised GetPln to allow a Release Limit Plan (type 12)',/
-     1 '        to be initilized using the initial plan storage ',/
+     1 '        to be initialized using the initial plan storage ',/
      1 '        varaiable in the plan data file (*.pln)',/
      1 '      Revised OutPlnMo for a Release Limit Plan (type 12)',/
      1 '        output to to print the maximum release as the annual',/
@@ -1491,7 +1509,7 @@ c     Formats
      1 '            plan reporting when the destination is a plan',/
      1 '          4.Revised OutBal2 and rule types 24, 25, 27, ',/
      1 '            28, 29, 46, 48, & 49, 46 accordingly',/
-     1 '        Revised Virset to initilize daily soil moisture data',/
+     1 '        Revised Virset to initialize daily soil moisture data',/
      1 '        Revised Oprinp to correct type 48 and 49 checks',/
      1 '          for correct destination and source data, AGAIN',/
      1 '    - 2008/01/03 (12.14)',/
@@ -1534,7 +1552,7 @@ c     Formats
      1 '            return ID in *.prf',/
      1 '         6. Revised GetSta to recognize a plan',/
      1 '    - 2007/12/06 (12.111)',/
-     1 '        Revised DirectBy (type 25) to initilize the CU factor',/
+     1 '        Revised DirectBy (type 25) to initialize the CU factor',/
      1 '        Revised Oprinp to correct a problem reading reuse',/
      1 '          data for a type 24 (Water Right Exchange) rule'/
      1 '        Added ChkPrf to check plan return flow indicator',/
@@ -1558,7 +1576,7 @@ c     Formats
      1 '          efficiency=0',/
      1 '        Removed all refrences to variable icuapp in Datinp,',/
      1 '          Getipy2, Getipy4, Mdainp, Rtnsec, Rtnsecw, and',/
-     1 '          Vircom. The code now initilizes and uses the same',/
+     1 '          Vircom. The code now initializes and uses the same',/
      1 '          variables when either a 2 or a 4 supply-irrigation',/
      1 '          data is provided in the irrigation practice file',/
      1 '          (*.ipy)',/
@@ -1903,7 +1921,7 @@ c
      1 '          to NOT STORE above target but reduce decree',/
      1 '          Note old logic allows storage above a target and',/
      1 '          required a spill',/
-     1 '        Revised divResP2.f to initilize relact to zero',/
+     1 '        Revised divResP2.f to initialize relact to zero',/
      1 '          (not -1) to correct amount printed to *.xop',/
      1 '        Revised Execut.f to clean up reoperation code',/
      1 '          (should not impact results)',/
@@ -2066,7 +2084,7 @@ c
      1 '        Revised Mdainp.f to use acreage data from *.ipy when',/
      1 '          initilizing soil moisture if the *.ipy file is ',/
      1 '          provided. Note befor this edit soil moisture was',/
-     1 '          initilized using data from the station files ',/
+     1 '          initialized using data from the station files ',/
      1 '          (*.dds and *.wes). These (especilly *.wes) may not',/
      1 '          equal data in the *.ipy file if they were',/
      1 '          developed from non Gis (e.g. structure) sources',/
@@ -2175,7 +2193,7 @@ c
      1 '          four items. NOT COMPLETE',/
      1 '        1.Revised common to include a variable for a ',/
      1 '          reservoir paper fill (RitPaper)',/
-     1 '        2. Revised Bomsec to initilize the paper fille',/
+     1 '        2. Revised Bomsec to initialize the paper fille',/
      1 '        3. Revised Resrg1 to limit the diversion by an OOP ',/
      1 '          right to the Seniors paper fill right',/
      1 '        4. Revised Resoop logic to limit a bookover to the',/
@@ -2721,7 +2739,7 @@ c
      1 '        Added year type and units to graph reports,',
      1        ' revised dayest to not call instream flows during',/
      1 '        baseflow calculations.',
-     1        ' Revised Virset to initilize CU, FromSoil, & ToSoil',/
+     1        ' Revised Virset to initialize CU, FromSoil, & ToSoil',/
      1 '        to correct *.xbi output for a daily baseflow run.',/
      1 ' **     Note impacts a report only, not a calcuated value',/
      1 '        Revised Virout to include positive res evap in CU.',/
@@ -2941,7 +2959,7 @@ c
      1 '        common.inc add dcu, dcuw, diwrreq, diwrreqw,',/ 
      1 '        ieffmax, datinp to read ieffmax',/
      1 '        mdainp reads in iwr (independent of demand IWR)',/
-     1 '        bomsec initilize diwrreq, dcu, diwrreqq, dcuw',//
+     1 '        bomsec initialize diwrreq, dcu, diwrreqq, dcuw',//
      1 '        rtnsec added call return',/
      1 '        rtnsecw added call return',//
      1 '        divrig break out rtnmax and calls to rtnmax',/
@@ -3306,7 +3324,7 @@ c    1 '      Revised repsort.f for error if multiple replacement ',/
 c    1 '        reservoirs & real*8 per Bethel 10/13 & 10/20/97 Email',/
 c    1 '      Revised execut.f, datinp.f & common.inc to allow ',/
 c    1 '        detailed calling information',/
-c    1 '      Revised divres to initilize relact per Bethel 10/15 ',
+c    1 '      Revised divres to initialize relact per Bethel 10/15 ',
 c    1          'Email',/
 c    1 '      Revised divrpl and divres to check for 0.01 befor',
 c    1          'Call Takout per Bethel 10/17 Email',/

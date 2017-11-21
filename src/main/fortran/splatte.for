@@ -699,7 +699,11 @@ c
         divactx=-relact
         
         if(iout.eq.1) then
-          write(nlogx,342) pavail*fac, divalo*fac, alocfs*fac, divact*fac
+c
+c rrb 2017/10/20; Correction
+cx        write(nlogx,342) pavail*fac, divalo*fac, alocfs*fac, divact*fac
+          write(nlogx,342) pavail*fac,divalo*fac,alocfs*fac,divact*fac
+          
         endif
         
         if(divact.le.small) then

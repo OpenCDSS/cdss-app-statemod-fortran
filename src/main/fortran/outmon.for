@@ -1198,6 +1198,10 @@ c
 c rrb 2006/06/07; Add from OOP 		          
           RRivExc = accr(3,n) + accr(18,n) + accr(28,n)
 c
+c rrb 2017/10/20; Addition
+          RClossC = accr(27,n)
+          RClossR = accr(30,n)
+c
 c rrb 2006/09/15; Correction          
           RTotSup = RRivPri + RCarPri  + RCarSto + RRivExc +
      1             RRivSto - RClossC - RClossR
