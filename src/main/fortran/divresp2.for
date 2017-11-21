@@ -252,7 +252,7 @@ c           qdiv(38         Carried water reported as Carried, Exchange
 c                             or Bypassed but not used to calculaete
 c                             River Divert in Outmon.f
 c                         
-c           qres(4          From Carrier by Storage to reservoir
+c           qres(4          From Carrier by Storage or Other to reservoir
 c           qres(11         From Storage to carrier
 c           qres(12         From Storage to River for Use (Powres*)
 c           qres(18      	  From River by Exchange to Reservoir
@@ -283,6 +283,10 @@ c		            iout=99 summary independent of corid
 c               ioutQ = 1 Print qdiv(38
 c                       2 Print qdiv(38 plus qdiv array
 c
+c rrb 2017/10/20 Addition
+c               ioutL = 0 Do not print loss data when iout=2
+c                       1 Print loss data when iout=2
+c
 c               ioutIR  details on instream flow reach
 c
 c               iout26= 1 details on reporting when the original 
@@ -296,6 +300,7 @@ c
       
       iout26=0
       ioutQ=0
+      ioutL=0
       
       lopr5=0
       lopr6=0
@@ -337,6 +342,9 @@ c
       if(iout.eq.2 .and. ioutiw.eq.iw) then 
         ioutQ=1
 c       ioutQ=2
+c
+c rrb 2017/10/20; Add ioutL
+        ioutL=0
       else
         ioutQ=0
       endif 
@@ -351,6 +359,10 @@ c ---------------------------------------------------------
       oprPct1=1.0
       
       ishort = 0
+c
+c rrb 2017/10/20; Move to top
+      iResT1=0
+      
       iw=iw
       iowna=0
       ioff=0
@@ -417,6 +429,10 @@ c     divact = 0.0
       
       OprmaxM1=-1.0
       OprmaxM2=-1.0
+c
+c rrb 2017/10/20; Addition
+      divaf=0.0
+      divafl=0.0
 
       iuseX=-1
       nd=-1
@@ -1034,11 +1050,17 @@ c rrb 2006/11/29; Allow multiple destination accounts
         if(iopdes(2,l2).lt.0) then
           nro=-iopdes(2,l2)
           irow=nowner(ndR)
+c
+c rrb 2017/10/20; Correction
+          iResT1=0
         endif
 
         if(iopdes(2,l2).gt.0) then
           irow=nowner(ndR)+iopdes(2,l2)-1
           nro=1
+c
+c rrb 2017/10/20; Correction
+          iResT1=-1
         endif
   
         iuseX=irow
@@ -1191,8 +1213,10 @@ c       idcdX=IDVSTA(ncar)
 c       ndndX=NDNNOD(idcdX)
       endif
 c
-c       
-      if(iout.eq.1) then
+c
+c rrb 2017/10/20; Addition
+cx    if(iout.eq.1) then
+      if(iout.eq.1 .or. ioutL.eq.1) then
         write(nlog,*) ' DivResP2;  ',
      1   '    iscd   idcdD   idcdR   idcdC   idcdP   idcdX    idcd'
         write(nlog,'(12x, 20i8)')
@@ -1254,8 +1278,11 @@ c	                adjustment
 c
 c rrb 2015/02/03X; Correction to specify source of lopr
 cx      if(lopr.gt.0) then       
-        if(lopr6.gt.0) then        
-          loprR=iopsou(1,lopr)
+        if(lopr6.gt.0) then 
+c
+c rrb 2017/10/20; correction
+cx        loprR=iopsou(1,lopr)
+          loprR=iopsou(1,lopr6)
           noprS=idivco(1,loprR)        
         endif  
       
@@ -1391,17 +1418,26 @@ c               If iout=1 print detailed results
 c
 c _________________________________________________________
 c
-c		Step 13; Calculate Diversion less carrier loss (DivactL)
+c         Step 13; Calculate Diversion less carrier loss (DivactL)
 c			 Note: OprEffT = Total Carrier Efficiency 
 c            TranLoss is system loss (after delivery)
 c
 c  rrb 2010/10/15; For water balance report system (tranloss)
 c                  at the destination
 cx      DivactL=divact*OprEffT  
-      DivactL=divact*OprEffT * (1.0-TranLoss)    
-      if(iout.eq.1 .or. iout.eq.3) write(nlog,*) ' DivResP2_13; ', 
-     1  divact*fac, DivactL*fac, oprefft 
-     
+      DivactL=divact*OprEffT * (1.0-TranLoss) 
+c
+c rrb 2017/10/20; Additional output
+cx      if(iout.eq.1 .or. iout.eq.3) then
+cx        write(nlog,*) ' DivResP2_13; ',
+cx     1  divact*fac, DivactL*fac, oprefft
+cx      endif
+    
+      if(iout.eq.1 .or. iout.eq.3 .or. ioutL.eq.1) then
+        write(nlog,*) ' DivResP2_13; ',
+     1  divact*fac, DivactL*fac, oprefft, (1.0-TranLoss)
+      endif
+c
       if(divact.le. small) then
         iwhy=20
         cwhy='Available flow without River Return (alocfs)= zero'
@@ -1424,7 +1460,7 @@ c		                     Note navail=1 allows avail to be adjusted
       if(iout.eq.1) write(nlog,*) '  DivResP2; nriver ', nriver
       if(nRiver.gt.0) then   
 c
-c rrb 2010/10/15; Update to allow operationn with a depletion release
+c rrb 2010/10/15; Update to allow operation with a depletion release
        if(idep.eq.0) then
           DepfacM=1.0
         else
@@ -1648,7 +1684,10 @@ c
 c  rrb 2010/10/15; For water balance report system (tranloss)
 c                  at the destination
 cx      divafL=divaf*OprEffT        
-        divafL=divaf*OprEffT * (1.0-TranLoss)          
+        divafL=divaf*OprEffT * (1.0-TranLoss) 
+c
+c rrb 2010/10/20; Additional output
+        cursto1=cursto(ndr)
         cursto(ndR)=cursto(ndR)+divafL
 c
 c ---------------------------------------------------------
@@ -1661,7 +1700,9 @@ c		   icx  = subroutine calling accou.for
 c		   ia   = account to adjust
       
         nrX=ndR
-        iResT1=0
+c
+c rrb 2017/10/20; Move to top
+cx      iResT1=0
         nrown1=nro
         iownX=irow
         icx2=icx+100
@@ -1671,6 +1712,8 @@ c		   ia   = account to adjust
 c
 c ---------------------------------------------------------
 c rrb 2007/12/04; Add Loss
+c                 Note the following allocates diversion after
+c                 loss to the total reservoir and each account
 c       call accou(maxacc, maxown, nrX, ownmon, curown, accr, ia, 
 c    1    ownmax, iownX, nrown1, cursa, divaf, iResT1,icx, cresid1)
         call accou(maxacc, maxown, nrX, ownmon, curown, accr, ia, 
@@ -1679,15 +1722,69 @@ c
 c ---------------------------------------------------------
 c		  Set Reservoir Source Data
 c
-c rrb 2010/10/15; Adjust to include loss qres(30 and qres(27
-        ResLoss=divafL*TranLoss
+c rrb 2010/10/15; Adjust to add loss in the source
+c                 supply (qres(30 and qres(27)
+cx
+cx rrb 2017/10/20; Simplify
+      ResLoss=divafL*TranLoss
+      ResLoss=amax1(0.0, divaf-divafL)
+cx
+cx
+cx rrb 2017/10/20; Detailed output
+        if(ioutL.eq.1) then
+          write(nlog,*) ' '
+          write(nlog,*) '  Divresp2; ndr, cursto1',ndr, cursto1
+          write(nlog,*) '  Divresp2; ndr, cursto(ndr)',ndr, cursto(ndr)
+          write(nlog,*) '  Divresp2; change ',cursto(ndr)-cursto1
+          
+          write(nlog,*) ' '
+          write(nlog,*) '  Divresp2; divaf, divafl, tranloss, resloss'
+          write(nlog,*) '  Divresp2;', divaf, divafl, tranloss, resloss
+        endif
+        
+c
+c rrb 2017/10/20; Detailed Output
+        if(ioutL.eq.1) then
+          write(nlog,*)' DivResP2; irow, accr(4,irow)',
+     1      irow, accr(4,irow)
+        endif
+c
+c rrb 2017/10/20; Correction
+cx        Note accr(4 gets set in accou.f but accr(30 (loss) does not
+cx        Note qres(4 and qres(30 do not get set in accou.f
+cx
+cx        qres(4  From Carrier by Storage or Other to reservoir
+cx        qres(18 From River by Exchange to Reservoir
+cx        qres(27 From Carrier Loss
+cx        qres(30 From River Loss
+cx    
+cx        if(ncarry.eq.0) then
+cx          qres(18,ndR)=qres(18,ndR)+divafL+ResLoss
+cx          qres(30,ndR)=qres(30,ndR)+ResLoss
+cx        else
+cx          qres(4,ndR)=qres(4,ndR)+divafL+ResLoss
+cx          qres(27,ndR)=qres(27,ndR)+ResLoss
+cx        endif
         if(ncarry.eq.0) then
           qres(18,ndR)=qres(18,ndR)+divafL+ResLoss
           qres(30,ndR)=qres(30,ndR)+ResLoss
+c
+c rrb 2017/10/20 Addition
+          accr(18,irow)=accr(18,irow)+ResLoss
+          accr(30,irow)=accr(30,irow)+ResLoss
         else        
           qres(4,ndR)=qres(4,ndR)+divafL+ResLoss
-          qres(27,ndR)=qres(27,ndR)+ResLoss          
-        endif  
+          qres(27,ndR)=qres(27,ndR)+ResLoss     
+c
+c rrb 2017/10/20 Addition
+          accr(4,irow)=accr(4,irow)+ResLoss
+          accr(27,irow)=accr(27,irow)+ResLoss
+        endif
+c
+c rrb 2017/10/20; Detailed Output
+        if(ioutL.eq.1) then
+          write(nlog,*)' DivResP2; accr(4,irow)', accr(4,irow)
+        endif
 c
 c               Check reservoir roundoff when exiting routine
         in=1

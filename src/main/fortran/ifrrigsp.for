@@ -65,7 +65,10 @@ c			                    np2 = iopdes(1,l2)
 c        np2            iopdes(1,l2) = if>10000, destination plan
 c			                    np2 = iopdes(1,l2) - 10000
 c        nr2            iopdes(1,l2) = if>0, destination reservoir ID
-
+c
+c rrb 2017/10/20
+c        idcd           stream ID of destination diversion (nd2) or reservoir
+c                                       or plan or CARRIER
 c        idcd2          stream ID of destination diversion (nd2) or reservoir
 c		                    	or plan or CARRIER
 c        idcd2X         stream ID of destination diversion (nd2) or reservoir
@@ -331,6 +334,9 @@ c		         Destination is a plan
         nr2=0
         iuse2=-1
         idcd=ipsta(np2)
+c
+c rrb 2017/10/20; Addition, variable idcd2 is used in IO but not set
+        idcd2=idcd
 c_______________________________________________________________________
 c    b; Set the diversion location equal to the destination location
         iscd=idcd

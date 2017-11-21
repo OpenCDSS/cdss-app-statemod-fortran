@@ -218,7 +218,9 @@ c		            1 details
 c		            2 summary 
 c          ioutp=1 details of plan operation
 c          ioutq=1 details of qdiv
-      iout=1
+c rrb 2017/10/20; I/O Control
+cx    iout=1
+      iout=0
       ioutP=0
       ioutQ=0   
       ioutiw=0 
@@ -423,6 +425,18 @@ c		                     ipUse = Reuse plan
         goto 9999
       endif
 c
+c rrb 2017/10/20; Correction; ipuse is used in Step 24. Suspect
+c                 it is "extra code that originated when routine
+c                 was develped by copying the type 24 code (DirectEx)
+c                 Warn and exit
+      ipUse=ireuse(l2)
+      if(ipUse.gt.0) then
+        cpuse='Yes'
+        write(nlog,*) '  DirectWR; Warning reuse plan for a type 26'
+        write(nlog,*) '            is specified but not tested'
+        goto 9999
+      endif
+c
 c _________________________________________________________ 
 c               Step 3; Set Source Data
 c
@@ -434,13 +448,13 @@ c ---------------------------------------------------------
 c		              a0. Check reoperation control and exit
 c                     if already operated one time
 c rrb 2015/10/10; Move below to allow detailed printout
-       icallOP(l2)=icallOP(l2) + 1 
+       icallOP(l2)=icallOP(l2) + 1
 c
-       if(icallOP(l2).gt.1) then       
+       if(icallOP(l2).gt.1) then
          iwhy=2
          cwhy='Reoperation not allowed'
          goto 260
-       endif              
+       endif
 c
 c ---------------------------------------------------------
 c		              a1. Exit if source structure is off (iwhy=2)
@@ -1063,12 +1077,15 @@ c         write(nlog,*) ' '
         write(nlog,280) '  DirectWR  ',     
      1    iyrmo(mon),xmonam(mon),idy, csour, cimcdR,
      1    iwx, iw,nwrord(1,iw),l2,lr,nd, iuse,
-     1    nd2, ND2x,iuse2x,imcdX,imcdS, nriver, ncarry, oprEfft*100.,
+c
+c rrb 2017/10/20; Variable iuse2x is not set
+cx   1    nd2, ND2x,iuse2x,imcdX,imcdS, nriver, ncarry, oprEfft*100.,
+     1    nd2, ND2x,iuse2,imcdX,imcdS, nriver, ncarry, oprEfft*100.,
      1    DIVREQx2*fac,AVAILX*fac,divaloS*fac,
-     1    dcrdiv2*fac, divCU*fac,       
-     1    pavail*fac,  culimit*100.,     
+     1    dcrdiv2*fac, divCU*fac,
+     1    pavail*fac, culimit*100.,
      1    oprmax1*fac, pfail1,
-     1    divcarry*fac, divcap1,   divcap2,pdem2*fac, dcrdiv1*fac,        
+     1    divcarry*fac, divcap1, divcap2,pdem2*fac, dcrdiv1*fac,
      1    divact0*fac, divAdd*fac, divact1*fac,divactE*fac,
      1    (divactE+divact1)*fac, iwhy, cwhy
      
@@ -1151,7 +1168,10 @@ c
      1  '  directwr    iyr mon   day',
      1  ' Source ID    Min ID      ',
      1  '     Iter     Iw  Nwrord      l2      lr      nd    iuse',
-     1  '     Nd2    Nd2X  Iuse2X   ImcdX   ImcdS  nRiver  nCarry',
+c
+c rrb 2017/10/20; Variable iuse2x is used but not set
+cx     1  '     Nd2    Nd2X  Iuse2X   ImcdX   ImcdS  nRiver  nCarry',
+     1  '     Nd2    Nd2X   Iuse2   ImcdX   ImcdS  nRiver  nCarry',
      1  ' OprEffT DivreqX2 AvailX DivaloS Dcrdiv2   DivCU',
      1  '  Pavail CuLimit Oprmax1  Pfail1 DivCary',
      1  ' divCap1 DivCap2   Pdem2 DcrDiv1 Divact0  DivAdd',
@@ -1210,10 +1230,13 @@ c		Print results
         write(nlog,280) '  Problem   ',
      1    iyrmo(mon),xmonam(mon),idy, csour, cimcdR,
      1    iwx, iw,nwrord(1,iw),l2,lr,nd, iuse,
-     1    nd2, ND2x,iuse2x,imcdX,imcdS, nriver, ncarry,oprEfft*100.,
+c
+c rrb 2017/10/20; Variable iuse2x is not set
+cx     1    nd2, ND2x,iuse2x,imcdX,imcdS, nriver, ncarry,oprEfft*100.,
+     1    nd2, ND2x,iuse2,imcdX,imcdS, nriver, ncarry,oprEfft*100.,
      1    DIVREQx2*fac,AVAILX*fac,divaloS*fac,
-     1    dcrdiv2*fac,  divCU*fac,     
-     1    pavail*fac,   culimit*100.,     
+     1    dcrdiv2*fac,  divCU*fac,
+     1    pavail*fac,   culimit*100.,
      1    oprmax1*fac,  pfail1,
      1    divcarry*fac, divCap1,    divCap2,pdem2*fac, dcrdiv1*fac,
      1    divact0*fac,  divAdd*fac, divact1*fac, divactE*fac, 
