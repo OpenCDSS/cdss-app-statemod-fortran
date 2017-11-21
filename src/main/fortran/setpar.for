@@ -5,17 +5,17 @@ c
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Setpar; It set parameter types
-c		Called by Statem
+c               Called by Statem
 c
 c _________________________________________________________
 c       Documentation               
 c
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
        dimension  paramd(maxparm), paramr(maxparm), paramw(maxparm),
      1            paramdX(40),     paramrX(40),     paramwX(40)
@@ -54,17 +54,30 @@ c
      1 'Total_Release',            'Evap',
      1 'Seep_Spill',               'Sim_EOM',
      1 'Target_Limit',             'Fill_Limit',
-     1 'River_Inflow',             'Total_Release',
-     1 'Total_Supply',             'River_By_Well',
-     1 'River_Outflow',            'Divert_From_Carrier ',
-     1 'Seep_Loss',                'ridr', 
-     1 'acc',                      'rnr', 
-     1 'River_Exchange',           'Carrier_Storage', 
+c
+c rrb 2017/11/13; Correction, Add River_Release and
+c                 River_Divert
+cx   1 'River_Inflow',             'Total_Release',
+cx   1 'Total_Supply',             'River_By_Well',
+     1 'River_Inflow',             'River_Release',
+     1 'River_Divert',             'River_By_Well',
+c
+c rrb 2017/11/13; Correction, Add Reservoir_Carry
+c                 Reservoir_Loss and Reservoir Seep
+cx     1 'River_Outflow',            'Divert_From_Carrier ',
+cx     1 'Seep_Loss',                'ridr',
+     1 'River_Outflow',            'Reservoir_Carry',
+     1 'Reservoir_Loss',           'Reservoir_Seep',
+     1 'ridr',
+     1 'acc',                      'rnr',
      1 'NA',                       'NA',
      1 'NA',                       'NA',
      1 'NA',                       'NA',
      1 'NA',                       'NA',
-     1 'NA',                       'NA'/
+     1 'NA',                       'NA',
+     1 'NA'/
+cx smalers 2017-11-20 removed one NA due to too many values being initialized
+c    1 'NA',                       'NA'/
 
        data paramwX/
      1 'Total_Demand',             'CU_Demand',
@@ -90,7 +103,7 @@ c
 c
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c               Step 1; Initialize
       iout=0
       do i=1,maxparm
         paramd(i)=paramdX(i)

@@ -23,3 +23,37 @@
 # Top-level bin folder and distribution folder
 /bin
 /dist
+
+# Ignore all StateMod binary and report output files
+# - these files are created by StateMod
+# - might to be a bit more nuanced if any of these files are needed in tests stored in this repository
+*.chk
+*.tmp
+fort.*
+*.b43
+*.b44
+*.b45
+*.b47
+*.b67
+*.b68
+*.xbe
+*.xbg
+*.xbi
+*.xbm
+*.xca
+*.xcb
+*.xcd
+*.xci
+*.xcw
+*.xdd
+*.xgn
+*.xir
+*.xop
+*.xou
+*.xpl
+*.xre
+*.xrh
+*.xri
+*.xss
+*.xtb
+*.xwr
