@@ -192,8 +192,8 @@ c				 9 includes wells
 c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
-        ver = '15.00.02'
-        vdate = '2017/10/20'
+        ver = '15.00.03'
+        vdate = '2017/11/13'
 c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -615,6 +615,10 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2017/10/20 (15.00.03)',/
+     1 '      Revised SetPar to include River_Release',/
+     1 '        River_Divert, Reservoir_Carry and ',/
+     1 '        Reservoir_Loss'/
      1 '    - 2017/10/20 (15.00.02)',/
      1 '      Revised DirectWR to turn off detailed output',/
      1 '      Revised DivResp2 typo (lopr =lopr6)',/
