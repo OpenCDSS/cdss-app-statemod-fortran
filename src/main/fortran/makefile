@@ -562,7 +562,10 @@ statemod: \
 			welrig3p.o \
 			year.o \
 			year2.o
-	$(FC) $(FFLAGS) -o statemod $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o statemod-gfortran-32bit $^ $(LDFLAGS)
+	@echo "-----------------------------------------------------------------------"
+	@echo "Executable is statemod-gfortran-32bit.exe"
+	@echo "-----------------------------------------------------------------------"
 
 # ======================================================================
 # The general rules.  These generally should not require modification.
@@ -596,8 +599,18 @@ statemod: \
 
 # Remove intermediate files used when compiling
 clean:
+	@echo "-----------------------------------------------------------------------"
+	@echo "Removing compile byproducts but not final executable..."
+	@echo "Use 'make veryclean' if necessary to also remove final executable."
+	@echo "-----------------------------------------------------------------------"
 	rm -f *.o *.mod *.MOD
 
 # Remove all intermediate files and the final executable
+# -TODO smalers 2017-11-30 Need to elegantly handle different OS,
+#  but OK to list extra files
 veryclean: clean
-	rm -f *~ $(PROGRAMS)
+	@echo "-----------------------------------------------------------------------"
+	@echo "Removing compile byproducts (make clean) and final executable..."
+	@echo "-----------------------------------------------------------------------"
+	rm -f *~ $(PROGRAMS) statemod-gfortran-32bit.exe statemod-gfortran-64-bit.exe
+	rm -f statemod-gfortran-32bit statemod-gfortran-64-bit
