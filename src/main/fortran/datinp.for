@@ -1708,15 +1708,18 @@ c rrb 01/03/08;
             if(iok.eq.0) then
               rec32='Upstream Return Flows' 
               if(iprintx.eq.0) write(nlog,1281) rec32
-              
-              if(iprintX.eq.0) write(nlog,1285) 
+c
+c rrb 2018/04/08; Reduce output to *.log              
+cx            if(iprintX.eq.0) write(nlog,1285) 
               if(iprintx.eq.0) write(nchk,1285) 
 
               if(ndx.eq.0) then
                 iprintx=iprintx+1    
-                write(nlog,1284) 
-     1            iprintx, cdivid(nd),  divnam1(nd),
-     1            cstaid(idcd), cstaid(ircd)  
+c
+c rrb 2018/04/08; Reduce output to *.log              
+cx                write(nlog,1284) 
+cx     1            iprintx, cdivid(nd),  divnam1(nd),
+cx     1            cstaid(idcd), cstaid(ircd)  
      
                 write(nchk,1284) 
      1            iprintx, cdivid(nd),  divnam1(nd),

@@ -193,9 +193,8 @@ c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
 c
-        ver = '15.00.12'
-        vdate = '2018/02/24'
-c
+        ver = '15.00.14'
+        vdate = '2018/04/04'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -257,7 +256,11 @@ c		and plans
       MAXDVR=  6500
       MAXPWR=  51
       MAXOPR=  3701
-      maxopr2= 20
+c
+c rrb 2018/04/08; Correction to fix water balance for South Platte to 
+c                 allow Divmulti to include up to 20 accounts)
+cx    maxopr2= 20
+      maxopr2= 40
       MAXNWR=  14991
       maxbas=  440                                   
       maxacc=  39
@@ -616,6 +619,15 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2018/04/08 (15.00.14)',/
+     1 '      Revised Oprinp & Statem & common.inc to increase',/
+     1 '        the dimension of maxopr2 to resolve a water balance',/
+     1 '         problem in the South Platte',/
+     1 '      Revised Datinp, Oprfind & Oprinp & Execut to reduce',/
+     1 '         output to screen and *.log',/       
+     1 '    - 2018/02/25 (15.00.13)',/
+     1 '      Revised DivimpR that caused a water balance problem',/
+     1 '        in the South Platte',/  
      1 '    - 2018/02/25 (15.00.12)',/
      1 '      Revised SetQdivX and SetQdivC to correct a problem',/
      1 '        when carried water gets returned to the river that',/

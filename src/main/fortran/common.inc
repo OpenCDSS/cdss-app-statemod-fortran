@@ -400,7 +400,10 @@ c
 c		Operating Rule Data #2
       COMMON/OPR2/
      1 demopr(   1500),  iopsou(20, 3701), divreqa(3701),
-     1 IOPDES(20, 3701), ITYOPR(    3701), IORGST(    3701), 
+c rrb 2018/04/08; Correction to fix water balance for South Platte to 
+c                 allow Divmulti to include up to 20 accounts)
+cx   1 IOPDES(20, 3701), ITYOPR(    3701), IORGST(    3701),     
+     1 IOPDES(40, 3701), ITYOPR(    3701), IORGST(    3701), 
      1 IOPRSW(    3701), ICONFL(    3701), intern(3701,20),  
      1 divo(3701),       iopid(351),       qdel(13,5),     
      1 qindex(13,5),     
