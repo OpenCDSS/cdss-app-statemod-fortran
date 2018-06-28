@@ -308,7 +308,8 @@ c
 c		    qdiv(30         From River from a Res or Reuse Plan 
 c                        to a T&C or Aug Plan. Note non consumptive
 c 	    qdiv(35        	Water with a Reuse or Admin plan source 
-c			                  tracked at the destination.
+c			                  tracked at the destination.  Show as from plan
+c                       in water balance report
 c       qdiv(38         Carried water not used in any calculations
 c                       to report River Divert
 c
@@ -318,9 +319,11 @@ c                 changed water right plan (type 13)
 cx        if(iplntyp(ndP).ne.11) then
 cx          qdiv(35,idcdD) = qdiv(35,idcdD) + divact
 cx        endif
-        if(iplntyp(ndP).ne.13) then
-          qdiv(35,idcdD) = qdiv(35,idcdD) + divact
-        endif
+c
+c rrb 2018/01/23; Water Balance Correction. 
+cx        if(iplntyp(ndP).ne.13) then  
+cx          qdiv(35,idcdD) = qdiv(35,idcdD) + divact
+cx        endif
         
 c
 c rrb 2008/01/15; If a T&C destination set qdiv(30 an

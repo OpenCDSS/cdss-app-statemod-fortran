@@ -1532,14 +1532,44 @@ c    1    ownmax, iownX, nrown1, cursa, divaf, iResT1, icx, cresid1)
 c
 c ---------------------------------------------------------
 c		Set Carrier Data
+cx rrb 2017/12/03; Simplify adding reservoir loss
+      ResLoss=divafL*TranLoss
+      ResLoss=amax1(0.0, divaf-divafL)
+c
 c rrb 2010/10/15; Correction adjust for carrier loss
 c									change divaf to divafL
+c
+c rrb 2017/12/03; Correction for TRANSIT LOSSES (NOT CARRIER LOSSES)
+cx        Note accr(4 gets set in accou.f but accr(30 (loss) does not
+cx        Note qres(4 and qres(30 do not get set in accou.f
+cx
+cx        qres(4  From Carrier by Storage or Other to reservoir
+cx        qres(18 From River by Exchange to Reservoir
+cx        qres(27 From Carrier Loss
+cx        qres(30 From River Loss      
+cx
+cx        if(ncarry.eq.0) then
+cx          qres(18,nr)=qres(18,nr)+divafL
+cx        else
+cx          qres(4,nr)=qres(4,nr)+divafL
+cx        endif  
+        
         if(ncarry.eq.0) then
-          qres(18,nr)=qres(18,nr)+divafL
-        else
-          qres(4,nr)=qres(4,nr)+divafL
-        endif  
-          
+          qres(18,ndR)=qres(18,ndR)+divafL+ResLoss
+          qres(30,ndR)=qres(30,ndR)+ResLoss
+c
+c rrb 2017/10/20 Addition
+          accr(18,irow)=accr(18,irow)+ResLoss
+          accr(30,irow)=accr(30,irow)+ResLoss
+        else        
+          qres(4,ndR)=qres(4,ndR)+divafL+ResLoss
+          qres(27,ndR)=qres(27,ndR)+ResLoss     
+c
+c rrb 2017/10/20 Addition
+          accr(4,irow)=accr(4,irow)+ResLoss
+          accr(27,irow)=accr(27,irow)+ResLoss
+        endif
+            
 c
 c ---------------------------------------------------------
 c               Check reservoir roundoff when exiting routine
@@ -1616,8 +1646,10 @@ c rrb 2015/10/04; Back to version befor allowing a type 13
 c                 plan type for changed water rights
 c                 Note this shows the plan release
 c                 as a return flow to system qdiv(36
-        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
-     1    iplntyp(nsP).eq.11) then  
+c rrb 2015/01/15
+cx        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6 .or.
+cx     1    iplntyp(nsP).eq.11) then  
+        if(iplntyp(nsP).eq.4 .or. iplntyp(nsP).eq.6) then      
           qdiv(36,iscd)=qdiv(36,iscd) - relact
           qdiv36=qdiv(36,iscd)
         endif  
@@ -1627,7 +1659,26 @@ c                 a type 13 plan type for changed water rights
         if(iplntyp(nsP).eq.11) then
           qdiv(38,iscd)=qdiv(38,iscd) - relact
           qdiv38=qdiv(38,iscd)
+c
+c rrb 2018/01/15; Correction store water from an admin plan (type 11) 
+c                 "from plan" at the destination for water balance
+          qdiv35=divact
+          if(ndtype.eq.1) then
+            qdiv(35,ndI) = qdiv(35,ndI) + divact
+          endif
           
+          if(ndtype.eq.2) then
+            qdiv(35,nr) = qdiv(35,nr) + divact
+          endif
+          
+          if(ndtype.eq.3) then
+            qdiv(35,nd) = qdiv(35,nd) + divact
+          endif
+          
+          if(ndtype.eq.7) then
+            qdiv(35,ndP) = qdiv(35,ndP) + divact
+          endif
+         
           if(ioutQ.eq.1) then
             write(nlog,*) 
      1      ' DivRplP; nsp, iscd, cstaid, qdiv38' 

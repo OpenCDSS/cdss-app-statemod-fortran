@@ -193,8 +193,8 @@ c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
 c
-        ver = '15.00.08'
-        vdate = '2017/12/22'
+        ver = '15.00.12'
+        vdate = '2018/02/24'
 c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -616,6 +616,28 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2018/02/25 (15.00.12)',/
+     1 '      Revised SetQdivX and SetQdivC to correct a problem',/
+     1 '        when carried water gets returned to the river that',/
+     1 '        caused a water balance problem in the Colorado',/
+     1 '        River application (e.g. when carried water returns',/
+     1 '        to the river and the last carrier is also the',/
+     1 '        destination',/
+     1 '    - 2018/02/11 (15.00.11)',/
+     1 '      Revised SetLoss to correct a problem when carried',/
+     1 '        water gets returned to the river that caused a ',/
+     1 '        water balance problem in the Thornton application',/
+     1 '        (e.g. when carried water returns to the river)',/
+     1 ' Recent updates',/
+     1 '    - 2018/01/23 (15.00.10)',/
+     1 '      Revised DivMulti (type 46) to not store water from a',/ 
+     1 '        split in qdiv(35 that reported it as from plan and',/
+     1 '        caused a water balance problem in test case Ex127P',/    
+     1 '    - 2018/01/15 (15.00.09)',/
+     1 '      Revised DivResP2 & DivRplP to store water from an ',/
+     1 '        admin plan (type 11) as qdiv(35,xx)"from plan" at',/
+     1 '        the destination location to correct a water balance',/
+     1 '        problem identified in the Colorado River application',/         
      1 '    - 2017/12/22 (15.00.08)',/
      1 '      Revised GetIpy4 & Mdainp to read an unknown number',/
      1 '        of records to allow the *.ipy file to have ',/

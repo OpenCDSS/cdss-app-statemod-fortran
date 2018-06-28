@@ -29,13 +29,18 @@ c
 c _________________________________________________________
 c	Documentation
 c
-c	        nCarry   0 No carrier
-c			 1 No return to River, Final Destination from a carrier
+c	  nCarry   0 No carrier
+c			       1 No return to River, Final Destination from a carrier
 c	        	 2 Return to River, Final Destination from a carrier
-c		 	 3 Return to River, Final Destination from the river
+c		 	       3 Return to River, Final Destination from the river
 c		ncnum= number of carriers
 c		nd   = source diversion
 c		nd2  = destination diversion, reservoir, or plan
+c
+c	  nlast    0 last structure in the carrier loop was a carrier
+c			       1 last structure in the carrier loop was a river return
+c
+
 c
 c		oprloss1 = transit efficiency (set in SetLoss)
 c		iscd = diversion location
@@ -48,8 +53,7 @@ c
 c		qdiv(5	From River by Priority
 c		qdiv(18 Carrier passing through a structure
 c
-c               qdiv(20 From Carrier by Storage or Exchange
-c		qdiv(32 From Carrier Loss
+c   qdiv(20 From Carrier by Storage or Exchange
 c
 c		qdiv(26 From River by Exc_Pln (Exc_Pln)
 c
@@ -76,8 +80,8 @@ c
 c
 c _________________________________________________________
 c		Step 1; Initilize        
-c		iout=0 No detailed output
-c                   =1 Details
+c		  iout=0 No detailed output
+c         =1 Details
         iout=0
         
         small=0.001
@@ -103,8 +107,10 @@ c		Step 2; Set Loss data
 c
 c _________________________________________________________
 c		Step 3; Set Carrier Data
-c			Note nlast=0 no prior return to River
-c			     ilast=1 prior return to River
+c
+c			nlast    0 last structure in the carrier loop was a carrier
+c			         1 last structure in the carrier loop was a river return
+c
         nlast=0
         do i=1,ncnum
           OprLosT=0.0          
@@ -139,9 +145,21 @@ c _________________________________________________________
 c		Case 2 Carrier is the Destination (diversion from the river)
 C		Note idcdX is the final destination (NOT THE CARRIER)
 c
+c
+c rrb 2018/02/24; Correction for water balance issues to allow
+c                 a carrier to be the same structure as the final
+c                 destination diverting from the river 
+c                 e.g. if inode=idcdX and i=ncnum icase = 3
+cx            if(inode.eq.idcdX) then
+cx              icase=2
+cx              goto 100
+cx            endif  
+c
             if(inode.eq.idcdX) then
-               icase=2
-               goto 100
+              if(i.ne.ncnum) then
+                icase=2
+                goto 100
+              endif
             endif  
 c
 c _________________________________________________________
@@ -157,7 +175,11 @@ c
             icase=3
 c
 c rrb 2008/11/20; Moved from above to only occurr for case 3            
-            divmon(ncar)=divmon(ncar)+divactC                 
+            divmon(ncar)=divmon(ncar)+divactC 
+c
+c rrb 2018-02-18; Test
+            if(iout.eq.1) write(nlog,*) '  SetQdivX, nlast', nlast
+                            
             if(nlast.eq.0) then
               qdiv(18,inode)=qdiv(18,inode)+ divactC - oprlosT
               qdiv(31,inode)=qdiv(31,inode)+ divactC 
@@ -214,7 +236,7 @@ c		Detailed output
           if(iout.eq.1) then
             if(i.eq.1) write(nlog,200)
             write(nlog,210) icx, corid1, 
-     1        i, icase, ncar, inode, iscd, idcdX, idcdC,
+     1        i, icase, nlast, ncar, inode, iscd, idcdX, idcdC,
      1        divactX*fac, OprEff1*100., divactC*fac,  
      1        EffmaxT1*100, OprlosT*fac,
      1        qdiv(31,inode)*fac, qdiv(33,inode)*fac,
@@ -232,11 +254,12 @@ c		Formats
  200   format(
      1 '  SetQdivX; ',
      1 '  icx CorID1      ',
-     1 '         i     icase      ncar     inode      iscd',
+     1 '         i     icase     nlast      ncar     inode',
+     1 '      iscd',
      1 '     idcdX     idcdC   divactX   oprEff1   divactC',
      1 '   EffmaxT1   OprlosT   qdiv(31   qdiv(33   qdiv(20',
      1 '   qdiv(32',/
-     1 ' ___________ ____ ____________', 16(' _________'))
- 210   format(12x, i5,1x,a12, 7i10, 20f10.0)    
+     1 ' ___________ ____ ____________', 17(' _________'))
+ 210   format(12x, i5,1x,a12, 8i10, 20f10.0)    
  250   format(/,72('_'))       
         end
