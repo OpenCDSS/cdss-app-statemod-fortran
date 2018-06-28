@@ -220,12 +220,12 @@ c          	OprEffT 	    Total Carrier Efficiency
 c                 
 c          	effmaxT		    Transit loss for a ditch 
 c          
-c           nCarry	  	  Carrier type
+c           nCarry	  	  Carrier type  initilized here then in SetLoss
 c                           0 No carrier
 c          		              1 No return to River, Final Destination 
-c                             from a carrier
+c                             from a carrier to a demand
 c          	                2 Return to River, Final Destination is 
-c                             off a carrier
+c                             from a carrier to a demand
 c          		              3 Return to River, Final Destination is 
 c                             off the river
 c           
@@ -240,16 +240,18 @@ c           qdiv(18         Carrier passing thru a structure
 c           qdiv(20         From Carrier by Storage, Exchange or Plan
 c		        qdiv(30         From River from a Res or Reuse Plan         
 c                           to a T&C or Aug Plan. Note non consumptive
-c                           See type 49 Divrplp2                      
-
-c           qdiv(31         From River by Exc or Plan by DivresP2 or 
-c                             DivrplP
+c                                             
+c           qdiv(31         From River by Other (Exchange, Plan, Carrier) by  
+c                             DivresP2 or DivrplP
 c	        
 c           qdiv(36         Water released to the system as return flow
 c                            plan types 4 & 6 reuse from a diversion or
 c                            tmtn diversion
+c rrb 2018/01/15
+c 		      qdiv(35         Water with a Reuse or Admin plan source 
+c		            	           tracked at the destination 
 c           qdiv(38         Carried water reported as Carried, Exchange
-c                             or Bypassed but not used to calculaete
+c                             or Bypassed but not used to calculate
 c                             River Divert in Outmon.f
 c                         
 c           qres(4          From Carrier by Storage or Other to reservoir
@@ -342,12 +344,14 @@ c
       if(iout.eq.2 .and. ioutiw.eq.iw) then 
         ioutQ=1
 c       ioutQ=2
+        write(nlog,*) ' DivResp2; ioutQ =', ioutQ
 c
 c rrb 2017/10/20; Add ioutL
         ioutL=0
       else
         ioutQ=0
       endif 
+
       
 c
 c ---------------------------------------------------------
@@ -421,6 +425,12 @@ c     divact = 0.0
       qdiv30 = -1./fac
       qdiv31a=-1./fac
       qdiv31b=-1./fac
+      qdiv31c=-1./fac
+      qdiv31d=-1./fac
+      qdiv31e=-1./fac      
+c
+c rrb 2018/01/10; Initilize
+      qdiv35=-1/fac
       qdiv35a=-1./fac
       qdiv35b=-1./fac
       qdiv36=-1./fac       
@@ -1194,7 +1204,7 @@ c rrb 2011/08/04; Instream flow reach
         ib=ndnifb(ndI)
         ie=ndnifb(ndI) + ndnifs(ndI) -1  
         if(ioutIR.eq.1) then
-          write(nlog,*) ' DivRplP; ndI, ib, ie', ndI, ib, ie
+          write(nlog,*) ' DivResP2; ndI, ib, ie', ndI, ib, ie
         endif     
        
 cx      write(nlog,*) '  DivResP2;', ndI, flowrq(ndI)*fac  
@@ -1518,6 +1528,14 @@ c
         write(nlog,*) ' DivResp2_4; lopr26, ndns26, iscd26'
         write(nlog,*) ' DivResp2_4; ', lopr26, ndns26, iscd26
       endif     
+c
+c rrb 2018/01/29 TEST
+        if(ioutQ.eq.1) then
+          write(nlog,*) ' '         
+          write(nlog,*) ' DivResp2 @ 1533, lopr26, iscd26, iscd relact'    
+          write(nlog,*) ' DivResp2 @ 1533', lopr26, iscd26, iscd, 
+     1                    relact*fac                   
+        endif
 c      
       if(lopr26.eq.0) then
         call TAKOUT(maxsta,avail,river,avinp,qtribu,idncod,
@@ -1548,6 +1566,16 @@ c			                       is from a carrier
 c
 c rrb 2011/08/04; Update to allow an Instream flow reach
       if(ndtype.eq.2 .or. ndtype.eq.3) then
+c
+c rrb 2018/01/29 TEST
+        if(ioutQ.eq.1) then
+          write(nlog,*) ' '  
+          write(nlog,*) ' DivResp2 @ 1570; nriver, ncarry'  
+          write(nlog,*) ' DivResp2 @ 1570;', nriver, ncarry                              
+          write(nlog,*) ' DivResp2 @ 1570, idcdx, idcdC, divact'    
+          write(nlog,*) ' DivResp2 @ 1570', ldcdx, idcdC,  
+     1                    divact*fac                   
+        endif
  
         if(nriver.eq.0) then  
           if(ncarry.eq.0) then
@@ -1576,8 +1604,8 @@ c                        Note adjust avail but not river
         do i=ib,ie       
           if(ioutIR.eq.1) then
             write(nlog,*) 
-     1        ' DivRplP; ndI, issr, avail, divact, avail-divact' 
-            write(nlog,*) ' DivRplP; ', ndI, issr, 
+     1        ' DivResP2; ndI, issr, avail, divact, avail-divact' 
+            write(nlog,*) ' DivResP2; ', ndI, issr, 
      1        avail(issr)*fac, divact*fac, (avail(issr)-divact)*fac
           endif
           
@@ -1664,7 +1692,7 @@ c         psto2(ipUse)=amax1(0.0, psto2(ipUse)-divact*fac)
 c
 c _________________________________________________________
 c
-c               Step 20; Update destination
+c               Step 20a; Update destination
 c
 c ---------------------------------------------------------
 c		a. Destination is a diversion
@@ -1678,6 +1706,7 @@ c rrb 2007/12/04; Add Loss
 c       DIVREQ(IUSE)=DIVREQ(IUSE)-DIVACT
         DIVREQ(IUSE)=DIVREQ(IUSE)-divactL
         DIVMON(ND  )=DIVMON(ND  )+DIVACT
+        
       endif  
 c      
 c ---------------------------------------------------------
@@ -1824,7 +1853,7 @@ c		    adjustment to total diversion in outbal2
           qdiv30=qdiv(30,idcd)
         endif 
 c
-c rrb 2011/02/28; Correction since Qdiv was rervised to
+c rrb 2011/02/28; Correction since Qdiv was revised to
 c                 only operates on diversions 
         if(nCarry.eq.0) then               
           qdiv(31,idcd)=qdiv(31,idcd)+Divact
@@ -1855,9 +1884,14 @@ cx      endif
 c      
 c _________________________________________________________
 c
-c               Step 20; Update Source 
+c               Step 20b; Update Source 
 c      
 c ---------------------------------------------------------
+c 		      qdiv(35         Water with a Reuse or Admin plan source 
+c		            	           tracked at the destination 
+c           qdiv(38         Carried water reported as Carried, Exchange
+c                             or Bypassed but not used to calculate
+c                             River Divert in Outmon.f
 c		a. Source is a Plan
       if(nsP.gt.0) then
         psuply(nsP)=amax1(0.0, psuply(nsP)+relact)
@@ -1871,17 +1905,44 @@ c
           qdiv36=qdiv(36,iscd)
         endif      
 c
-c rrb 2015/10/04; Correction to address type 11 before allowing a
+c rrb 2015/10/04; Correction to address an Admin Plan (type 11)
+c                 before allowing a
 c                 a type 13 plan type for changed water rights
         if(iplntyp(nsP).eq.11) then
           qdiv(38,iscd)=qdiv(38,iscd) - relact
           qdiv38=qdiv(38,iscd)
+c
+c rrb 2018/01/15; Correction store water from an admin plan (type 11) 
+c                 "from plan" at the destination for water balance
+          qdiv35=divact
+c
+c                 Destination is an isf (ndI)         
+          if(ndtype.eq.1) then
+            qdiv(35,ndI) = qdiv(35,ndI) + divact
+          endif
+c
+c                 Destination is a reservoir (ndR)        
+          if(ndtype.eq.2) then
+            qdiv(35,ndR) = qdiv(35,ndR) + divact
+          endif
+c
+c                 Destination is a diversion (nd)                
+          if(ndtype.eq.3) then
+            qdiv(35,nd) = qdiv(35,nd) + divact
+          endif
+c
+c                 Destination is a plan (ndP)                
+          
+          if(ndtype.eq.7) then
+            qdiv(35,ndP) = qdiv(35,ndP) + divact
+          endif
           
           if(ioutQ.eq.1) then
             write(nlog,*) 
-     1      ' DivRplP; nsp, iscd, cstaid, qdiv38' 
+     1      ' DivResP2; nsp, iscd, cstaid, qdiv38, qdiv35' 
             write(nlog,*) 
-     1      ' DivRplP;', nsp, iscd, cstaid(iscd), qdiv38*fac
+     1      ' DivResP2;', nsp, iscd, cstaid(iscd), qdiv38*fac,
+     1          qdiv35*fac
           endif
         endif
 c 
@@ -2009,8 +2070,10 @@ c               Step 24; Update Qdiv for Source and Destination
 c
 c rrb 2015/08/23; Correct problem when idcdX has not been set
       if(idcdX.gt.0) then
-      
-        qdiv31a=qdiv(31,idcdX)
+        if(idcdD.gt.0) then
+          qdiv31a=qdiv(31,idcdD)
+        endif
+        
         call setQdiv(nlog,  nCarry, nRiver,
      1    ndD, ndR, iscd,   idcdX, idcdC,
      1    divact, TranLoss, EffmaxT1, OprEffT, fac, 
@@ -2019,9 +2082,12 @@ c rrb 2015/08/23; Correct problem when idcdX has not been set
 c
 c rrb 2011/02/23; Correction; do not set destination data when
 c                 it is a reservoir     
-        qdiv31b=qdiv(31,idcdX)
-        if(iout.eq.1) then
-          write(nlog,*) '  DivResP2; Call SetQdiv qdiv31b', qdiv31b*fac
+        if(idcdD.gt.0) then
+          qdiv31b=qdiv(31,idcdD)
+        endif
+        if(ioutQ.eq.1) then
+          write(nlog,*) ' DivResP2; After SetQdiv; qdiv31a, qdiv31b'
+          write(nlog,*) '          ',idcdD, qdiv31a*fac,qdiv31b*fac
           call flush(nlog)
         endif  
       endif
@@ -2041,7 +2107,11 @@ c     qdiv36a=qdiv(36, iscd)
         qdiv36a=qdiv(36, iscd)
       endif
 c
-      if(ncarry.gt.0) then      
+      if(ncarry.gt.0) then   
+        if(idcdD.gt.0) then
+          qdiv31c=qdiv(31,idcdD)
+        endif
+                 
         call setQdivC(
      1    nlog, ncarry, ncnum, nd, ndD, l2, iscd, idcdX, idcdC, 
 c
@@ -2053,10 +2123,21 @@ cx   1    nriver, divactX, TranLoss, EffmaxT1,
      1    maxrtnPP, maxplan, OprEff1, ipuse,  
      1    pctlosPP, rlossP, oprLossc,internT, 
      1    icx, corid(l2))
+c
+c rrb 2018-02-11; Check
+        if(idcdD.gt.0) then
+          qdiv31d=qdiv(31,idcdD)
+        endif
+        if(ioutQ.eq.1) then
+          write(nlog,*) ' DivResP2; After SetQdivC; qdiv31c, qdiv31d'
+          write(nlog,*) '          ',idcdD, qdiv31c*fac,qdiv31d*fac
+          call flush(nlog)
+        endif  
+
       endif 
 c
 c rrb 2014/01/24; Check                                                                             
-c rrb 2015/08/23; Correct problem when incar has not been set                
+c rrb 2015/08/23; Correct problem when ncar has not been set                
       if(ncar.gt.0) then                  
         divcap2=divcap(ncar) - divmon(ncar)
       endif 
@@ -2179,6 +2260,18 @@ c _________________________________________________________
 c
 c               Step 28; Detailed output at Exit
 c
+c rrb 2018-02-11; Test
+        if(idcdD.gt.0) then
+          qdiv31e=qdiv(31,idcd)
+        endif
+        if(ioutQ.eq.1) then
+          write(nlog,*) ' DivResP2; At End; idcdD, qdiv31e ', 
+     1                  idcdD, qdiv31e*fac
+          call flush(nlog)
+        endif  
+
+
+c
 c rrb 2009/05/12; Reduce output for a daily model
 cx    if((iout.eq.1 .or. iout.eq.2) .and. iw.eq.ioutiw) then 
 c
@@ -2222,6 +2315,7 @@ c
 c _________________________________________________________
 c               
 c               Step 29; Check results
+c rrb 2018-02-11; Check
 c
       if(iout.eq.1) then
         write(nlog,*) ' DivresP2; Calling Chekava Out ',  corid1

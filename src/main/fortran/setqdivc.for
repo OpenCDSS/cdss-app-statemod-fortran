@@ -37,6 +37,9 @@ c		  ncnum    number of carriers
 c		  nd       source diversion
 c		  nd2      destination diversion, reservoir, or plan
 c
+c			nlast    0 last structure in the carrier loop was a diversion
+c			         1 last structure in the carrier loop was a river return
+c
 c		  oprloss1 transit efficiency (set in SetLoss)
 c		  iscd     diversion location
 c     idcdX    stream ID of destination diversion (nd2) or reservoir
@@ -131,8 +134,10 @@ cx      OprLos1=divactX*TranLoss
 c
 c _________________________________________________________
 c		Step 3; Set Carrier Data
-c			Note nlast=0 no prior return to River
-c			     ilast=1 prior return to River
+c			Note: 
+c       nlast=0 last structure in the carrier loop was a diversion
+c			       =1 last structure in the carrier loop was a river return
+c
         nlast=0
         do i=1,ncnum
           OprLosT=0.0          
@@ -167,9 +172,21 @@ c _________________________________________________________
 c		Case 2 Carrier is the Destination (diversion from the river)
 C		Note idcdX is the final destination (NOT THE CARRIER)
 c
+c
+c rrb 2018/02/24; Correction for water balance issues to allow
+c                 a carrier to be the same structure as the final
+c                 destination diverting from the river 
+c                 e.g. if inode=idcdX and i=ncnum icase = 3
+cx            if(inode.eq.idcdX) then
+cx              icase=2
+cx              goto 100
+cx            endif  
+c
             if(inode.eq.idcdX) then
-               icase=2
-               goto 100
+              if(i.ne.ncnum) then
+                icase=2
+                goto 100
+              endif
             endif  
 c
 c _________________________________________________________
