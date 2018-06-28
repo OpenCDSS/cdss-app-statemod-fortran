@@ -193,8 +193,8 @@ c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
 c
-        ver = '15.00.06'
-        vdate = '2017/12/11'
+        ver = '15.00.08'
+        vdate = '2017/12/22'
 c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -615,6 +615,16 @@ c               Go back to menu if in default mode
 c ______________________________________________________________________
 c     Formats
   212   format(//
+     1 ' Recent updates',/
+     1 '    - 2017/12/22 (15.00.08)',/
+     1 '      Revised GetIpy4 & Mdainp to read an unknown number',/
+     1 '        of records to allow the *.ipy file to have ',/
+     1 '        significantly more structures than those contained',/
+     1 '        in the data',/     
+     1 '    - 2017/12/18 (15.00.07)',/
+     1 '      Revised GetIpy4 & Mdainp to read 5000 records to',/
+     1 '        allow the *.ipy file to have significantly more',/
+     1 '        structures than those contained in the data',/
      1 ' Recent updates',/
      1 '    - 2017/12/11 (15.00.06)',/
      1 '      Revised the following to limit screen output',/

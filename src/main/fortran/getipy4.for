@@ -106,12 +106,16 @@ c                there is code below to jump out of this loop when the
 c                last record is read (the year changes)
 C          do nd = 1, numdiv+numdivw
 c
-c rrb 2017/12/11; Remove jhb edit that adds an arbritrary number
-c                 and add warning if not large enough
-cx     do nd = 1, 5000
+c rrb 2017/12-18; Add variable to print do loop limit
+c rrb 2017/12/22; Revise to read an unknown number of records
+c                 until a new year is read or and end of file
+c                 is encountered.
+cx    do nd = 1, 5000
+c     ndmax=5000
+cx    do nd = 1, ndmax
 cx
-       ndmax = (numdiv+numdivw)*2
-       do nd=1,ndmax
+      nd=0
+ 100  nd=nd+1
 	        ifound=0
           read(10,954,end=1700,err=928) idyr,cistat, (x(i), i=1,3),
      1	      AreaSF1, AreaSS1, AreaGF1, AreaGS1, Qmax, gwmode1, Atot
@@ -555,12 +559,19 @@ c
 c _________________________________________________________
 c
 c		Step 6; End diversion + well loop
-        if(iout.eq.1) write(nlog,*)'  GetIpy4; end do nd'   , nd  
-	    end do 
+        if(iout.eq.1) write(nlog,*)'  GetIpy4; end do nd'   , nd
+c
+c rrb 2017/12/22; Revise to read an unknown number of records
+c                 until a new year is read or and end of file
+c                 is encountered.
+cx    end do 
 c
 c rrb 2017/12/11; Warn and stop if the loop to read data is too small
-      write(nlog,1320) ndmax
-      goto 9999
+cx    write(nlog,1320) ndmax
+cx    goto 9999
+
+      goto 100 
+ 110  continue	    
 c
 c _________________________________________________________
 c		  Return
