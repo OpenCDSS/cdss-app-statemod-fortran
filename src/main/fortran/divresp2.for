@@ -535,13 +535,17 @@ c rrb 2015/02/03X; Set ipUse when the source is a reservoir
       endif 
 c
 c rrb 2015/02/03X; Set ipuse when the source is a Reuse Plan
-      if(nsP.gt.0 .and. iplntyp(nsP).ne.11) then
-        ipUse=ireuse(l2)
-        if(ipUse.gt.0) then
-          cpuse='Yes'
-          cplntyp='Reuse_Plan'
-        endif  
-      endif      
+c smalers 2017-11-06 split If statement to ensure that valid index value is used
+c     if(nsP.gt.0 .and. iplntyp(nsP).ne.11) then
+      if(nsP.gt.0) then
+        if (iplntyp(nsP).ne.11) then
+          ipUse=ireuse(l2)
+          if(ipUse.gt.0) then
+            cpuse='Yes'
+            cplntyp='Reuse_Plan'
+          endif
+        endif
+      endif
 c           
 c      
 c ________________________________________________________
@@ -642,25 +646,28 @@ c
 c rrb 2015/03/07; Revise to use Oprlimit 1-9
 cx    if(nsP.gt.0 .and. iplntyp(nsP).eq.11) then
 cx      lopr26=ireuse(l2)    
-      if(nsP.gt.0 .and. iplntyp(nsP).eq.13) then           
-        lopr26=iopsou(7,l2)
-        lr26=iopsou(1,lopr26)
-        nd26=idivco(1,lr26)
-        iscd26=IDVSTA(nd26)          
-        ndns26=NDNNOD(iscd26)    
+c smalers 2017-11-06 split If statement to ensure that valid index value is used
+c     if(nsP.gt.0 .and. iplntyp(nsP).eq.13) then
+      if(nsP.gt.0) then
+        if(iplntyp(nsP).eq.13) then
+          lopr26=iopsou(7,l2)
+          lr26=iopsou(1,lopr26)
+          nd26=idivco(1,lr26)
+          iscd26=IDVSTA(nd26)          
+          ndns26=NDNNOD(iscd26)    
 c
 c rrb 2015/01/24; Revised reporting approach.
 c                 Set iscd1 the node containing the plan
 c                 the original source water right diverted to
-        nsp1=iopdes(1,lopr26)
-        iscd1=ipsta(nsp1)   
-        iok=0
-        if(lopr26.eq.0 .or. lr26.eq.0  .or. nd26.eq.0. or.
+          nsp1=iopdes(1,lopr26)
+          iscd1=ipsta(nsp1)   
+          iok=0
+          if(lopr26.eq.0 .or. lr26.eq.0  .or. nd26.eq.0. or.
      1     iscd26.eq.0 .or. nsp1.eq.0 .or. iscd1.eq.0) then
-          iout26=1
-          iok=1     
-        endif       
-                 
+            iout26=1
+            iok=1     
+          endif       
+        endif         
       endif    
 c   
       if(iout26.eq.1) then
@@ -2026,9 +2033,15 @@ c		   for the carrier(s)
 c		   Also calculate return flows for carrier losses
 c		   using the structure properties of the carrier	
 c
-      qdiv36a=qdiv(36, iscd)
-      if(ncarry.gt.0) then      
+c smalers 2017-11-07 Steve added Jim's change
+c jhb 2016/10/17 prevent the array error when iscd=-1
+c                but why iscd=-1 has not been fixed
+c     qdiv36a=qdiv(36, iscd)
+      if(iscd.gt.0) then
+        qdiv36a=qdiv(36, iscd)
+      endif
 c
+      if(ncarry.gt.0) then      
         call setQdivC(
      1    nlog, ncarry, ncnum, nd, ndD, l2, iscd, idcdX, idcdC, 
 c

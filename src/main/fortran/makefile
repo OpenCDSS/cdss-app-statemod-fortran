@@ -21,9 +21,12 @@ FC = gfortran
 # The preprocessor is run in traditional mode. Any restrictions of the file-format,
 # especially the limits on line length, apply for preprocessed output as well, so it might be
 # advisable to use the -ffree-line-length-none or -ffixed-line-length-none options.
-#------------
+#-------------------------------------------------------------------------------------------------------
+# See compiler options here:  https://gcc.gnu.org/onlinedocs/gfortran/#toc-GNU-Fortran-Command-Options
+#-------------------------------------------------------------------------------------------------------
 #
 # -fcheck=bounds
+# -fbounds-check (this is deprecated in favor of -fcheck=bounds)
 #
 # Enable generation of run-time checks for array subscripts and against the declared
 # minimum and maximum values. It also checks array indices for assumed and deferred
@@ -37,12 +40,14 @@ FC = gfortran
 #
 # -finit-local-zero
 #
+# ALWAYS INCLUDE.
 # The -finit-local-zero option instructs the compiler to initialize local INTEGER, REAL,
 # and COMPLEX variables to zero, LOGICAL variables to false, and CHARACTER variables to a string of null bytes
 #------------
 #
 # -fno-align-commons
 #
+# ALWAYS INCLUDE.
 # By default, gfortran enforces proper alignment of all variables in a COMMON block
 # by padding them as needed. On certain platforms this is mandatory, on others it
 # increases performance. If a COMMON block is not declared with consistent data types
@@ -54,6 +59,7 @@ FC = gfortran
 #
 # -fno-automatic
 #
+# ALWAYS INCLUDE.
 # Treat each program unit (except those marked as RECURSIVE) as if the SAVE statement were
 # specified for every local variable and array referenced in it. Does not affect common blocks.
 # (Some Fortran compilers provide this option under the name -static or -save.)
@@ -62,15 +68,22 @@ FC = gfortran
 #------------
 #
 # -g 
+#
+# ALWAYS INCLUDE.
 #------------
 #
 # -static
+#
+# ALWAYS INCLUDE.
 #------------
 
 #FFLAGS = -g -fbounds-check -fno-align-commons
 # use -static especially for windows compiling 
 #FFLAGS = -g -cpp -fbounds-check -fno-align-commons -static
-FFLAGS = -g -cpp -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero
+# Extra checks that can be added for deep check of code logic
+# - Steve Malers added to track down remaining issues
+FFLAGS_EXTRA_CHECKS=-fcheck=do,mem,pointer
+FFLAGS = -g -cpp -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_EXTRA_CHECKS)
 #FFLAGS = -O2
 # The flags for all cases (e.g. look for system .mod files, required in gfortran)
 FFLAGS += -I/usr/include
@@ -116,30 +129,31 @@ endif
 # all: compile all programs
 # - the default if make is called without arguments
 # - may want to change so default is 'help'
-all: $(PROGRAMS)
+#all: printenv $(PROGRAMS)
+all: help
 
 # help: print the targets that are available
 help:
-	@echo "-----------------------------------------------------------------------"
+	@echo "--------------------------------------------------------------------------------"
 	@echo "StateMod makefile targets:"
 	@echo ""
-	@echo "all        Default target to compile all programs, currently only"
-	@echo "           statemod but could include utility programs in the future."
+	@echo "all        Default target that prints this help message."
 	@echo "clean      Remove dynamically created files (but not final executable)."
 	@echo "help       Print this message."
+	@echo "statemod   Compile the StateMod executable, recompiling any .o if .for modified."
 	@echo "veryclean  Make the 'clean' target, and also remove the final executable."
 	@echo ""
-	@echo "file.o     Compile the source file.for file into object file,"
+	@echo "file.o     Compile the source file.for file into object file file.o,"
 	@echo "           useful to check syntax for a single file."
-	@echo "-----------------------------------------------------------------------"
-	@echo "Makefile variables that are used:"
+	@echo "--------------------------------------------------------------------------------"
+	@echo "Important makefile variables that are used:"
 	@echo ""
 	@echo "FC (compiler) = $(FC)"
-	@echo "-----------------------------------------------------------------------"
-	@echo "Environment variables that are used:"
+	@echo "--------------------------------------------------------------------------------"
+	@echo "Important environment variables that are used:"
 	@echo ""
 	@echo "OS (to determine operating system) = $(OS)"
-	@echo "-----------------------------------------------------------------------"
+	@echo "--------------------------------------------------------------------------------"
 
 # Dependencies for object files
 # - because statemod is the main output (not library, etc.) only concern is the include file
@@ -562,7 +576,10 @@ statemod: \
 			welrig3p.o \
 			year.o \
 			year2.o
-	$(FC) $(FFLAGS) -o statemod $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o statemod-gfortran-32bit $^ $(LDFLAGS)
+	@echo "-----------------------------------------------------------------------"
+	@echo "Executable is statemod-gfortran-32bit.exe"
+	@echo "-----------------------------------------------------------------------"
 
 # ======================================================================
 # The general rules.  These generally should not require modification.
@@ -595,9 +612,36 @@ statemod: \
 .PHONY: clean veryclean
 
 # Remove intermediate files used when compiling
-clean:
+# - Do not remove *.obj because that is used with Lahey and want gfortran compile to be separate.
+clean: printenv
+	@echo "-----------------------------------------------------------------------"
+	@echo "Removing compile byproducts but not final executable..."
+	@echo "Use 'make veryclean' if necessary to also remove final executable."
+	@echo "-----------------------------------------------------------------------"
 	rm -f *.o *.mod *.MOD
 
+# Print important environment information to help understand setup
+printenv: 
+	@echo "-----------------------------------------------------------------------"
+	@echo "Environment information:"
+ifdef OS
+	@echo "Windows detected from OS environment variable:  yes"
+else
+	@echo "Windows detected from OS environment variable:  no"
+	@echo "...assuming Linux"
+endif
+	@echo "-----------------------------------------------------------------------"
+
 # Remove all intermediate files and the final executable
-veryclean: clean
+veryclean: printenv clean
+	@echo "-----------------------------------------------------------------------"
+	@echo "Removing compile byproducts (make clean) and final executable..."
+	@echo "-----------------------------------------------------------------------"
 	rm -f *~ $(PROGRAMS)
+ifdef OS
+	# Windows...
+	rm -f *~ $(PROGRAMS) statemod-gfortran-32bit.exe statemod-gfortran-64-bit.exe
+else
+	# Linux...
+	rm -f statemod-gfortran-32bit statemod-gfortran-64-bit
+endif

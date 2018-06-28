@@ -343,7 +343,19 @@ c
         AVTEMP(IS)=AVAIL(IS)
       end do
 C
-      IF(iresw.eq.0.and.(IOPRTN.EQ.0.OR.IRTURN(IUSE).EQ.4)) GO TO 140
+C smalers 2017-11-05 add Jim's changes because comment in statem.for indicated
+C     the change fixes array bound issues
+c jhb 20141223 break this line into multiple ifs to avoid irturn being
+c     evaluated everytime
+c      IF(iresw.eq.0.and.(IOPRTN.EQ.0.OR.IRTURN(IUSE).EQ.4)) GO TO 140
+      if(iresw.eq.0) then
+        if(IOPRTN.EQ.0) then
+          GO TO 140
+        endif
+        if(IRTURN(IUSE).EQ.4) then
+          GO TO 140
+        endif
+      endif
 C
 c      
 c rrb 2006/09/28; Not required with 1 structure per station      
@@ -358,7 +370,15 @@ c               CHECK AVAILABLE WATER AT CURRENT STATION
 c 140 IF(AVTEMP(ISCD).GT.0.00001) GO TO 150
   140 IF(AVTEMP(ISCD).GT.small) GO TO 150
 C
-      IF(iresw.eq.0.and.IRTURN(IUSE).LE.3) ISHORT=1
+C smalers 2017-11-05 add Jim's changes because comment in statem.for indicated
+C     the change fixes array bound issues
+c jhb split to two if statements
+c      IF(iresw.eq.0.and.IRTURN(IUSE).LE.3) ISHORT=1
+      IF (iresw.eq.0) then
+        if (IRTURN(IUSE).LE.3) then
+          ISHORT=1
+        endif
+      endif
         iwhy=7
         cwhy='Available flow (AvailX) is zero'
         goto 380
@@ -466,14 +486,32 @@ c               FIND DOWNSTREAM MINIMUM FLOW STATION
       PAVAIL=AVTEMP(IMCD)
       divaloS=pavail
 
-      IF(iresw.eq.0.and.IRTURN(IUSE).EQ.4) PAVAIL=AMIN1(AVTEMP(IMCD),
-     + QSTERN(ND2))
+C smalers 2017-11-05 add Jim's changes because comment in statem.for indicated
+C     the change fixes array bound issues
+c jhb 20141223 break the following into multiple ifs to avoid evaluating irturn
+c      IF(iresw.eq.0.and.IRTURN(IUSE).EQ.4) PAVAIL=AMIN1(AVTEMP(IMCD),
+c     + QSTERN(ND2))
+      if(iresw.eq.0) then
+        if(IRTURN(IUSE).EQ.4)then
+          PAVAIL=AMIN1(AVTEMP(IMCD),QSTERN(ND2))
+        endif
+       endif
 c
 c _________________________________________________________
 c
 c               Step 9; Set actual diversion (divact)
 c 
-  200 IF(iresw.eq.0.and.IRI.LE.IRE.AND.IRTURN(IUSE).NE.4) GO TO 210
+C smalers 2017-11-05 add Jim's changes because comment in statem.for indicated
+C     the change fixes array bound issues
+c jhb 20141223 break the following into multiple ifs to avoid evaluating irturn
+c  200 IF(iresw.eq.0.and.IRI.LE.IRE.AND.IRTURN(IUSE).NE.4) GO TO 210
+   200 if(iresw.eq.0) then
+         if(IRI.LE.IRE) then 
+           if(IRTURN(IUSE).NE.4) then
+             GO TO 210
+           endif
+         endif
+       endif
 c
 c ---------------------------------------------------------
 c               9a. Case 1 No return flow adjustment
@@ -504,7 +542,16 @@ c
       CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1            DIVACT, NDNS,  ISCD     )
 c                        
-      IF(iresw.eq.0.and.IRTURN(IUSE).NE.4) GO TO 290
+C smalers 2017-11-05 add Jim's changes because comment in statem.for indicated
+C     the change fixes array bound issues
+c jhb 20141223 break the following into multiple ifs to avoid evaluating irturn
+c      IF(iresw.eq.0.and.IRTURN(IUSE).NE.4) GO TO 290
+      if(iresw.eq.0) then
+        if(IRTURN(IUSE).NE.4) then
+          GO TO 290
+        endif
+      endif
+
       if (iresw.eq.0) QSTERN(ND2)=QSTERN(ND2)-DIVACT
       GO TO 300
 C
@@ -753,7 +800,15 @@ c               m. Update destination demand ()
         if (iresw.eq.0) DIVMON(ND2)=DIVMON(ND2)+DIVACT
       endif    
  
-      IF(iresw.eq.0.and.IRTURN(IUSE).EQ.4) GO TO 360
+C smalers 2017-11-05 add Jim's changes because comment in statem.for indicated
+C     the change fixes array bound issues
+c jhb 20141223 break the following into multiple ifs to avoid evaluating irturn
+c      IF(iresw.eq.0.and.IRTURN(IUSE).EQ.4) GO TO 360
+      if(iresw.eq.0) then
+        if(IRTURN(IUSE).EQ.4) then
+          GO TO 360
+        endif
+      endif
       GO TO 370
 c
 c               n. Update carrier to a transmtn diversion (qdiv(8,x))
