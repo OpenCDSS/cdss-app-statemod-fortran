@@ -120,6 +120,7 @@ c   ioutSP=details on South Platte Compact
 c		ioutSep=details on call sepsec (seepage)
 c   ioutGVC = details on Grand Valley Check
 c   ioutRep = details on replacement rule
+c   ioutMin = control output to the screen 
       iout=0
       ioutR=0   
       ioutSP=0
@@ -127,6 +128,13 @@ c   ioutRep = details on replacement rule
       ioutGVC=0
       noutGVC=0
       ioutRep=0
+c
+c rrb 2017/12/11; Control amount of output to
+c                 screen for Gfortran that does not
+c                 understand carrige control ('+')
+c                 0 = print every iteration
+c                 1 = print every month
+      ioutmin=1
 c jhb 2014/07/04 debugging
 c      ichk = 94
 
@@ -686,6 +694,11 @@ c     write(6,*) ' '
 cr      if(ioptio.eq.8) then
 cr        write(6,106) iyrmo(mon), xmonam(mon)
 cr      endif 
+c
+c rrb 2017/12/11; Control output  to the screen for Gfortran
+        if(ioutmin.eq.1) then
+          write(6,106) iyrmo(mon), xmonam(mon)
+        endif
 c_______________________________________________________________________
 c		Step X; Print call information
 	    nrepcall=0
@@ -809,10 +822,12 @@ c         Save maximum reoperation by year
               idymax=idy
             endif
 c           if(ioptio.ne.8) then
-              if ( iwx/10 .eq. 0 ) then
-                write(6,103) iyrmo(mon), xmonam(mon), idy, iwx,
-     1            iwxmaxY
-              endif
+c
+c rrb 2017/12/11; Control amount of output to screen for Gfortran
+cx          write(6,103) iyrmo(mon), xmonam(mon), idy, iwx, iwxmaxY
+            if(ioutMin.eq.0) then
+	            write(6,103) iyrmo(mon), xmonam(mon), idy, iwx, iwxmaxY
+	          endif
 c           endif
           endif
 c_______________________________________________________________________

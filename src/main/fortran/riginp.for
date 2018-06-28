@@ -64,6 +64,9 @@ c               ioutD = 1 print *.ddr read
       czero = '0           '                                            
       istop=0
 c
+c rrb 2017/12/11; Fixed typos in several write statements 
+c                 e.g. Ringip = Riginp     
+c
 c               Step 1; Read ISF rights (*.ifr)
 c _________________________________________________________
 c
@@ -88,7 +91,9 @@ c       write(nlog,*) ' Riginp; filena   = ', filena
 c
 c		Allow no data to be read
       if(filena(1:2).eq.'-1') then
-        write(nlog,*) ' Ringip; FYI no instream flow rights provided'
+c
+        write(nlog,*) ' Riginp; FYI no instream flow rights provided'
+        
         numfrr=0
         goto 131
       endif
@@ -193,7 +198,7 @@ C
 c
 c
       if(filena(1:2).eq.'-1') then
-        write(nlog,*) ' Ringip; FYI no reservoir right provided'
+        write(nlog,*) ' Riginp; FYI no reservoir right provided'
         numres=0
         goto 280
       endif
@@ -470,7 +475,7 @@ c rrb 99/05/20
 c
 c		Allow no data to be read
       if(filena(1:2).eq.'-1') then
-        write(nlog,*) ' Ringip; FYI no diversion right provided'
+        write(nlog,*) ' Riginp; FYI no diversion right provided'
         numdvr=0
         goto 361
       endif
@@ -606,7 +611,7 @@ c       write(nlog,*) ' Riginp; filena   = ', filena
 c
 c		Allow no data to be read
       if(filena(1:2).eq.'-1') then
-        write(nlog,*) ' Ringip; FYI no reservoir right provided'
+        write(nlog,*) ' Riginp; FYI no reservoir right provided'
         numdvrw=0
         goto 901
       endif

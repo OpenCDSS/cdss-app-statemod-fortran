@@ -92,9 +92,14 @@ c		iout=0 No details
 c		iout=1 Details
 c		iout=2 Summary
 c		iout=3 Qres(29 details
-c		iout=99 summary indenpendent of ioutiw
+c		iout=99 summary independent of ioutiw
       iout=0
       ioutiw=0
+c
+c rrb 2017/12/07
+c     ioutY=1 0 Do not print limit data
+c             1 Print limit data (ity and iopsou(3,l2))
+      ioutY=0      
 c
 c rrb 2016-/06/25; Additional outut  
       if(ichk.eq.4) iout=2 
@@ -142,8 +147,9 @@ c
       cwhy='N/A'
       ity=0
       lr=l2
-      
-      
+c
+c rrb 2017/12/07; Initize
+      np=0
 c
 c _________________________________________________________
 c
@@ -269,15 +275,22 @@ c
 c rrb 2006/11/27; Revise to allow output
 c     caprem=2000000
       caprem=1000000/fac
+c
       if(iopsou(3,l2).ge.0) go to 110
       
       ity=-(iopsou(3,l2)-((iopsou(3,l2)/10)*10))
-      write(99,*) 'ity',ity
+c
+c rrb 2017/12/07; Detailed output
+cx    write(99,*) '  Rsrspu; ity = ', ity
+      if(ioutY.eq.1) then
+        write(99,*) '  Rsrspu; iopsou(3,l2), ity = ',iopsou(3,l2),ity
+      endif
+      
 c _________________________________________________________
 c
 c		Step 6; Diversion Limit (ity=1)      
       if(ity.eq.1) then
-        NP  =-iopsou(3,l2)/10
+        NP =-iopsou(3,l2)/10
 c
 c  grb following line added 6-29-97 to allow for switch to use ddm file for a
 c  structure as the necessary contents in the source before a bookover is made
@@ -535,9 +548,20 @@ c     DIVMON(NP  )=DIVMON(NP  )+DIVACT
 c smalers 2017-11-07 add check for invalid array index
 c      if (nd.ne.nr) DIVMON(NP  )=DIVMON(NP  )+DIVACT
 c jhb 2016/10/17 prevent array bound error when np=0
-      if(np.gt.0) then
-        if (nd.ne.nr) DIVMON(NP  )=DIVMON(NP  )+DIVACT
-      endif
+c
+c rrb 2017/12/07; Revise logic to insure the following line only
+c                   operates when the limit is a diversion (ity=1)
+c                    if ity=0 then np = 0 no limit to bookover
+c                    if ity=1 then np = pointer to diversion limit structure
+c                    if ity=2 then np = pointer to operating rule limit
+cx    if(np.gt.0) then
+cx      if (nd.ne.nr) DIVMON(NP  )=DIVMON(NP  )+DIVACT
+cx    endif
+      if(ity.eq.1) then
+        if(np.gt.0) then
+          if (nd.ne.nr) DIVMON(NP  )=DIVMON(NP  )+DIVACT
+        endif 
+      endif     
 c
 c        nd = destination
 c        nr = source

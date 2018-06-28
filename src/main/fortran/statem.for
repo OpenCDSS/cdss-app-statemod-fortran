@@ -192,8 +192,9 @@ c				 9 includes wells
 c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
-        ver = '15.00.03'
-        vdate = '2017/11/13'
+c
+        ver = '15.00.06'
+        vdate = '2017/12/11'
 c
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -208,7 +209,7 @@ c
 c _________________________________________________________
 c        
 C
-C------  SPESIFY MAXIMUM DIMENSION OF ARRAYS
+C------  SPECIFY MAXIMUM DIMENSION OF ARRAYS
 C
 c
 c rrb 99/08/26; Rio Grande
@@ -615,6 +616,25 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - 2017/12/11 (15.00.06)',/
+     1 '      Revised the following to limit screen output',/
+     1 '        for Gfortran: ',/
+     1 '        outdivw, outxss, outres, execut',/
+     1 '      Revised the following to verify or delete',/
+     1 '        edits by Jim Brannon (jhb)',/
+     1 '        divcarl, divcar1, divresp2, divrplp, mdainp',/
+     1 '        outmon, outpln, outplnmo, riginp, rsrspu',/
+     1 '    - 2017/12/07 (15.00.05)',/
+     1 '      Revised Rsrsup (type 6) to correct an array value =0',/
+     1 '        and ensure the diversion limit adjustment works OK',/     
+     1 '    - 2017/12/03 (15.00.04)',/
+     1 '      Revised Outmon to correct a reporting ',/
+     1 '        issued in *.xdd when diverting to a reservoir',/
+     1 '        with losses that occurred after the edits',/
+     1 '        to DivResp2 (type 27) in 15.00.03',/
+     1 '      Revised DivRplP (type 28) to include consistent',/
+     1 '        edits performed to DivResp2 in 15.00.03',/
+      
      1 '    - 2017/10/20 (15.00.03)',/
      1 '      Revised SetPar to include River_Release',/
      1 '        River_Divert, Reservoir_Carry and ',/
