@@ -416,11 +416,22 @@ c               Turn off Opr right if source water right is off
               if(ion.ne.-1) then
                 if(iifrsw1(nx).eq.0) then
                   ioprsw(k) = 0
-                  if(iprinto.eq.0) write(nlog,300)
-                  
+c
+c rrb 2018/04/08; Reduce output to *.log                   
+cx                  if(iprinto.eq.0) write(nlog,300)                 
+cx                  iprinto=iprinto+1
+cx                  write(nlog,302) iprinto, ityopr1, cidvri, nameo(k), 
+cx     1              cx, iifrsw1(nx), nx, cidvri
+cx     
+                  if(iprinto.eq.0) then
+                    write(nlog,1282) 'Rights turned off by a opr. rule'                    
+                    write(nchk,300)       
+                  endif
+                            
                   iprinto=iprinto+1
-                  write(nlog,302) iprinto, ityopr1, cidvri, nameo(k), 
+                  write(nchk,302) iprinto, ityopr1, cidvri, nameo(k), 
      1              cx, iifrsw1(nx), nx, cidvri
+     
                 endif
               endif
 c
@@ -486,10 +497,20 @@ c		            controlled by an operating rule
                 if(irsrsw1(nx).eq.0) then
                   ioprsw(k) = 0
 cr                if(iprinto.eq.0) write(nlog,1281)
-                  if(iprinto.eq.0) write(nlog,300)
-                  
+c
+c rrb 2018/04/08; Reduce output to *.log    
+cx                if(iprinto.eq.0) write(nlog,300)
+cx                  iprinto=iprinto+1
+cx                  write(nlog,302) iprinto, ityopr1, cidvri, nameo(k), 
+cx     1              cx, irsrsw1(nx), nx, cidvri
+cx
+                  if(iprinto.eq.0) then             
+                    write(nlog,1282) 'Rights turned off by a opr. rule'  
+                    write(nchk,300) 
+                  endif        
+                                             
                   iprinto=iprinto+1
-                  write(nlog,302) iprinto, ityopr1, cidvri, nameo(k), 
+                  write(nchk,302) iprinto, ityopr1, cidvri, nameo(k), 
      1              cx, irsrsw1(nx), nx, cidvri
                 endif
               endif
@@ -498,9 +519,21 @@ c ---------------------------------------------------------
 c
               if(ion.eq.1) then
                 irsrsw(nx)=0
-                if(iprinto.eq.0) write(nlog,300)
-                iprinto=iprinto+1                
-                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+c
+c rrb 2018/04/08; Reduce output to *.log                    
+cx                if(iprinto.eq.0) write(nlog,300)
+cx                iprinto=iprinto+1   
+cx                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+cx     1              cx, irsrsw(nx), nx, cx 
+cx
+                if(iprinto.eq.0) then
+                  write(nlog,1282) 'Rights turned off by a opr. rule'                  
+                  write(nchk,300)
+                endif
+                
+                iprinto=iprinto+1   
+                          
+                write(nchk,302) iprinto, ityopr1, cidvri, nameo(k),
      1              cx, irsrsw(nx), nx, cx
               endif
               
@@ -548,11 +581,22 @@ c ---------------------------------------------------------
               if(idvrsw1(nx).eq.0) then
                 ioprsw(k) = 0
 cr              if(iprinto.eq.0) write(nlog,1281)
-                if(iprinto.eq.0) write(nlog,300)
+c
+c rrb 2018/04/08; Reduce output to *.log                    
+cx                if(iprinto.eq.0) write(nlog,300)
+cx                
+cx                iprinto=iprinto+1
+cx                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+cx     1              cx, idvrsw1(nx), nx, cidvri
+     
+                if(iprinto.eq.0) then
+                  write(nlog,1282) 'Rights turned off by a opr. rule'                              
+                  write(nchk,300)
+                endif
                 
                 iprinto=iprinto+1
-                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
-     1              cx, idvrsw1(nx), nx, cidvri
+                write(nchk,302) iprinto, ityopr1, cidvri, nameo(k),
+     1              cx, idvrsw1(nx), nx, cidvri    
               endif
 c
 c
@@ -561,10 +605,20 @@ c rrb 04/09/20; turn off source right, it is now controlled by an
 c		operating right  
               if(ion.eq.1) then
                 idvrsw(nx)=0
+c
+c rrb 2018/04/08; Reduce output to *.log   
+cx                if(iprinto.eq.0) write(nlog,300)
+cx                iprinto=iprinto+1                
+cx                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+cx     1              cx, idvrsw(nx), nx, cx
+cx             
+                if(iprinto.eq.0) then
+                  write(nlog,1282) 'Rights turned off by a opr. rule'                                         
+                  write(nchk,300)
+                endif
                 
-                if(iprinto.eq.0) write(nlog,300)
                 iprinto=iprinto+1                
-                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+                write(nchk,302) iprinto, ityopr1, cidvri, nameo(k),
      1              cx, idvrsw(nx), nx, cx
               endif
 c
@@ -608,14 +662,28 @@ c ---------------------------------------------------------
 c		   Turn off right if the source right is off
               if(ion.eq.1 .and. ioprsw(nx).eq.0) then
                 ioprsw(k) = 0
-                if(iprinto.eq.0) write(nlog,300)
-                
+c
+c rrb 2018/04/08; Reduce output to *.log                   
+cx                if(iprinto.eq.0) write(nlog,300)
+cx                iprinto=iprinto+1
+cx                write(nlog,*) iprinto, cidvri, nameo(k),
+cx     1              cx, corid(nx), nx
+cx                write(nlog,*) iprinto, cidvri, nameo(k),
+cx     1              cx, corid(nx), nx
+cx                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+cx     1              cx, corid(nx), nx, cidvri
+cx                              
+                if(iprinto.eq.0) then
+                  write(nlog,1282) 'Rights turned off by a opr. rule'                                                         
+                  write(nchk,300)
+                endif
+                                
                 iprinto=iprinto+1
-                write(nlog,*) iprinto, cidvri, nameo(k),
+                write(nchk,*) iprinto, cidvri, nameo(k),
      1              cx, corid(nx), nx
-                write(nlog,*) iprinto, cidvri, nameo(k),
+                write(nchk,*) iprinto, cidvri, nameo(k),
      1              cx, corid(nx), nx
-                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+                write(nchk,302) iprinto, ityopr1, cidvri, nameo(k),
      1              cx, corid(nx), nx, cidvri
               endif
 c
@@ -666,11 +734,22 @@ cr                goto 500
                 else
                   if(ioprsw(nx).eq.0) then
                     ioprsw(k) = 0
-                    if(iprinto.eq.0) write(nlog,300)
+c
+c rrb 2018/04/08; Reduce output to *.log                                       
+cx                    if(iprinto.eq.0) write(nlog,300)
+cx                    
+cx                    iprinto=iprinto+1
+cx                    write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+cx     1                cx, ioprsw(nx), nx, cidvri      
+cx
+                    if(iprinto.eq.0) then
+                      write(nlog,1282) 'Rights turned off by opr. rule'                      
+                      write(nchk,300)
+                    endif
                     
                     iprinto=iprinto+1
-                    write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
-     1                cx, ioprsw(nx), nx, cidvri                    
+                    write(nchk,302) iprinto, ityopr1, cidvri, nameo(k),
+     1                cx, ioprsw(nx), nx, cidvri                                 
                   endif
 cr                goto 500
                 endif
@@ -720,12 +799,23 @@ c		            controlled by an operating rule
               if(idvrsww1(nx).eq.0) then
                 ioprsw(k) = 0
 cr              if(iprinto.eq.0) write(nlog,1281)
-                if(iprinto.eq.0) write(nlog,300)
+c
+c rrb 2018/04/08; Reduce output to *.log                                       
+cx                if(iprinto.eq.0) write(nlog,300)
+cx                
+cx                iprinto=iprinto+1
+cx                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+cx     1              cx, idvrsww1(nx), nx, cidvri
+cx
+                if(iprinto.eq.0) then
+                  write(nlog,1282) 'Rights turned off by a opr. rule'                 
+                  write(nchk,300)
+                endif
                 
                 iprinto=iprinto+1
-                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+                write(nchk,302) iprinto, ityopr1, cidvri, nameo(k),
      1              cx, idvrsww1(nx), nx, cidvri
-                
+               
               endif
 c
 c ---------------------------------------------------------
@@ -805,10 +895,21 @@ c ---------------------------------------------------------
               if(idvrsww1(nx).eq.0) then
                 ioprsw(k) = 0
 cr              if(iprinto.eq.0) write(nlog,1281)
-                if(iprinto.eq.0) write(nlog,300)
+c
+c rrb 2018/04/08; Reduce output to *.log                                       
+cx                if(iprinto.eq.0) write(nlog,300)
+cx                
+cx                iprinto=iprinto+1
+cx                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+cx     1              cx, idvrsww1(nx), nx, cidvri
+cx
+                if(iprinto.eq.0) then
+                  write(nlog,1282) 'Rights turned off by a opr. rule'                 
+                  write(nchk,300)
+                endif
                 
                 iprinto=iprinto+1
-                write(nlog,302) iprinto, ityopr1, cidvri, nameo(k),
+                write(nchk,302) iprinto, ityopr1, cidvri, nameo(k),
      1              cx, idvrsww1(nx), nx, cidvri
                 
               endif
@@ -1317,6 +1418,10 @@ c ____________________________________________________
      
  1281  FORMAT(/,72('_'),/
      1  '  Oprfind; Warning See *.chk for details.')
+     
+ 1282  FORMAT(/,72('_'),/
+     1  '  Oprfind; Warning See *.chk for details regarding: ',a32)
+     
      
 c              
 c               Error Processing

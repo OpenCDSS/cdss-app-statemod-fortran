@@ -10,7 +10,7 @@ c
 c      iw       = water right loop counter
 c      iwx      = total number of reoperations per time step
 c      iwxt     = total number of reoperations per simulation
-c      iwxo     = counter for output of reoperations
+c      iwxo     = counter for output of reoperations per time step
 c      iwxmax   = maximum reoperations that occurred in a given run
 c      iwxlimit = maximum reoperations allows in a given time step
 c
@@ -812,7 +812,12 @@ c_______________________________________________________________________
 c		Step X; Water Right Loop
  135      iw = iw+1
 c_______________________________________________________________________
-c         Save maximum reoperation by year		 
+c         Save maximum reoperation by year	
+c           iwx      = total number of reoperations per time step
+c           iwxo     = counter for output of reoperations per time step
+c           Therefore if iwx.ne.iwxo means it wont print unless the 
+c                     there is a new reoperation
+	 
           if(iwx.ne.iwxo) then
             iwxo=iwx
             iwxmax=max0(iwxmax, iwx)
@@ -830,6 +835,12 @@ cx          write(6,103) iyrmo(mon), xmonam(mon), idy, iwx, iwxmaxY
 	          endif
 c           endif
           endif
+c
+c rrb 2018/03/19; Add printout of annual iterations.
+c                 Note this is very slow so comment out
+cx          if(ioutMin.eq.0) then
+cx	          write(6,104) iyrmo(mon), xmonam(mon), idy, iwx, iwxmaxY
+cx	        endif        
 c_______________________________________________________________________
 c rrb 2006/11/01; Initilized inside water right loop		
           divchkR=0.0
@@ -1549,10 +1560,11 @@ c        write(nlogx,*) ' Execut; type 26 In Avail(8) ', avail(8)*fac,
 c     1                avinp(8)*fac 
         if(ichk.eq.94) write(nlogx,*) ' Execut; Calliing 26 directWR'
 c
-c	         
-        call directWR(iw,l2,ishort,divactX,ncall(26))
-cx      icall26=1
-cx     endif    
+c
+       call directWR(iw,l2,ishort,divactX,ncall(26))
+c        
+c      icall26=1
+c     endif    
 c          
 c      write(nlog,*) ' Execut; type 26 Out Avail(8)', avail(8)*fac,
 c    1               avinp(8)*fac   
@@ -1574,6 +1586,9 @@ cx     1   avinp(8)*fac
 cx       write(nlog,*)'  Execut; Warning type 27 off'   
 cx
        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 27-DivResP2' 
+c
+c rrb 2018/03/09; Test
+cx
        call DivResP2(iw,l2,ishort,irep,tranlim,dcrdivx,divdx,
      1   divactx,divacty,ncall(27))	    
        
@@ -1593,7 +1608,8 @@ c
 	    dcrdivx=0.0
 	    divdx=0.0  
 cx      write(nlog,*)'  Execut; Warning type 28 off'    
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 28-DivRplP'    
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 28-DivRplP' 
+c
       call divRplP(iw,l2,ishort,irep,tranlim,dcrdivx,divdx,
      1             divactx,divacty,ncall(28))   
 	    goto 400
@@ -1606,7 +1622,10 @@ c     write(nlog,*) ' Execut; type 29 In Avail(8) ', avail(8)*fac,
 c    1    avinp(8)*fac    
 cx       write(nlog,*)'  Execut; Warning type 29 off'    
       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 29-PowSeaP' 
-      call powseaP(iw,l2,divactx,ncall(29))  
+c
+c rrb 2018/03/09; test
+cx    
+       call powseaP(iw,l2,divactx,ncall(29))  
         
 c      write(nlog,*) ' Execut; type 29 Out Avail(8)', avail(8)*fac,
 c    1    avinp(8)*fac     
@@ -1658,7 +1677,8 @@ c
 c rrb 05/03/29; Type 35 Import with Reuse (NO CARRIER)
 c
   335  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 35-DivIMpR'   
+       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 35-DivIMpR' 
+c
        call divImpR(iw,l2,ishort,divactx,ncall(35))  
 	     goto 400   
 c_______________________________________________________________________
@@ -1738,15 +1758,20 @@ c
 c rrb 05/01/30; Type 44. Recharge Well to a Reservoir
 c
   344  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 44-WelRech'   
-       call WelRech(iw,l2,ncall(44))  
+       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 44-WelRech' 
+c
+c rrb 2018/03/09; test
+         call WelRech(iw,l2,ncall(44))  
 	     goto 400
 c_______________________________________________________________________
 c
 c rrb 05/01/30; Type 45. Carrier with Loss
 c
   345  continue  
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 45-DivCarL'   
+       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 45-DivCarL' 
+c
+c rrb 2018/03/09; test
+cx       
        call DivCarL(iw,l2,ishort,divactx, ncall(45))  
 c      write(nlog,*) '  Execut; ID = ',corid(l2)
        
@@ -1773,8 +1798,10 @@ c
 c rrb 05/01/28; Type 48. Reservoir or Reuse Plan to a T&C Plan  direct
 c
   348  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 48-PowResP'   
-       call PowResP(iw,l2,divactX,ncall(48))
+       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 48-PowResP'
+c
+c rrb 2018/03/09; Test
+         call PowResP(iw,l2,divactX,ncall(48))
 	     goto 400
 c_______________________________________________________________________
 c
@@ -2290,7 +2317,7 @@ c               Note Daily model has already read *.out
 c
 c rrb 01/04/03; Daily model has already opened *.out
        if(iday.eq.0) then
-	  ioutx=0
+	       ioutx=0
 c
 c rrb 98/12/31; Wells
           if(infile.eq.1) then
@@ -2409,49 +2436,49 @@ c 		Print output files to screen
  503    format(/,72('_'),/ 
      1  '  Execut; Successful Run output files are:')
         if(ioptio.ne.8) then                       
-	  write(nf,*) ' '
-	  write(nf,*)   ' Diversion output:             *.xdd'
-	  write(nf,*)   ' Reservoir output:             *.xre'
-	  write(nf,*)   ' Operating Rule Info:          *.xop'
-	  write(nf,*)   ' Instream Reach Info:          *.xir'
-	  write(nf,*)   ' Structure Summary:            *.xss'  
-	  write(nf,*)   ' Call (Control) Summary:       *.xca'  
+	      write(nf,*) ' '
+	      write(nf,*)   ' Diversion output:             *.xdd'
+	      write(nf,*)   ' Reservoir output:             *.xre'
+	      write(nf,*)   ' Operating Rule Info:          *.xop'
+	      write(nf,*)   ' Instream Reach Info:          *.xir'
+	      write(nf,*)   ' Structure Summary:            *.xss'  
+	      write(nf,*)   ' Call (Control) Summary:       *.xca'  
+                                                            
+	      if(iwell.ge.1) then                           
+	        write(nf,*) ' Well output:                  *.xwe'
+	      endif                                         
+                                                            
+	      if(isjrip.ge.1) then                          
+	        write(nf,*) ' SJRIP Output:                 *.xsj'
+	      endif                                         
                                                         
-	  if(iwell.ge.1) then                           
-	    write(nf,*) ' Well output:                  *.xwe'
-	  endif                                         
-                                                        
-	  if(isjrip.ge.1) then                          
-	    write(nf,*) ' SJRIP Output:                 *.xsj'
-	  endif                                         
-                                                        
-	  if(nplan.ge.1) then                           
-	    write(nf,*) ' Plan Output:                  *.xpl'
-	  endif                                         
-	                                                
-	  if(irepn.ge.1) then                           
-	    write(nf,*) ' Replacement Reesrvoir Output: *.xrp'
-	  endif                                         
-	                                                
-	  if(irg1+irg2.ge.1)                            
+	      if(nplan.ge.1) then                           
+	        write(nf,*) ' Plan Output:                  *.xpl'
+	      endif                                         
+	                                                    
+	      if(irepn.ge.1) then                           
+	        write(nf,*) ' Replacement Reesrvoir Output: *.xrp'
+	      endif                                         
+	                                                    
+	      if(irg1+irg2.ge.1)                            
      1      write(nf,*) ' Rio Grande Compact Info:      *.xrg' 
 c
 c ---------------------------------------------------------
 c		Daily						
-         if(iday.eq.1) then
-	    write(nf,*) ' Daily Diversion output:       *.xdy'
-	    write(nf,*) ' Daily Reservoir output:       *.xry'
-	    if(iwell.ge.1)                              
+        if(iday.eq.1) then
+	      write(nf,*) ' Daily Diversion output:       *.xdy'
+	      write(nf,*) ' Daily Reservoir output:       *.xry'
+	      if(iwell.ge.1)                              
      1         write(nf,*) ' Daily Well output:            *.xwy'
-	    if(ichk.eq.8) 
+	      if(ichk.eq.8) 
      1         write(nf,*) ' Daily Naturalized Streamflow  *.xtp'
-	    write(nf,*) ' Note, other daily data not available'
-	  endif
+	      write(nf,*) ' Note, other daily data not available'
+	    endif
         else
-	  write(nf,*) ' '
-	  write(nf,*) ' No standard reports generated'
+	    write(nf,*) ' '
+	    write(nf,*) ' No standard reports generated'
           write(nf,*) ' To get them run report -xst'
-        endif
+      endif
       end do
       
       if(ideplete.eq.1) write(nlog,9000)
@@ -2541,7 +2568,12 @@ c               Formats
      
  103   format(
      1   '+', ' Execut; Year ', i5, ' Month ', a4, ' Day ', i3,
+     1   ' Reoperation ', i5, ' Annual Maximum ', i5)
+     
+ 104   format(
+     1   '+', ' Execut; Year ', i5, ' Month ', a4, ' Day ', i3,
      1   ' Reoperation ', i5, ' Annual Total ', i5)
+     
      
  106   format(
      1   '+', ' Execut;  Year ', i5, ' Month ', a4)  
