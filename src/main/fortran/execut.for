@@ -809,7 +809,10 @@ c         Save maximum reoperation by year
               idymax=idy
             endif
 c           if(ioptio.ne.8) then
-	        write(6,103) iyrmo(mon), xmonam(mon), idy, iwx, iwxmaxY
+              if ( iwx/10 .eq. 0 ) then
+                write(6,103) iyrmo(mon), xmonam(mon), idy, iwx,
+     1            iwxmaxY
+              endif
 c           endif
           endif
 c_______________________________________________________________________

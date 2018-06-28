@@ -17,7 +17,9 @@
 *.so
 *.log
 
-# Lahey dynamic files
+# Lahey compiler dynamic files
+src/main/fortran/AMTEMP.BAT
+src/main/fortran/AMTEMP2.BAT
 *.DEP
 
 # Top-level bin folder and distribution folder
