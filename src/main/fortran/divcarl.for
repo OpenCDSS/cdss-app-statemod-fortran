@@ -103,7 +103,13 @@ c
 c      nd2   =  destination pointer
 c               Initially + = diversion
 c               Initially - = reservoir
-c	 	            Later diversion or reservoir pointer
+c	 	            Later a diversion pointer
+c     
+c rrb 2017/12/11; Documentaion
+c      nr2   =  reservoir pointer
+c               Initially + = diversion
+c               Initially - = reservoir
+c	 	            Later a reservoir pointer
 c     
 c	     iscd  = Source location on river
 c
@@ -374,6 +380,9 @@ c rrb 2009/05/14;
       nd=0
       nd2=0
       nS1=0
+c
+c rrb 2017/12/11; Initilize
+      nr2=0
       
       if (intern(l2,1).ne.0) ccarry='Yes'
       cshare='No '
@@ -1941,15 +1950,20 @@ c	 	   nrown1=number of accounts in this reservoir
 c	 	   iown = first account associated with this reservoir        
 c	 	   icx = calling routine 2=DivCarL
 c	 	   ia   = account to adjust (27=From Carrier Loss)
-         nrX=nd2
+c
+c rrb 2017/12/11; Correction, in reservoir section 
+c                 so nd2 should be nr2
+cx       nrX=nd2
+         nrX=nr2
          nrown1=nro
          iownX=irow
          ia=27
 c smalers 2017-11-07 pull in Jim's edit
 c jhb 2016/10/17 prevent array out of bounds error
-         if(nrX.gt.0) then
-           cresid1=cresid(nrX)
-         endif
+c rrb 2017/12/11; Corrected above
+cx         if(nrX.gt.0) then
+         cresid1=cresid(nrX)
+cx         endif
          OprLosAF=OprLost*fac
 c      
 

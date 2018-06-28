@@ -247,7 +247,12 @@ C
             write(nlog,950) pid(i), cgoto
             write(6,950) pid(i), cgoto
             ibad=ibad+1
+c
+c rrb 2017/12/11; Revise to exit to 9999 if a plan is not located on
+c                 the river.  It causes problems when plans are
+c                 printed
 cx          Goto 9999
+            Goto 9999
           endif  
 c     
 c _________________________________________________________

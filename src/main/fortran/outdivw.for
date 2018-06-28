@@ -160,16 +160,20 @@ c
 c rrb 10/27/94 Print Output to screen every 25 structures
         ix = ix+1
         c = float(ip)/float(numsta)*100.0
-c       if(numsta.ge.25) then
-c         if(ix.ge.25 .or. is.eq.nid) then
-c            ix = 0
-c           write(6,260) ip, numsta, c  
-c            call flush(6)
-c          endif
-c        else
+c
+c rrb 2017/12/11; Control amount of output to
+c                 screen for Gfortran that does not
+c                 understand carrige control ('+')
+        if(numsta.ge.25) then
+          if(ix.ge.25 .or. is.eq.nid) then
+             ix = 0
+             write(6,260) ip, numsta, c  
+             call flush(6)
+          endif
+        else
           write(6,260) ip, numsta, c  
           call flush(6)
-c        endif
+        endif
 c
 c _________________________________________________________
 c

@@ -115,10 +115,13 @@ c               Step 4c; Print Header
 c
 c rb 2011/07/28; print the location to the header
 c smalers 2017-11-07 Check to avoid invalid array index
-          if (is.gt.0) then
+c
+c
+c rrb 2017/12/11; Correction varible is is set in getpln
+cx        if (is.gt.0) then
             write(21,300) cunitm, np, iplntyp(np),plntypC(np),Pid(np),
      1        Pname1(np), Psource(np), cstaid(is)
-          endif
+cx        endif
      
           iop=0
           iops=0

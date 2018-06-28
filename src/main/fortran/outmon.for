@@ -403,16 +403,18 @@ c		Note iplntyp=1 for T&C, 2 for well augmentation, 3 CU reuse
 c               4 for Tmtn reuse
         IF(pon(np).gt.0) then
           is=ipsta(np)
-c smalers 2017-11-07 Add checks to avoid array index out of bounds         
-          if(is.gt.0) then
+c smalers 2017-11-07 Add checks to avoid array index out of bounds 
+c
+c rrb 2017/12/11; Correction variable is is set in getpln
+cx          if(is.gt.0) then
             IF(iplntyp(np).eq.1 .or. iplntyp(np).eq.2) then
               demx(is)=demx(is) + pdemT(np)        
               qdiv(11,is)=qdiv(11,is)+Pdem(np)
               QDIV(12,IS)=pdemT(np)
-            endif
+cx          endif
 c
 c rrb 2006/04/18; do not adjust for reservoir recharge since it
-c		  is included in return flow          
+c                is included in return flow          
             
             if(iplntyp(np).ge.3 .and. iplntyp(np).ne.8) then
 c             write(nlog,*) ' Outmon; Plan data for node (is) = ', is
@@ -527,8 +529,10 @@ c
         IS=IRSSTA(NR)
         AVT(IS)=AMIN1(AVT(IS),OFLz(IS))
 c
-c rrb 2010/10/15; Include loss at the destination        
-        rlossX(is)=rlossX(is) + (qres(27,nr) + qres(30,nr))/fac
+c rrb 2010/10/15; Include loss at the destination  
+c rrb 2017/12/03; TEST; already adjusted with fixt to OutBal2.for
+c      
+cx        rlossX(is)=rlossX(is) + (qres(27,nr) + qres(30,nr))/fac
   220 CONTINUE
 c
 c _________________________________________________________
