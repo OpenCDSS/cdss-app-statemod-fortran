@@ -1,97 +1,79 @@
-# cdss-app-statemod-fortran
+# cdss-app-statemod-fortran #
 
-This repository contains the source code and developer documentation for the StateMod water allocation model,
+This repository contains the source code for the StateMod water allocation model,
 which is part of [Colorado's Decision Support Systems (CDSS)](http://cdss.state.co.us).
-CDSS is supported by the [Colorado Water Conservation Board](http://cwcb.state.co.us) and
-[Colorado Division of Water Resources](http://water.state.co.us).
+The StateMod software is being migrated to an open source software project as part of the OpenCDSS project.
+See the following online resources:
 
-The StateMod software is being migrated to an open source software project as part of the OpenCDSS project
-led by the [Open Water Foundation](http://openwaterfoundation.org).
+* [OpenCDSS](http://learn.openwaterfoundation.org/cdss-learn-statemod-dev/)
+* [StateMod Developer Documentation](http://learn.openwaterfoundation.org/cdss-app-statemod-doc-dev/)
+* [StateMod User Documentation](http://learn.openwaterfoundation.org/cdss-app-statemod-doc-user/)
 
-See the following online developer documentation to get started as a StateMod developer:
-
-* [Learn StateMod (for Developers)](http://learn.openwaterfoundation.org/cdss-learn-statemod-dev/)
-
-The developer documentation and guidelines will be updated as the development environment is proven out.
+The developer documentation and guidelines will be updated as the development environment is used in development.  See the following sections in this page:
 
 * [StateMod Repository Folder Structure](#statemod-repository-folder-structure)
-* [Cloning this Repository](#cloning-this-repository)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
 
 -----
 
-<a name="statemod-repository-folder-structure"></a>
 ## StateMod Repository Folder Structure ##
 
-The following folder structure is recommended for StateMod development including this documentation.
+The following are folders in the repository.  Eclpse Photran has been initially configured but developers often use the command-line compiler tools.  Other development environment tools may be used in the future.
+
+```
+cdss-app-statemod-fortran/    StateMod source code and development working files.
+  .github/                    Folder used by Git (DO NOT MODIFY THIS).
+  .settings/                  Used by Eclipse, may be removed in the future.
+  build-util/                 Windows batch files and Linux scripts to build software.
+  doc-doxygen-project/        Doxygen project to help understand code logic (experimental).
+  src/                        StateMod source code root folder.
+    main/                     StateMod main program code.
+      fortran/                Folder for Fortran code, makefiles, etc.
+  .cproject                   Used by Eclipse PHOTRAN.
+  .gitattributes              Standard Git configuration file.
+  .gitignore                  Standard Git configuration file.
+  .project                    Used by Eclipse.
+  LICENSE.md                  StateMod software license (under review).
+  README.md                   This file.
+```
+
+The following folder structure is recommended for StateMod development.
 Top-level folders should be created as necessary.
-
-### Linux ###
-
-```
-/home/user/                                 (user's home folder)
-    cdss-dev/                               (work done for Colorado's Decision Support Systems)
-        StateMod/                           (work related to the StateMod product)
-           git-repos/                       (Git repositories for StateMod)
-               cdss-app-statemod-fortran/   (the StateMod code and documentation repository)
-```
-
-### Windows ####
+Repositories are expected to be on the same folder level to allow scripts in those repositories to work.
 
 ```
-C:\Users\user\                              (user's home folder)
-    cdss-dev\                               (work done for Colorado's Decision Support Systems)
-        StateMod\                           (work related to the StateMod product)
-           git-repos\                       (Git repositories for StateMod)
-               cdss-app-statemod-fortran\   (the StateMod code and documentation repository)
+C:\Users\user\                               Windows user home folder.
+/home/user/                                  Linux user home folder.
+  cdss-dev/                                  Projects that are part of Colorado's Decision Support Systems.
+    StateMod/                                StateMod product folder.
+      git-repos/                             Git repositories for StateMod.
+        cdss-app-statemod-fortran/           StateMod source code development.
+        cdss-app-statemod-fortran-doc-dev/   StateMod develpoer documentation.
+        cdss-app-statemod-fortran-doc-user/  StateMod user documentation.
+        cdss-app-statemod-fortran-test/      StateMod automated tests.
 ```
 
-<a name="cloning-this-repository"></a>
-## Cloning this Repository ##
-
-Clone this repository using a Git software client, for example using Git command line:
-
-### Linux ###
-
-```sh
-> cd /home/user/cdss-dev/StateMod/git-repos
-> git clone https://github.com/OpenWaterFoundation/cdss-app-statemod-fortran.git
-```
-
-### Windows ###
-
-```sh
-> C:
-> cd \Users\user\cdss-dev\StateMod\git-repos
-> git clone https://github.com/OpenWaterFoundation/cdss-app-statemod-fortran.git
-```
-
-<a name="contributing"></a>
 ## Contributing ##
 
 Contributions to this project can be submitted using the following options:
 
 1. StateMod software developers with commit privileges can write to this repository
-as per normal CDSS development protocols.
-2. Post an issue on GitHub with suggested change (preferred for small changes).
-3. Email the contact.
+as per normal OpenCDSS development protocols.
+2. Post an issue on GitHub with suggested change (preferred for small changes).  Provide information using the issue template.
+3. Email a development contact.
 4. Fork the repository, make changes, and do a pull request (preferred for large changes).
 Contents of the current master branch should be merged with the fork to minimize
 code review before committing the pull request.
 
-<a name="license"></a>
+See also the [OpenCDSS / StateMod protocols](http://learn.openwaterfoundation.org/cdss-website-opencdss/statemod/statemod/).
+
 ## License ##
 
 A license for the software is being determined as part of the OpenCDSS project.
+GPL 3.0 has been recommended.
 
-<a name="contact"></a>
 ## Contact ##
 
-The lead developers/maintainers for StateMod are:
-
-* Steve Malers, Open Water Foundation, [steve.malers@openwaterfoundation.org](mailto:steve.malers@openwaterfoundation.org)
-(initial author of this developer documentation and architect of OpenCDSS development/test environment)
-* Ray Bennett, original StateMod developer and current lead contributor
-* Andy Moore, Colorado Water Conservation Board, [andy.moore@state.co.us](mailto:andy.moore@state.co.us) (CDSS lead at the CWCB)
+See the [OpenCDSS / StateMod leadership information for contacts](http://learn.openwaterfoundation.org/cdss-website-opencdss/statemod/statemod/#product-leadership).
