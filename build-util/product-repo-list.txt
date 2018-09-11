@@ -1,0 +1,6 @@
+# Repositories that comprise StateMod
+# - assumes that local folder name will match the repository name
+cdss-app-statemod-fortran
+cdss-app-statemod-fortran-doc-dev
+cdss-app-statemod-fortran-doc-user
+cdss-app-statemod-fortran-test
