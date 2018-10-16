@@ -24,23 +24,20 @@
 dryRun=false # Default is to run operationally
 #dryRun=true  # for testing
 
-version="1.1.0 2018-10-14"
+version="1.2.0 2018-10-16"
 
 # Parse the command parameters
-while getopts :g:hm:p:v opt; do
+while getopts :hm:p:u:v opt; do
 	#echo "Command line option is ${opt}"
 	case $opt in
-		g) # GitHub root URL
-			githubRootUrl=$OPTARG
-			;;
 		h) # usage
 			echo ""
-			echo "Usage:  git-clone-all.sh -m mainRepo -p productHome -g githubRootUrl"
+			echo "Usage:  git-clone-all.sh -m mainRepo -p productHome -u remoteRootUrl"
 			echo ""
-			echo "    git-clone-all.sh -m cdss-app-tstool-main -p cdss-dev/TSTool -g https://github.com/someaccount"
+			echo "    git-clone-all.sh -m cdss-app-tstool-main -p cdss-dev/StateMod -u https://github.com/someaccount"
 			echo "         -m specifies the main repository name."
-			echo "         -p specifies the product home folder relative to HOME."
-			echo "         -g specifies the root URL where GitHub repositories will be found."
+			echo "         -p specifies the product home folder relative to user's home folder."
+			echo "         -g specifies the root URL where repositories will be found."
 			echo ""
 			echo "    -h prints the usage"
 			echo "    -v prints the version"
@@ -52,6 +49,9 @@ while getopts :g:hm:p:v opt; do
 			;;
 		p) # product home
 			productHome=$OPTARG
+			;;
+		u) # GitHub (or other) root URL
+			remoteRootUrl=$OPTARG
 			;;
 		v) # version
 			echo ""
@@ -111,25 +111,25 @@ if [ "${operatingSystem}" = "cygwin" ]
 	# Expect product files to be in Windows user files location (/cygdrive/...), not Cygwin user files (/home/...)
 	home2="/cygdrive/C/Users/$USER"
 fi
-if [ ! -z "${githubRootUrl}" ]
+if [ -z "${remoteRootUrl}" ]
 	then
 	echo ""
 	echo "GitHub root URL has not been specified.  Exiting."
 	exit 1
 fi
-if [ ! -z "${mainRepo}" ]
+if [ -z "${mainRepo}" ]
 	then
 	echo ""
 	echo "Main repository has not been specified.  Exiting."
 	exit 1
 fi
-if [ ! -z "${productHome}" ]
+if [ -z "${productHome}" ]
 	then
 	echo ""
 	echo "Product home folder has not been specified.  Exiting."
 	exit 1
 fi
-# The product home is relative to the users files in a standard CDSS development files location
+# The product home is relative to the user's files in a standard CDSS development files location
 productHomeAbs="$home2/${productHome}"
 # Git repos are located in the following
 gitReposFolder="${productHomeAbs}/git-repos"
@@ -140,7 +140,7 @@ gitRepoFolder=`dirname ${mainRepoFolder}`
 # The following is a list of repositories including the main repository
 # - one repo per line, no URL, just the repo name
 # - repositories must have previously been cloned to local files
-repoList="${mainRepoFolder}/build-util/product-repo-list.txt"
+repoListFile="${mainRepoFolder}/build-util/product-repo-list.txt"
 
 # Make sure that expected folders exist
 if [ ! -d "${productHomeAbs}" ]
@@ -161,18 +161,24 @@ if [ ! -d "${mainRepoFolder}" ]
 	echo "Main repo folder \"${mainRepoFolder}\" does not exist.  Exiting."
 	exit 1
 fi
-if [ ! -f "${repoList}" ]
+if [ ! -f "${repoListFile}" ]
 	then
 	echo ""
-	echo "Product repo list file \"${repoList}\" does not exist.  Exiting."
+	echo "Product repo list file \"${repoListFile}\" does not exist.  Exiting."
 	exit 1
 fi
 
 while [ "1" = "1" ]
 do
 	echo ""
+	echo "Clone all repositories for the product, to set up a new developer environment."
+	echo "The following is from ${repoListFile}"
+	echo ""
+	cat ${repoListFile}
+	echo ""
 	echo "All repositories that don't already exist will be cloned to ${gitReposFolder}."
-	echo "Repositories will use GitHub URL ${githubRootUrl}"
+	echo "Repositories will be cloned using root URL ${remoteRootUrl}"
+	echo "You may be prompted to enter credentials."
 	read -p "Continue [y/n]?: " answer
 	if [ "${answer}" = "y" ]
 	then
@@ -206,7 +212,7 @@ do
 	fi
 	# Clone the repo
 	repoFolder="${productHomeAbs}/git-repos/${repoName}"
-	repoUrl="${githubRootUrl}/${repoName}"
+	repoUrl="${remoteRootUrl}/${repoName}"
 	echo "================================================================================"
 	echo "Cloning repo:  ${repoName}"
 	echo "Repository folder:  ${repoFolder}"
@@ -224,4 +230,11 @@ do
 			git clone ${repoUrl}
 		fi
 	fi
-done < ${repoList}
+done < ${repoListFile}
+echo "================================================================================"
+
+# List the repositories
+
+echo ""
+echo "After cloning, ${gitReposFolder} contains:"
+ls -1 ${gitReposFolder}
