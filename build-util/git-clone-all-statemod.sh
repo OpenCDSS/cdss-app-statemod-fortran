@@ -22,4 +22,4 @@ githubRootUrl="https://github.com/OpenWaterFoundation"
 mainRepo="cdss-app-statemod-fortran"
 
 # Run the general script
-${scriptDir}/git-util/git-clone-all.sh -m "${mainRepo}" -p "${productHome}" -g "${githubRootUrl}" $@
+${scriptDir}/git-util/git-clone-all.sh -m "${mainRepo}" -p "${productHome}" -u "${githubRootUrl}" $@
