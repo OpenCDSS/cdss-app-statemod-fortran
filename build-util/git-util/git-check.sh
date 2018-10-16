@@ -35,9 +35,11 @@ while getopts :hm:p:v opt; do
 			echo ""
 			echo "Usage:  git-check.sh -m mainRepo -p productHome"
 			echo ""
+			echo "    git-check.sh -m product-main-repo -p DevFolder/Product"
 			echo "    git-check.sh -m cdss-app-tstool-main -p cdss-dev/TSTool"
 			echo "         -m specifies the main repo name."
 			echo "         -p specifies the product home folder relative to HOME"
+			echo "            (a git-repos folder is assumed to exist under this)."
 			echo ""
 			echo "    -h prints the usage"
 			echo "    -v prints the version"
@@ -289,7 +291,14 @@ if [ "${operatingSystem}" = "cygwin" ]
 	# Expect product files to be in Windows user files location (/cygdrive/...), not Cygwin user files (/home/...)
 	home2="/cygdrive/C/Users/$USER"
 fi
-# Product home is relative to the users files in a standard CDSS development files location
+# Product home is relative to the users files in a standard development files location
+# $HOME/
+#    DevFiles/
+#      ProductHome/
+#        git-repoos/
+#          repo-name1/
+#          repo-name2/
+#          ...
 productHomeFolderAbs="$home2/${productHomeFolder}"
 # Location of git repositories
 # - currently assume that there is a "git-repos" folder under the product home folder
