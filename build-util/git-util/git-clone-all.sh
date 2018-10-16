@@ -34,10 +34,12 @@ while getopts :hm:p:u:v opt; do
 			echo ""
 			echo "Usage:  git-clone-all.sh -m mainRepo -p productHome -u remoteRootUrl"
 			echo ""
-			echo "    git-clone-all.sh -m cdss-app-tstool-main -p cdss-dev/StateMod -u https://github.com/someaccount"
+			echo "    git-clone-all.sh -m main-repo-folder -p dev-folder/ProductName -u https://github.com/SomeAccount"
+			echo "    git-clone-all.sh -m cdss-app-tstool-main -p cdss-dev/TSTool -u https://github.com/OpenCDSS"
 			echo "         -m specifies the main repository name."
-			echo "         -p specifies the product home folder relative to user's home folder."
-			echo "         -g specifies the root URL where repositories will be found."
+			echo "         -p specifies the product home folder relative to user's home folder"
+			echo "            (git-repos folder is assumed to exist under this)."
+			echo "         -u specifies the root URL where repositories will be found."
 			echo ""
 			echo "    -h prints the usage"
 			echo "    -v prints the version"
@@ -129,7 +131,15 @@ if [ -z "${productHome}" ]
 	echo "Product home folder has not been specified.  Exiting."
 	exit 1
 fi
-# The product home is relative to the user's files in a standard CDSS development files location
+# The product home is relative to the user's files in a standard development files location:
+# 
+# $HOME/
+#    DevFiles/
+#      ProductHome/
+#        git-repoos/
+#          repo-name1/
+#          repo-name2/
+#          ...
 productHomeAbs="$home2/${productHome}"
 # Git repos are located in the following
 gitReposFolder="${productHomeAbs}/git-repos"
@@ -174,7 +184,9 @@ do
 	echo "Clone all repositories for the product, to set up a new developer environment."
 	echo "The following is from ${repoListFile}"
 	echo ""
+	echo "--------------------------------------------------------------------------------"
 	cat ${repoListFile}
+	echo "--------------------------------------------------------------------------------"
 	echo ""
 	echo "All repositories that don't already exist will be cloned to ${gitReposFolder}."
 	echo "Repositories will be cloned using root URL ${remoteRootUrl}"
