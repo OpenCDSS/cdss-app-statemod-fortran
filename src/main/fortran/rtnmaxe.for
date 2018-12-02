@@ -1,6 +1,26 @@
-c
-c *********************************************************
-c
+c rtnmaxe - calculates maximum diversion allowable
+c           (pavail) with returns in a given reach using a maximum  efficiency approach. Note:
+c           1. Same as rtnmax but it allows a percent of the source to be included (pctS)
+c           2. It is used instead of rtnsec because it calculates a maximum, not actual.
+c_________________________________________________________________NoticeStart_
+c StateMod Water Allocation Model
+c StateMod is a part of Colorado's Decision Support Systems (CDSS)
+c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c 
+c StateMod is free software:  you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
+c     the Free Software Foundation, either version 3 of the License, or
+c     (at your option) any later version.
+c 
+c StateMod is distributed in the hope that it will be useful,
+c     but WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+c     GNU General Public License for more details.
+c 
+c     You should have received a copy of the GNU General Public License
+c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
+c_________________________________________________________________NoticeEnd___
+
         subroutine RtnmaxE(
      1   iter, iuse, iri, ire, iscd, ndns, 
      1   small, pctS, pavail, ieff2, cCallBy, corid1)

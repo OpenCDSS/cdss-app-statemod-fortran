@@ -8,6 +8,8 @@
 # ======================================================================
 # The compiler
 FC = gfortran
+# Determine the StateMod version, to use in the executable name
+STATEMOD_VERSION := $(shell cat statem.for | grep 'ver =' | grep -v 'xx' | cut -d '=' -f 2 | sed "s/'//g" | tr -d ' ' )
 # The flags for debugging or for maximum performance, comment as necessary
 
 # -cpp
@@ -149,6 +151,7 @@ help:
 	@echo "Important makefile variables that are used:"
 	@echo ""
 	@echo "FC (compiler) = $(FC)"
+	@echo "STATEMOD_VERSION (from statem.for) = $(STATEMOD_VERSION)"
 	@echo "--------------------------------------------------------------------------------"
 	@echo "Important environment variables that are used:"
 	@echo ""
@@ -351,7 +354,7 @@ statemod: \
 		namext.o \
 		$(parse_o_file) \
 		$(getpath_o_file) \
-		gnu.o \
+		license.o \
 		skipn.o \
 		getfn.o \
 		setpar.o \
@@ -576,10 +579,19 @@ statemod: \
 			welrig3p.o \
 			year.o \
 			year2.o
-	$(FC) $(FFLAGS) -o statemod-gfortran-32bit $^ $(LDFLAGS)
+ifdef OS
+	# Windows...
+	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-32bit.exe $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
-	@echo "Executable is statemod-gfortran-32bit.exe"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-32bit.exe"
 	@echo "-----------------------------------------------------------------------"
+else
+	# Linux...
+	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-32bit $^ $(LDFLAGS)
+	@echo "-----------------------------------------------------------------------"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-32bit"
+	@echo "-----------------------------------------------------------------------"
+endif
 
 # ======================================================================
 # The general rules.  These generally should not require modification.
@@ -637,11 +649,10 @@ veryclean: printenv clean
 	@echo "-----------------------------------------------------------------------"
 	@echo "Removing compile byproducts (make clean) and final executable..."
 	@echo "-----------------------------------------------------------------------"
-	rm -f *~ $(PROGRAMS)
 ifdef OS
 	# Windows...
-	rm -f *~ $(PROGRAMS) statemod-gfortran-32bit.exe statemod-gfortran-64-bit.exe
+	rm -f *~ $(PROGRAMS) *.exe
 else
 	# Linux...
-	rm -f statemod-gfortran-32bit statemod-gfortran-64-bit
+	rm -f *~ $(PROGRAMS) *.exe statemod-$(STATEMOD_VERSION)-gfortran-32bit statemod-$(STATEMOD_VERSION)-gfortran-64bit
 endif

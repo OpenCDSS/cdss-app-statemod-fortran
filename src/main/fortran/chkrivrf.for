@@ -1,5 +1,23 @@
-c
-c *********************************************************
+c chkrivrf - checks whether return to river data is located properly
+c_________________________________________________________________NoticeStart_
+c StateMod Water Allocation Model
+c StateMod is a part of Colorado's Decision Support Systems (CDSS)
+c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c 
+c StateMod is free software:  you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
+c     the Free Software Foundation, either version 3 of the License, or
+c     (at your option) any later version.
+c 
+c StateMod is distributed in the hope that it will be useful,
+c     but WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+c     GNU General Public License for more details.
+c 
+c     You should have received a copy of the GNU General Public License
+c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
+c_________________________________________________________________NoticeEnd___
+
 c     Last change:  RRB  18 Dec 100    2:29 pm
 c
       SUBROUTINE ChkRivRF(nlog, icx, k, fac, maxopr, maxsta,  
@@ -10,7 +28,7 @@ c		located properly
 c
 c 2008/01/04; Added nRiver to indicate a carrier release to river
 c _________________________________________________________
-c		Documentaiton
+c		Documentation
 c
 c	 itypeR         0 = served directly
 c	 itypeR         1 = served by exchange

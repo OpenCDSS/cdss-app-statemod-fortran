@@ -1,18 +1,24 @@
+c statem - main program for StateMod
+c_________________________________________________________________NoticeStart_
+c StateMod Water Allocation Model
+c StateMod is a part of Colorado's Decision Support Systems (CDSS)
+c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c 
+c StateMod is free software:  you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
+c     the Free Software Foundation, either version 3 of the License, or
+c     (at your option) any later version.
+c 
+c StateMod is distributed in the hope that it will be useful,
+c     but WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+c     GNU General Public License for more details.
+c 
+c     You should have received a copy of the GNU General Public License
+c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
+c_________________________________________________________________NoticeEnd___
 
-c     Last change:  RRB   9 Oct 2002    3:25 pm
-c *********************************************************
-c
-c
-c
       PROGRAM StateM
-c
-c       Statem; Main program for StateMod
-c
-c
-c _________________________________________________________
-c	Program Description
-c
-c		StateM; main program for StateMod
 c _________________________________________________________
 c       Update History
 c
@@ -167,7 +173,7 @@ c      Max # of plans tied to a use (maxplnO)  20   100 No longer used
 c      Max # of plan types (maxplnT)           21   21            
 c
 c _________________________________________________________
-c	Dimensions
+c Dimensions
 c
       include 'common.inc'
       character getid*12, fnlog*256, rec48*48, rec256b*256,
@@ -371,11 +377,10 @@ c               -help option
      1 '        For help with StateMod see documentation and examples')         
         goto 190
       endif
-c
-c
-c _________________________________________________________
 
-c               -version option
+c _________________________________________________________
+c -version option
+c _________________________________________________________
       if(ioptio.eq.5) then
         write(6,200) ver, vdate
   200   format(
@@ -385,35 +390,9 @@ c               -version option
      1 '        Version: ',a8,/,
      1 '        Last revision date: ',a10,//
      1 72('_'))     
+        call license(6)
         goto 190
       endif     
-c
-c
-c _________________________________________________________
-c		- Warrenty request      
-      if(ioptio.eq.10) then
-        write(nlog,200) ver, vdate
-        call gnu(ioptio,nlog)
-        goto 190
-      endif  
-c
-c
-c _________________________________________________________
-c		- Conditions of use
-      if(ioptio.eq.11) then
-        write(nlog,200) ver, vdate
-        call gnu(ioptio,nlog)
-        goto 190
-      endif  
-c
-c
-c _________________________________________________________
-c		- Contact information
-      if(ioptio.eq.12) then
-        write(nlog,200) ver, vdate
-        call gnu(ioptio,nlog)
-        goto 190
-      endif  
 c
 c
 c _________________________________________________________
@@ -619,6 +598,8 @@ c ______________________________________________________________________
 c     Formats
   212   format(//
      1 ' Recent updates',/
+     1 '    - Release TBD',/
+     1 '      Add GPL v3 license to all code and -version output',/
      1 '    - 2018/04/08 (15.00.14)',/
      1 '      Revised Oprinp & Statem & common.inc to increase',/
      1 '        the dimension of maxopr2 to resolve a water balance',/
