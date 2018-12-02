@@ -12,7 +12,11 @@ if "%MinGW_SETUP%"=="YES" (
 )
 
 rem Update PATH to find the MinGW bin folder and also the MSYS folders (Unix utilities).
+echo.
+echo Configuring this Windows command prompt window to compile StateMod with gfortran.
+echo Run setup-mingw-env.bat in each command prompt window that is opened for compiling.
 echo Setting PATH to include MinGW software locations at front of PATH:
+echo.
 set PATH=C:\MinGW\bin;C:\MinGW\MSYS\1.0\local\bin;C:\MinGW\MSYS\1.0\bin;%PATH%
 echo %PATH%
 

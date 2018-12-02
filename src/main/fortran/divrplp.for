@@ -1,3 +1,26 @@
+c divrplp - Type 28 operating rule
+c           It allows a plan release to a diversion, or
+c           reservoir or plan or instream flow reach by exchange.
+c           Note can exchange the diversion amount or depletion amount.
+c_________________________________________________________________NoticeStart_
+c StateMod Water Allocation Model
+c StateMod is a part of Colorado's Decision Support Systems (CDSS)
+c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c 
+c StateMod is free software:  you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
+c     the Free Software Foundation, either version 3 of the License, or
+c     (at your option) any later version.
+c 
+c StateMod is distributed in the hope that it will be useful,
+c     but WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+c     GNU General Public License for more details.
+c 
+c     You should have received a copy of the GNU General Public License
+c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
+c_________________________________________________________________NoticeEnd___
+
 C     Last change:  RRB  28 May 2002    4:31 pm
 c     Type 28
 c

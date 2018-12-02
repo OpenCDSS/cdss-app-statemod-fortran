@@ -35,7 +35,7 @@ cdss-app-statemod-fortran/    StateMod source code and development working files
   .gitattributes              Standard Git configuration file.
   .gitignore                  Standard Git configuration file.
   .project                    Used by Eclipse.
-  LICENSE.md                  StateMod software license (under review).
+  LICENSE.md                  StateMod software license (GPL v3).
   README.md                   This file.
 ```
 
@@ -71,8 +71,7 @@ See also the [OpenCDSS / StateMod protocols](http://learn.openwaterfoundation.or
 
 ## License ##
 
-A license for the software is being determined as part of the OpenCDSS project.
-GPL 3.0 has been recommended.
+The software is licensed under GPL v3+.  See the [LICENSE.md](LICENSE.md) file.
 
 ## Contact ##
 
