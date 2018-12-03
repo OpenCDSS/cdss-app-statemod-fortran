@@ -24,33 +24,71 @@
 dryRun=false # Default is to run operationally
 #dryRun=true  # for testing
 
-version="1.2.0 2018-10-16"
+version="1.3.0 2018-11-27"
+
+# Supporting functions
+
+# Determine the operating system that is running the script
+# - mainly care whether Cygwin
+checkOperatingSystem()
+{
+	if [ ! -z "${operatingSystem}" ]; then
+		# Have already checked operating system so return
+		return
+	fi
+	operatingSystem="unknown"
+	os=`uname | tr [a-z] [A-Z]`
+	case "${os}" in
+		CYGWIN*)
+			operatingSystem="cygwin"
+			;;
+		LINUX*)
+			operatingSystem="linux"
+			;;
+		MINGW*)
+			operatingSystem="mingw"
+			;;
+	esac
+	echo "operatingSystem=$operatingSystem (used to check for Cygwin and filemode compatibility)"
+}
+
+# Print the script usage
+printUsage() {
+	echo ""
+	echo "Usage:  git-clone-all.sh -m productMainRepo -g gitReposFolder -u remoteRootUrl"
+	echo ""
+	echo "Example:"
+	echo "    git-clone-all.sh -m owf-git-util -g $HOME/owf-dev/Util-Git/git-repos -u https://github.com/OpenCDSS"
+	echo ""
+	echo "-g specifies the folder containing 1+ Git repos for product."
+	echo "-h prints the usage"
+	echo "-m specifies the main repository name."
+	echo "-u specifies the root URL where repositories will be found."
+	echo "-v prints the version"
+	echo ""
+}
+
+# Main script entry point
+
+# Check the operating system to control logic
+checkOperatingSystem
 
 # Parse the command parameters
-while getopts :hm:p:u:v opt; do
+while getopts :g:hm:p:u:v opt; do
 	#echo "Command line option is ${opt}"
 	case $opt in
+		g) # Folder containing Git repositories
+			gitReposFolder=$OPTARG
+			;;
 		h) # usage
-			echo ""
-			echo "Usage:  git-clone-all.sh -m mainRepo -p productHome -u remoteRootUrl"
-			echo ""
-			echo "    git-clone-all.sh -m main-repo-folder -p dev-folder/ProductName -u https://github.com/SomeAccount"
-			echo "    git-clone-all.sh -m cdss-app-tstool-main -p cdss-dev/TSTool -u https://github.com/OpenCDSS"
-			echo "         -m specifies the main repository name."
-			echo "         -p specifies the product home folder relative to user's home folder"
-			echo "            (git-repos folder is assumed to exist under this)."
-			echo "         -u specifies the root URL where repositories will be found."
-			echo ""
-			echo "    -h prints the usage"
-			echo "    -v prints the version"
-			echo ""
+			printUsage
 			exit 0
 			;;
 		m) # main repo
 			mainRepo=$OPTARG
 			;;
 		p) # product home
-			productHome=$OPTARG
+			echo "-p is obsolete.  Use -g instead."
 			;;
 		u) # GitHub (or other) root URL
 			remoteRootUrl=$OPTARG
@@ -82,106 +120,65 @@ while getopts :hm:p:u:v opt; do
 	esac
 done
 
-# Determine the OS that is running the script
-# - mainly care whether Cygwin
-checkOperatingSystem()
-{
-	if [ ! -z "${operatingSystem}" ]
-	then
-		# Have already checked operating system so return
-		return
-	fi
-	operatingSystem="unknown"
-	case "$(uname)" in
-		CYGWIN*) operatingSystem="cygwin";;
-		MINGW*) operatingSystem="mingw";;
-	esac
-	echo "operatingSystem=$operatingSystem (used to check for Cygwin)"
-	if [ "${operatingSystem}" = "cygwin" ]
-	then
-		echo "RECOMMEND not using Cygwin git commands for development for this product"
-	fi
-}
-
-# Main script entry point
+if [ -z "${gitReposFolder}" ]; then
+	echo ""
+	echo "The Git repositories folder has not been specified with -g.  Exiting."
+	echo ""
+	exit 1
+fi
+if [ -z "${remoteRootUrl}" ]; then
+	echo ""
+	echo "The remote root URL has not been specified with -u.  Exiting."
+	echo ""
+	exit 1
+fi
 
 # Product development main folder
 # - top-level folder for the product
 home2=$HOME
-if [ "${operatingSystem}" = "cygwin" ]
-	then
+if [ "${operatingSystem}" = "cygwin" ]; then
 	# Expect product files to be in Windows user files location (/cygdrive/...), not Cygwin user files (/home/...)
 	home2="/cygdrive/C/Users/$USER"
 fi
-if [ -z "${remoteRootUrl}" ]
-	then
-	echo ""
-	echo "GitHub root URL has not been specified.  Exiting."
-	exit 1
-fi
-if [ -z "${mainRepo}" ]
-	then
-	echo ""
-	echo "Main repository has not been specified.  Exiting."
-	exit 1
-fi
-if [ -z "${productHome}" ]
-	then
-	echo ""
-	echo "Product home folder has not been specified.  Exiting."
-	exit 1
-fi
-# The product home is relative to the user's files in a standard development files location:
-# 
-# $HOME/
-#    DevFiles/
-#      ProductHome/
-#        git-repoos/
-#          repo-name1/
+# Git repsitories folder is relative to the user's files in a standard development location, for example:
+# $HOME/                     User's files.
+#    DevFiles/               Development files grouped by a system, product line, etc.
+#      ProductHome/          Development files for a specific product.
+#        git-repos/          Git repositories that comprise the product.
+#          repo-name1/       Git repository folders (each containing .git, etc.)
 #          repo-name2/
 #          ...
-productHomeAbs="$home2/${productHome}"
-# Git repos are located in the following
-gitReposFolder="${productHomeAbs}/git-repos"
+#
 # Main repository in a group of repositories for a product
 # - this is where the product repository list file will live
-mainRepoFolder="${productHomeAbs}/git-repos/${mainRepo}"
-gitRepoFolder=`dirname ${mainRepoFolder}`
+mainRepoAbs="${gitReposFolder}/${mainRepo}"
 # The following is a list of repositories including the main repository
 # - one repo per line, no URL, just the repo name
 # - repositories must have previously been cloned to local files
-repoListFile="${mainRepoFolder}/build-util/product-repo-list.txt"
+repoListFile="${mainRepoAbs}/build-util/product-repo-list.txt"
 
-# Make sure that expected folders exist
-if [ ! -d "${productHomeAbs}" ]
-	then
+# Check for local folder existence and exit if not as expected
+# - ensures that other logic will work as expected in folder structure
+
+if [ ! -d "${mainRepoAbs}" ]; then
 	echo ""
-	echo "Product folder \"${productHomeAbs}\" does not exist.  Exiting."
+	echo "Main repo folder does not exist:  ${mainRepoAbs}"
+	echo "Exiting."
+	echo ""
 	exit 1
 fi
-if [ ! -d "${gitReposFolder}" ]
-	then
+if [ ! -f "${repoListFile}" ]; then
 	echo ""
-	echo "Product git-repos folder \"${gitReposFolder}\" does not exist.  Exiting."
-	exit 1
-fi
-if [ ! -d "${mainRepoFolder}" ]
-	then
+	echo "Product repo list file does not exist:  ${repoListFile}"
+	echo "Exiting."
 	echo ""
-	echo "Main repo folder \"${mainRepoFolder}\" does not exist.  Exiting."
-	exit 1
-fi
-if [ ! -f "${repoListFile}" ]
-	then
-	echo ""
-	echo "Product repo list file \"${repoListFile}\" does not exist.  Exiting."
 	exit 1
 fi
 
 while [ "1" = "1" ]
 do
 	echo ""
-	echo "Clone all repositories for the product, to set up a new developer environment."
+	echo "Clone all repositories for the product to set up a new developer environment."
 	echo "The following is from ${repoListFile}"
 	echo ""
 	echo "--------------------------------------------------------------------------------"
@@ -223,10 +220,10 @@ do
 		continue
 	fi
 	# Clone the repo
-	repoFolder="${productHomeAbs}/git-repos/${repoName}"
+	repoFolder="${gitReposFolder}/${repoName}"
 	repoUrl="${remoteRootUrl}/${repoName}"
 	echo "================================================================================"
-	echo "Cloning repo:  ${repoName}"
+	echo "Cloning repository:  ${repoName}"
 	echo "Repository folder:  ${repoFolder}"
 	echo "Repository Url:  ${repoUrl}"
 	if [ -d "${repoFolder}" ]
@@ -237,7 +234,7 @@ do
 	else
 		if [ ${dryRun} = "true" ]
 		then
-			echo "Dry run:  cloning repo with:  git clone \"${repoUrl}\""
+			echo "Dry run:  cloning repository with:  git clone \"${repoUrl}\""
 		else
 			git clone ${repoUrl}
 		fi
