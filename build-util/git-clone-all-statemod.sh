@@ -6,20 +6,20 @@
 # - this script calls the general git utilities script
 
 # Get the location where this script is located since it may have been run from any folder
-# -see: https://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
-# -see: https://gist.github.com/tvlooy/cbfbdb111a4ebad8b93e
-# -the following should work if no symbolic links are involved, but no link should be used here so use the simple solution
-scriptDir=`dirname "$0"`
+scriptFolder=`cd $(dirname "$0") && pwd`
 
-# StateMod product home is relative to the user's files in a standard CDSS development files location
-# - $HOME/${productHome}
-productHome="cdss-dev/StateMod"
+# Git utilities folder is relative to the user's files in a standard development files location
+# - determine based on location relative to the script folder
+# Specific repository folder for this repository
+repoFolder=`dirname ${scriptFolder}`
+# Want the parent folder to the specific Git repository folder
+gitReposFolder=`dirname ${repoFolder}`
 
 # StateMod GitHub repo URL root
-githubRootUrl="https://github.com/OpenWaterFoundation"
+githubRootUrl="https://github.com/OpenCDSS"
 
 # Main StateMod repository
 mainRepo="cdss-app-statemod-fortran"
 
 # Run the general script
-${scriptDir}/git-util/git-clone-all.sh -m "${mainRepo}" -p "${productHome}" -u "${githubRootUrl}" $@
+${scriptFolder}/git-util/git-clone-all.sh -m "${mainRepo}" -g "${gitReposFolder}" -u "${githubRootUrl}" $@

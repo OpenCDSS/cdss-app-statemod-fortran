@@ -24,4 +24,8 @@ rem Set an environment variable to know that the environment was set up
 rem so that rerunning the batch file does not add to the path
 set MinGW_SETUP=YES
 
+rem Set the title of the window
+title MINGW configured to compile using gfortran
+
+rem If here can end the script
 :end

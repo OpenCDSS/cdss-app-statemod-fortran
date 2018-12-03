@@ -1,0 +1,15 @@
+# Ignore everything in this folder except:
+#
+# copy-to-co-dnr-gcp.bat
+# Doxyfile-template
+# README.md
+# .gitignore
+#
+# All other files are dynamic.
+# Use the repository build-util/run-doxygen.sh script to run the software.
+*
+!.gitignore
+!copy-to-co-dnr-gcp.bat
+!copy-to-co-dnr-gcp.sh
+!Doxyfile-template
+!README.md
