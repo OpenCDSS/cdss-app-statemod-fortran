@@ -6,8 +6,8 @@ The StateMod software is being migrated to an open source software project as pa
 See the following online resources:
 
 * [OpenCDSS](http://learn.openwaterfoundation.org/cdss-learn-statemod-dev/)
-* [StateMod Developer Documentation](http://learn.openwaterfoundation.org/cdss-app-statemod-doc-dev/)
-* [StateMod User Documentation](http://learn.openwaterfoundation.org/cdss-app-statemod-doc-user/)
+* [StateMod Developer Documentation](http://learn.openwaterfoundation.org/cdss-app-statemod-fortran-doc-dev/)
+* [StateMod User Documentation](http://learn.openwaterfoundation.org/cdss-app-statemod-fortran-doc-user/)
 
 The developer documentation and guidelines will be updated as the development environment is used in development.  See the following sections in this page:
 
