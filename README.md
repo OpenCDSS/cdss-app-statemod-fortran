@@ -1,7 +1,7 @@
 # cdss-app-statemod-fortran #
 
 This repository contains the source code for the StateMod water allocation model,
-which is part of [Colorado's Decision Support Systems (CDSS)](http://cdss.state.co.us).
+which is part of [Colorado's Decision Support Systems (CDSS)](https://www.colorado.gov/cdss).
 The StateMod software is being migrated to an open source software project as part of the OpenCDSS project.
 See the following online resources:
 
