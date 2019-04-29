@@ -798,7 +798,7 @@ C
      
        CHARACTER
      1 FILENA*256, filenc*256, fpath1*256, 
-     1 ver*8,      vdate*10, ccall*12,  xmonam*4,   
+     1 ver*20,      vdate*10, ccall*12,  xmonam*4,   
      1 filetype*40, filename*256, fileSuf*5, rec256*256
 c
 c _________________________________________________________
