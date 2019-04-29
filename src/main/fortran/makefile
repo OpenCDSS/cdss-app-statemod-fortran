@@ -8,7 +8,10 @@
 # ======================================================================
 # The compiler
 FC = gfortran
-# Determine the StateMod version, to use in the executable name
+# Determine the StateMod version
+# - used in the executable name
+# - also used for installer upload folder, etc.
+# - "dev" at the end of the version (e.g., 15.00.14dev) indicates the software is under development
 STATEMOD_VERSION := $(shell cat statem.for | grep 'ver =' | grep -v 'xx' | cut -d '=' -f 2 | sed "s/'//g" | tr -d ' ' )
 # The flags for debugging or for maximum performance, comment as necessary
 
@@ -581,15 +584,15 @@ statemod: \
 			year2.o
 ifdef OS
 	# Windows...
-	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-32bit.exe $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-win-32bit.exe $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
-	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-32bit.exe"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-win-32bit.exe"
 	@echo "-----------------------------------------------------------------------"
 else
 	# Linux...
 	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-32bit $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
-	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-32bit"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-32bit"
 	@echo "-----------------------------------------------------------------------"
 endif
 
@@ -654,5 +657,5 @@ ifdef OS
 	rm -f *~ $(PROGRAMS) *.exe
 else
 	# Linux...
-	rm -f *~ $(PROGRAMS) *.exe statemod-$(STATEMOD_VERSION)-gfortran-32bit statemod-$(STATEMOD_VERSION)-gfortran-64bit
+	rm -f *~ $(PROGRAMS) *.exe statemod-$(STATEMOD_VERSION)-gfortran-lin-32bit statemod-$(STATEMOD_VERSION)-gfortran-lin-64bit
 endif

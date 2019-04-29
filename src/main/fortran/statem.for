@@ -199,7 +199,7 @@ c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
 c
-        ver = '15.00.14'
+        ver = '15.00.14dev'
         vdate = '2018/04/04'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
@@ -387,7 +387,7 @@ c _________________________________________________________
      1 72('_'),//
      1 '        StateMod                       '/
      1 '        State of Colorado - Water Supply Planning Model     '//
-     1 '        Version: ',a8,/,
+     1 '        Version: ',a20,/,
      1 '        Last revision date: ',a10,//
      1 72('_'))     
         call license(6)
