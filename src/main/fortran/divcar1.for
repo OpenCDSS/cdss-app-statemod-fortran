@@ -3,7 +3,7 @@ c           it recognizes an annual limit to a diversion when iopsou(4,l2) is .g
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-C     Last change:  RRB   7 Dec 101    1:20 pm
 C
       SUBROUTINE DIVCAr1(IW,L2,ISHORT,divactx,ncallX)
 c
@@ -32,7 +30,7 @@ c                 Similar to a standard carrier (type 11) but
 c                 it recognizes an annual limit to a diversion
 c                 when iopsou(4,l2) is .gt. 1.
 c		    Note Oprinp checks that iopsou(4,l2) >=1)
-c                 Also it inlcudes lots of notes added to the old 
+c                 Also it includes lots of notes added to the old 
 c                 type 11
 c
 c _________________________________________________________
@@ -42,7 +40,7 @@ c
 c
 c rrb 2006/08/18; Revised to work with multiple reservoir
 c                 destination accounts
-c rrb 96/03/13; initilize divact, send returns to bottom & set divo
+c rrb 96/03/13; initialize divact, send returns to bottom & set divo
 c
 c rrb 00/12/26; For variable efficiency capability replaced lots of 
 c               code that appears in many different subroutines
@@ -145,7 +143,7 @@ c
      1  cCallBy*12, corid1*12
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 
       iout=0
@@ -753,6 +751,10 @@ c
         nrown1=nro
         iownX=irow
         icx=114
+c
+c rrb 2018/07/05; Test
+cx      write(nlog,*) '  Divcar1; nrX = ', nrX
+        
         cresid1=cresid(nrX)
         ia=2
         call accou(maxacc, maxown, nrX, ownmon, curown, accr, ia,
@@ -894,7 +896,7 @@ c
      1  ' Carrier (Y/N) = ',a3, ' Reuse Plan (Y/N) = ', a3/
      1  ' DivCar       iyr mon   day ID          ',
      1  '    Iter      Iw  nwrord      l2      lr     Nd2   ipUse', 
-     1  '   imcdX  availX CapRem2  Demand divaloS psuplyT qdiv(18',
+     1  '   imcdX  availX CapRem2  Demand divaloS      NA qdiv(18',
      1  ' divactX',
      1  '    iwhy Comment',/
      1  ' ___________ ____ ____ ____ ____________', 

@@ -2,7 +2,7 @@ c datinp - reads in constant (non time series) data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
 c	Update History
 c
 
@@ -147,7 +147,7 @@ C
       write(6,*) ' Subroutine Datinp'
 c
 c__________________________________________________________
-c               Initilize
+c               Initialize
 c
 c		Details:
 c		  ioutC = Control Data (*.ctl)
@@ -168,7 +168,7 @@ c		        = 2 Network plus idncod and ndnnod
 
       blank = '            '                       
 c ---------------------------------------------------------
-c               Initilize return pointer here so
+c               Initialize return pointer here so
 c		  resevoir returns can be read in GetRes
 c		  as well as Getdiv and Getwel.     
 
@@ -186,7 +186,7 @@ c		  as well as Getdiv and Getwel.
         irnord(is)=0
       end do  
 c
-c rrb 2006/11/08;  Move initilization to top for new control file read
+c rrb 2006/11/08;  Move initialization to top for new control file read
 c		   (e.g. getctlC)      
       ireach = 0 
       icondem = 0
@@ -323,7 +323,7 @@ c
      1    itsfile, r, cx, rec80)
         call getctlC(nlog, 1, iok,0, 'Variable_Efficiency     ',
      1    ieffmax,r,cx, rec80)
-        call getctlC(nlog, 1, iok,0, 'Sprinker_Approach       ', 
+        call getctlC(nlog, 1, iok,0, 'Sprinkler_Approach      ', 
      1    isprink,r,cx, rec80)              
         call getctlC(nlog, 1, iok,1, 'Soil_Moisture_Depth     ',
      1    i, soild, cx, rec80)
@@ -1070,7 +1070,7 @@ c       IF(ISS.NE.0) Goto 270
   260 CONTINUE                           
 c              
 c               Print tree structure information
-        write(nlog,*) '  Datinp; ioutN @ line 1053 ', ioutN
+c       write(nlog,*) '  Datinp; ioutN @ line 1053 ', ioutN
         if(ioutN.eq.1 .or. ioutN.eq.2 .or. ichk.eq.1) then
           write(nchk,1030)
           do 270 is=1,numsta
@@ -1146,7 +1146,7 @@ c		INITIALIZE RETURN FLOW ARRAY
 C
   730   continue
       if(ichk.eq.4) write(nlog,*) 
-     1  'Datinp initilize monthly return flow arrays'
+     1  'Datinp initialize monthly return flow arrays'
      
         DO IS=1,maxsta
           DO IM=1,maxdlm
@@ -1156,9 +1156,9 @@ C
 c
 c _________________________________________________________
 c
-c rrb 97/10/15; Initilize daily return array
+c rrb 97/10/15; Initialize daily return array
       if(ichk.eq.4) write(nlog,*) 
-     1  'Datinp initilize daily return flow arrays'
+     1  'Datinp initialize daily return flow arrays'
      
         if(iday.eq.1) then
 c
@@ -1175,7 +1175,7 @@ c _________________________________________________________
 c
 c		INITIALIZE Plan arrays
       if(ichk.eq.4) write(nlog,*) 
-     1  'Datinp initilize MONTHLY plan arrays'
+     1  'Datinp initialize MONTHLY plan arrays'
 
       do ip=1,maxplan
         do im=1,maxdlm
@@ -1184,10 +1184,10 @@ c		INITIALIZE Plan arrays
         end do
       end do
 c
-c		Initilize daily plan arrays
+c		Initialize daily plan arrays
       if(iday.eq.1) then
         if(ichk.eq.4) write(nlog,*) 
-     1    'Datinp initilize DAILY plan arrays'
+     1    'Datinp initialize DAILY plan arrays'
 c
 c rrb 2006/05/09; correction     
 cr      do ip=1,nplan
@@ -1199,7 +1199,7 @@ cr      do ip=1,nplan
         end do            
       endif
 c
-c		Initilize reuse plan array
+c		Initialize reuse plan array
 c		Note ipnode(i)>0 means the river node has a reuse plan
       do ns=1,maxsta
         ipnode(ns)=0
@@ -1239,7 +1239,7 @@ c
 c rrb 04/25/97; Daily model (next 9 lines (up to ... goto 790)
 c               idays  = 0 = set monthly to daily average,
 c                        1 = daily gage monthly controls
-c                        2 = refrence gage monthly controls
+c                        2 = reference gage monthly controls
 c                        3 = daily gage daily rules
 c                       -1 = divide by # of days
 c
@@ -2119,7 +2119,7 @@ c rrb 99/09/15; Allow isf to have monthly data
  1370  format(/,72('_'),/
      1 '  Datinp; Warning. ',
      1 ' Instream flow points or reaches ',a12,' and ',a12,/
-     1  18x, ' overlap befor the downstream point is found'/
+     1  18x, ' overlap before the downstream point is found'/
      1  18x, ' Recommend you check your isf station (*.ifs) file',/
      1  18x, ' and or your river network (*.rin) file')
      

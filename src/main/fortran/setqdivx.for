@@ -4,7 +4,7 @@ c            from any carrier losses.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -40,10 +40,10 @@ c
 c	  Note:
 c	    1. If the source is also a carrier it is handled 100%
 c	    	in the Calling Program and SetQdiv.
-c	    2. If the destination is the a carrier, it is handled
-c		100% in SetQdiv
+c	    2. If the destination is a carrier, it is handled
+c		     100% in SetQdiv
 c	    3. If the carrier is a return to river (ncar=intern(l2,i)<0    
-c		nothing occurrs
+c		     nothing occurs
 c
 c _________________________________________________________
 c	Documentation
@@ -63,9 +63,9 @@ c
 c
 c		oprloss1 = transit efficiency (set in SetLoss)
 c		iscd = diversion location
-c               idcdX = stream ID of destination diversion (nd2) or reservoir
+c   idcdX = stream ID of destination diversion (nd2) or reservoir
 c			 or plan (NOT CARRIER)
-c               idcdC = stream ID of destination carrier 
+c   idcdC = stream ID of destination carrier 
 c
 c		divactX=amount diverted (cfs)
 c
@@ -98,7 +98,7 @@ c
         character corid1*12
 c
 c _________________________________________________________
-c		Step 1; Initilize        
+c		Step 1; Initialize        
 c		  iout=0 No detailed output
 c         =1 Details
         iout=0
@@ -185,9 +185,9 @@ c _________________________________________________________
 c		Case 3 Simple Carrier
 c rrb 2008/02/04;	Set Loss             
 c		qdiv(18 Carrier passing through a structure
+c   qdiv(20 From Carrier by Storage or Exchange
 c		qdiv(31 From River by Sto/Exc/Plan by type 27 or 28
 c		qdiv(33 From River loss 
-c               qdiv(20 From Carrier by Storage or Exchange
 c		qdiv(32 From Carrier Loss
 c
 

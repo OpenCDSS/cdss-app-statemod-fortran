@@ -2,7 +2,7 @@ c rivrtn - calculates return to river
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c      
  	Subroutine RivRtn(
      1    icx, nriver, l2, ndtype, iscd, nd, iuse, idcd, idcdX, 
      1    fac, smallN, oprEffT, relact, adj, divact, divactL, 
      1    ncnum, nAvail, alocfsR, DepfacM, imcdR, corid1)
 c     
 c		   It calculates return to river.
-c		   It is used to similate an augmentation station 
+c		   It is used to simulate an augmentation station 
 c		   (e.g. a structure that diverts then immediately 
 c		   returns water to river for diversion at another
 c		   structure (destination)) or another carrier
@@ -32,7 +32,7 @@ c		   Note it operates on AVTEMP; not avail because
 c		   the ultimate destination at idcd may be located upstream
 c		   or downstream of the return to the river.
 c      
-c		   Genreal approach:
+c		   General approach:
 c		   1. Adjust AVTEMP for every release, diversion and return
 c		      (Steps 1-5)
 c		   2. Search for minimum at every diversion from the river
@@ -51,13 +51,13 @@ c
 c               Update History
 c
 c rrb 2008/10/23; Revised to readjust when a shortage
-c		  occurrs, even if adj > 0
+c		  occurs, even if adj > 0
 c
 c rrb 2008/10/15; Revised to not adjust the adjustment by
 c		  the efficiency of water use, already
 c		  included in the calculation of Avail.
 c
-c rrb 2008/09/12; Revised calculation of adjustmnet factor and
+c rrb 2008/09/12; Revised calculation of adjustment factor and
 c		  to allow reoperation with an adjusted diversion
 c		  up to 3 times 
 c
@@ -121,11 +121,11 @@ c
       character 
      1  cwhy*48, cdestyp*12, ccarry*8, cpuse*3, csour*12,
      1  rec12*12, cTandC*3, cresid1*12, criver*12, 
-     1  corid1*12, cimcd*12
+     1  corid1*12, cimcd*12, subtypX*8
 
 c _________________________________________________________      
 c
-c	              Step 1; Initilize
+c	              Step 1; Initialize
 c		            iout = 1 details
 c		            iout = 2 summary
 c		            iout = 3 summary & details on last diversion
@@ -137,6 +137,7 @@ c
 c     iout=4
 cx    iout=5
       iout=0
+      subtypX='rivrtn  '
       
 cx     if(corid1(1:9) .eq. 'RkyMtn.07')   iout=4
 
@@ -289,7 +290,7 @@ c                        (InternT()=2)
           call takou2(isub, maxsta,AVTEMP,idncod,RelRiv,ndnd1,idcd1)
 c
 c ---------------------------------------------------------
-c		            Step 4c; Detalied output at 3 locations          
+c		            Step 4c; Detailed output at 3 locations          
           if(iout.eq.1) then
             idcd0=amax0(idcd1-1,1)
             idcd2=idcd1+1
@@ -312,7 +313,7 @@ c                       (ndtype=3)
 c
       if(ndtype.eq.3) then		        
 c
-c		Initilize Dumx to Avatemp before return adjustments      
+c		Initialize Dumx to Avatemp before return adjustments      
 c		so they can be removed if the diversion gets adjusted
         do is=1,numsta
           dumx(is)=avtemp(is)
@@ -635,7 +636,7 @@ c ---------------------------------------------------------
 c		            Step 14; Adjust AVAIL for each diversion
 c		            from the river to a Carrier (e.g. do not adjust
 c		            if the final destination is from the river
-c		            that adjustment occurrs in step in the calling routine
+c		            that adjustment occurs in step in the calling routine
       
         if(internT(l2,i).eq.1) then
           if(nlast.eq.0) then
@@ -816,7 +817,10 @@ c
 c		Error Processing
 c		Note istop=0 do not stop
  900  istop=0
-      call ChekAv2(icx, maxsta, numsta, istop, fac, AVTEMP, imcd, avMin)
+c
+c rrb 2018/07/15; Revise number of operating rules 
+      call ChekAv2
+     1 (icx, maxsta, numsta, istop, fac, AVTEMP, imcd, avMin, subtypX)
       
       write(nlog,260) corid1, iterX, iterMax, 
      1  Adjx, short, small,
@@ -844,7 +848,9 @@ cr    i1=amax1(iterX-10, 1)
 c
 c rrb Remove comment indicator to TEST what happens when the
 c            system is allowed to keep operating
-cx   RETURN
+c
+c rrb 2018-02-18; Test logic by allowing execution to continue
+cx    RETURN
     
  1050 format(/, 72('_'),/
      1 '  Stopped in RivRtn',/,

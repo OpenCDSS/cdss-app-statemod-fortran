@@ -2,7 +2,7 @@ c rtnsec - calculates return flows from a diversion that are non-consumed.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ c	      and avail to be performed
 c _________________________________________________________
 c       Update History
 c
-c rrb; 95/03/18; removed redundant refrence to over 50 tables
+c rrb; 95/03/18; removed redundant reference to over 50 tables
 c                saved as old code f031596.zip
 c rrb; 98/03/17; Revised to handle daily operation
 c rrb; 00/12/09; Revised to handle variable efficiency
@@ -149,7 +149,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 c
 c     write(6,*)    '  Rtnsec;'
 c     write(nlog,*) '  Rtnsec;'
@@ -235,7 +235,7 @@ c               Step 2 - Calculate total return (rettot)
 c                        and loss (rloss)
 c
 c               Calculate return, etc using ave efficiency (diveff)
-c               or maximum efficiency (effmax) based on switchs 
+c               or maximum efficiency (effmax) based on switches 
 c               (ieffmax and ieff2)
 c
 c rrb 2006/08/29; Add new CU (call return2)
@@ -332,7 +332,7 @@ c                        and delay table (idly)
         CONST=RETTOT*PCTTOT(IRN)/10000.
         idly=irtndl(irn)
 c
-c rrb; 980503; Must set befor branch for baseflows (ioptio.eq.1)
+c rrb; 980503; Must set before branch for baseflows (ioptio.eq.1)
         NDNN=NDNNOD(ISCD)
         IORD=IRNORD(IRCD)
 c

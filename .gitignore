@@ -8,6 +8,10 @@
 # Temporary Windows files
 ~$*
 
+# Reused junk file for temporary files.
+# - any file that starts with "junk"
+junk*
+
 # Products of compiling software (but need to be careful if library dependencies are included)
 *.o
 *.obj

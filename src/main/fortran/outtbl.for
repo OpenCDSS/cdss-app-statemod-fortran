@@ -2,7 +2,7 @@ c outtbl - prints summary tables of input data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-                                                              
+c                                                              
       SUBROUTINE OUTTBL(NUMHIS)
 c
 c
@@ -31,13 +31,15 @@ c	Dimensions
 c
       include 'common.inc'
        dimension
-     1 oprtyp(50),   cdem(5)
+cx   1 oprtyp(50),   cdem(5)
+     1 oprtyp(60),   cdem(5)
 
         character
      1 recres*1,     cdemx*8,      cdem*8, 
      1 namez*12,     name1*12,     name2*12,  blank*12,
      1 oprtyp*30,    cix2*12,      cname1*24, cname2*24
 c
+c rrb 2018-07/15; Revise to allow up to 55 operating rules
         data oprtyp/
      1     'Res to Instream by River      ', 
      2     'Res to Diversion by River     ', 
@@ -88,10 +90,13 @@ c
      7     'Administration Plan Limits    ',
      8     'Plan or Reservoir to Plan Dir ',
      9     'Plan or Reservoir to Plan Exc ',
-     5     ' '/
-
+     5     'South Platte Compact          ',
+     1     'Flow Reservoir Control        ',     
+     2     ' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' '/    
+c
         data cdem /
      1     ' Mon-Tot', ' Ann-Tot', ' Mon-Iwr', ' Ann-Iwr', '    Zero'/
+c
 c                Similar to outsyt but it prints average
 c _________________________________________________________
 c
@@ -99,9 +104,12 @@ c
         blank = '            '
         small = 0.001
 c
+c rrb 2018/07/29; Check for operating rule limit
+        if(maxoprin.gt.60) goto 900
+c
 c rrb 2008/05/19; irpt=0 original operating fule format
-c		  irpt=1 similar to original but includes Source ID
-c		  irpt=2 smaller version for reports        
+cx		  irpt=1 similar to original but includes Source ID
+cx		  irpt=2 smaller version for reports        
         irpt=2
 c
 c               Lines per page (lpp)
@@ -1013,7 +1021,7 @@ c           it=it+1
 c
           n=n+1      
           itx = ityopr(k)
-          write(nlog,*) n, nameo(k), ityopr(k)
+c         write(nlog,*) 'Outtbl;', n, nameo(k), ityopr(k)
           
 c
 c ---------------------------------------------------------
@@ -1333,6 +1341,17 @@ c _________________________________________________________
 c
              
        return
+c
+c rrb 2018/07/27; check for operational rule limit
+ 900  write(nlog,910) 
+      write(nlog,920) 
+      call flush(6)
+ 910  format('    Stopped in OutTbl',/,
+     1       '    See the *.log file')
+ 920  format('    Stopped in OutTbl; number of operating rules > 60')
+      write(6,*) 'Stop 1'
+      call flush(6)
+      call exit(1)
       END       
 
 

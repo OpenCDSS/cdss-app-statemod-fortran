@@ -2,7 +2,7 @@ c outrch - print preliminary river data (22) based on River Reach data (*.rir)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
        subroutine OutRch(nreach)   
 c
 c
@@ -41,7 +41,7 @@ c
      1   crch4*4, rchIdX*12, rchIdY*12      
 C
 c _________________________________________________________
-c		Step 1; Initilize Reach Data
+c		Step 1; Initialize Reach Data
       iout=0
       write(nlog,*) ' OutRch;  numsta, nreach', numsta, nreach
       cRch4='Str '
@@ -53,13 +53,13 @@ c		Step 2; Set reach based on stream gage locations
       write(22,200)
       
       do ng=1,nreach
-        if(iout.eq.1) write(nlog,*) ' ng = ', ng                
+        if(iout.eq.1) write(nlog,*) 'OutRch;  ng = ', ng                
         write(nlog,201) ng, rchIdR(ng), rchNameR(ng)
         write(22,201) ng, rchIdR(ng), rchNameR(ng)
       end do
 c
 c _________________________________________________________
-c		Step 4; Initilize all nodes to the default reach (ngageX)
+c		Step 4; Initialize all nodes to the default reach (ngageX)
 c			 this is required for the last few
 c			 nodes that do not have a downstream gage
       write(22,202)

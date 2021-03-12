@@ -6,7 +6,7 @@ c         When called 1x per month, reads reservoir eom data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ c                static variable compiler switch -fno-automatic
       integer :: numDre = 0
 c
 c _________________________________________________________
-c		Step 1; Initilize   
+c		Step 1; Initialize   
 c		ioutR= Reservoir details
 c		ioutRe=Diversion to Recharge details
 c		ioutRe2=Reservoir recharge data
@@ -90,7 +90,7 @@ c               Called 1x per simulation
         filena='*.rsp'
 c
 c _________________________________________________________
-c		Initilize Recharge Data 
+c		Initialize Recharge Data 
 c       idvRre is reservoir to recharge
 c		idvDre is diversion to recharge      
         do nr=1,numres
@@ -586,7 +586,7 @@ c rrb 99/05/20
         if(iriver.eq.1) then
 c          
 c ---------------------------------------------------------
-c               a. Initilize daily ID pointer
+c               a. Initialize daily ID pointer
 c        
 cr        do is=1,numrun
           do is=1,maxsta
@@ -651,7 +651,7 @@ c ---------------------------------------------------------
 c		h. Set daily ID        
 c               idays  = 0 = set monthly to daily average,
 c                        1 = daily gage monthly controls
-c                        2 = refrence gage monthly controls
+c                        2 = reference gage monthly controls
 c                        3 = daily gage daily rules
 c                       -1 = divide by # of days
             if(ioutG.eq.1)
@@ -781,7 +781,7 @@ c               Called 1x per year
       if(ityp.eq.1) then
 c
 c _________________________________________________________
-c		Initilize Recharge Data 
+c		Initialize Recharge Data 
       do nr=1,numres
         do im=1,13
           RrechM(im,nr)=0.0
@@ -890,7 +890,7 @@ c		Step 14; Read Diversion to Recharge data (*.dre)
 C
  490    continue
 c
-c rrb 2008/12/09; Initilize diversion to use (Duse) = total diversion (diver)
+c rrb 2008/12/09; Initialize diversion to use (Duse) = total diversion (diver)
         do nd=1,numdiv
           do im=1,12
             DuseM(im,nd)=diver(im,nd)

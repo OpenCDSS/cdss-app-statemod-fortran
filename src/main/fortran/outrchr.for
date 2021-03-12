@@ -2,7 +2,7 @@ c outrchr - print a water balance report by reach (*.xrh)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -112,7 +112,7 @@ cx      1 nRchTo(150), nRchEnd(150)
 c
 c ____________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
 c	          	 iout        =0  no details
 c	          	 iout        =1  print all adjustments to balance
@@ -288,7 +288,7 @@ c              Step X; Loop for each reach
         riz=float(iz)
           
 c
-c		Initilize reach in and out
+c		Initialize reach in and out
         do ix=1,100
           ioutX(ix)=0
           iinX(ix)=0
@@ -296,7 +296,7 @@ c		Initilize reach in and out
       
 c ____________________________________________________
 c rrb 10/31/96;
-c              Step 1b. Initilize average annual arrays
+c              Step 1b. Initialize average annual arrays
         do n=1,nb+ng
           do im=1,13
             dum(im,n) = 0.0
@@ -304,7 +304,7 @@ c              Step 1b. Initilize average annual arrays
         end do
 c ____________________________________________________
 c
-c rrb 2009/01/06;  Step 1b. Initilize adjustment averages
+c rrb 2009/01/06;  Step 1b. Initialize adjustment averages
         AdjDcT=0.0
         AdjRcT=0.0
         AdjPt=0.0
@@ -413,7 +413,7 @@ c               Step 5; Print header once per year
 c
 c ____________________________________________________
 c
-c		Step 7; Initilze annual totals
+c		Step 7; Initialize annual totals
 
           tint   = 0.0
           trett  = 0.0

@@ -2,7 +2,7 @@ c daymon - allows an easy transition from a monthly model to a daily model.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
 	  subroutine daymon(itype)
 c
 c _________________________________________________________
@@ -31,8 +31,8 @@ c               same for a daily or monthly model.
 c               After a month is complete it then sets
 c               the monthly totals back to calculated values.
 c
-c               The routine also prints daily data and resets
-c               daily return and depletion arrays
+c               In addition, the routine also prints daily data and
+c               resets daily return and depletion arrays
 c
 c               itype = 0 routine sums daily or monthly values into
 c                 monthly totals
@@ -43,7 +43,8 @@ c               Called by Execut
 c
 c _________________________________________________________
 c	Update History
-c		NA
+c rrb 2019/07/28; Add diversion to a WWSP-Supply plan by a
+c                 direct diversion (psupDD() and psuppDDM())
 c
 c__________________________________________________________
 c	Dimensions
@@ -200,6 +201,9 @@ c
 c rrb 2006/03/31; Well Augmentation Pumping in Priority          	      
 	      PwellCM(np)=PwellCM(np) + PwellC(np)
 	      PdriveM(np)=PdriveM(np) + Pdrive(np)
+c
+c rrb 2019/07/28; Direct flow diversion to a WWSP plan
+        PsupDDM(np)=psupDDM(np) + psupDD(np)
 	      
               if(iout.eq.1) then
 cr              write(nlog,*) '  Daymon;',
@@ -218,7 +222,7 @@ c           write(io99,*) ' ichk99 = ', ichk99
             if(ichk99.ne.30) call dayoutr(maxstax)
 c
 c__________________________________________________________
-c               Step 9; Initilize return array
+c               Step 9; Initialize return array
 c rrb 01/03/28; Set return values for reuse 
 c
 c               Test for I/O of return data
@@ -233,7 +237,7 @@ c         irec1=irecx+nr
 c         write(78,rec=irec1) 0.0,0.0
 	end do
 c
-c		Set Initilize plan obligation data for reuse
+c		Set Initialize plan obligation data for reuse
         do ip=1,nplan
           pobld(ido,ip)=0.0
           psupD(ido,ip)=0.0
@@ -383,6 +387,9 @@ c
 c rrb 2006/03/31; Well Augmentation Pumping in Priority          	    
 	    PwellC(np)=PwellCM(np)/rimd
 	    Pdrive(np)=PdriveM(np)/rimd
+c
+c rrb 2019/07/28; Direct flow diversion to a WWSP plan
+        PsupDD(np)=psupDDM(np)/rimd
 	  end do
 	  
 c

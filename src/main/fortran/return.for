@@ -4,7 +4,7 @@ c          Note efficiency varies from average to maximum based on switches ieff
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ c
        character cdividx*12
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
        iout=0
        
        if(ichk.ge.90 .and. ichk.le.100) iout=1

@@ -2,7 +2,7 @@ c outsum - prints a diversion file as a matrix
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ C
      4           'RESERVOIR INFLOW                        '/
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
 c rrb 10/27/94 Additional Output
       write(6,*) ' '

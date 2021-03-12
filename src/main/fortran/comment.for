@@ -2,7 +2,7 @@ c comment - allows a comment (#) to be in a data file
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ c
       character rec1*1, rec80*80, ljrec80*80
 c
 c _________________________________________________________
-c	Initilize
+c	Initialize
 c        
       
       iout=0

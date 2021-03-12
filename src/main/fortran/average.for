@@ -2,7 +2,7 @@ c average - keeps a running total for 5 elements in an array ave
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -23,32 +23,32 @@ c_________________________________________________________________NoticeEnd___
      1                     iz, maxrch, maxyrs, ave3D) 
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c               It keeps a running total for 5 elements in
 c               an array ave       
 c
 c
 c _________________________________________________________
-c	Update History
+c       Update History
 c
 c rrb 99/12/27; Revised to process if some data is missing
 c rrb 00/11/27; Revised to include basin total (avet)
 c rrb 2006/12/22; Revised to include reach (zone) balance 
 c               Ave3D(iz,iy,i)
-c		where iz=# of zones, iy=year, i=element
+c               where iz=# of zones, iy=year, i=element
 c
 c _________________________________________________________
-c	Documentation
+c       Documentation
 c
 c
-c               iopt = 0 initilize 
+c               iopt = 0 initialize 
 c                      1 total
 c                      -1 Basin Total
 c               iopt2  0 do not calculate basin total (avet)
-c                      1 do calcualte basin total (avet)
+c                      1 do calculate basin total (avet)
 c                      Note the above is required since streamflow
-c                      and diversions are processed simotaneously
+c                      and diversions are processed simultaneously
 c               im   = for iopt = 0,  array size (numres, numdiv, etc.)
 c                      for iopt = 1,  month
 c
@@ -56,7 +56,7 @@ c               iy   = year to begin storing the annual total in
 c                      array elements 6...n
 c               nyr1 = counter for missing data by year
 c               f    = factor to convert data 
-c               c1...= data to total
+c               c1   = data to total
 c               ave  = Ditch results 
 c                      ave(1-13, 1-4) = ditch averages by month for elements 1-4
 c                      ave(1-4, 5-ny+5) ditch totals by year
@@ -70,7 +70,7 @@ c
 
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
 c
         dimension ave(13,maxsta), avet(13,maxsta), c(5),
@@ -89,7 +89,7 @@ c       write(99,*) '  Average:', maxsta, iopt, iopt2
 
 c _________________________________________________________
 c 
-c               Step 2; Initilize basin total data
+c               Step 2; Initialize basin total data
         if(iopt.eq.-1) then
           do i=1,13
             do j=1,maxsta
@@ -97,7 +97,7 @@ c               Step 2; Initilize basin total data
             end do
           end do
 c
-c		Step 2b; Initilize ave3d           
+c         Step 2b; Initialize ave3d
 c rrb 2006/12/22; Add average 3D (zone, year, element)
           do i=1,13
             do j=1,maxyrs
@@ -113,7 +113,7 @@ cx            do iz=1,maxrch
         endif
 c _________________________________________________________
 c 
-c               Step 3; Initilize structure data
+c               Step 3; Initialize structure data
         if(iopt.eq.0) then
           do i=1,13
             do j=1,maxsta
@@ -156,7 +156,7 @@ c rrb 00/11/29; Calculate Basin Total
                 avet(3,n2) = -999.0
                 avet(4,n2) = -999.0
 c
-c		3D (Reach) Total 
+c               3D (Reach) Total
 c rrb 20100208; Correction
                 if(iz.gt.0) then               
                   ave3d(iz,iy,1)=-999.0
@@ -192,7 +192,7 @@ c
                 if(iopt2.eq.1) then
                   avet(i,n2) = avet(i,n2) + c(i)
 c
-c		Reach total 
+c                 Reach total
 c rrb 20100208; Correction
                   if(iz.gt.0) then                  
                     ave3d(iz,iy,i)=ave3D(iz,iy,i) + c(i)
@@ -206,7 +206,7 @@ c     write(99,*)' Average; ',iz, iy, (avet(i,n2), i=1,5)
 c     write(99,*)' Average; ',iz, iy, (ave3D(iz,iy,i), i=1,5)
 c _________________________________________________________
 c
-c		Return
+c     Return
   500  return
 
 
@@ -218,4 +218,3 @@ c		Return
       call exit(1)
       stop 
       END
-

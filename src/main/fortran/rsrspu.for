@@ -2,7 +2,7 @@ c rsrspu - Type 6 operating rule Reservoir to Reservoir (Bookover)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE RSRSPU(IW,L2,ncallX)
 c
 c
@@ -25,20 +25,23 @@ c _________________________________________________________
 c	Program Description
 c
 c       Rsrspu; Type 6 Reservoir to Reservoir (Bookover)
-c		It can constrain the bookover by a carrier capacity
-c		and a demand specified in the diversion demand file 
+c		            It can constrain the bookover by a carrier capacity
+c		            and a demand specified in the diversion demand file 
 c               (*.ddm)
 c
 c
 c _____________________________________________________________
 c	Update History
 c
+c      2018/07/29; Revised to allow multiple destination accounts
+c                  to be specified as a percentage 
+c                    
 c      2015/07/08; Revised to control reoperation if
 c                  an operating rule is provided as a limit in
 c                  iopsou(3) (e.g. ity = 2) and that
 c                  operating rule has been called at least
 c                  once in this time step.  Implemented to 
-c                  control bookover operatoins after water is
+c                  control bookover operations after water is
 c                  booked out then back in when iopsou(3,l2)
 c                  is an operating rule specified and oprlimit(l2)
 c                  is 1.
@@ -72,7 +75,7 @@ c                       = 2 bookover to first n accounts
 c
 c        oprCall(l2)    = counts number of times this operating
 c                         rule has been called.  Used with oprlimit(l2)
-c                         is an operatng rule and oprlimit = 1
+c                         is an operating rule and oprlimit = 1
 c                         to not allow a bookover once another 
 c                         operating rule specified as iopsou(3,l2)
 c                         has operated.
@@ -99,7 +102,7 @@ c
      1          cresid1*12  
 c _________________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
 c
 c _________________________________________________________
@@ -135,6 +138,7 @@ c                 ioutx = 2 focused source & destination detail
         write(io99,*) '________________________________'
         write(io99,*) 'Rsrspu; iout, iw, ioutX', iout, iw, ioutX
       endif
+      ioutX=0
 c     
       divaf = 0.0
       small = 0.001
@@ -254,7 +258,7 @@ c rrb 2015/09/09; Detailed output
 
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize      
+c rrb 2006/09/25; Allow multiple accounts - Initialize      
 c rrb 2015/06/25; If iopdes(2,l2)>0 bookover to one account
 c                 if iopdes(2,l2)<0 bookover to first n accounts
 c
@@ -574,6 +578,7 @@ c                    if ity=2 then np = pointer to operating rule limit
 cx    if(np.gt.0) then
 cx      if (nd.ne.nr) DIVMON(NP  )=DIVMON(NP  )+DIVACT
 cx    endif
+c
       if(ity.eq.1) then
         if(np.gt.0) then
           if (nd.ne.nr) DIVMON(NP  )=DIVMON(NP  )+DIVACT

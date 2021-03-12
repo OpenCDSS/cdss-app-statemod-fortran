@@ -2,7 +2,7 @@ c getpln - reads plan data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,12 +17,18 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       Subroutine GetPln(numstax)
 c
 c _________________________________________________________
 c	Program Description
 c	 GetPln It reads plan data
+c
+c ______________________________________________________________________
+c       Update History
+c
+c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a plan 
+c                  type 14 and a WWSP User plan is a plan type 15
 c _________________________________________________________
 c	Dimensions
       include 'common.inc'
@@ -38,22 +44,25 @@ c
 c _________________________________________________________
 c
 c     write(6,*) ' Subroutine GetPln'
-      write(nlog,*) ' Subroutine GetPln ', nlog
+      write(nlog,*) ' Subroutine GetPln nlog = ', nlog
 
 c     
 c _________________________________________________________
 c
-c		Step 1; Initilize 
+c		Step 1; Initialize 
 c
 c		iout = 0 No details on plan data
-c		       1 Plan data Details
+c		       1 Echo input and provide plan data Details
 c		       2 Plan data Summary
 c		       5 Plan Return flow summary
       iout=0
 c
 c rrb 2013/02/03; Allow type 13 = Changed Water Right     
 cx    maxPlnT1=12
-      maxPlnT1=13
+c
+c rrb 2018/08/05; Allow type 14 = WWSP and 1 extra
+cx    maxPlnT1=13
+      maxPlnT1=15
       
       ibad=0
       small=0.001
@@ -79,7 +88,14 @@ cx    maxPlnT1=12
 c
 c rrb 2015-03-07
       plntypX(13)= 'Changed Water Right'
-
+c
+c rrb 2018/08/05
+c rrb 2019/04/20; Set 14 to a WWSP Supply Plan and 
+c                     15 to a WWSP User Plan 
+c
+      plntypX(14)= 'Winter Water Supply Plan'
+      plntypX(15)= 'Winter Water User Plan'
+      
       ifn=53
       filena=fileName(ifn)
       if(iout.eq.1) write(nlog,*) ' GetPln; filena = ', filena
@@ -90,7 +106,7 @@ c rrb 2015-03-07
         goto 906
       endif
 c
-c		Initilize  
+c		Initialize  
       if(iout.eq.1) write(nlog,*) ' GetPln; maxplan, ', maxplan
       do i=1,maxplan
         Pid(i)=' '
@@ -185,6 +201,7 @@ c		Set plan type
               plntypc(i) = plntypX(it)
               ntype(it)=ntype(it)+1
             endif
+            
             if(iplnTyp(i).gt.maxplnT1) then
               write(nlog,910) iplnTyp(i)
               goto 9999
@@ -207,7 +224,7 @@ c         if(peff1.gt.0.0 .and. peff1.le.998.9) then
             read(55,*,end=928,err=928) (peff(j,i), j=1,12)
           endif  
 c          
-c		Initilze default efficiency
+c		Initialize default efficiency
           if(peff1.gt.998.0) then
             do j=1,12
               peff(j,i) = -1.
@@ -216,7 +233,7 @@ c		Initilze default efficiency
 c     
 c _________________________________________________________
 c
-c		Step 5; Initilize plan failure and initial plan supply 
+c		Step 5; Initialize plan failure and initial plan supply 
 c		Note Psto1 and Psto2 are in acft
 c		Psup and PsupD are in cfs
           pfail(i)=0.0
@@ -230,6 +247,13 @@ cx     1       iplnTyp(i).eq.9) then
             psup(1,i)=psup1/factor/mthday(1)
             psupD(1,i)=psup1/factor
           endif  
+c
+c rrb 2020/12/05; Test ability to set a T&C or Aug plan demand
+          if(iplnTyp(i).eq.1 .or. iplnTyp(i).eq.2) then
+            pfail(i)=psup1
+cx          write(nlog,*) '  GetPln; i, pdem(i)', i, pdem(i)
+          endif
+ 
 c     
 c _________________________________________________________
 c
@@ -572,7 +596,7 @@ c               Formats
  114  format(/,72('_'),/
      1  '  GetPln; Plan Return File (*.prf) ')      
      
- 901  format(/,72('__'),/' GetPln; Plan Return File (*.prf) ')
+ 901  format(/,72('__'),/'  GetPln; Plan Return File (*.prf) ')
      
  903  format(/,
      1 '  GetPln; Plan Data:',/

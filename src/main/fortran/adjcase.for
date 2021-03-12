@@ -2,7 +2,7 @@ c adjcase - changes characters to/from upper/lower case
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -21,30 +21,30 @@ c
       subroutine AdjCase(nlog, recin, recout, nin, ntype)
 c
 c _________________________________________________________
-c	Program Description
-c		It changes characters from upper case to lower
-c		case or visa versa
+c       Program Description
+c       It changes characters from upper case to lower
+c       case or vice versa
 c
 c
 c _________________________________________________________
-c	Update History
+ci      Update History
 c
-c		NA
-c
-c _________________________________________________________
-c	Documentation
-c
-c
-c	nlog   = log file number
-c	recin  =  input record
-c      recout = output record
-c	nin    = record size
-c	ntype  = 1 caps to lower case
-c	         2 lower case to capitol
-c
+c       NA
 c
 c _________________________________________________________
-c	Dimensions
+c       Documentation
+c
+c
+c       nlog   = log file number
+c       recin  = input record
+c       recout = output record
+c       nin    = record size
+c       ntype  = 1 caps to lower case
+c                2 lower case to capitol
+c
+c
+c _________________________________________________________
+c     Dimensions
 c
       dimension cap(26), lc(26)
       character cap*1, lc*1
@@ -60,7 +60,7 @@ c
       iout=0
       recout=recin
 c
-c		Caps to lower case
+c     Caps to lower case
       if(ntype.eq.1) then
         do i=1,nin
           do j=1,26     
@@ -82,4 +82,3 @@ c		Caps to lower case
       endif
       return
       end     
-          

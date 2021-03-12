@@ -2,7 +2,7 @@ c ifrrig2 - calculates instream flow for a reach similar to ifrrig.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ c	Dimensions
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12
 c
 c _________________________________________________________
-c		Step 0; Initilize
+c		Step 0; Initialize
 c		iout = Detailed output based on control data
 c		       0 no details
 c		       1 details
@@ -134,7 +134,7 @@ c               Instream Reach Loop
 c
 c _________________________________________________________
 c
-c               Step 1. Initilize
+c               Step 1. Initialize
         actwrq  = 0.0
         actwrq1 = 0.0
         aloifr1 = 0.0

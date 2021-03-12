@@ -2,7 +2,7 @@ c gwsub - adjusts river, etc to pay back water to gw storage and sets avail to r
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ c	Dimensions
       include 'common.inc'
 c
 c _________________________________________________________       
-c               Step 1; Initilize
+c               Step 1; Initialize
 c               
       ichk1=0
       cx=1.0
@@ -126,7 +126,7 @@ c
 c
 c _________________________________________________________
 c               Step 3; Check and warn if negative
-c rrb 12/12/95; warn user of negative flows befor allocation
+c rrb 12/12/95; warn user of negative flows before allocation
 
         if(river(is).lt. -0.01) then
           if(ichk1.eq.1) then
@@ -210,7 +210,7 @@ c               Formats
      1  '  Gwsub; Gw2gw  After Adjustment',/, (10f10.2))
   
  410    format(
-     1 '  Bomsec; Warning negative flow (af) befor allocation ', /
+     1 '  Bomsec; Warning negative flow (af) before allocation ', /
      1 '   on ', i4, 1x, a3, ' at ', a24, ' It was set to zero',/
      1 '   from', f10.2, ' cfs or ', f10.0, ' acft')
 

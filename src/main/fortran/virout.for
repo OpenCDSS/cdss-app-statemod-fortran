@@ -2,7 +2,7 @@ c virout - prints baseflow (virgin) results
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ c
       character cunit*5, ctime*3
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
       iout=0
       
       if(iout.eq.1 .or. ichk.eq.4) then
@@ -279,7 +279,7 @@ c rrb 01/12/31
 c
 c ---------------------------------------------------------
 c
-c               Step 5a; Initilize
+c               Step 5a; Initialize
           do j=1,nout
             tempa(j) = 0.0
           end do
@@ -463,7 +463,7 @@ c               Step 7; Daily Base flow information file (*.xbx)
 c                       Called 1x/day from vircom
       if(ityp.eq.5) then
 c
-c rrb 012/01/14; Initilize
+c rrb 012/01/14; Initialize
         fx=faf(mon)
 
 c

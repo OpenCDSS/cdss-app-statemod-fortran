@@ -4,7 +4,7 @@ c           Historic Vs Simulated Diversions
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -94,9 +94,9 @@ c
      1  rec12b*12, rec72*72, recTypX*16
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
-c          iout=1 print informatoin on every diversion
+c          iout=1 print information on every diversion
 c          ioutAdj = 1 print adjustment information
       ioutD=0
       ioutS=0
@@ -283,8 +283,8 @@ c               Find streamflow gage
   140 continue
 c
 c _________________________________________________________
-c               Step x; Initilize Total Basin data
-c			Note iopt=-1 (initilize basin total) 
+c               Step x; Initialize Total Basin data
+c			Note iopt=-1 (initialize basin total) 
 c			dum=average
 c			dum2=basin total
 c			dum3D(iz,iy,i)= total reach iz, year iy, month i
@@ -307,8 +307,8 @@ c
 c               Step 5 Print Title
 c-------------------------------------------------------------------
 c 
-c               Initilize structure data
-c			Note iopt=0 (initilize average monthly data) 
+c               Initialize structure data
+c			Note iopt=0 (initialize average monthly data) 
         iopt=0
         call average(maxsta,iopt,1,im,iy1,nyr1,
      1   1.0,d1,d2,d3,d4,d5,dum,dum2,

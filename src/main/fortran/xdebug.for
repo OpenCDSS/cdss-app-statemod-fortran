@@ -2,7 +2,7 @@ c xdebug - controls the data check option
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE XDEBUG(nreach)
 c
 c
@@ -66,9 +66,13 @@ c	Dimensions
       include 'common.inc'
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
       write(99,10)
  10   format(/, ' Check Option',//)
+c
+c rrb 2021/02/14; Print calls from Xdebug if iout=1
+c      iout=1
+      iout=0
 
 c
 c _________________________________________________________
@@ -124,12 +128,16 @@ c rrb 2009/06/09; Correction
 cx    CALL RIGINP(IIN,maxwrx)
       maxres1=maxres
       maxdvr1=maxdvr
+      
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling Riginp'
       call riginp(iin, maxres1, maxdvr1)          
 
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling Rigsor'
       maxnwrx=maxnwr
       CALL RIGSOR(maxnwrx)
 c
 c rrb 00/02/23; Check demand Vs decrees Vs capacity
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling Demcons'
       call demcons(0)
 c
 c _________________________________________________________
@@ -137,6 +145,7 @@ c
 c               FIND THE STARTING POINT AT ALL MONTHLY INPUT DATA FILES
       I12=0
 C
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling Mdainp - 1'
       CALL MDAINP(IIN,I12)
         if(infile.eq.0) then
           call skip(iin,2)
@@ -162,6 +171,8 @@ C
       I12=12
       IYR=IYSTR-1
       IP=0
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling ouflow'
+      
       CALL OUFLOW(IP)
 c
 c _________________________________________________________
@@ -177,13 +188,14 @@ c
 c 140 format('  Xdebug; Data check for Year = ', i5) 
 c
 c     write(6,*) '  Xdebug; Calling mdainp'
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling mdainp - 2'
       CALL MDAINP(IIN,I12)
 c
 c rrb 00/02/23; Check Demand Vs Decrees Vs Capacity
       call demcons(1)
 C
       IP=IP+1
-c     write(6,*) '  Xdebug; Calling ouflow'
+      if(iout.eq.1) write(nlog,*) '  Xdebug; Calling ouflow'
       CALL OUFLOW(IP)
 C
 C------  GO TO BEGINNING OF YEAR LOOP
@@ -197,7 +209,8 @@ c _________________________________________________________
 c
 c		Print Data Check Data
 c jhb 2014/07/21 include second outdeb argument, nreach
-c      CALL OUTDEB(1)
+c      OUTDEB(1)
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling outdeb'
       CALL OUTDEB(1,nreach)
 c 
 c
@@ -233,12 +246,15 @@ c	  	      nf = file #
 c
 c           Get River Reach data (iget=1)
         iget=1
+        if(iout.eq.1) write(nlog,*) ' Xdebug; Calling GetRch'
+        
         call GetRch(nlog, iget, maxsta, maxrch, 
      1    nreach, iRch, nRchTo, nRchEnd,
      1    RchId, RchIdR, RchNameR, cstaid) 
 c
 c ---------------------------------------------------------
 c           Call OutRch to print Reach Data       
+      if(iout.eq.1) write(nlog,*) ' Xdebug; Calling outRch'
         call outRch(nreach)
       endif
 c

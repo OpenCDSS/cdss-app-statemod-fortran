@@ -2,7 +2,7 @@ c planeva - distributes reservoir evaporation to a reservoir plan
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ c	Update History
 c
 c rrb 2006/04/05; Corrected a problem associated with assigning
 c                   the correct reservoir ID and
-c		  Revised common and bomsec to initilize
+c		  Revised common and bomsec to initialize
 c                   iplnopr() that ties a plan to an operating rule
 c _________________________________________________________
 c       Documentation               
@@ -49,7 +49,7 @@ c
 c	iplnopr(np)     Ties a operating rule to a plan
 c	        	Defined 1x/run in Bomsec
 c       iout            0 no detailed printout
-c                       n print detailed infor for reservoir n
+c                       n print detailed info for reservoir n
 c
 c
 c _________________________________________________________
@@ -59,7 +59,7 @@ c
 c                           
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
       iout = 0
 
       small=0.001
@@ -155,7 +155,7 @@ cr            ira=iopdes(2,k)
 cr            ira=NOWNER(ir)+IOPSOU(2,k)-1
 c                           
 c _________________________________________________________
-c		Step 4; Initilze
+c		Step 4; Initialize
 c		Note  evap and Psuply are in ac-ft
 c                    +evap= more evap than rain
 c                    -evap= more rain than evap

@@ -2,7 +2,7 @@ c outrg - prints Rio Grande Compact operational rule information
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ c
  210  format(/,72('_'),/,'  Subroutine Outrg')
 c
 c _________________________________________________________
-c               Step 2; Initilize.  Note
+c               Step 2; Initialize.  Note
 c               nrg = # of values in binary rio grande file               
 c               numrg = # of compact reservoirs
       nrg=23
@@ -177,7 +177,7 @@ c
 c _________________________________________________________
 c               Step 14; Set State Summary Variables Note:
 c                       dat1(7) = Total index
-c                       dat1(8) = Obligaton
+c                       dat1(8) = Obligation
 c                       dat1(16)= Surplus Spill
 c                       dat1(20)= Actual Delivery
 c                       dat1(23)= Spill
@@ -214,7 +214,7 @@ c               Step 16; Begin State Summary Output
         iy2=0
         iysp=0
 c
-c rrb 01/08/10; Initilize cumulative to initial conditions
+c rrb 01/08/10; Initialize cumulative to initial conditions
 c       ctot = 0.0
         ctot = qdebtx(1) + qdebtx(2)
         iprint = 0

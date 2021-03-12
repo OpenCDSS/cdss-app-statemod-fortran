@@ -2,7 +2,7 @@ c getrch - get reach data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+C
       SUBROUTINE GetRch(nlog, iget, maxsta, maxrch, 
      1  nreach, iRch, nRchTo, nRchEnd,
      1  RchId, RchIdR, RchNameR, cstaid)
@@ -57,7 +57,7 @@ c
 c
 c
 c _________________________________________________________
-c		Initilize
+c		Initialize
 c
 c				iout =1 details
 c				iout =2 summary
@@ -75,7 +75,7 @@ c					Reach River Reach data (iget = 1)
       if(iget.eq.1) then
 c
 c _________________________________________________________
-c		  	Initilize River Reach data
+c		  	Initialize River Reach data
         do i=1,maxsta
           irch(i)=1
           RchID(i)='Reach_01    '
@@ -113,7 +113,8 @@ cx          if(rec12.eq.'Node_Data   ') goto 110
           call getid(4, is1, ir1, ir2, StaID)      
           nRchEnd(ng)=is1
                
-          if(iout.eq.1) write(nlog,*) ng, RchidR(ng), RchNameR(ng), 
+          if(iout.eq.1) write(nlog,*) 'GetRch;', ng, 
+     1      RchidR(ng), RchNameR(ng), 
      1      RchTo(ng), rec24, StaID,nRchEnd(ng)
         end do
 c

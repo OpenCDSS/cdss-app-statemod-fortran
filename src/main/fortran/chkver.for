@@ -2,7 +2,7 @@ c chkver - estimates the version of a data file provided
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ c		Formats
  310  format(    
      1   '          Based on the data in the file it appears',/
      1   '            you have provided version 1 that has',/
-     1   '            2 land use types (Total GW and Total Sprinker).',/
+     1   '            2 land use types (Total GW and Total Sprinkler).',/
      1   '          To eliminate this warning it is recommend you',/
      1   '            migrate to the current standard format or,',/
      1   '            at a minimum, include the following at the top',/

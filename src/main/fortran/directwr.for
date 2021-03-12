@@ -2,7 +2,7 @@ c directwr - Type 26 operating rule, Changed Water Right
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-c
-c     Last change:  RRB  18 Dec 100    2:29 pm
-c
-      SUBROUTINE directwr(IW,L2,ISHORT,divactX,ncallX)
+C
+c rrb 2018/07/29; Add Reservoir Control when ioprlim(l2)=5
+c 
+      SUBROUTINE directwr(IW,L2,ISHORT,divactX,ncallX,iflow)
 c _________________________________________________________
 c	Program Description
 c
@@ -32,7 +32,7 @@ c       right to be diverted at its original location and
 c		 2. The balance of a water right to be diverted to a Plan
 c
 c      Approach: 
-c      1. Initilize
+c      1. Initialize
 c      2. Source is a water right (iopsou(1,l2)
 c      3. Destination is a plan (iopdes(1,l2) 
 c      4. Calculate the water right left at the source limited by 
@@ -63,6 +63,16 @@ c
 c _________________________________________________________
 c	Update History
 c
+C
+c
+c rrb 2018/07/29; For the ArkDSS added capability to limit operation 
+c                 based on a project on/project off condition calculated
+c                 in a type 51 operating rule 51 (FlowRes) when
+c                 oprlim(l2) = 5 and 
+c                 iflow = 1 is Project on and 0 is project off
+c                 iflowX = 1 Operate if iflow=1, 0 do not
+c
+c rrb 2018/07/29; Add Reservoir Control when ioprlim(l2)=5
 c rrb 2014-11-24;  Copied type 24 (DirectEx) and edited.
 c                  Major differences are:
 c                  Source must be a water right
@@ -179,7 +189,6 @@ c     qdiv(18        Carrier passing thru a structure
 c     qdiv(20        From Carrier by Storage or Exchange 
 
 c     qdiv(26, )     From River by Exc_Pln
-c     qdiv(27, )     Diversion to Carry, Exchange or Bypass
 c     qdiv(28, )     Source is a reuse or admin plan
 c     qdiv(38  )     Carried water reported as Carried, Exchange 
 c                      or Bypassed but not used to calculate
@@ -223,12 +232,13 @@ c		Dimensions
      1  cwhy*48, cdestyp*12, ccarry*8, cpuse*3, csour*12,
      1  rec12*12, cTandC*3, cresid1*12, criver*12,
      1  corid1*12, cCallBy*12, ctype1*12, cImcdR*12,
-     1  cwhy2*48
+     1  cwhy2*48, subtypX*8, cIflow*3
 c
 c
 c_____________________________________________________________
-c               Step 1; Common Initilization
+c               Step 1; Common Initialization
 c  
+      subtypX='directwr'
       corid1=corid(l2)
       cCallBy='directwr    '
 c
@@ -243,6 +253,7 @@ cx    iout=1
       ioutP=0
       ioutQ=0   
       ioutiw=0 
+      ioutF=0
 c               
       if(ichk.eq.126 .and. iout.eq.0) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw      
@@ -268,7 +279,7 @@ c               b. Daily capability
       endif      
 c
 c ---------------------------------------------------------
-c               c. Initilize
+c               c. Initialize
       ieff2=1
       icx=26
       small = 0.001
@@ -315,6 +326,12 @@ c               c. Initilize
       ccarry='No'
       cpuse='No'
       cTandC='No'
+c
+c rrb 2019/07/29; Flow Reservoir Control      
+      
+      cIflow='No'
+      if(ioprlim(l2).eq.5) cIflow='Yes'
+      iflowX=iopsou(6,l2)      
             
       idcd2  = 0
       idcd2D = 0
@@ -325,6 +342,7 @@ c               c. Initilize
       
       psto21=0.0
       psto22=0.0
+      
 c
 c ---------------------------------------------------------
 c                 d1. Return to River
@@ -394,7 +412,7 @@ c
 c ---------------------------------------------------------
 c               i. Check Avail array coming in
       if(iout.eq.1) write(nlog,*) ' directwr; Calling Chekava In'
-      call chekava(30, maxsta, numsta, avail)
+      call chekava(30, maxsta, numsta, avail, subtypX)
 
 c
 c _________________________________________________________
@@ -405,7 +423,9 @@ c
         iwhy=1
         cwhy='Monthly switch Off'
         ioff=1
-      endif   
+      endif  
+      
+cx    write(nlog,*) ' DirectWR;', imonsw(l2,mon), iwhy, ioff, cwhy 
 c
 c ---------------------------------------------------------
 c		For a daily model set demand for beginning of season
@@ -426,6 +446,31 @@ c		For a daily model set demand for end of season
           ioff=1
         endif  
       endif  
+
+
+c
+c _________________________________________________________
+c rrb  2018/07/29; Add Flow Control Capability       
+c
+c		            Step 2b. Flow Control Limit  
+        if(ioutF.eq.1) then
+           write(nlog,*) '  DirectWR; ioprlim, iflow = ', 
+     1                     ioprlim(l2), iflow    
+        endif   
+           
+        iflowX = iopsou(6,l2)
+        if(ioprlim(l2).eq.5) then
+         if(iflow.ne.iflowX) then
+           iwhy=1
+           cwhy='Type 51 Operating Rule Control is off'  
+cx         ioff=1         
+           if(ioutF.eq.1) write(nlog,*) '  DirectWR; iflow = ',
+     1       iflow, iflowx, cwhy
+           goto 260
+         endif          
+       endif  
+       
+                
 c
 c _________________________________________________________
 c              Step 2b; Set reoperation control
@@ -544,8 +589,8 @@ c
 c ---------------------------------------------------------
 c               e. Set current Capacity limits    
 c rrb 2015/05-06/11/29; Set Capacity limit
-        divCap1=divcap(nd)-divmon(nd)
-        divCap2=divCap1
+      divCap1=divcap(nd)-divmon(nd)
+      divCap2=divCap1
 c
 c _________________________________________________________
 c               Step 4; Set destination data 
@@ -639,7 +684,7 @@ c               Test for a quick exit from routine (260)
       endif
 c_____________________________________________________________
 c               Step 7; Begin to calculate diversion at SOURCE
-c                       (divalo)limited by decree (dcrdiv1),
+c                       (divalo) limited by decree (dcrdiv1),
 c                       demand(divreqX) & capacity (divcap1)
 c                       BUT NOT WATER SUPPLY
 c                       Note divcap1 is set in step 3e
@@ -724,15 +769,15 @@ c               8a. Exit to Source (250) if monthly switch for
 c                        changed WR is off
       if(ioff.eq.1) then
         divactE=0.0
-        iwhy= 11
-        cwhy='Monthly changed WR switch is off'
+c
+c rrb 2018/07/29; Correction print iwhy and cwhy set above
+cx       iwhy= 11
+cx        cwhy='Monthly changed WR switch is off'
         goto 250
       endif  
 c
 c ---------------------------------------------------------
 c               8b. Calculate Available flow at the Destination
-c
-c
 c rrb 2014-11-24; Key difference from a type 24 
 c                 by removing limitation associated
 c                 with an exchange by calculating flow 
@@ -762,7 +807,7 @@ c
       if(ndtype.eq.7) then
         divaloE=amin1(divact2, dcrdiv2, divreqX2)         
 c
-c               Add carrier Loss befor transfer limit      
+c               Add carrier Loss before transfer limit      
         divaloE=divaloE/OprEffT     
 c
 c		            Limit to annual or monthly limit (oprmax1)        
@@ -781,7 +826,7 @@ c ---------------------------------------------------------
 c		            8d. Exit to source (250) if changed WR = 0      
       if(divaloE.le.small) then
         iwhy=13
-        cwhy = 'Demand or remaining water right  = 0'
+        cwhy = 'Demand or remaining water right (DivaloE) = 0'
         goto 250
       endif  
 c
@@ -1048,7 +1093,7 @@ c
 c _________________________________________________________
 c		            Step 27; Update diversion by this water right
 c		                     by amount at source (divact1) and by
-c		                     changed WR (divactE) befor CU adj
+c		                     changed WR (divactE) before CU adj
 c                        (culimit)
       divd(lr) = divd(lr)+divactX
       divdS(l2)= divdS(l2)+divact1
@@ -1088,7 +1133,7 @@ c                Limit daily output to non zero values
         ncallX=ncallX+1
         if(ncallX.eq.1) then
           write(nlog,270) corid(l2), cdestyp, ccarry, cTandC, cpuse,
-     1      cDivTyp(l2), criver
+     1      cDivTyp(l2), criver, cIflow
         else
 c         write(nlog,*) ' '
         endif  
@@ -1099,7 +1144,8 @@ c         write(nlog,*) ' '
 c
 c rrb 2017/10/20; Variable iuse2x is not set
 cx   1    nd2, ND2x,iuse2x,imcdX,imcdS, nriver, ncarry, oprEfft*100.,
-     1    nd2, ND2x,iuse2,imcdX,imcdS, nriver, ncarry, oprEfft*100.,
+     1    nd2, ND2x,iuse2,imcdX,imcdS, nriver, ncarry, iflow,iflowX,
+     1    oprEfft*100.,
      1    DIVREQx2*fac,AVAILX*fac,divaloS*fac,
      1    dcrdiv2*fac, divCU*fac,
      1    pavail*fac, culimit*100.,
@@ -1152,7 +1198,7 @@ c _____________________________________________________________
 c               
 c               Step 32 - Check Entire Avail array
 c rrb 05/05/11; Check Avail going out of the routine
-      call chekava(30, maxsta, numsta, avail)
+      call chekava(30, maxsta, numsta, avail, subtypX)
 c
 c _____________________________________________________________
 c               
@@ -1183,7 +1229,11 @@ c
      1  ' Destination Type = ', a12,
      1  ' Carrier = ',a8, ' T&C Plan = ',a3,
      1  ' Reuse Plan (Y/N) = ', a3,  ' Diversion Type = ', a12,
-     1  ' Release to River = ', a12,/    
+     1  ' Release to River = ', a12, ' Flow Reservoir Control = ', a3,/ 
+     1  '    Iflow   = Flow storage control; 1 = project on, 0 = off'/  
+     1  '    IflowX  = Flow switch; 1 = operate if iflow=1',/
+     1  '                           0 = do not operate if iflow=1',//   
+        
      1  '  directwr    iyr mon   day',
      1  ' Source ID    Min ID      ',
      1  '     Iter     Iw  Nwrord      l2      lr      nd    iuse',
@@ -1191,6 +1241,7 @@ c
 c rrb 2017/10/20; Variable iuse2x is used but not set
 cx     1  '     Nd2    Nd2X  Iuse2X   ImcdX   ImcdS  nRiver  nCarry',
      1  '     Nd2    Nd2X   Iuse2   ImcdX   ImcdS  nRiver  nCarry',
+     1  '   iflow  iflowX',
      1  ' OprEffT DivreqX2 AvailX DivaloS Dcrdiv2   DivCU',
      1  '  Pavail CuLimit Oprmax1  Pfail1 DivCary',
      1  ' divCap1 DivCap2   Pdem2 DcrDiv1 Divact0  DivAdd',
@@ -1200,6 +1251,7 @@ cx     1  '     Nd2    Nd2X  Iuse2X   ImcdX   ImcdS  nRiver  nCarry',
      1  ' ____________ ____________', 
      1  ' _______ _______ _______ _______ _______ _______ _______', 
      1  ' _______ _______ _______ _______ _______ _______ _______',
+     1  ' _______ _______'
      1  ' _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______ _______',
@@ -1207,7 +1259,7 @@ cx     1  '     Nd2    Nd2X  Iuse2X   ImcdX   ImcdS  nRiver  nCarry',
      1  ' _______ __________________________')
      
 c 280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,13i8,23F8.0,i8,
-  280   FORMAT(a12, i5,1x,a4, i5, 2(1x,a12),14i8,20F8.0,i8,
+  280   FORMAT(a12, i5,1x,a4, i5, 2(1x,a12),16i8,20F8.0,i8,
      1   1x, a48)
   281   FORMAT(a12, 143x, i8, f8.0, f8.2, 1x, a24)
   290   FORMAT(/, '  directwr   QDIV ',a12,/,16F7.1)
@@ -1252,7 +1304,8 @@ c		Print results
 c
 c rrb 2017/10/20; Variable iuse2x is not set
 cx     1    nd2, ND2x,iuse2x,imcdX,imcdS, nriver, ncarry,oprEfft*100.,
-     1    nd2, ND2x,iuse2,imcdX,imcdS, nriver, ncarry,oprEfft*100.,
+     1    nd2, ND2x,iuse2,imcdX,imcdS, nriver, ncarry, iflow,iflowX,
+     1    oprEfft*100.,
      1    DIVREQx2*fac,AVAILX*fac,divaloS*fac,
      1    dcrdiv2*fac,  divCU*fac,
      1    pavail*fac,   culimit*100.,

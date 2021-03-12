@@ -3,7 +3,7 @@ c          values to minimize the changes in most subroutines
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -26,8 +26,7 @@ c
 c _________________________________________________________
 c	Documentation
 c
-
-cc     Last change:  RB   13 Feb 98    2:49 pm
+c     Last change:  RB   13 Feb 98    2:49 pm
 c
       subroutine dayset
 c
@@ -37,7 +36,14 @@ c
 c      Dayset; it sets variables used in monthly model to daily 
 c               values to minimize the changes in most subroutines
 c
+c              Called by Execut.f within the daily loop
 c
+c _________________________________________________________
+c
+c               Update history
+c
+c rrb 2019/07/28; Add diversion to a WWSP-Supply plan by a
+c                 direct diversion (psupDD() and psuppDDM())
 c
 c _________________________________________________________
 c	Dimensions
@@ -45,18 +51,18 @@ c	Dimensions
 c                           
 c
 c _________________________________________________________
-c	Initilize
+c	Initialize
       fac=factor
       ioutR=0
 
 c
 c =========================================================
-c               Initilize on day 1
+c               Initialize on day 1
 c
       if(idy.eq.1) then
 c
 c _________________________________________________________
-c               Step 1; Initilize monthly stream data
+c               Step 1; Initialize monthly stream data
 c
         do is=1,numsta
           riverm(is) = 0.0
@@ -74,13 +80,13 @@ c
         end do
 c
 c _________________________________________________________
-c               Step 2; Initilize monthly diversions
+c               Step 2; Initialize monthly diversions
 c
         do iu=1,numuse
           divreqm(iu)=0.0
         end do
 c
-c rrb 99/07/12; Initilize monthly total by diversion
+c rrb 99/07/12; Initialize monthly total by diversion
         do nd=1,numdiv
           rlossm(nd)=0.0
 
@@ -89,7 +95,7 @@ c rrb 99/07/12; Initilize monthly total by diversion
         end do
 c
 c _________________________________________________________
-c               Step 3; Initilize monthly wells
+c               Step 3; Initialize monthly wells
 c
         do nw=1,numdivw
           divmonwm(nw)=0.0
@@ -104,7 +110,7 @@ c
         end do
 c
 c _________________________________________________________
-c               Step 4; Initilize monthly instream flows
+c               Step 4; Initialize monthly instream flows
 c
         do ni=1,numifr
           flowrqm(ni)=0.0
@@ -118,7 +124,7 @@ c rrb 08/07/96 Add Instream flow reach
         end do
 c
 c _________________________________________________________
-c               Step 5; Initilize reservoir accounts
+c               Step 5; Initialize reservoir accounts
 c
         do no=1,maxown
           do i=1,maxacc
@@ -155,7 +161,7 @@ c               Do not show OOP rights as part of the total
 c
 c _________________________________________________________  
 c
-c               Step 6; Initilize Reservoir Total
+c               Step 6; Initialize Reservoir Total
 c               Note evapm is not used (it is / 31 in evasec.for)
         do nr=1,numres
           evapM(nr) = 0.0
@@ -168,13 +174,13 @@ c rrb 2006/04/12; Reservoir Seepage Loss
 c
 c
 c _________________________________________________________ 
-c               Step 7; Initilize monthly operating Rule data
+c               Step 7; Initialize monthly operating Rule data
         do no=1,numopr
           divom(no)=0.0
         end do
 c
 c _________________________________________________________
-c               Step 8; Initilize monthly cu
+c               Step 8; Initialize monthly cu
         do nu=1,numuse
           usemon(nu)=0.0
           dcum(nu)=0.0
@@ -188,7 +194,7 @@ c               Step 8; Initilize monthly cu
         end do
 c
 c _________________________________________________________
-c               Step 8; Initilize plan data on day 1x/mo
+c               Step 8; Initialize plan data on day 1x/mo
         do np=1,nplan
           pdemM(np)=0.0          
           pdemTM(np)=0.0
@@ -206,6 +212,9 @@ c
 c rrb 2006/03/31; Well Augmentation Pumping in Priority                    
           PwellCM(np) = 0.0
           PdriveM(np) = 0.0
+c
+c rrb 2019/07/28; Direct flow diversion to a WWSP plan
+          PsupDDM(np) = 0.0
         end do
 c
 c _________________________________________________________
@@ -217,16 +226,16 @@ c		Operational right maximum limit 1x/mo
         end do
 c
 c =========================================================
-c               End Initilization on day 1 only
+c               End Initialization on day 1 only
 
       endif
 c
 c =========================================================
-c               Begin to Initilize every day
+c               Begin to Initialize every day
 c
 c
 c _________________________________________________________
-c               Step 9; Initilize daily water rights 1x/day
+c               Step 9; Initialize daily water rights 1x/day
 c
       do nd=1,numfrr
         divi(nd)=0.
@@ -266,7 +275,7 @@ c                  (Changed water right operation)
       end do
 c
 c _________________________________________________________
-c               Step 10; Initilize daily diversion cu 1x/day
+c               Step 10; Initialize daily diversion cu 1x/day
 c
         do nu=1,numuse
           dcu(nu)=0.0
@@ -274,7 +283,7 @@ c
         end do
 c
 c _________________________________________________________
-c               Step 11; Initilize daily well cu 1x/day
+c               Step 11; Initialize daily well cu 1x/day
 c
         do nw=1,numdivw
           dcuw(nw)=0.0
@@ -282,7 +291,7 @@ c
         end do 
 c
 c _________________________________________________________
-c               Step 12; Initilize daily Instream Flows 1x/day
+c               Step 12; Initialize daily Instream Flows 1x/day
 c
       do ni=1,numifr
 c
@@ -299,7 +308,7 @@ c rrb 08/07/96; Instream flow reach
         end do
       end do
 c _________________________________________________________
-c               Step 13; Initilize daily demands 1x/day
+c               Step 13; Initialize daily demands 1x/day
 c
 c rrb 01/02/20; Handled in demand.for based on demand type
 c     do nu=1,numuse
@@ -312,7 +321,7 @@ c
       end do
 c
 c _________________________________________________________
-c               Step 14; Initilize daily Wells 1x/day
+c               Step 14; Initialize daily Wells 1x/day
 c
       do nw=1,numdivw
 c
@@ -331,7 +340,7 @@ c       diwrreqw(nw)=diwrdw(idy,nw)
       end do
 c
 c _________________________________________________________
-c               Step 15; Initilize daily demands (diversions & wells)
+c               Step 15; Initialize daily demands (diversions & wells)
 c                         1x/day
 c
 c rrb 01/12/26; Variable dimension               
@@ -343,7 +352,7 @@ c     call demand(1)
 
 c
 c _________________________________________________________
-c               Step 16; Initilize daily stream flow and
+c               Step 16; Initialize daily stream flow and
 c               payback to stream 1x/day
 c
       do is=1,numsta
@@ -358,7 +367,7 @@ c
       end do
 c
 c _________________________________________________________
-c               Step 17; Compute daily Virgen Flow 1x/day
+c               Step 17; Compute daily Virgin Flow 1x/day
 c
       do iru=1,numrun
         iss=irusta(iru)
@@ -387,7 +396,7 @@ c           avinp (iss)=avinp (iss)+virinp(mon,iru)
       end do
 c
 c _________________________________________________________
-c               Step 18; Initilize daily Qstern 1x/day
+c               Step 18; Initialize daily Qstern 1x/day
 c
       do nd=1,numdiv
         is=idvsta(nd)
@@ -395,7 +404,7 @@ c
       end do
 c
 c _________________________________________________________
-c               Step 19; Initilize daily return flows and 
+c               Step 19; Initialize daily return flows and 
 c                        depletions 1x/day
 c
       do irn=1,nstrtn
@@ -428,14 +437,14 @@ c		         Also set Avail = River
       call gwsub
 c
 c _________________________________________________________
-c               Step 21; Initilize daily currtn 1x/day
+c               Step 21; Initialize daily currtn 1x/day
 c                                 
       do is=1,numsta
         currtn(is)=0.
       end do
 c
 c _________________________________________________________
-c               Step 23; Initilize daily Qdiv 1x/day
+c               Step 23; Initialize daily Qdiv 1x/day
 c
       do i=1,numsta
         do j=1,maxacc
@@ -444,7 +453,7 @@ c
       end do
 c
 c _________________________________________________________
-c               Step 24; Initilize reservoir diversions (qres)
+c               Step 24; Initialize reservoir diversions (qres)
 c                        & accounts (accr) 1x/day
 c               Note accr(20) is initial storage 
 c 
@@ -495,7 +504,7 @@ c               Do not show OOP rights as part of the total
 c
 c _________________________________________________________
 c rrb 2009/06/01; 
-c		  Step 25; Initilize reservoir data when the admin date
+c		  Step 25; Initialize reservoir data when the admin date
 c			is not used (rdate(nr) = -1)
 c
 
@@ -513,7 +522,7 @@ c
          if(ifix(rdate(nr)).lt.0) then 
 c
 c _________________________________________________________
-c               Step 4; Initilize account storage 1x/run or Admin Date
+c               Step 4; Initialize account storage 1x/run or Admin Date
 c
 
 	    NOI=NOWNER(NR)
@@ -540,8 +549,8 @@ c
 c
 c ---------------------------------------------------------
 c rrb 2006/10/13; 
-c               b. Initilize 1x/run or on admin date
-c                  Initilize operating rule data tied to a
+c               b. Initialize 1x/run or on admin date
+c                  Initialize operating rule data tied to a
 c	            reservoir operating date
 
             do k=1,numopr
@@ -550,7 +559,7 @@ c	            reservoir operating date
 	    
 c
 c ---------------------------------------------------------
-c               b. Initilize reservoir water right data 1x/run or
+c               b. Initialize reservoir water right data 1x/run or
 c		on Admin date
 c               Loop for all water rights in priority loop
 c               to set one fill constraint
@@ -659,7 +668,7 @@ c    1    iyrmo(mon), xmonam(mon), idy, dcall1
       endif
 c
 c _________________________________________________________
-c               Step 27; Initilize plan data 1x/day
+c               Step 27; Initialize plan data 1x/day
 c
         do np=1,nplan
           c = poblD(ido,np) + pfail(np)/fac
@@ -675,8 +684,13 @@ c rrb 2005/08/05; Revise to carry over storage from a res plan
 c		  Note Psuply is running total; psuplyT is total inflow	          
           c = psupD(ido,np)
           caf=c*fac
-          iPtype1=iPlnTyp(np)          
-          if(iPtype1.eq.3 .or. iPtype1.eq.5 .or. iPtype1.eq.9) then
+          iPtype1=iPlnTyp(np)    
+c
+c rrb 2018/08/05; Add WWSP type 14 plan type      
+cx        if(iPtype1.eq.3 .or. iPtype1.eq.5 .or. iPtype1.eq.9) then
+          if(iPtype1.eq.3 .or. iPtype1.eq.5 .or. 
+     1       iPtype1.eq.9 .or. iPtype1.eq.14) then
+          
             psuply(np)= psupD(ido,np)+psuply(np)
             psuplyT(np)= psupD(ido,np)
             
@@ -689,7 +703,7 @@ cx          psto2(np)=psto2(np) + psupD(ido,np)*fac
             psuplyT(np)= psupD(ido,np)
           endif
 c
-c		Initilize amount in a reuse plan here since at least
+c		Initialize amount in a reuse plan here since at least
 c               part of it is calculated from a diversion in a prior
 c               time step
 c
@@ -709,7 +723,7 @@ cr        PImport(np)=PImportD(np,nd)
         end do
 c
 c _________________________________________________________
-c               Step 28; Initilize Call indicators 1x/day
+c               Step 28; Initialize Call indicators 1x/day
 c			Note ..L = call location
 c                            ... = print indicator
             do i=1,numsta
@@ -717,7 +731,7 @@ c                            ... = print indicator
             end do
 c
 c _________________________________________________________
-c       	  Step 29; Initilze compact demand 1x/day if a Type 13
+c       	  Step 29; Initialize compact demand 1x/day if a Type 13
 c		   operating rule is on.
 c
       if(isetOpr(13).gt.0) then
@@ -781,7 +795,7 @@ c _________________________________________________________
 c               Formats
 c
  100  format
-     1    ('  Dayset; Warning < 0 befor allocation ',
+     1    ('  Dayset; Warning < 0 before allocation ',
      1    ' on ',i4,1x,a3,i4,'. Set to zero from ',
      1     f10.3, ' cfs or ', f10.0, ' af at ', a24)
  110  format('  dayset;  mon  idy idyt',/,10x, 3i5)

@@ -2,7 +2,7 @@ c welrig3 - simulates diversions (pumping) by a well
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE welrig3(IW,L2,ispruse,retx,divact,ncallX)
 c
 c
@@ -44,7 +44,7 @@ c        nwR            source water right
 c
 c        ishort         code for reoperation; 0=no, 1=yes
 c
-c        ceff           ratio of GW to SW efficicney
+c        ceff           ratio of GW to SW efficiency
 c
 c        depx           depletion in this month by pumping
 c        divact         total well pumping
@@ -70,13 +70,13 @@ c
 c        diveff(mon,nd) Average diversion efficiency via *.dds
 c        diveffw(mon,nwe)Average well efficiency via *.wes
 c
-c        effmaxs(nwe)   Maximum sprinker efficiency via *.tsp
+c        effmaxs(nwe)   Maximum sprinkler efficiency via *.tsp
 c        effmaxw(nwe)   Maximum flood efficiency via *.tsp
 c
 c        effd           Average diversion efficiency via *.dds
 c        effa           Average well efficiency via *.wes
 c
-c        effs1          Maximum sprinker efficiency via *.tsp
+c        effs1          Maximum sprinkler efficiency via *.tsp
 c        efff1          Maximum flood efficiency via *.tsp 
 c
 c        iout           Switch: 0 no print; 1 yes print
@@ -99,7 +99,7 @@ c        idivcow2(nw)   SW diversion, if any, associated with well nw
 c        iscdx          River location of well (iscdx = idvstaw(nwe))
 c
 c        ispr           =0 use flood efficiency in rtnsecw
-c                       =1 use sprinker efficiency in rtnsecw
+c                       =1 use sprinkler efficiency in rtnsecw
 c
 c        ispruse        =0 called by subroutine execut
 c                       =1 called by subroutine suruse for sprinkler use
@@ -135,11 +135,12 @@ c	Dimensions
 c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
-     1          rec12*12, cTandC*3, cidWR*12, ctype1*12, cStrOut*12
+     1          rec12*12, cTandC*3, cidWR*12, ctype1*12, cStrOut*12,
+     1          subtypX*8
 c
 c
 c _________________________________________________________
-c       Step 1 Common Initilization
+c       Step 1 Common Initialization
 c
 c		iout = 0 no details
 c		       1 details
@@ -147,6 +148,7 @@ c                      2 summary
 c		       3 super detail
 c		       4 selected ID
 
+      subtypX='welrig3 '
       iout=0
       ioutiw=0
       
@@ -212,7 +214,7 @@ c rrb 01/01/13; Set default efficiency to non sprinklers (ispr=0)
       ispr=0 
 c
 c               d. Check Avail array
-      call chekava(19, maxsta, numsta, avail)
+      call chekava(19, maxsta, numsta, avail, subtypX)
 c
 c               e. Set river avail array to temporary avtemp
       do is=1,numsta
@@ -468,7 +470,7 @@ c     call deplete(DIVACT,depx,nwr,nd)
       
 c
 c _________________________________________________________
-c               Step 17; Separate into sprinker and other use
+c               Step 17; Separate into sprinkler and other use
       divsprx=amin1(divsprx, divact)
       divothx=amax1(divact-divsprx, 0.0)
 c
@@ -477,7 +479,7 @@ c
 c               Step 18; Add in return flows for all time steps
 c                       once for sprinklers and once for other
 c                       Note:
-c			ispr=1 uses sprinker efficiency
+c			ispr=1 uses sprinkler efficiency
 c			ispr=0 uses flood efficiency
 c  
       if(divsprx.gt.small) then
@@ -678,7 +680,7 @@ c
 c _________________________________________________________
 c
 c               Step 25; Check Avail for Roundoff issues
-      call chekava(19, maxsta, numsta, avail)
+      call chekava(19, maxsta, numsta, avail, subtypX)
       
 c
 cx      if(iout.eq.1) then

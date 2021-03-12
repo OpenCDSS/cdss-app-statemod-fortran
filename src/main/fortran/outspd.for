@@ -2,7 +2,7 @@ c outspd - daily special parameter and id printout, same as outsp but daily
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ c
       character ftype*24, ptype*24
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
       ichk1 = 0
 c     ndiv = 23
 c rrb 2005/11/22; River Loss and Carrier Loss

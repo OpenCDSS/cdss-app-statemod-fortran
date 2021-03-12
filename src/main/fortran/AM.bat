@@ -39,3 +39,10 @@ rem Delete the AMTEMP.BAT file, presumably because it may be in error.
 rem This is commented out to allow for troubleshooting but maybe should be uncommented?
 :delete
 rem DEL AMTEMP.BAT
+
+rem copy to Standard statemod directory so I dont have to revise all the *.bat commands
+rem TODO smalers 2021-03-11 Need to wrap the following in if to make only work for Ray Bennett,
+rem for examaple to check %USER%
+rem copy statemod.exe c:\w\statem\forwell
+rem copy statemod.exe c:\w\statem\forwell\StateMod_160042.exe
+rem copy StateMod.exe StateMod_160042.exe

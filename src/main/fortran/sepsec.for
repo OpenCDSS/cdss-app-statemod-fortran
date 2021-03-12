@@ -2,7 +2,7 @@ c sepsec - calculates reservoir seepage
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ c 		Note it uses a counter (nsepcal(nr) to limit
 c		seepage to 1) Once per time step or 2) to
 c		the change in seepage between iterations within
 c		the same time step.  Without this counter
-c		a resevoir will keep seeping each time called
+c		a reservoir will keep seeping each time called
 c
 c
 c _________________________________________________________
@@ -67,7 +67,7 @@ c
       character cSub*12, cProg*12
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
 c		iout=1 details
 c		     2 summary
@@ -234,7 +234,7 @@ c 		Call RetnSecRP to accumulate seepage to a plan
 c		     or loss as appropriate          
         
         if(iout.eq.1 .and. ioutR.eq.nr) then
-          write(nlog,*) ' SepSec; befor RtnSecRP', 
+          write(nlog,*) ' SepSec; before RtnSecRP', 
      1      iwhy, nr, nSepCal(nr), 
      1      seep0, sepact(nr), sepact1(nr), seep1
         endif   

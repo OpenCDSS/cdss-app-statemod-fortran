@@ -2,7 +2,7 @@ c resrg1 - simulates a standard reservoir diversion
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE RESRG1(IW,L2,divx,short,ncallX)
 c       
 c
@@ -27,26 +27,29 @@ c
 c       Resrg1; It simulates a standard reservoir diversion
 c               If Iressw(l2)=0 it limits storage to target 
 c                  contents and DOES NOT CHARGE against their
-c		   decree (paper fill)
+c		               decree (paper fill)
 c               If Iressw(l2)=3 it limits storage to target 
 c                  contents and DOES CHARGE against their
-c		   decree (paper fill)
+c		               decree (paper fill)
 c
 c _________________________________________________________
 c       Update History
 c
-c rrb 04/10/96; added special logic for out of priority storage 
-c               right (ityrsr(l2) = -1)
-c     Revised to distribute one water right to many owners
-c     05/012/01; Revised to allow re storage of previously released
-c                reusable water
+c rrb 1996/04/10; added special logic for out of priority storage 
+c                 right (ityrsr(l2) = -1)
+c                 Revised to distribute one water right to many owners
+c     2001/05/12; Revised to allow re storage of previously released
+c                 reusable water
 c     2006/06/05; Add Paper Fill (RitPaper)
 c     2006/06/16; Set paper fill to ritrem.
-c                 Removed all refrences to an OOP reservoir right
+c                 Removed all references to an OOP reservoir right
 c                 (ityrsr(l2)=-1. Replaced with a type 38 rule
 c     2006/11/20; Revise storage above target logic when IRESSW(L2)=3
-C		  New logic does not allow storage above target
-c		  but does reduce the decree.
+C		              New logic does not allow storage above target
+c		              but does reduce the decree.
+c
+c     2019/11/17; Print diversion by priority to a reservoir to *.xdd 
+c                 by storing diversion in qdiv(5,ircd) 
 c
 c _________________________________________________________
 c       Documentation
@@ -54,6 +57,7 @@ c
 c        IW         : OVERALL WATER RIGHT ORDER
 c        L2         : LOC. OF WATER RIGHT (IW) ON RES. RIGHT TABLE
 c        nrown(l2)  : Number of owners associated with right l2
+c        ircd       : Location of reservoir in network
 c        iresco(2,l2) account(s) tied to this right.  Note set to 1
 c                     if multiple accounts are tied to this right
 c        irestyp(l2): =1 right is tied to 1 account
@@ -62,7 +66,7 @@ c                       reservoir and water is distributed based
 c                       on ownership ratio
 c                     =-1 right is tied to the firs n accounts in this
 c                       reservoir and water is distributed based
-c                       on availabel space in each
+c                       on available space in each
 c
 c         iressw(l2)    0 DO NOT STORE above target DO NOT CHARGE
 c			  to decree
@@ -80,7 +84,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c		iout = 0 no details
 c		       1 details
@@ -202,8 +206,8 @@ c
 c               Step 6; FIND THE ALLOWABLE STORAGE
 C                       also limit to target contents based on type
 c		        Note if iressw(nr)=3 it will NOT STORE above a 
-c			target but will charge against their decree
-c			(e.g. Paper fill)
+c		        target but will charge against their decree
+c			      (e.g. Paper fill)
 
 c
 c rrb 2006/11/29; Correct paper fill above target calculations
@@ -324,6 +328,11 @@ c     RITREM(L2  )=RITREM(L2  )-ACTAF-TarCon
       RITREM(L2  )=RITREM(L2  )-ACTAF-PaperFil
       CURSTO(NR  )=CURSTO(NR  )+ACTAF
       QRES(1,NR  )=QRES(1,NR  )+ACTAF
+c
+c rrb 2019/11/17; Print diversion by priority to a reservoir 
+c                 qdiv(5,ircd) to *.xdd
+      QDIV(5,IRCD)=QDIV(5,IRCD)+STOACT
+
 c
 c _________________________________________________________
 c

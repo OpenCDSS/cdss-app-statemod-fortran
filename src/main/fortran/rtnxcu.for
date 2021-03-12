@@ -4,7 +4,7 @@ c          Instead RetTot is provided as an input to the routine.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ c               interv = +n = number of returns for all patterns
 c                      = -n = variable number of returns per pattern
 c
 c               irnsta(irn) = ircd = return location node
-c               irnord      = set in datinp.  refers to river node??
+c               irnord      = set in datinp.  Refers to river node??
 c
 c               idncod(ircd)= iscd = # of downstream nodes from ircd
 c
@@ -124,7 +124,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 c
 c     write(6,*)    '  RtnXcu;'
 c     write(nlog,*) '  RtnXcu;'
@@ -206,7 +206,7 @@ c                        and delay table (idly)
         CONST=RETTOT*PCTTOT(IRN)/10000.
         idly=irtndl(irn)
 c
-c rrb; 980503; Must set befor branch for baseflows (ioptio.eq.1)
+c rrb; 980503; Must set before branch for baseflows (ioptio.eq.1)
         NDNN=NDNNOD(ISCD)
         IORD=IRNORD(IRCD)
 c

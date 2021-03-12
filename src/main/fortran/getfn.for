@@ -2,7 +2,7 @@ c getfn - reads in files in any order parses through them to get actual file nam
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
        subroutine Getfn(iin, nlog, infile, maxfile, 
      1   fileName, ifileNum, filetype, fileSuf)
 c     
@@ -33,6 +33,8 @@ c	      Called by Statem.for
 c
 c _________________________________________________________
 c	Update History
+c 2018/10/14; Update to include JMartin Monthly inflow (*.jmm)
+c             revise dimension from 80 to 90
 c	2006/01/01; Add Network so it can be inlcuded in *.rsp file
 c                   for GUI (*.net)
 c	2006/03/21; Add Plan Well for well augmentation data (*.plw)
@@ -56,9 +58,9 @@ c
 c _________________________________________________________
 c	Dimensions
        dimension
-     1   ifileNum(80), fileName(80), 
-     1   filetypX(80), fileType(80),
-     1   fileID(80), ifileNx(80), fileSuf(80)
+     1   ifileNum(90), fileName(90), 
+     1   filetypX(90), fileType(90),
+     1   fileID(90), ifileNx(90), fileSuf(90)
 
        character filena*256,
      1   filetype*40, filetypX*40, FileName*256, FileId*5,
@@ -87,7 +89,10 @@ c	Dimensions
      1  '*.evm', '*.prm', '*.rig', '*.rie', '*.prf',
      
      7  '*.rch', '*.rst', '*.row', '*.rev', '*.rpp',
-     1  '*.rac', '*.rre', '*.dre', '*.plr', '*.rir'/
+     1  '*.rac', '*.rre', '*.dre', '*.plr', '*.rir',
+     
+     8  ' ',     ' ',     ' ',     ' ',     ' ',
+     1  ' ',     ' ',     '*.jmm', ' ',     ' '/
      
        data filetypX/
      1  'Response',
@@ -176,7 +181,18 @@ c	Dimensions
      7  'Reservoir_Historic_To_Recharge_Monthly',
      8  'Diversion_Historic_To_Recharge_Monthly',
      9  'Plan_Recharge',
-     8  'River_Reach'/
+     8  'River_Reach',
+     
+     1  ' ',
+     2  ' ', 
+     3  ' ',
+     4  ' ',
+     5  ' ',
+     6  ' ',
+     7 '  ',
+     8 'JMartin_Monthly',
+     9 ' ',
+     9 ' '/
      
 c
 c		Set file number (ifileNx)
@@ -189,11 +205,13 @@ c		Use -1 if not currently used
      4  86, 87, 81, 82, 84, 85, -1, -1, -1, 55,
      5  90, -1, 55, 56, 56, 56, 57, 58, 59, 60,
      6  61, -1, 55, 64, 55,  2,  1, 68, 55, 55,
-     7  55,  3, 55, 55, 55, 55, 77, 78, 55, 55/
+     7  55,  3, 55, 55, 55, 55, 77, 78, 55, 55,
+     8  -1, -1, -1, -1, 88, -1, -1, -1, -1, -1/
+
 c
 c _______________________________________________________ 
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 
 c
 c               iout = 0 no details
@@ -238,6 +256,7 @@ c               Step 2; Random file, read in other files and store
          ! if debugging details are on then read the next
          ! line in the response file and then
          ! output it to the log file
+         
          if(iout.eq.1) then
            write(nlog,*) '  Getfn; i=', i
            ! don't need the next line
@@ -261,6 +280,7 @@ c               Step 2; Random file, read in other files and store
              ! don't need the next line
              !read(iin,'(a256)',err=9999, end=500) filena
              ! if debugging details are on then output to the log file
+             
              if(iout.eq.1) write(nlog,*) '  Getfn 2; filena, ', filena
              call getName(i, nlog,nfsize,ifound, filena,fileT1,fileN1)
 c
@@ -277,7 +297,7 @@ c _________________________________________________________
 c
 c               Find File Type
              ifound=0
-             do j=1,maxfile
+             do j=1,maxfile              
                if(fileT1.eq.filetypX(j)) then
                  ifound=1
                  j1=j1+1
@@ -293,7 +313,13 @@ cr               if(iout.ge.2) then
                    if(j.eq.32 .or. j.eq.53) write(nlog,*) ' '
                    write(nlog,204)  jp, j, ifileNx(j), fileid(j),
      1              ifileNum(j), fileT1, fileN1
-                 end if
+                 endif
+c
+c rrb 2018/10/14; Debug for JMartin_Monthly
+                 if(iout.eq.1) then
+                   write(nlog,*) ' Getfn;', 
+     1                j, ifound, fileT1, filetypX(j)
+                 endif
                endif
              end do
 c

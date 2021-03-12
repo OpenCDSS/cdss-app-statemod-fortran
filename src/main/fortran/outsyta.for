@@ -3,7 +3,7 @@ c           Similar to outsyt but it prints average.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ c
      3   '                        ','                        '/
 C
 C_______________________________________________________________----
-C		Step 1; Initilze
+C		Step 1; Initialize
 c
       write(6,*) ' '
       write(6,*) ' Subroutine Outsyta'
@@ -109,7 +109,7 @@ C
       write(6,*) ' '
       do 610 is=1,numsta-1
 c
-c               Initilize for a given structure
+c               Initialize for a given structure
         do im=1,13
           do i=1,ndiv
             data1(im,i)=0.0

@@ -2,7 +2,7 @@ c setdem - sets demand data for a diversion or well
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ c_________________________________________________________________NoticeEnd___
 c
 c _________________________________________________________
 c     SetDem; It Sets demand data for a diversion
-c     or well.  Note hte well may operate independently (nd2=0)
+c     or well.  Note the well may operate independently (nd2=0)
 c     or as part of a diversion system (nd2>0) 
 c
       include 'common.inc'
@@ -36,11 +36,11 @@ c _________________________________________________________
 c	Program Description
 c
 c     SetDem; it sets well demand depending on the type of
-c     demand specifieid (idemtyp) and if the well is tied
+c     demand specified (idemtyp) and if the well is tied
 c     to a diversion (nd2>0) or not (nd2=0)
 c _________________________________________________________
 c
-c		  Step 1; Initilize
+c		  Step 1; Initialize
 c
 
       iout=0

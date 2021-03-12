@@ -2,7 +2,7 @@ c setloss - initializes loss data for various operating rules
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c		It initilizes loss data for various operating rules
+c		It initializes loss data for various operating rules
 c
 c _________________________________________________________
 c		Update History
@@ -92,7 +92,7 @@ cx   1 OprlossC(maxopr,10)
 c
 c
 c _________________________________________________________
-c		Step 1;  Initilize
+c		Step 1;  Initialize
       iout=0
       
       ioprloss=int(OprLoss(l2))
@@ -114,7 +114,7 @@ c rrb 2008/06/10;
 c
 c rrb 2010/10/15; Correction for a water balance
 c                 report system (tranloss)at the destination;
-c                 not befor water is carried. 
+c                 not before water is carried. 
 cx    OprEff1 = 1.0 - TranLoss   
       OprEff1 = 1.0  
       OprEffT = OprEff1

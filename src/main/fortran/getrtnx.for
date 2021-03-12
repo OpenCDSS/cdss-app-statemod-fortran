@@ -2,7 +2,7 @@ c getrtnx - generic code used to read return flow data a well, reservoir, or pla
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ c		Local variables
 c
 c _________________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
 c			  iout=1 print return flow details
 c		         2 summary
         iout=0
@@ -147,7 +147,7 @@ c       write(nlog,900) ityp, istrtyp
         endif  
      
 c
-c rrb 2008/08/24; Initilize to be consistent with 
+c rrb 2008/08/24; Initialize to be consistent with 
 c                 diversion array nrtn      
 c rrb 2009/05/26 
         if(maxdivX.gt.maxRtnX) goto 1408

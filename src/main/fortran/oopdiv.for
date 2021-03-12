@@ -3,7 +3,7 @@ c          via the upstream storage statute.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE OopDiv(IW,L2,ISHORT,divactX,ncallx)
 c
 c
@@ -137,10 +137,8 @@ c        qdiv(18        Carrier passing thru a structure (e.g. divcar)
 c        qdiv(20        From Carrier by Storage or Exchange (e.g. carrpl)
 
 c        qdiv(26, )     Diversion by Bypass
-c        qdiv(27, )     Diversion to Carry, Exchange or Bypass
 c        qdiv(28, )     Stored via a reuse plan  
-c
-c	 qdiv(34, )     Diversion by an Out of Priority Diversion
+c	       qdiv(34, )     Diversion by an Out of Priority Diversion
 
 c
 c        currtn         Immediate return to diverting node??
@@ -148,40 +146,42 @@ c        qtribu         Tributary InFlow (baseflow point)
 c        qstern         Flow at diversion (used for transmtn divs)
 c        small          a small value for roundoff (0.0) concerns
 c
-c	 pdem(ip)       Obligation to a plan (ip)
-c			Note calculated in RtnsecP
+c	       pdem(ip)       Obligation to a plan (ip)
+c			                  Note calculated in RtnsecP
 c
-c	 ritPapS        Paper fill at source 
+c	       ritPapS        Paper fill at source 
 c                         (currently just use ritrem()
-c	 ritPapD        Paper fill at reservoir destination
+c	       ritPapD        Paper fill at reservoir destination
 c                         (currently just use ritrem()
 c
-c        qres(4  From carrier by Storage, Exchange, Plan, etc.
+c        qres(4         From carrier by Storage, Exchange, Plan, etc.
 c        qres(18,ix)    From River by bypass to Reservoir
 c
-c	 iP		Plan ID
+c	       iP		         Plan ID
 c
-c	 DivOpr		Toal amount diverted by this Opr Rule
-c			Paid back by OopBook2. 
-c                       Note this value is in acft since it 
-c			cululates from one month to the next
+c	       DivOpr		     Toal amount diverted by this Opr Rule
+c			                 Paid back by OopBook2. 
+c                      Note this value is in acft since it 
+c			                 cumulates from one month to the next
 c _____________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
       character 
      1  cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
-     1  rec12*12, cidvri*12, cresid1*12, cCallBy*12, corid1*12
+     1  rec12*12, cidvri*12, cresid1*12, cCallBy*12, corid1*12,
+     1  subtypX*8
 c
 c
 c_____________________________________________________________
-c               Step 1; Common Initilization
+c               Step 1; Common Initialization
 c
 c		iout=0 no detials
 c		     1 details
 c		     2 summary
 c		    99 summary without limit to ccall
 
+      subtypX='oopdiv  '
       iout=0
       ioutiw=0
       
@@ -466,7 +466,7 @@ c		a. Exit if destination structure (nDes) is off
         endif
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nRes)+iopdes(2,l2)-1
 
         nro=1
@@ -964,7 +964,7 @@ c
 c
 c ---------------------------------------------------------
 c 
-c rrb 2006/07/25; Update decree when diversion occurrs 
+c rrb 2006/07/25; Update decree when diversion occurs 
 c		  to limit to total
 c
 c rrb 2006/07/26; Revise based on decree until booked over
@@ -1052,7 +1052,7 @@ c _____________________________________________________________
 c               
 c               Step 29 - Check Entire Avail array
 c rrb 05/05/11; Check Avail going out of the routine
-      call chekava(23, maxsta, numsta, avail)
+      call chekava(23, maxsta, numsta, avail, subtypX)
       
 c
 c_____________________________________________________________

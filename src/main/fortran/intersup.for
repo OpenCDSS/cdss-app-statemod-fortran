@@ -1,12 +1,12 @@
 c intersup - Type 35 operating rule
-c            It calculates an interruptable supply by
+c            It calculates an interruptible supply by
 c            allowing an instream flow (nf) to divert water that
 c            would have been diverted by a direct flow right (isr)
 c            based on the natural flow at a stream station (isx).
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       Type 35;  It calculates an interruptable supply by
+c       Type 35;  It calculates an interruptible supply by
 c                 allowing an instream flow (nf) to divert water that
-c                 would have been divertd by a direct flow right (isr)
+c                 would have been diverted by a direct flow right (isr)
 c                 based on the natural flow at a stream station (isx)
 c
 c _________________________________________________________
@@ -43,10 +43,10 @@ c                   = 0 called from bomsec to compare to natural flow
 c                   = 1 called from execut for operation
 c
 c               nf  = iopdes(1,l2) Destination instream flow fr riginp
-c               isx = iopsou(1,l2) Stream ID for interruptable switch
+c               isx = iopsou(1,l2) Stream ID for interruptible switch
 c               isr = iopsou(2,l2) Source water right fr riginp
 c                     iopsou(3,l2) Stream discharge for on/off switch
-c                     iopsou(4,l2) Switch to allow interruptable
+c                     iopsou(4,l2) Switch to allow interruptible
 c                                  transfer of diversion (0) or CU (-1)
 c               divact          = resulting instream flow diversion
 c               imonsw(l2,mon)  = monthly on/off switch
@@ -54,8 +54,8 @@ c
 c               flowrq          = isf demand 
 c               divo            = total diversion under this opr rule
 c               qdiv(23, )      = exchange from an non reservoir
-c                                 (e.g. interruptable supply).
-c               divd            = total diversin by a right ???
+c                                 (e.g. interruptible supply).
+c               divd            = total diversion by a right ???
 c
 c
 c _________________________________________________________
@@ -67,7 +67,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1; Initilization - General
+c               Step 1; Initialization - General
 c
 c               a. Convergence 
       small = 0.001
@@ -179,9 +179,9 @@ c		For a daily model set demand for end of season
 c
 c _________________________________________________________
 c
-c               Step 4: Check if this is an interruptable year
+c               Step 4: Check if this is an interruptible year
 c               Note i12 insures this check is done 1x/yr from bomsec
-c               for the first month when an inter. supply might occurr
+c               for the first month when an inter. Supply might occur
 c               ioprsw(l2) is the opr rule on/off switch used in execut
 c               idvrsw(isr) is the right on/off switch used in execut
       if(i12.eq.0) then
@@ -210,12 +210,12 @@ c               Step 5; Calculate demand for ISF
 c
 c _________________________________________________________
 c
-c               Step 6; Calcualte water right remaining
+c               Step 6; Calculate water right remaining
       divalo = dcrdiv(isr)-divd(isr)
 c
 c _________________________________________________________
 c
-c               Step 7; Calcualte demand at water right location
+c               Step 7; Calculate demand at water right location
 c                       as remaining demand
 c                       note demopr = divreq = diversion under
 c                       this structure from bomsec.f
@@ -267,16 +267,16 @@ c
 c _________________________________________________________
 c
 c               Step 11; Update
-c               a. Adjust avaialble flow at ISF
+c               a. Adjust available flow at ISF
       avail(ifcd) = avail(ifcd) - divact
 c
 c               b. Adjust ISF demand
       flowrq(nf) = flowrq(nf) - divact
 c
-c               c. Adjsut ISF demand by reach.
-c                  Note; this allows interruptable
+c               c. Adjust ISF demand by reach.
+c                  Note; this allows interruptible
 c                  supply to give correct results with or without
-c                  ISF by reach although the interruptable supply
+c                  ISF by reach although the interruptible supply
 c                  is currently tied to a point only
       ib=ndnifb(nf)
       ie=ndnifb(nf) + ndnifs(nf) - 1
@@ -287,7 +287,7 @@ c
 c               d. Adjust diversion demand
 c
 c rrb 99/07/01; Do not do this to keep shortage correct for
-c               source structure.  See step 7, adjustement 
+c               source structure.  See step 7, adjustment 
 c               to diversion demand
       if(iopsou(4,l2).ne.-1) then
 c       divreq(iuse)=divreq(iuse)-divact

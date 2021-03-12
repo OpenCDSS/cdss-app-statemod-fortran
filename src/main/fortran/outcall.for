@@ -2,7 +2,7 @@ c outcall - estimates the call when a right is shorted
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -191,7 +191,7 @@ cr   1      commentX
      1  ' OutCall; Call Details',//
      1  ' Note: The calling right is estiamted to be the most senior ',/
      1  '       water right at the calling location that is shorted.',/
-     1  '       If none is reported (NA) it typically occurrs when a',/
+     1  '       If none is reported (NA) it typically occurs when a',/
      1  '       structure is diverting at a carrier location, not its',/
      1  '       physical location.',/
   

@@ -6,7 +6,7 @@ c           Also it can serve two T&C plans; a Total and a secondary at the same
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -21,9 +21,10 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine PowResP(iw,l2,divact,ncallX)
 c
+c Saved 2020-02-10
 c
 c _________________________________________________________
 c	Program Description
@@ -53,47 +54,99 @@ c
 c      qdiv(30        Plan release to a T&C plan or power
 c      qdiv(31        Direct Diversion from ReUse plan to a
 c	
-c 	   qdiv(35 	      Water with a Reuse or Admin plan source 
+c      qdiv(35        Water with a Reuse or Admin plan source 
+c                      tracked at the destination & reported as
+c                      from Plan in water balanace (OutTbl2)
 c			                 tracked at the destination.
-c	     qdiv(36  	    Water released to the river (report as
-c			                return flow)
-
-
-c      qres(1         From river by Priority
-c      qres(2  	      From carrier by Priority
-c      qres(3          
-c      qres(4  	      From carrier by Storage to reservoir
-c      qres(8  	      From reservoir to carrier for Tmtn
-c      qres(9  	      From reservoir to carrier for non Tmtn.
-c      qres(11 	      From reservoir to carrier
+c
+c
 c      qres(12        From storage to River for Use (Powres*)
-c      qres(18 	      From river by Exchange to Reservoir
-c      qres(21 	      From storage for Exchange
-c	     qres(22 	      From storage to carrier
-c      qres(26 	      From river by Storage to Reservoir
-c      qres(27 	      Carrier Loss (DivCar)
 c
 c _________________________________________________________
 c       Update History
 c
+c
+c ---------------------------------------------------------
+c rrb 2020/12/07; Adjust from River by Other (qdiv(31,iscd)
+c                 If the supply is an admin plan (type 11)
+c                 
+c
+c rrb 2020/11/29 StateMod 16.00.44
+c                Revised PowResp (type 48) to allow selected
+c                  sources to be skipped for testing
+c                Revise to not adjust avail if the supply is 
+c                  a non-reservoir Reuse (type 4) or Recharge
+c                  plan (type 8).
+c                Test when the source is a plan do not
+c                 increment qdiv(30
+c                Test when the source is a reservoir do not
+c                 increment qdiv(15 or qdiv(30
+c
+c rrb 2020/11/26 StateMod 16.00.44
+c                Increment qdiv(14,idcd) if the destination is
+c                  an ISF
+c                Increment qdiv(31,idcd) if the destination is
+c                  a plan that is not type 1 or 2.
+c                Correction to accr to be a release
+c                Increment qdiv(38 when the destination is an isf or
+c                  plan to set Carried but not divert in *.xdd or *.xwb
+c                Do not increment qdiv(28,iscd) that is not used 
+c                  as of 2010
+c                Correction to qdiv(15,iscd) when source is a res
+c                Correction to qdiv(30,iscd) when source is a plan
+c
+c rrb 2020/11/08 StateMod 16.00.44ab
+c                Revised PowResP (type 48) to not increment qdiv(35,)
+c                  to help resolve double accounting of From Plan
+c                  in water budget (*.xwb)
+c
 c rrb 2007/12/26; Revised to allow two destination plans
-c rrb 2006/12/19; Recogize a type 10 plan is admnistrative
-c		  Therefore set supply to a big number
+c
+c rrb 2006/12/19; Recognize a type 10 plan is administrative
+c		              Therefore set supply to a big number
+c
 c rrb 2004/11/29; Edit Powres.
 c                 Basically treat a plan source like a reservoir
 c                 Note since reuse plan inflows are never diverted 
 c                 from the river they do not get release from the 
-c		  river herein.
+c		              river herein.
 c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
       character cwhy*48, cdestyp*12, rec12*12, ccarry*3, cpuse*3,
-     1          csource*10, cstaid1*12     
+     1          csource*10, cstaid1*12, subtypX*8     
 c
 c _________________________________________________________
 c
-c		Step 1; Initilize
+c		            Step 1; Initialize
+c
+c 2020/09/30; Add quick exit for testing; Turned off
+cx    goto 500
+c
+c ---------------------------------------------------------------------
+c rrb 2020/11/29; Test for different source plan types      
+      i500=0     
+      if(iopsour(l2).eq.7) then
+         iopsou1=abs(iopsou(1,l2)) 
+       
+         if(iplntyp(iopsou1).eq. 3)  i500=0
+         if(iplntyp(iopsou1).eq. 4)  i500=0
+         if(iplntyp(iopsou1).eq. 8)  i500=0
+         if(iplntyp(iopsou1).eq. 11) i500=0
+         if(iplntyp(iopsou1).eq. 13) i500=0     
+      endif  
+      
+      if(iopsour(l2).eq.2) then
+        i500 = 0
+      endif
+           
+      if(i500.gt.0) then
+        write(nlog,*) ' PowResp; skipping plan or res type ', i500
+        goto 500
+      endif
+c 
+      subtypX='powresp '
       iout=0
       ioutiw=0
       
@@ -120,6 +173,7 @@ c rrb 98/03/03; Daily capability
       endif
 c
 c ---------------------------------------------------------      
+      nr=0
       np=0
       npD=0
       npD2=0
@@ -149,18 +203,26 @@ c rrb 98/08/10; Convergence Update
       avail2=-1./fac
       
       qdiv35=-1./fac
-      qdiv15=-1./fac
 c
 c ---------------------------------------------------------
 c               d. Check Avail array coming in
 c     write(nlog,*) ' PowresP; Calling Chekava going in ',corid(l2)
-      call chekava(22, maxsta, numsta, avail)      
-
-      NR  =IOPSOU(1,L2)
-      if(nr.gt.0) csource='Reservoir '      
-      if(nr.lt.0) csource='Plan      '      
+      call chekava(22, maxsta, numsta, avail, subtypX)      
 c
-c ---------------------------------------------------------      
+c ---------------------------------------------------------
+      nr=iopsou(1,l2)
+      if(nr.gt.0) then    
+        np=0  
+        csource='Reservoir '
+      endif
+      
+      if(nr.lt.0) then
+        np = -1 * nr
+        csource='Plan      '
+      endif
+c
+c ---------------------------------------------------------   
+c              f. Set Reuse   
       cpuse='No'
       ipUse=ireuse(l2)
       if(ipUse.gt.0) cpuse='Yes'
@@ -211,11 +273,11 @@ c		For a daily model set demand for end of season
       
 c _________________________________________________________
 c
-c		Step 2; FIND THE SOURCE DATA
+c		            Step 2; FIND THE SOURCE DATA
 C
 c ---------------------------------------------------------
 c
-c		Step 2a Source is a Reservoir
+c		            Step 2a Source is a Reservoir
       if(nr.gt.0) then
         np=0
         cstaid1=cresid(nr)
@@ -231,7 +293,7 @@ c
       endif
 c _________________________________________________________
 c
-c		Step 2b Source is a Plan
+c		            Step 2b Source is a Plan
       if(nr.lt.0) then
         np=-nr
         cstaid1=pid(np)
@@ -263,7 +325,7 @@ cx        iall=iplnr(np)
       endif  
 c _________________________________________________________
 c
-c		Step 3; Destination data
+c		            Step 3; Destination data
 c	                Note if nf > 0 it is an instream flow
 c	                Note if nf < 0 it is a plan
 C
@@ -272,15 +334,13 @@ C
       
 c _________________________________________________________
 c
-c		Step 3a Destination is an ISF      
-c     if(nf.gt.0) then
+c		            Step 3a Destination is an ISF      
       if(ndtype.eq.1) then
         NF  =IOPDES(1,L2)
         iisf=1
         idcd=IFRSTA(NF)
         NDNSd=NDNNOD(idcd)        
-C
-c       IF(FLOWRQ(NF).LE.0.00001) Goto 130
+c
         IF(FLOWRQ(NF).LE.small) then
           iwhy=4
           cwhy='Destination ISF is off'
@@ -290,11 +350,9 @@ c       IF(FLOWRQ(NF).LE.0.00001) Goto 130
       endif  
 c _________________________________________________________
 c
-c		Step 3b; Destination is a plan
+c		            Step 3b; Destination is a plan
 c			 stored as a negative value
-c     if(nf.lt.0) then
       if(ndtype.eq.7) then
-c       npD=-nf
         npD=IOPDES(1,L2)
         
 C
@@ -302,9 +360,7 @@ C
         NDNSd=NDNNOD(idcd)        
         pdem1A=pdem(npD)
         DIVALO=pdem(npD)
-cx        write(nlog,*) ' PowResP; pdem1a, divalo pdemT',
-cx     1    pdem1a*fac, divalo*fac, pdemT(npD)*fac
-                
+c                
         IF(pdem(npD).LE.small) then
           iwhy=5
           cwhy='Total Plan Demand is zero'
@@ -313,7 +369,7 @@ cx     1    pdem1a*fac, divalo*fac, pdemT(npD)*fac
       endif  
 c _________________________________________________________
 c
-c		Step 3c; Secondary Destination is a plan ID
+c		            Step 3c; Secondary Destination is a plan ID
       if(nPd2.gt.0) then
 C
         idcd=ipsta(npD2)
@@ -330,7 +386,7 @@ cx      write(nlog,*) ' PowResP; pdem1b, divalo', pdem1b*fac, divalo*fac
       endif  
 c _________________________________________________________
 c
-c		Step 4; CALCULATE VOLUME AVAILABLE
+c		            Step 4; CALCULATE VOLUME AVAILABLE
 c			from a reservoir or plan
 C
 c		4a; Reservoir Supply
@@ -342,7 +398,11 @@ c		4a; Reservoir Supply
         cursto1=cursto(nr)
         curown1=curown(iown)
 c
-        river1=river(idcd)
+c ---------------------------------------------------------
+c rrb 2020/11/26; Correction
+cx        river1=river(idcd)
+        river1=river(iscd)
+        
         FLOAVL=AMAX1(FLOMAX(NR)-RIVER(iscd),0.)
         IF(FLOAVL.LE.small) then
           iwhy=6
@@ -351,7 +411,7 @@ c
         endif          
       else
 c
-c		4b; Plan Supply
+c		            4b; Plan Supply
 c rrb 2006/12/19; Type 10 plan has an administrative supply
 c		  Set supply to demand (divalo)
         
@@ -361,7 +421,7 @@ c		  Set supply to demand (divalo)
       endif
 c
 c
-c		4d; Exit if zero              
+c		            4d; Exit if zero              
       IF(RAVCFS.LE.small) then
         iwhy=7
         cwhy='Source Plan supply is zero'        
@@ -370,8 +430,8 @@ c		4d; Exit if zero
 c
 c _________________________________________________________
 c
-c		Step 6; CALCULATE Supply AS THE MINIMUM OF
-c               DEMAND (DIVALO), STORAGE (RAVCFS) AND
+c		            Step 6; CALCULATE DIVERSION (DIVACT) AS THE MINIMUM OF
+c               DEMAND (DIVALO), SUPPLY (RAVCFS) AND
 C               OUTLET CAPACITY (FLOAVL)
 
       DIVACT=AMIN1(Divalo, ravcfs, floavl)
@@ -379,11 +439,11 @@ cx      write(nlog,*) '  PowResP; ',
 cx     1  divact*fac,  divalo*fac, ravcfs*fac, floavl*fac
 c _________________________________________________________
 c
-c		Step 7; Add Reservoir or Plan releases downstream
-c		        Warning reuse plan return flows
-c			   were never diverted from the system
+c		            Step 7; Add Reservoir or Plan releases downstream
+c		                    Warning reuse plan return flows
+c			                  were never diverted from the system
 C
-c		a. Reservoir source
+c		            7a. Reservoir source
       if(nr.gt.0) then
         availr=avail(iscd)
         TEMP=-DIVACT
@@ -395,15 +455,23 @@ c rrb 05/03/29; Avail supply at the reservoir (iscd) has not increased
       endif  
 c
 c ---------------------------------------------------------
-c		b. Plan source Note do not add if:
-c			   the plan is a recharge (type 8)
-c		     or adminnistrative (type 10)
-c		     site since it shows up in return flows   
+c		            7b. Plan source Note do not add if:
+c			   the plan is a recharge (type 8) or a special augmentation
+c        plan (type 10) such as a designated basin, coffin well, etc.
+c        or a non-reservoir Reuse (type 4)
+c		     since it shows up in return flows   
 c 
 c rrb 201002/5; Correction add np check  
       if(np.gt.0) then 
         iskip=0
-        if(iplntyp(np).eq.8 .or. iplntyp(np).eq.10) iskip=1
+c
+c ---------------------------------------------------------
+c rrb 2020/11/29; Revise to not adjust avail if the supply is 
+c                 a recharge plan (type 8) or non-reservoir Reuse
+c                 plan (type 4).  Note type 10 is not allowed
+c                 when read in Oprinp.f
+cx      if(iplntyp(np).eq.8 .or. iplntyp(np).eq.10) iskip=1
+        if(iplntyp(np).eq.8 .or. iplntyp(np).eq.4) iskip=1
 c 
 c rrb 201002/5; Correction add np check above
 cx      if(np.gt.0 .and. iskip.eq.0) then
@@ -421,10 +489,10 @@ c
 c _____________________________________________________________
 c
 c               Step 8; Remove destination from Avail to 
-c		              shepherd water from other upstream uses
-c			         Note since ndown1 = 1; it only adjusts 
-c			         availat node idcd.  Also since it uses takou2
-c                        only avail gets adjusted (not river & avinp)
+c		              shepherd water from other uses
+c			            Note since ndown1 = 1; it only adjusts 
+c			            availat node idcd.  Also since it uses takou2
+c                 only avail gets adjusted (not river & avinp)
 c rrb 2008/04/10; Correction; only shepherd water if water has 
 c                 been released from a reservoir
       if(nr.gt.0 .or. (np.gt.0 .and. iskip.eq.0)) then
@@ -441,28 +509,29 @@ cx      call takou2(isub, maxsta, avail, idncod, divact, ndown, idcd)
 
 c _________________________________________________________
 c
-c		Step 9; Update supply variables
+c									Step 9; Update supply variables
       RELAF=DIVACT*fac
 C
+c                 9a Supply is a reservoir
       if(nr.gt.0) then
-c      
-cr        write(nlog,*) ' PowresP; 1, RRivpri', qres(1,1)*fac 	    
         cursto1=cursto(nr)
         CURSTO(NR  )=CURSTO(NR  )-RELAF
         PROJTF(NR  )=PROJTF(NR  )+DIVACT
 C
         CUROWN(IOWN)=CUROWN(IOWN)-RELAF
         QRES(12,NR)=QRES(12,NR)+RELAF
-        accr(12,iown) = accr(12,iown)+relaf
+c
+c ---------------------------------------------------------
+c rrb 2020/11/26; Correction to accr to be a release
+cx      accr(12,iown) = accr(12,iown)+relaf
+        accr(12,iown) = accr(12,iown)-relaf
         
-        QDIV(15,idcd)=QDIV(15,idcd)+DIVACT    
-        qdiv15=qdiv(15,idcd)    
         curown2=curown(iown)
         cursto2=cursto(nr)        
       endif  
 c
 c ---------------------------------------------------------
-c		Source is a plan      
+c		            9b Supply is a plan      
       if(np.gt.0) then
 c
         psuply(np)=psuply(np) - divact  
@@ -472,44 +541,33 @@ c rrb 2006/01/01; Correction for a reservoir plan
           psto2(np)=amax1(psto2(np)- divact*fac,0.0)                
         endif  
 c
-c rrb 2008/01/14; Qdiv(28 & qdiv(35 have a reuse or Admin plan source
-        qdiv(28,iscd) = qdiv(28,iscd) + divact
-c        
-c rrb 2008/01/15; qdiv(35 Water with a Reuse or Admin plan source 
-c			  at the destination.     
-c        
-c rrb 2010/09/15; Do not set qdiv(35 (From Plan in *.xwb)
-c		              if the destination plan is a
-c                 type 2 well aug or type 10 (administrative)     
-cx        if(iplntyp(npD).ne.10) then   
-        if(iplntyp(npD).ne.2 .and. iplntyp(npD).ne.10) then   
-          qdiv(35,idcd) = qdiv(35,idcd) + divact             
-          qdiv35=qdiv(35,idcd)
+c ---------------------------------------------------------
+c rrb 2020/12/07; Adjust from River by Other (qdiv(31,iscd)
+c                 If the supply is an admin plan (type 11)
+        if(iplntyp(np).eq.11) then
+          qdiv(31,iscd) = qdiv(31,iscd) - divact
         endif
-c
-c rrb 2008/01/15; If a T&C or Aug Plan destination set qdiv(30 From River 
-c                 by Exch or plan in outmon
-c rrb 2010/09/15; Add iplntyp.eq.2 (well aug)
-cx      if(iplntyp(npD).eq.1) then    
-        if(iplntyp(npD).eq.1 .or. iplntyp(npD).eq.2) then   
-          qdiv(30,idcd)=qdiv(30,idcd)+DIVACT
-          
-cx        write(nlog,*) ' PowResP; ', idcd, qdiv(30,idcd)*fac
-        endif         
       endif  
 c
 c _________________________________________________________
 c
-c		Step 10; Update destination variables
+c		            Step 10; Update destination variables
 c
 c ---------------------------------------------------------
-c		a. Destination is an instream flow
+c		            10a. Destination is an instream flow
       if(ndtype.eq.1) then
         FLOWRQ(NF  )=FLOWRQ(NF  )-DIVACT
+c
+c ---------------------------------------------------------
+c rrb 2020/11/26; Increment qdiv(38 and qdiv(14 when the destination
+c                 is an isf.  Note qdiv(38 prints to Carrier in *.xdd
+c                 but not divert in *.xdd or *.xwb
+cx      qdiv(14,idcd) = qdiv(14,idcd) + DIVACT
+        qdiv(38,idcd) = qdiv(38,idcd) + DIVACT
       endif  
 c
 c ---------------------------------------------------------
-c		b. Destination is a plan      
+c		            10b. Destination is a plan      
       if(ndtype.eq.7) then
         pdem(npD)=pdem(npD) - divact
         pdem2A=pdem(npD)
@@ -527,11 +585,30 @@ c     Adjsut if there is a secondary plan (npD2.gt.0)
             psto2(npD2)=amax1(psto2(npD2) + divact*fac,0.0)           
           endif
         endif
+c
+c ---------------------------------------------------------
+c rrb 2020/11/26; 
+c               10c. Increment qdiv(38 when the destination is a plan
+c                    to set Carried but not divert in *.xdd or *.xwb
+        qdiv(38,idcd) = qdiv(38,idcd) + DIVACT  
+c
+c ---------------------------------------------------------
+c rrb 2020/11/26; 
+c               10d. Note do not increment qdiv(31,idcd) at the 
+c                    destination since it is a T&C plan (1)
+c                    or Well Aug plan (2) that meets a
+c                    delivery requirement to the stream but is not
+c                    physically diverted
+cx      if(iplntyp(npD).eq.1 .or. iplntyp(npD).eq.2) then 
+cx        qdiv(31,idcd) = qdiv(31,idcd) + DIVACT
+cx      endif     
+c
+
       endif  
 C
 c _________________________________________________________
 c
-c		Step 11; Update reuse for potential pay back
+c		            Step 11; Update reuse for potential pay back
 c                       (reservoir re diversion). Note:
 c                       when nr>0 the source is a reservoir and 
 c                       when ndtype=7 the destination is a plan
@@ -545,17 +622,14 @@ c                       when ndtype=7 the destination is a plan
 C
 c _________________________________________________________
 c
-c		Step 12; Update operating rule variables
+c		            Step 12; Update operating rule variables
 
  130  divo(l2)=divo(l2)+divact
       divo2=divo(l2)
-cr      write(nlog,*) ' PowresP; 2, RRivpri', qres(1,1)*fac 	  
- 
-c 
 c
 c _________________________________________________________
 c
-c		Step 13; Check printout
+c		            Step 13; Check printout
         
       if(iout.ge.1 .and. iw.eq.ioutiw) then      
         ncallX=ncallX+1
@@ -566,9 +640,8 @@ c		Step 13; Check printout
      1      write(nlog,272) corid(l2), csource, cdestyp, ccarry, cpuse
         endif  
         
-cx         write(nlog,*) ' PowResP; qdiv15, qdiv35 ', 
-cx     1     qdiv15*fac,qdiv35*fac          
 c
+c ---------------------------------------------------------
 c               13a. Check Printout source reservoir
         if(nr.gt.0) then        
           write(nlog,280) '  PowResP   ',
@@ -582,6 +655,7 @@ c               13a. Check Printout source reservoir
      
         else
 c
+c ---------------------------------------------------------
 c               13b. Check Printout source plan
 c         write(nlog,142) 
 cx          if(iwhy.eq.0) then
@@ -594,19 +668,25 @@ cx          if(iwhy.eq.0) then
      1        iwhy, cwhy     
            endif
         endif
-cx      endif
+c
  280  FORMAT(a12, i5,1x,a4, 2i5, 1x, a12,4i5, 17f12.2, i5, 1x, a48) 
  282  FORMAT(a12, i5,1x,a4, 2i5, 1x, a12,4i5, 12f12.2, i5,1x, a48) 
 c
 c               d. Check Avail array going out
 c     write(nlog,*) ' PowresP; Calling Chekava at exit ',corid(l2)
-      call chekava(22, maxsta, numsta, avail)      
+      call chekava(22, maxsta, numsta, avail, subtypX)      
 c     write(nlog,*) ' PowresP; After Chekava ',corid(l2)
         
 c
+c
 c _________________________________________________________
 c
-      RETURN
+c		            Step 14; Return
+
+c
+c 2020/09/30; Add quick exit for testing
+cx    RETURN
+ 500  RETURN
 c
 c_____________________________________________________________
 c               Formats

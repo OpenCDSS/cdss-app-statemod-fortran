@@ -2,7 +2,7 @@ c statem - main program for StateMod
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,8 +19,13 @@ c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
       PROGRAM StateM
-c _________________________________________________________
+
 c       Update History
+c
+c rrb 2019/01/31; Increase Dimension for ArkDss.  Specifically
+c                   Daily delay values (maxdld) from 3660 to 7320
+c                   # of reservoir accounts (maxown) from 251 to 1001,
+c                   # of years with daily return data from 10 to 20
 c
 c rrb 01/01/02; Added option 10 (baseflows with variable efficiency)
 c               and option 11 (baseflow with variable efficiency and
@@ -28,7 +33,7 @@ c               wells with sprinklers get used first)
 c
 c rrb 03/06/02; Added option to not print a log file with -version
 c               option by moving the temporary log file open
-c               statememtn to parse.f
+c               statement to parse.f
 c jhb 2014/07/09; version 13.00.02A
 c                 interim version for testing
 c                 added new op rule type 24 code from ray b
@@ -65,7 +70,7 @@ c                   because it now works since multiple isf water rights
 c                   are allowed at isf reach nodes
 c                 changed output for an admin plan (to b68 binary and
 c                   therefore the xpl, too) when the plan is being split
-c                   by a type 46 op rule into other plans.  output the
+c                   by a type 46 op rule into other plans.  Output the
 c                   total supply to those plans from psuplyt()
 c jhb 2014/08/19; upgraded operating rule 35 (transbasin import) behavior
 c                   now the destination should be a type 11 (accounting) plan
@@ -74,9 +79,9 @@ c                   reuse is NOT handled by the op rule 35 anymore, but
 c                   should be handled by the modeler downstream of the
 c                   accounting plan
 c                 also (un)fixed a problem in execut.for in the
-c                   IMO variable reset logic.  a change was made previously
+c                   IMO variable reset logic.  A change was made previously
 c                   to fix array bounds errors, but the fix broke return flow
-c                   calculations.  therefore reverted code back to original.
+c                   calculations.  Therefore reverted code back to original.
 c                   however, now have to find another way to fix array bounds
 c                   problem when daily return flow patterns are used.
 c jhb 2014/09/05; merged newtype35 branch into master
@@ -90,7 +95,7 @@ c jhb 2014/10/24; change code to prevent array bounds errors in welrig3.for and 
 c jhb 2014/10/28; change code to prevent rediversion of op rule type 24 returns/spills
 c                   add new option (oprlimit=-1) to opr file input
 c                   that causes the type 24 results to be frozen after
-c                   reop step 1.  done with a simple change to execut.for
+c                   reop step 1.  Done with a simple change to execut.for
 c                   that prevents it from calling DirectEx.for on subsequent
 c                   reop loops over the water right list.
 c jhb 2014/10/31; skip reading secondary records if ioprsw()=0
@@ -98,7 +103,7 @@ c                 only allow plan type 11 as a type 35 destination
 c jhb 2014/11/01; Revise dimensions
 c   ISF rights          241-2241
 c                       because the IfrRigSP routine uses the op rule counter
-c                       as an index in the divi() array.  might have to go larger later.
+c                       as an index in the divi() array.  Might have to go larger later.
 c jhb 2014/11/20; ver='14.01.06'
 c                 Fix an array index (iscd) problem in IfrRigSP when the avail water < small
 c                   and a jump to line 260 is triggered
@@ -112,16 +117,16 @@ C      PROGRAM LIMITS:
 C
 c
 c rrb 99/08/26; Rio Grande
-c                                          Pre-RG    RG RG-Daily
+c                                          Pre-RG    RG RG-Daily ArkDSS
 C      STATIONS                 maxsta        777  2001  2278
 C      STREAM INFLOWS           maxsta        777  2001  2278
 C      PRECIP STATIONS          maxpre         35   155   180  
 C      EVAPOR STATIONS          maxeva         35   155   180
 C      RESERVOIRS               maxres         35   155   180
-C      RESERVOIR OWNERS         maxown         50   155   180
-C      RESERVOIR RIGHTS         maxrsr         80   101   251
+C      RESERVOIR OWNERS         maxown         50   155   180   1001
+C      RESERVOIR RIGHTS         maxrsr         80   101   251    351
 C      DIVERSION STATIONS       maxdiv        850  1110   1500
-C      DIVERSION USERS          maxuse        850  1110   1500  3060
+C      DIVERSION USERS          maxuse        850  1110   3060
 c      Diversion Owners         maxownD      2400
 C      DIVERSION RIGHTS         maxdvr       2000  3500   6500
 C      DIVERSION RETURNS        maxrtn       1900  1210   2001
@@ -134,11 +139,11 @@ c
 c       Note the following dimension is a subset for return data
 c         to keep 2001 size yet limit daily return and depletion 
 c         arrays close to the minimum required for Rio Grande
-c      Total return locations (nstrtn)maxrtnA NA   725  1725
+c      Total return locations (nstrtn)maxrtnA NA   725    1725
 c
 c      Max delay years          maxdla               20
 c      Return delay months      maxdlm         30   240
-c      Return delay days        maxdld        930   930 7320 (daily)
+c      Return delay days        maxdld        930   930   3660   7320 
 c
 c      IFR Stations             maxifr        300   230
 c      IFR Rights               maxfrr        300   230
@@ -146,7 +151,7 @@ c jhb 2014/11/01; Revise dimensions
 c   ISF rights          241-2241
 c                       because the IfrRigSP routine uses the op rule counter
 c                       as an index in the divi() array.  might have to go larger later.
-c      IFR nodes within all reachs maxrea     N/A  2000
+c      IFR nodes within all reaches maxrea    N/A  2000
 C      POWER RIGHTS (inactive)  N/A            20    20
 c
 C      OPERATION RIGHTS         maxopr        200   501   800
@@ -165,15 +170,15 @@ c      Maxfutil; maximum number of futil calls 10    10
 c      Maxrg; maximum number of Rio Grande opr rules  5
 c      Maximum file name length maxfn          72   256
 c      Maximum # of Cu groups (se outcu)       56    56
-c      Maximum # of files in the response file maxfile 60 75
+c      Maximum # of files in the response file maxfile 60 75 90
 c      Maximum # of operating right sub water rights (maxOprWr) 11
-c      Maximum # of Plans (augmentaiton and T&C)      14
+c      Maximum # of Plans (augmentation and T&C)      14
 c      Max # of Reservoir Returns maxrtnRP     202  10000
-c      Max # of plans tied to a use (maxplnO)  20   100 No longer used
-c      Max # of plan types (maxplnT)           21   21            
+c      Max # of plans tied to a use (maxplnO)  15     15   
+c      Max # of Carriers (maxCary)             40         
 c
 c _________________________________________________________
-c Dimensions
+c	Dimensions
 c
       include 'common.inc'
       character getid*12, fnlog*256, rec48*48, rec256b*256,
@@ -198,9 +203,8 @@ c				 9 includes wells
 c				 8 includes daily capability
 c				 7 includes new binary output format			
 c		
-c
-        ver = '15.00.14dev'
-        vdate = '2018/04/04'
+        ver = '16.00.47'
+        vdate = '2021/02/14'
 c
 c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         isgi = 0
@@ -210,6 +214,7 @@ c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
         nlog=99
         nchk=98
         ntmp=97
+c        
 c
 c _________________________________________________________
 c        
@@ -224,8 +229,15 @@ c rrb 99/08/26; Rio Grande
       MAXEVA= 180
       MAXRAI= 180
       MAXEPT= 180
-      MAXRES= 180
-      MAXOWN= 251
+c
+c rrb 2020/07/28; Increase Dimension for ArkDss
+CX    MAXRES= 180
+      MAXRES= 1001
+c
+c rrb 2019/01/31; Increase Dimension for ArkDss
+cx    MAXOWN= 251
+      MAXOWN= 1001
+      
       MAXDIV=3060
       MAXUSE=3060
       MAXRTN=3920
@@ -234,9 +246,15 @@ c rrb 99/08/26; Rio Grande
 
       MaxDly=525    
       maxdlA=20  
-      maxdlAd=10
+c
+c rrb 2019/01/31; Increase Dimension for ArkDss
+cx    maxdlAd=10 
+      maxdlAd=20
       maxdlm= 240
-      maxdld= 3660    
+c
+c rrb 2019/01/31; Increase Dimension for ArkDss
+cx    maxdld= 3660 
+      maxdld= 7320   
 c
 c rrb 2010/09/15; Add warning if years do not coincide with
 c                 maximum daily and monthly return values
@@ -264,7 +282,7 @@ c		and plans
       MAXOPR=  3701
 c
 c rrb 2018/04/08; Correction to fix water balance for South Platte to 
-c                 allow Divmulti to include up to 20 accounts)
+c                 allow Divmulti to include up to 20 accounts (maxopr2/2)
 cx    maxopr2= 20
       maxopr2= 40
       MAXNWR=  14991
@@ -280,7 +298,7 @@ cx    maxopr2= 20
       maxrg=5
       maxfn=256
       maxgrp=57
-      maxfile=80
+      maxfile=90
       maxownD=3060
 c
       maxPlan = 1440
@@ -288,12 +306,20 @@ c
 cx    maxPlnO=100
 c
 c rrb 2015-03-24
-      maxPlnT=13
-      maxOprin=50
+c rrb 2018/08/15
+cx    maxPlnT=13
+      maxPlnT=15
+c
+c rrb 2018/07/15; Revise number of operating rules
+cx    maxOprin=50
+      maxOprin=60
       maximprt=15
       nimport=0
       maxparm=40
-      maxrtnRP=180
+c
+c rrb 2020/07/28; Increase Dimension for ArkDss
+CX      maxrtnRP=180
+      maxrtnRP=1001
       maxQdiv=39
 c
 c	Set ndivO maximum # of values to print in *.xdd      
@@ -306,7 +332,10 @@ c     nwelO=18
 c
 c rrb 2006/12/22; Maximum reach (maxrch) & maximum years (maxyrs)
       maxrch=150
-      maxyrs=200  		
+      maxyrs=200  	
+c
+c rrb 2021/02/14; Maxinum number of carriers
+      maxcary=40	
 c
 c rrb 2011/04/04;  Initialize some daily array counters      
       numbas=0
@@ -362,7 +391,7 @@ c     call parsgi(ioptio, ioptio2, filenc, getid)
 c
 crrb 99/05/20;
       call getpath(maxfn, filenc, fpath1)
-      
+c
       close (nlog)
 c
 c
@@ -374,13 +403,14 @@ c               -help option
         write(6,206)
   206   format(
      1 72('_'),//
-     1 '        For help with StateMod see documentation and examples')         
+     1 '        For help with StateMod see documentation and examples')
         goto 190
       endif
+c
+c
+c _________________________________________________________
 
-c _________________________________________________________
-c -version option
-c _________________________________________________________
+c               -version option
       if(ioptio.eq.5) then
         write(6,200) ver, vdate
   200   format(
@@ -389,7 +419,7 @@ c _________________________________________________________
      1 '        State of Colorado - Water Supply Planning Model     '//
      1 '        Version: ',a20,/,
      1 '        Last revision date: ',a10,//
-     1 72('_'))     
+     1 72('_')) 
         call license(6)
         goto 190
       endif     
@@ -443,20 +473,24 @@ c rrb 03/06/02; Make the log file an option
 c     if(ioptio.eq.7) then
       if(ioptio.eq.7 .and. ioptio2.ne.20) then
         write(6,200) ver, vdate
-        write(6,212)
+        write(6,201)
 
         write(nlog,200) ver, vdate
-        write(nlog,212)
+        write(nlog,201)
         goto 190
       endif
 c
 c rrb 03/06/02; Print to screen if log file option is off       
       if(ioptio.eq.7 .and. ioptio2.eq.20) then
         write(6,200) ver, vdate
-        write(6,212)
+        write(6,201)
 
 c       write(6,200) ver, vdate
-        write(6,212)
+        write(6,201)
+        write(6,217)
+        write(6,216)
+        write(6,215)
+        write(6,214)
         write(6,211)
         write(6,210)
         write(6,208)
@@ -596,16 +630,657 @@ c               Go back to menu if in default mode
       stop 
 c ______________________________________________________________________
 c     Formats
-  212   format(//
+  201   format(//
      1 ' Recent updates',/
-     1 '    - Release TBD',/
-     1 '      Add GPL v3 license to all code and -version output',/
+c
+     1 '    - 2021-02-14 (16.00.47):',/
+     1 '     Revised common.inc & StateM.f to include maxcary',/
+     1 '       (max # of carriers',/
+     1 '     Revised Oprinp.f to check for if maxcary is exceeded',/
+     1 '     Revised Oprion.f to check a type 27 or 28 opr rule',/
+     1 '       if the destination is a Aug plan (type 1) or a T&C',/
+     1 '       plan (type 2) with a carrier with losses as a ',/
+     1 '       non-fatal error and resetting the loss to 0.',/
+c         
+     1 '     Revised Powseap.f (type 29) Spill to let iopsouR(L2)',/
+     1 '       control the source type.  Specifically iopsou(1,k)',/
+     1 '       is positive for both a reservoir and plan source.',/
+     1 ' '/
+     1 '     Revised Oprinp.f to print C5 checks as a table in',/
+     1 '       *.chk for limits used by more than 1 operating rule',/
+     1 ' ',
+     1 '     Updated Oprinp.f to  print C16 checks as a table in',/
+     1 '       *.chk for a type 29 (Plan or Reservoir Spill) ',/
+     1 '       spill destination as follows:',/
+     1 '       An Admin Plan (type 11) spills to itself',/
+     1 '       A Changed WR Plan (type 13) spills to next',/
+     1 '         downstream node',/
+     1 '       The WWSP Supply (14) and User (15) plans do not',/
+     1 '         spill; they are are a reset only',/
+     1 ' ',/
+     1 '    - 2020/12/21 (16.00.46)',/
+     1 '      Revised DivResP2.f (type 27) and DivRplP (type 28) to',/
+     1 '        update plan demand pdem(ndP) for both T&C (type 1)',/
+     1 '        and Aug plan (type 2) destinations',/
+     1 ' ',/
+     1 '    - 2020/12/12.45 (16.00.45)',/
+     1 '      Revised DivRplR.f (type 33) to fix a problem related',/
+     1 '        to using variable ncarry as a stream location',/
+     1 '        (see code for more detail)',/
+     1 '      Fixed reporting to *.xdd for a carrier and various',/
+     1 '        destinations',/
+     1 '      Set qdiv(xx,38) to report as carried at all',/
+     1 '        destination types (div, isf, res)',/ 
+     1 ' ',/
+     1 '      Revise PowResP.f (type 48) to adjust (qdiv(31,iscd)',/
+     1 '        (From River by Other if the supply is an admin plan',/
+     1 '        (type 11)',/
+     1 ' ',/
+     1 '      Revise *.res to simulate seepage losses',/
+     1 ' ',/     
+     1 '      Revise DivRplP.f (type 48) to update (qdiv(30,idcd)',/
+     1 '       when the destination is both both a T&C (type 1)',/ 
+     1 '       and Aug Plan (type 2) Plan.',/
+     1 ' ',/
+     1 '      Revise DivRplP2.f (type 49) to call takout to ',/
+     1 '        account for a release to the system only when',/ 
+     1 '        when the exchange is from a reservoir (e.g. not',/
+     1 '        when the source is a non reservoir plan)',/
+     1 ' ',/
+     1 '      Revise Oprinp to turn carrier losses back on',/
+     1 ' '
+     1 '    - 2020/12/01 (16.00.44)',/
+     1 '      Revise Oprinp.f to not include carrier losses for',/
+     1 '      testing and ran with *.res file not having seepage',/
+     1 ' ',/
+     1 '      Revised DivResP2.f (27) & DivrplP (28) follows:',/    
+     1 '        Allow the adjustment to the admin source',/
+     1 '        qdiv(31,iscd) to be negative as follows (where',/
+     1 '        relact is negative)',/
+     1 '        qdiv(31,iscd) = qdiv(31,iscd) + relact',/
+     1 ' ',/      
+     1 '       Do not adjust qdiv(38 if the destination is ',/
+     1 '        a diversion and there is a carrier,  Note ',/
+     1 '        Setqdivc sets qdiv(18 that is similar to qdiv(38',/
+     1 ' ',/           
+     1 '      Revised PowResp.f (type 48) as follows:',/
+     1 '        to allow selected sources to be skipped for testing',/
+     1 '        to not adjust avail if the supply is a ',/
+     1 '          non-reservoir Reuse (type 4) or Recharge Plan',/
+     1 '        to not increment qdiv(30 when the source is a plan',/
+     1 '        to not increment qdiv(15 or qdiv(30 when the source',/
+     1 '          is a reservoir',/
+     1 ' ',/          
+     1 '       Revised Oprinp.f for type 48 to require a source',/
+     1 '         plan type be a type 4 - Reuse to a diversion,',/ 
+     1 '         6 - Reuse to a diversion by Tmtn, 8- Recharge',/
+     1 '         11 - Administrative or 13 - Changed WR plan.',/
+     1 '         else print warning and turn the oper right off',/     
+     1 ' ',/          
+     1 '       Revised DivResp2.f (type 27) and DivRplP (type 28)',/
+     1 '         to subtract the diversion from the source',/
+     1 '         qdiv(31 because it was diverted when water',/
+     1 '         was imported by DivImpR (type 35) to avoid error',/
+     1 '         in the water balance (*.xwb)',/   
+     1 ' ',/          
+     1 '       Revised DivResp2.f (type 27) and DivRplP (type 28)',/
+     1 '         to increment qdiv(38 to show water to a',/
+     1 '         diversion, reservoir, plan or ISF as Carried',/
+     1 '         Exchaged or Other but not used to calculate',/
+     1 '         divert from stream in outmon',/
+     1 ' ',/          
+     1 '       Revised Outbal2.f footnote 5 in water budget report',/ 
+     1 '         (*.xwb) to indicate From Plan is imported water',/
+     1 ' ',/ 
+     1 '       Revised DivImp.f (type 35) to increment qdiv(31)',/
+     1 '         Diversion From River for Other in stream report',/
+     1 '         (*.xdd).',/
+     1 ' ',/          
+     1 '       Revised DivResp2.f (type 27), DivImpr (type 35), ',/
+     1 '         DivRplP (type 28) DivRplP2 (type 49)  & DivResP2',/
+     1 '         (type 27) to not increment qdiv(35 that is printed',/
+     1 '         in water balance report (*.xwb) as From Plan',/
+     1 '         Net result is only DivImp (type 35) increments',/
+     1 '         qdiv(35 and accumulates flow to From Plan in',/
+     1 '         the water budget (*.xwb)report',/ 
+     1 ' ',/          
+     1 '    - 2020/10/10 (16.00.43)',/ 
+     1 '       Revised DivResp2.f (type 27) to correct a typo from:',/
+     1 '         accr(18,irow)=accr(4,irow)  + ResLoss to: ',/
+     1 '         accr(18,irow)=accr(18,irow) + ResLoss ',/     
+     1 '       Revised OutBal2 back to adjust for From River',/
+     1 '         to Other aka Qdiv(22) and Dat1(32)',/
+     1 '         reverses the edit in v 16.00.41',/ 
+     1 '    - 2020/09/30 (16.00.42)',/ 
+     1 '       Revised PowResp.f (type 48) to resolve a mass',/
+     1 '         balance issue when the source is an admin',/
+     1 '         plan (type 11) and the destinaion is a well',/
+     1 '         aug plan (type 2)',/ 
+     1 '       Removed edit in version 41 then put it back that ',/
+     1 '         Revised OutBal2.f to not adjust for From River',/
+     1 '         to Other aka Qdiv(22) and Dat1(32)',/
+     1 '    - 2020/09/20 (16.00.41)',/ 
+     1 '       Revised DivResr.f (type 32) to',/ 
+     1 '         Add to qdiv(22 similar to a type 3 to allow ',/
+     1 '       Revised Outbal2 to adjust for a release To_Conduit',/
+     1 '         for a diversion destination (Step 17) or    ',/
+     1 '         a reservoir destination (Step 18)           ',/
+     1 '         Saved as Divresr_2020-09-20.old then did    ',/
+     1 '         clean up related to qdiv and qres reporting ',/
+     1 '       Revised OutBal2.f to not adjust for FromRiver to',/
+     1 '         other aka Qdiv(22) and Dat1(32)',/
+     1 '    - 2020/09/06 (16.00.40)',/ 
+     1 '       Revise Oprinp.f Destination type (iopdesr() to',/
+     1 '         support To_Stream and To_Conduit and still',/       
+     1 '         support diversion = To Stream and',/ 
+     1 '         support Divert = To_Conduit',/
+     1 '       Revise DivRes.f (type 2 & 3) to increment Qdiv(38)',/
+     1 '         for source reservoir reporting in *.xdd',/
+     1 '         and support To_Stream and To_Conduit',/
+     1 '       Revise DivResR.f (type 32) to allow destination type',/
+     1 '        (iopdesr) to support To_Stream and To_Conduit.',/
+     1 '         Note: Oprinp revises Diversion = To Stream and',/ 
+     1 '         revises Divert = To_Conduit',/
+     1 '    - 2020/08/31 (16.00.39)',/ 
+     1 '       Revised DivResR.f (type 32) to correct ',/
+     1 '         qdiv(22,inode)=qdiv(22,inode)+divact such that:',/
+     1 '         if ndtype 2 (reservoir) inode = irusta(nrD)',/
+     1 '         not idvsta(nrD).  Note this revises a fix included',/
+     1 '         in version 16.00.38',/
+     1 '    - 2020/07/28 (16.00.38)',/ 
+     1 '       Perforfmed the following based on the results of ',/
+     1 '        compiling with Gfortran:',/
+     1 '       1. Revised DivResR.f (type 32) to correct ',/
+     1 '          qdiv(22,inode)=qdiv(22,inode)+divact such that:',/
+     1 '          if ndtype 2 (reservoir) inode = idvsta(nrD) &',/
+     1 '          if ndtype 3 (diversi0n) inode = idvsta(ndD)',/     
+     1 '       2. Revised Ifrrigsp.f (type 50) to not accrue the',/
+     1 '          amount diverted by this operating rule to the',/
+     1 '          isf water right divi(l2)',/
+     1 '       3. Revised Demand.f to correct a problem with the',/
+     1 '          South Platte application.  Specifically',/ 
+     1 '          Replaced diwrreqw(nw)=diwrwx(nd)* ca with',/
+     1 '                   diwrreqw(nw)=diwrreqw(nw)* ca',/
+     1 '       4. Revise Oprinp.f for a type 46 opr rule to include a',/
+     1 '          do loop when checking if the rule has data that',/
+     1 '          indicates it should operate less than a full',/
+     1 '          month that is not supported',/     
+     1 '       5. Revise Oprinp.f for a type 45 rule to correct an',/
+     1 '          error when variable ciospoX5 is set to the plan',/
+     1 '          associated with the operating rule being read',/
+     1 '       6. Revise Splatte (type 40) for the check to see if ',/
+     1 '          more can be diverted to not include the unit',/
+     1 '          conversion (fac)'/
+     1 '       7, Revised OutJM.f to correct a typo to Section III',/
+     1 '          reporting by changing 68.6% to 68.8%',/          
+     1 '       8. Revised Execute to report run time in hours',/
+     1 '       9. Removed detailed output from Mdainp.f for imports',/
+     1 '    - 2020/07/23 (16.00.37)',/           
+     1 '        Revised DivImpr (type 35) detailed output',/
+     1 '        Revised Mdainp.f to fix a problem introduced',/
+     1 '          in version 16.00.22 when negative',/
+     1 '          diversions (imports) are mixed with values',/
+     1 '          greater than or equal to zero that set',/
+     1 '          zero = -0.001 cfs or warning and stopping',/          
+     1 '    - 2020/07/23 (16.00.36)',/           
+     1 '        Revised OutJm.f to calculate and print annual total &',/
+     1 '          annual average available flow',/  
+     1 '    - 2020/07/15 (16.00.35)',/         
+     1 '        Revise JmStore (type 53) to allow the Available flow',/
+     1 '          printed to the John Martin Report (*.xjm) file',/
+     1 '          (divoWWX(l2)) to be he min flow downstream',/ 
+     1 '          from the reservoir not the flow of the Ark at LA',/
+     1 '    - 2020/06/09 (16.00.34)',/
+     1 '       Revised JMStore (type 53) logic to correct ',/
+     1 '         approach to determine if there is a loosing',/
+     1 '         reach from JMartin (confluence of Ark & Purg',/
+     1 '       Revised the Purgatoire to operate after the Arkansas',/
+     1 '         has diverted to both Conservation (1) and Other (2)',/
+     1 '         Note the approach used only works because',/
+     1 '         the Purgatoire only goes to Conservation (1)',/
+     1 '    - 2020/05/22 (16.00.33)',/
+     1 '        Revised JMStore (type 53) to store Purgatoire in',/
+     1 '        JMartins Conservation pool, not the Other pool',/
+     1 '    - 2020/04/26 (16.00.32)',/
+     1 '        Revise JMFlow.f to all the Winter Storage season to',/ 
+     1 '        go from 3/15 to 3/31.  Therefore:',/
+     1 '        Step 9.8 is for 3/1 - 3/15 and',/
+     1 '        Step 9.9 is for 3/16 to 3/31',/      
+     1 '    - 2020/04/19 (16.00.31)',/
+     1 '        Revised JMStore (type 53) to handle a check that',/
+     1 '          there is a losing reach when the min downstream',/
+     1 '          flow is exactly equal to the follow at of the',/
+     1 '          Arkansas @ Las Animas gage.  Specifically:',/
+     1 '          Change: if(AvailX .gt. avail(ns)) then',/
+     1 '          To:     if((AvailX + small) .gt. avail(ns)) then',/
+     1 '    - 2020/04/14 (16.00.30)',/
+     1 '        Revise DivRpl (type 4) to correct a problem printing',/
+     1 '          to *.xre related to qres(8 & 9 and causing double',/
+     1 '          accounting with qres(18 & 21.',/
+     1 '    - 2020/04/03 (16.00.29)',/
+     1 '        Revise ResRpl (type 5) to correct a problem printing',/
+     1 '          to *.xre as From Storage to River for Use and ',/
+     1 '          From Storage to River for Exchange to ',/
+     1 '          From Storage to River for Exchange only',/
+     1 '        Revised OutdivW (*.xdd) & DayDivO to rename ',/
+     1 '          Carried, Exchanged Bypass to ',/
+     1 '          Carried, Exchang & Other to help with ',/ 
+     1 '          interpeting the River Divert column for reservoir',/
+     1 '          reporting in *.xdd',/
+     1 '        Revise ResRpl (type 5), Divres(type 2) and PowseaP ',/
+     1 '          (type 9) to include qdiv(38,xx) for reservoir',/
+     1 '          reporting in *.xdd in column 11 (Carried, Exchange,',/
+     1 '          Other) to show how a reservoir release can cause',/
+     1 '          a negative River Divert in the *.xdd stream',/
+     1 '          accounting',/
+     1 '    - 2020/03/03 (16.00.28)',/
+     1 '        Revise Outmon.f to remove adjustment to AVT(is that',/
+     1 '         is set to ävflow that is the the min flow',/
+     1 '         downstream printed to *.xdd.  This is no longer',/
+     1 '         needed after adding reservoir reporting to *.xdd',/
+     1 '    - 2020/03/01 (16.00.27)',/
+     1 '        Revised Outmon.f & DayoutR.f estimate of Carried',/
+     1 '          in *.xre to not subtract From Storage to Carrier',/
+     1 '          (qres(11) & From Storage for Exchange (qres(21)',/
+     1 '          from RStoUse',/ 
+     1 '        Revised DivrplP.f (28) DivresP.f (27) & Divcar.f(45)',/
+     1 '          increment carried (qdiv(38,xx) for a reservoir',/
+     1 '          source in *.xdd',/
+     1 '        Revised DivrplP to increment',/
+     1 '          From Storage to river for exchange qdiv(21, not',/
+     1 '          From Storage to River for other qdiv(12',/
+     1 '        Revised Oprinp.f to require a type 46, 51, 52 and 53',/
+     1 '          to enter multiple as the desitnation to simplify',/
+     1 '          logic used to read the operating rights',/
+     1 '    - 2020/02/24 (16.00.26)',/
+     1 '        Revised Oprinp.f to allow a Type 45 opr right',/
+     1 '          to have a direct diversion source with no',/
+     1 '          carrier and be limited by a type 51 Flow Res',/
+     1 '          Control',/     
+     1 '    - 2020/02/23 (16.00.25)',/
+     1 '        Revised Oprinp.f to add additional checks for a Type',/
+     1 '          45 (divcarL) with a spill order when oprimit = 7',/
+     1 '    - 2020/02/09 (16.00.24)',/
+     1 '        Revised Divresp2.f to recognize a reservoir',/    
+     1 '          to a carrier by default gets released from the',/
+     1 '          reservoir to the river then a carrier.  Therefore',/
+     1 '          update qres(12 in order to report correctly in *.xre',/
+     1 '    - 2020/01/24 (16.00.23)',/
+     1 '        Revise Oprinp.f & Divcarl.f (type 45) to allow a',/
+     1 '          spill order by setting oprimit = 7.  Specifically',/
+     1 '          store from the river up to the amount in a',/
+     1 '          spill order account and spill from that account',/
+     1 '          once storage occurs.',/
+     1 '    - 2019/12/29 (16.00.22)',/
+     1 '        Revised Mdainp.f to fix a problem when negative',/
+     1 '          diversions (imports) are mixed with values',/
+     1 '          greater than or equal to zero by setting ',/
+     1 '          zero = -0.001 cfs or warning and stopping',/     
+     1 '    - 2019/11/17 (16.00.21)',/
+     1 '        Revised ResRg1.f to print from river by priority',/
+     1 '          for a reservoir to *.xdd using variable qdiv(5,)',/ 
+     1 '        Revised SetPlanO.f and Common.inc to correct',/
+     1 '        a reporting limit when a type 45 operating rule',/
+     1 '        is limited by two type 12 plan limits (e.g. ',/
+     1 '        when variable oprlimit=14)',/
+     1 '    - 2019/10/28 (16.00.20)',/
+     1 '        Revised Jmstore.f, Outmon.f & Outjm.f to ',/
+     1 '        Print available flow using variable divowwX',/
+     1 '    - 2019/10/27 (16.00.20)',/         
+     1 '        Revised to allow a shortage caused by a',/ 
+     1 '        loosing reach to be evenly shared between',/
+     1 '        Arkansas River and Purgatoire River.',/
+     1 '        Resulted in calling Purgatoire after',/
+     1 '        teh Arkansas diverts to both conservatoin and ',/
+     1 '        other (e.g. when variable (n) = 2, not 1',/ 
+     1 '    - 2019/09/15 (16.00.19)',/
+     1 '      Revised DivcarL (45) to correct a problem when',/
+     1 '        ioprlim=14 (two plan limits) that caused the',/
+     1 '        variable iwwP2 to be >0 that caused psto2(iwwp2)',/
+     1 '        to be adjusted when it should not be',/
+     1 '    - 2019/09/07 (16.00.18)',/
+     1 '      Revised SetLimit to allow a ioprlim =14 when two',/
+     1 '        plan limits are specified to correct an ',/
+     1 '        issue identified with DivcarL',/
+     1 '    - 2019/08/25 (16.00.17)',/
+     1 '      Revised DivMulti (46) to use psupDD() set in ',/
+     1 '        DivCarL (45) to track a WWSP diversion to a ',/
+     1 '        direct diversion instead of psuply() to correct',/
+     1 '        a problem when the plan is not a WWSP (14 or 15)',/
+     1 '    - 2019/08/12 (16.00.16)',/
+     1 '      Revised RsrspuP.f (34) to adjust psuply(np) in ',/
+     1 '        addition to psto2(np) when a bookover is part of a',/
+     1 '        WWSP-Supply (14) or WWSP-User (15) plan',/
+     1 '    - 2019/08/11 (16.00.15)',/
+     1 '      Revised oprinp to not allow iopsou(2,k1) to be reset',/
+     1 '        when checking WWSP data in step C13',/     
+     1 '    - 2019/07/30 (16.00.14)',/
+     1 '      Revised DirectEX (24) and DirectBy(25) to not report',/
+     1 '        an exchange or bypass to a plan in *.xdd as',/
+     1 '        carried, exchanged or bypassed.  This avoids double',/
+     1 '        accounting when water is release from the plan',/
+     1 '    - 2019/07/28 (16.00.13)',/
+     1 '      Revised Bomsec.f & Oprinp.f to simplify WWSP plan',/
+     1 '        initialization by removing 16.00.12 edits',/
+     1 '      Revised common.inc, DaySet.f and DayMon.f to include',/
+     1 '         diversion to both a WWSP-Supply and direct diversion',/
+     1 '      Revised Oprinp.f to check that only one DivMulti (opr',/
+     1 '         type 46) is provided and that daily on and',/
+     1 '         off switches (imonsw() are not provided)',/
+     1 '    - 2019/07/21 (16.00.12)',/
+     1 '      Revised common.inc & oprinp to include iwwPlan an',/
+     1 '        indicator a type 45 (divert with carrier) operating',/
+     1 '        rule has been provided with a WWSP plan with a direct',/
+     1 '        diversion to a WWSP for use in Bomsec.',/
+     1 '      Revised BomSec to initialize WWSP variables associated',/
+     1 '        with a direct diversion (psuply and psupDD)',/
+     1 '        after a multi-split type 46 operating rule fires',/
+     1 '      Revised common.inc, DivcarL and Bomsec to include',/
+     1 '        variable psupDD in AF for a WWSP diversion to',/
+     1 '         irrigate',/     
+     1 '      Revised DivcarL (type 45) to track psupDD, total',/
+     1 '        direct diversion that is part of a WWSP Plan',/
+     1 '    - 2019/07/14 (16.00.11)',/
+     1 '      Revised DivMulti (type 46) to:',/
+     1 '       1. Move initialization from step 3 to step 1.5',/
+     1 '          to facilitate detaied output',/
+     1 '       2. Correction for type 14 and 15 (again) in step 4',/
+     1 '          (nr 364)',/
+     1 '       3. Added psuplyX to store cumulative divert to ',/
+     1 '          irrigate in step 4a for use in step 9 (see below)',/
+     1 '       4. Detailed output when direct diversion > allocation',/
+     1 '          at bottom of step 4a when ioutW=1.',/
+     1 '       5. Corrected pctX % when direct divert > allocation',/
+     1 '          in step 4b',/
+     1 '       6. Revised test for WWSP in step 5b',/
+     1 '       7. Added step 9 to reset WWSP-Supply for direct',/ 
+     1 '          diversion and note that the WWSP-User is reset',/
+     1 '          in BomSec.f after the split has occurred and',/
+     1 '          results are printed',/
+     1 '       8. Initialized psuplyDT to zero to correct a problem',/
+     1 '           in years 2-n',/    
+     1 '    - 2019/06/17 (16.00.10)',/
+     1 '      Revised Mdainp.f to allow JMartin monthly data (*.jmm)',/
+     1 '        to be Baseflow % only (no Enhanced %)',/
+     1 '      Revised JMFlow.f (type 54) monthly model to calculate',/
+     1 '        the Enhanced Baseflow % as 100 - Baseflow % and',/
+     1 '        check the ID in *.jmm equals the type 54 sourc 1 ID',/
+     1 '      Revised Oprinp.f to check type 53 and 54 data for:',/
+     1 '       1) Type 54 is senior to type 53',/ 
+     1 '       2) If a type 53 or 54 is provided then the other',/
+     1 '          is also provided',/
+     1 '       3) Both the type 53 and 54 are provided and have',/
+     1 '          the same source 1 and source 2',/     
+     1 '    - 2019/05/26 (16.00.09',/
+     1 '      Revised Oprinp.f to allow a type 29 to reset a plan',/
+     1 '        to zero without making a physical release when',/
+     1 '        the destination (ciopde) = -1.',/
+     1 '      Revised PowseaP (type 29) to print the type of',/
+     1 '        release (physical or reset) when the detailed'/
+     1 '        ouput option if requested',/
+     1 '      Revised SetplanO to allow a type 46 operating rule to',/
+     1 '        have a source 1 be a WWSP Supply (14) or User (15)',/
+     1 '    - 2019/05/27 (16.00.08)',/
+     1 '      Revised Oprinp.f to print a better warning when a',/
+     1 '        WWSP Supply or WWSP User plan provided is wrong',/
+     1 '        for a operating rule type 24, 25, 45 and 46',/
+     1 '    - 2019/04/29 (16.00.07)',/
+     1 '      Revised SetPlanO.f and OutPln.f to correct a problem',/
+     1 '        printing data to *.xpl for a type 46 operating rule',/
+     1 '        that showed up when WWSP Supply (14) and WWSP User',/
+     1 '        (type 15) were added.',/
+     1 '      Revised SetPlanO.f and OutPln.f to include a summary',/
+     1 '        output of print control data when iout=2',/
+     1 '      Revised Oprinp.f to check if a type 46 opr rule is',/
+     1 '        provided with monthly on-off values and the',/
+     1 '        destination does not use the Multiple (free format)',/
+     1 '        option',/
+     1 '    - 2019/04/27 (16.00.06)',/
+     1 '      Revised Oprinp.f to check the following operating',/
+     1 '        rules have the correct WWSP Plan type:',/
+     1 '        A WWSP Supply (type 14) is used in Opr rules',/
+     1 '          24, 25, 45 and 46',/
+     1 '        A WWSP User (type 15) is used in Opr rules',/
+     1 '          27, 28, 29 and 34',/
+     1 '        Both a WWSP Supply(type 14) and WWSP User (type 15)',/
+     1 '          are used in Opr rules 45 and 46',/
+     1 '      Revised Divcarl (type 45) to add to a WWSP Supply ',/
+     1 '        storage if diverted to a reservoir (e.g. not',/
+     1 '        diverted to irrigate',/
+     1 '    - 2019/04/20 (16.00.05)',/
+     1 '      Revised the following to separate a WWSP Plan into',/
+     1 '        a WWSP Supply Plan (type 14) and ',/
+     1 '        a WWSP User Plan (type 15) ',/
+     1 '        Directex.f (type 24), Directby.f (type 25),',/
+     1 '        Divresp2.f (type 27), Divrplp.f (type 28),',/
+     1 '        Divcarl.f (type 45),  Divmulti.f (type 45),',/
+     1 '        Powseap.f (type 29),  Bomsec.f, SetplanO.f',/
+     1 '        Outpln.f, Outplnmo.f and OutWW.f',/
+     1 '    - 2019/04/15 (16.00.04)',/
+     1 '      Enhanced Outww to print 3 decimals when reporting the ',/
+     1 '        percent split to each account',/
+     1 '    - 2019/04/10 (16.00.03)',/
+     1 '      Enhanced Divmulti (type 46) to fix a problem introduced',/
+     1 '        when implementing a type 46 input with a WWSP Plan',/
+     1 '    - 2019/03/27 (16.00.02)',/
+     1 '      Enhanced Oprinp.f to fix an array problem when checking',/
+     1 '        a type 46 input with the plan type = 11',/
+     1 '       (note not related to WWSP enhancement)',/
+     1 '      Enhanced Outres.f to fix a reporting problem with total',/
+     1 '       reservoir output.  In summary this routine was not',/
+     1 '        updated when the number of variables in the binary',/
+     1 '        reservoir file was updated long ago',/
+     1 '    - 2019/02/25 (16.00.01)',/
+     1 '      Enhanced WWSP output (*.xww) header to include percent',/
+     1 '        for a type 46 operating rule',/
+     1 '    - 2019/01/31 (16.0.00)',/
+     1 '      Offical release with basic functionality required',/
+     1 '        for the Arkansas DSS such as Winter Water Program',/
+     1 '        John Martin 1980 Storage Resoultion simulation',/      
+     1 '      Increased dimension for ArkDss in Statem.f and',/
+     1 '        common.inc.  Specifically:',/
+     1 '        Daily delay values (maxdld) from 3660 to 7320',/
+     1 '        # of reservoir accounts (maxown) from 251 to 1001')    
+     
+ 217     format(           
+     1 '    - 2019/01/15 (15.00.35)',/
+     1 '      Revised DirectEx.f (type 24) to apply the % exchange',/
+     1 '        to the water right and capacity but not the ',/
+     1 '        available flow.  This is consistent with DirectBy.f',/
+     1 '        Also revised the steps in DirectEx.f to be consistent',/
+     1 '        with DirectBy.f',/
+     1 '      Revised Oprinp.f to check when the variable creuse',/
+     1 '        is a WWSP Plan (type 14) that there is a type 46',/
+     1 '        operating rule with the source equal to the same',/
+     1 '        WWSP Plan ID',/ 
+     1 '      Revised Oprinp.f to check that a type 46 operating',/
+     1 '        rule has monthly on-off data provided and that the',/
+     1 '        rule is only allowed to run once per year',/
+     1 '    - 2018/12/16 (15.00.34)',/
+     1 '      Completed enhancement of JMStore.f to include',/
+     1 '         the Purgatoire',/
+     1 '      Developed Chekav3.f to check the impact of JMStore',/
+     1 '        (type 53) on variable avail',/
+     1 '      Enhanced JMFlow.f (type 54), JMStore.f (type 53) &',/
+     1 '        Oprinp.f to allow source 2 to be the Purgatoire',/
+     1 '        River @ LA',/
+     1 '    - 2018/12/08 (15.00.33)',/
+     1 '      Enhanced the following to tie Johm Martin to the WWSP:',/
+     1 '        DivmultR.f (type 52), oprinp.f, outpln.f,',/
+     1 '        outplnmo.f, setplano & outww.',/
+     1 '      Enhanced OutJM to not use variable creuse and begin',/
+     1 '        to read a report (*.rpt) input file for Jmartin ',/
+     1 '        reporting (*.xjm).',/
+     1 '    - 2018/12/03 (15.00.32)',/
+     1 '      Enhanced JMFlow (type 54) logic for allocation flows',/
+     1 '        from 11/15 to 11-27 as follows:',/
+     1 '        if(flow1<aveB then pctb = 100 else pctb = aveB/flow1',/
+     1 '    - 2018/11/19 (15.00.31)',/
+     1 '      Enhanced DivMultR.f (type 52) & Oprinp.f to allow the ',/
+     1 '        allocation to be specified as a percent or volume',/
+     1 '      Enhanced DivMultR.f (type 52) & Oprinp.f to allow the ',/
+     1 '        allocation to be limited by a maximum transfer rate',/
+     1 '      Enhanced DivMultr.f (type 52) to store detailed results',/
+     1 '        in variable outww(i,j2).',/
+     1 '      Developed Outjm.f to print JMartin output',/
+     1 '    - 2018/11/17 (15.00.30)',/
+     1 '      Enhanced JMFlow (type 54) and JMStore (type 53) to',/
+     1 '        simulate the John Martin 1980 Storage Decree',/
+     1 '    - 2018/11/08 (15.00.29)',/
+     1 '      Revised DirectEx and DirectBy to allow 100% of the',/
+     1 '        water right to divert if the monthly switch is off',/
+     1 '    - 2018/11/04 (15.00.28)',/
+     1 '      Initiated development of JMFlow (type 54) to estimate',/
+     1 '        Baseflow and Enhanced Baseflow percent of inflow',/
+     1 '        Based on the flow of Ark @ Las animas from 11/8-11/15',/
+     1 '        and 11/16-11/3 respectively.  Included edits to',/
+     1 '        JMStore, Oprinp.f and Execut.f',/
+     1 '      Developed JMStore (type 53) to operate the special',/
+     1 '        J Martin storage rules in the winter 11/1 - 3/31',/
+     1 '    - 2018/10/31 (15.00.27)',/
+     1 '      Revised DirectEx.f and Directby.f to execute',/
+     1 '        more than once per time step.',/
+     1 '      Revised Opring.f to stop after warning the user that',/
+     1 '        the Depletion mode is not fully tested',/
+     1 '    - 2018/10/21 (15.00.26)',/
+     1 '      Revised DirectEx.f and Directby.f to execute',/
+     1 '        once per time step.',/
+     1 '      Revised Outww.f to print a warning if a WWSP',/
+     1 '        user takes more water by direct irrigation',/
+     1 '        than its allocated portion',/     
+     1 '      Revised RsrSpu.f (type 34) and Oprinp.f, Setplano.f ',/
+     1 '        and outWW.f to allow a bookover to be tied to a',/
+     1 '        WWSP Plan (type 14)',/
+     1 '      Revised Powseap.f (type 29) and Oprinp.f, Setplano.f ',/
+     1 '        and outWW.f to allow a WWSP plan to be reset to zero',/
+     1 '        without making a reservoir release.',/
+     1 '      Revised Outww.f to correct a problem when a type 45',/
+     1 '        (Carrier) rules destination is a reservoir (not',/
+     1 '        to irrigate)',/
+     1 '      Revised Oprinp.f to check & stop if the user specifies',/
+     1 '        a diversion to irrigate but the destination is not ',/
+     1 '        a diversion',/
+     1 '    - 2018/10/14 (15.00.25)',/
+     1 '      Revised Bomsec.f, getfn.f, mdainp.f, chekts.f ',/
+     1 '        datinp.f and common.inc to open a file of ', /
+     1 '        J_Martin inflows for an future operating rule',/
+     1 '      Revised Divmulti.f Outmon.f, Execut.f, Outww.f',/
+     1 '        and common.inc to begin to print a warning to ',/
+     1 '        *.xww if a user takes more water to direct',/
+     1 '        irrigate than allocated',/
+     1 '      Revised PowseaP.f (type 29) and Oprinp.f to allow',/
+     1 '        a reservoir and WWSP plan pair to spill',/  
+     1 '      Revised Divmulti.f (type 46) to reallocate WWSP',/
+     1 '        supplies if a user takes more water to direct',/
+     1 '        irrigate than allocated',/
+     1 '      Revised Directby.f (type 24) and Directex.f (type 25)',/ 
+     1 '        to skip the ability to divert more water at the',/
+     1 '        source location if the exchange or bypass was',/
+     1 '        shorte if *.opr variable oprlimit = 1',/  
+     1 '    - 2018/10/08 (15.00.24)',/
+     1 '      For WWSP reporting did the following:',/
+     1 '        Revised OutWW.f to include total to plan',/
+     1 '        Revised DivMulti.f to not allow psuplyT to be <0',/
+     1 '    - 2018/10/07 (15.00.24)',/
+     1 '      For WWSP reporting did the following:',/  
+     1 ' ',/
+     1 '        Revised DivresP2.f (27), outww.f, bomsec.f, ',
+     1 '          Divmulti.f(46), and Divcarl.f (45)',/
+     1 '        Checked Setplano.f, outplnmo.f, outpln.f',/  
+     1 ' ',/        
+     1 '    - 2018/09/22 (15.00.23)',/
+     1 '      Revised directL.f (type 45) to correct a problem',/
+     1 '        with diversions to irrigate',/
+     1 '      Revised setplano.f to print type 45 output to *.xpl',/
+     1 '      Revised divmulti.f to correct a problem with type 46',/
+     1 '      Revised directby.f (type 25) to correct a problem',/
+     1 '        that did not allow the maount diverted by the',/
+     1 '        source structure to be reported when the bypassed',/
+     1 '        amount is < 100%',/     
+     1 '    - 2018/09/15 (15.00.22)',/
+     1 '      Revised Divresp2.f (type 27), DivRplp.f (type 28)',/
+     1 '         to allow a WWSP supply limit',/
+     1 '      Revised Oprinp.f, setPlano.f & outWW.f to allow the',/
+     1 '         above edits to types 27 & 28 to work',/
+     1 '    - 2018/09/10 (15.00.21)',/
+     1 '      Added OutWW.f to print WWSP report',/
+     1 '        Revised execut.f & report.f to open file 26 and',/
+     1 '        call outWW.f',/     
+     1 '        Revised divmulti.f, outplnmo.f and setplano.f',/
+     1 '        to print WWSP results to an output file not',/
+     1 '        include in a plan report',/ 
+     1 '    - 2018/08/30 (15.00.20)',/
+     1 '      Revised SetplanO.f and OutPlnmo to print results',/
+     1 '        for a WWSP Plan to the Plan Output file (*.xop)',/
+     1 '      Revised Multiple Plan (Type 46) to include direct flow',
+     1 '       diversions to a WWSP Plan',/
+     1 '    - 2018/08/24 (15.00.19)',/
+     1 '      Revised Oprinp.f and Divarl (type 45) to allow two',/
+     1 '        type 47 operating rules to limit a diversion',/
+     1 '        Note the above edit requires variable Oprlimit in',/
+     1 '        *.opr to be set to 14 and a second type 47 operating',/
+     1 '        rule to be provided in card 4',/
+     1 '    - 2018/08/13 (15.00.18)',/
+     1 '      Added WWSP.f a new type 53 opr rule that distributes',/
+     1 '        a users WWSP User Plan to move from the Total account',/
+     1 '        to a user reservoir account',/ 
+     1 '      Revised Execut.f call and Oprinp reads to allow',/
+     1 '        a new type 53 operating rule',/
+     1 '      Revised common.inc to include variable iopsouX to',/
+     1 '        represent store the WWSP plan',/      
+     1 '      Revised Oprinp.f to allow iopsou(2,k) to set a Project',/
+     1 '        on (1) or off (0) for a type 51 Flow Control rule',/
+     1 '      Began to revise Parse to handle a larger file name',/
+     1 '        for the Gfortran application.  Stopped after file',/
+     1 '        Parse_gfortran.for was found as a fix by SAM',/
+     1 '      Revised Divcarl (type 45) and DirectWR (type 26)',/
+     1 '        & oprinp.f to include a type 51 opr rule switch to',/
+     1 '        indicate a right should or should not fire if the',/
+     1 '        type 51 Project is on or off',/     
+     1 '    - 2018/08/12 (15.00.17)',/
+     1 '      Revised Execut.f to correct initialization of type',/
+     1 '        type 51 Flow Reservoir control (iflow)',/
+     1 '      Revised oprinp.f to allow type 24, 25 and 45 to',/
+     1 '        include a WWSP limit as variable creuse',/
+     1 '      Revised divcarL.f (45) to allow a WWSP plan to accrue',/
+     1 '      Revised directEX.f (24) to allow a WWSP plan to accrue',/
+     1 '      Revised directBy.f (25) to allow a WWSP plan to accrue',/
+     1 '      Revised GetPln.f, OutPln.f, outplnmo.f,  bomsec.f',/
+     1 '        and dayset.f to allow a WWSP (type 14) plan type',/
+     1 '    - 2018/08/06 (15.00.16)',/     
+     1 '      For ArkDSS-Trinidad',/
+     1 '        Added DivmultR.f a new type 52 opr rule that allows',/
+     1 '        a bookover from one reservoir account to several',/
+     1 '        by supplying a percentage to each account',/
+     1 '        Note DivmultR.f is limited to operate once per',/
+     1 '        time step to not allow a supply greater than the',/
+     1 '        account capacity to be booked into another account',/
+     1 '      Revised Oprinp.f to require a type 52 operating rule',/
+     1 '        source and destination reservoir are the same',/     
+     1 '      Revised FlowRes.f to print the Project On (1) and ',/
+     1 '        Off (1) results to the operating rule report (*.xop)',/
+     1 '      Revised Execut.f call and Oprinp reads to allow',/
+     1 '        a new type 52 operating rule')
+     
+ 216     format(    
+     1 '    - 2018/07/15 & 2018/07/29 (15.00.15)',/
+     1 '      Revised Divcarl (type 45) and DirectWR (type 26)',/
+     1 '        to include a type 51 opr rule limit',/
+     1 '      Revised Execut calls and Oprinp reads to Divcarl',/
+     1 '        (type 45) and DirectWR(type 26) to include a type',/
+     1 '        51 opr rule limit',/       
+     1 '      Added FlowRes a new type 51 opr rule that provides',/
+     1 '        Flow-Reservoir Control for the ArkDss application',/
+     1 '      Revised Chekav2, Chekava & Chekres & Outtbl to allow ',/
+     1 '        60 operating rules',/
      1 '    - 2018/04/08 (15.00.14)',/
      1 '      Revised Oprinp & Statem & common.inc to increase',/
      1 '        the dimension of maxopr2 to resolve a water balance',/
      1 '         problem in the South Platte',/
      1 '      Revised Datinp, Oprfind & Oprinp & Execut to reduce',/
      1 '         output to screen and *.log',/       
+     1 '    - 2018/04/04 (15.00.14)',/
+     1 '      Add GPL v3 license to all code and -version output',/
      1 '    - 2018/02/25 (15.00.13)',/
      1 '      Revised DivimpR that caused a water balance problem',/
      1 '        in the South Platte',/  
@@ -625,12 +1300,12 @@ c     Formats
      1 '    - 2018/01/23 (15.00.10)',/
      1 '      Revised DivMulti (type 46) to not store water from a',/ 
      1 '        split in qdiv(35 that reported it as from plan and',/
-     1 '        caused a water balance problem in test case Ex127P',/    
+     1 '        caused a water balance problem in test case Ex127P',/
      1 '    - 2018/01/15 (15.00.09)',/
      1 '      Revised DivResP2 & DivRplP to store water from an ',/
      1 '        admin plan (type 11) as qdiv(35,xx)"from plan" at',/
      1 '        the destination location to correct a water balance',/
-     1 '        problem identified in the Colorado River application',/         
+     1 '        problem identified in the Colorado River application',/
      1 '    - 2017/12/22 (15.00.08)',/
      1 '      Revised GetIpy4 & Mdainp to read an unknown number',/
      1 '        of records to allow the *.ipy file to have ',/
@@ -651,7 +1326,7 @@ c     Formats
      1 '        outmon, outpln, outplnmo, riginp, rsrspu',/
      1 '    - 2017/12/07 (15.00.05)',/
      1 '      Revised Rsrsup (type 6) to correct an array value =0',/
-     1 '        and ensure the diversion limit adjustment works OK',/     
+     1 '        and ensure the diversion limit adjustment works OK',/
      1 '    - 2017/12/03 (15.00.04)',/
      1 '      Revised Outmon to correct a reporting ',/
      1 '        issued in *.xdd when diverting to a reservoir',/
@@ -692,7 +1367,9 @@ c     Formats
      1 '        operating rule.',/
      1 '      Minor clean up to DirectWR (type 26), DivResP2',/
      1 '        (type 27) and DivrplP (type 28) to remove some',/
-     1 '        confusing notes',/
+     1 '        confusing notes')
+     
+ 215        format(    
      1 '    - 2015/10/10 (14.02.27)',/
      1 '      Revised DirectWR (type 26) to correct a problem',/
      1 '        associated with the one operation per time step',/
@@ -721,7 +1398,7 @@ c     Formats
      1 '      Revised DivResp2 (type 27) and DivRplP (type 28) to ',/
      1 '        correct a roundoff issue that caused an inconsistency',/
      1 '        associated with the Replacement rule (type 10)',/
-     1 '        reporting between the *.xop, *.xre & *.xrp reports',/     
+     1 '        reporting between the *.xop, *.xre & *.xrp reports',/
      1 '    - 2015/08/23 (14.02.23)',/
      1 '      Revised DivResp2 (type 27) to correct a problem ',/
      1 '        associated with porting the routine to the',/
@@ -731,7 +1408,7 @@ c     Formats
      1 '      Revised PowseaP, the Reservoir or Plan Spill operating',/
      1 '        rule to not adjust Avail at the reservoir itself',/
      1 '        if the source is a reservoir. This is consistent with',/
-     1 '        a Spill to Reservoir Target operating rule (type 9)',/     
+     1 '        a Spill to Reservoir Target operating rule (type 9)',/
      1 '    - 2015/08/11 (14.02.22)',/
      1 '      Revised RsrSpu.f (type 6) to set qres(29,n) for all',/
      1 '        reservoir to reservoir bookovers to correct a water',/
@@ -742,7 +1419,7 @@ c     Formats
      1 '        identified in the North Platte Model',/
      1 '    - 2015/07/27 (14.02.21)',/      
      1 '      Revised Outmon.f to correct a problem with reporting',/
-     1 '        reservoir releases from a type 27 rule by account ',/     
+     1 '        reservoir releases from a type 27 rule by account ',/
      1 '    - 2015/07/18 (14.02.20)',/      
      1 '      Revised Outmon.f to correct a problem with reporting',/
      1 '        reservoir releases from a type 27 rule for the ',/
@@ -752,7 +1429,7 @@ c     Formats
      1 '        above edit.',/
      1 '      Revised DirectWR.f (type 26) to fix a typo to ',/
      1 '        allow only one operation per time step that was',/
-     1 '        implemented in version 14.02.18',/                                
+     1 '        implemented in version 14.02.18',/
      1 '      Revised Oprinp.f to warn the user if ther are type 6',/
      1 '        operating rules that book water from a reservoir to',/
      1 '        itself then back that might cause a reoperation',/
@@ -773,7 +1450,7 @@ c     Formats
      1 '        and DivCarl.f',/
      1 '        Began enhancements to control when a reservoir book',/ 
      1 '        over should be limited to one operation per time step',/
-     1 '        to resolve a problem indentified in the San Juan',/        
+     1 '        to resolve a problem indentified in the San Juan',/
      1 '    - 2015/06/15 (14.02.16)',/                                 
      1 '      Revised DsaMod to correct a problem that originated',/
      1 '        with porting the code to a new compiler with version',/
@@ -796,11 +1473,11 @@ c     Formats
      1 '    - 2015/03/07 (14.02.10)',/
      1 '      Revised Oprinp.f to allow type 27 Direct Release and',/
      1 '        type 28 Release by Exchange to allow variable',/
-     1 '        Oprlimit to be 5-9 not varaible creuse when the',/
+     1 '        Oprlimit to be 5-9 not variable creuse when the',/
      1 '        source is a Changed Water Right Plan (type 13).',/
      1 '        Revised type 27 Direct Release (DivResP2.f) and',/
      1 '        type 28 Release by Exchange (DivRplP.f) to allow',/
-     1 '        OprLimit = 5-9 and not use varaible creuse.',/
+     1 '        OprLimit = 5-9 and not use variable creuse.',/
      1 '      Revised GetPln to allow a Changed Water Right Plan',/
      1 '        (type 13)',/
      1 '    - 2015/02/03 (14.02.09)',/   
@@ -832,7 +1509,7 @@ c     Formats
      1 '        as Carried-Exchange-Bypass only in DirectWR (type 26)',/
      1 '        and when released from an admin plan direct by',/
      1 '        Divresp2 (type 27) to by exchange by DivRplP (type 28)',/  
-     1 ' Recent updates',/
+     1 '    Recent updates',/
      1 '    - 2015/01/16 (14.02.04)',/
      1 '      Revised DirectWR, PowseaP & DivMulti to clean up ',/
      1 '        reporting for a diversion to Admin Plan (type 11)',/ 
@@ -926,7 +1603,9 @@ c     Formats
      1 '      Fixed several array bounds issues found during testing',/
      1 '    - 2014/07/14 (14.00.01)',/
      1 '      Updated ISF reach to work with multiple water rights.',/
-     1 '        This allows simulating overlapping ISF reaches.',/
+     1 '        This allows simulating overlapping ISF reaches.')
+     
+ 214        format(
      1 '    - 2014/07/14 (14.00.00)',/
      1 '      Array sizes increased:',/
      1 '        diversions from 1530 to 3060',/
@@ -1013,209 +1692,6 @@ c     Formats
      1 '      Revised Splatte.f to call Dsamod',/
      1 '      Revised RtnMax.f & RtnSecX to pass ndns, the',/
      1 '        # of downstream nodes so they can be used by',/
-     1 '        Dsamod.f to search an exchange reach',/ 
-     1 '      Added OutIchk and revised Resrg1 & RtnSec &',/
-     1 '        Execut to enhance detailed output for ichk=4',/
-     1 '        and ichk=9',/
-     1 '    - 2011/05/04 (12.3016)',/ 
-     1 '      Revised Type 40 (Splatte.f) to limit a diversion',/
-     1 '        to the destinations decreed amount and',/
-     1 '        not be called if junior to the compact',/
-     1 '      Revised Execut.f for detailed output (ichk=4',/
-     1 '    - 2011/04/04 (12.3015)',/ 
-     1 '      Revised Mdainp.f to stop if the control variable ',/
-     1 '        itsfile is set to expect a *.ipy file but a *.ipy',/
-     1 '        file is not provided',/  
-     1 '      Revised OutCu.f, StateM.f & Common.inc to enhance the',/
-     1 '        array size reporting',/ 
-     1 '      Revised Execut to only call a type 40 (Splatte) when a',/
-     1 '        diversion is short or the destination is an instream',/
-     1 '        flow',/       
-     1 '      Revised Type 40, Splatte.f, to correct a typo that',/
-     1 '        impacted return flow calculations',/  
-     1 '    - 2011/02/17 (12.3014)',/ 
-     1 '      Revised Carrpl.f (type 7) reporting from a reservoir',/
-     1 '        to a reservoir by a carrier to correct a problem',/
-     1 '        in water balance reporting',/
-     1 '      Revised DivResP2, DivRplP & OutDivC to correct a ',/
-     1 '        reporting problem if the destination is a reservoir',/
-     1 '        or instream flow that impacted the total diversion',/
-     1 '        adjustment in the water balance report',/
-     1 '      Revised Outdivc.f to include structures with multiple',/
-     1 '        activities at the same node',/                                   
-     1 '      Revised Outbal2.f to add footnote 6 in the *.xwb ',/
-     1 '        output to match the total presented in the *.xdc',/
-     1 '        output. ',/
-     1 '      Revised Outdivc.f to add Carrier Type A in the *.xdc ',/
-     1 '        output to match the total presented in the *.xwb',/
-     1 '        output. ',/ 
-     1 '    - 2011/02/13 (12.3013)',/
-     1 '      Finalized South Platte Compact (Ifrrigsp & Splatte)',/
-     1 '    - 2011/02/02 (12.3012)',/       
-     1 '      Revised PowSeaP (29) approach to spill a type 11 plan',/ 
-     1 '    - 2011/02/01 (12.3011)',/
-     1 '      Revised Oprinp to correct a problem when reading',/
-     1 '        a source water right for a type 25 rule',/
-     1 '    - 2011/01/11 (12.3010)',/
-     1 '      Enhanced S Platte operation to be two separate',/
-     1 '        rules; ifrrigsp.f (type 50) to store and splatte.f',/
-     1 '        (type 40) to release',/  
-     1 '    - 2011/01/11 (12.3009)',/
-     1 '      Revised DivAlt (type 39) to correct a problem when',/
-     1 '        the diversion is limited to the flow at the',/
-     1 '        source water right',/
-     1 '    - 2011/01/06 (12.3008)',/
-     1 '      Added Splatte.f & IfrrigSp.f and edited Oprinp.f',/
-     1 '        Oprinp.f, SetPlanO.f & OutplanMo.f to begin to',/
-     1 '        simulate the S Platte Compact.',/
-     1 '      Revised Ifrrig, Ifrrig2, to divert 0 if the ',/
-     1 '        destination ISF is off.  Also revised the 12.3007',/
-     1 '        edit to Powres & Powers2 if the destination ISF is',/ 
-     1 '        off',/     
-     1 '    - 2010/12/26 (12.3007)',/
-     1 '      Revised Powres & Powres2 (type 1) to divert 0 if the ',/
-     1 '        destination ISF is off',/
-     1 '      Revised DivAlt (type 39) to limit diversions to the',/
-     1 '        capacity of the alternate point',/
-     1 '      Revised DivAlt (type 39) to not override variable',/
-     1 '        idemtyp from the control file',/
-     1 '    - 2010/12/05 (12.3006)',/
-     1 '      Revised WelRig3P to correct a problem calculating',/
-     1 '        an augmentation plans demand (pdem) when the flow',/
-     1 '        from ground water is > 0 to offset a negative flow',/
-     1 '      Replaced reals used as characters throughout (e.g.',/
-     1 '        divnam(i,j) = divnam1(j)',/  
-     1 '    - 2010/11/15 (12.3005)',/     
-     1 '      Revised DivAlt (39) to allow the alternate point',/
-     1 '        to be a well',/
-     1 '      Created SetWel to set demand data for Divalt (39)',/
-     1 '      Created SetGW to set From GW when the well depletion',/
-     1 '        causes the system to go negative',/
-     1 '      Revised DivCarL (45) to allow canal loss to be',/
-     1 '        routed to the stream using a return flow pattern',/
-     1 '        specified for a plan',/
-     1 '      Revised RtnXcuP to allow plan return data to be used',/
-     1 '    - 2010/11/01 (12.3004)',/     
-     1 '      Revised DivCarL (45) to allow canal loss to be',/
-     1 '        assigned to a recharge plan',/
-     1 '      Added RtnXcuP to assign canal loss to a recharge',/
-     1 '        plan',/
-     1 '      Revised RtnCarry to pass iplan and call RtnXcuP',/ 
-     1 '      Revised PowresP (48) and DivRplP2 (49) to shepherd',/
-     1 '        a Reservoir or Plan release to a plan',/
-     1 '    - 2010/10/31 (12.3003)',/      
-     1 '      Revised Rivrtn to handle a depletion release',/ 
-     1 '        to correct a mass balance issue on the Thorton',/
-     1 '        application',/
-     1 '      Revised Call Rivrtn from Directby (25), Directex (24)',/
-     1 '        Divcarl (45), Divresp2 (27) and Divrplp(28)',/
-     1 '      Revised type 27 DivResP2 & 28 DivRplP to correct a ',/
-     1 '        problem with setting qdiv(36 (return to river)',/ 
-     1 '        when making a depletion release',/
-     1 '      Revised type 27 DivResP2 to correct a problem with',/
-     1 '        call SetQdivC when making a depletion release',/
-     1 '      Revised SetLoss, SetQdiv & SetQdivC to inlcude system',/
-     1 '        loss (tranloss) at the destination, not the source',/
-     1 '      Revised Outmon to report From River Loss (qres(30',/
-     1 '      Revised DivResp2 (27) diversion with loss (divactL &',/
-     1 '        divafL) to include system loss at the destination',/
-     1 '        and reservoir loss qres(27 & qres(30)',/
-     1 '      Revised PowSeaP (29) to allow a type 11 to spill',/
-     1 '        consistently (at all locations)',/
-     1 '      Revised Carrpl (7) to correct a water balance reporting',/
-     1 '        problem with operating a carrier by exchange',/
-     1 '    - 2010/10/15 (12.3002)',/  
-     1 '      Revised type 32 DivResR to correct a problem with',/
-     1 '        call SetQdivC',/
-     1 '      Revised column headers in *.xdd as follows:',/
-     1 '        From Carrier by Sto_Exc is now From Carrier by Other',/
-     1 '        Water Use Total Return is now Water Use To Other',/
-     1 '      Revised column headers in *.xre as follows:',/
-     1 '        From River by Exc_Pln is now From River by Other',/
-     1 '        From Carrier by Sto_Exc is now From Carrier by Other',/
-     1 '      Revised SetPar to recognize the new column names',/
-     1 '    - 2010/09/11 (12.3001)',/                          
-     1 '      Revised Setqdiv when called by a type 49 rule',/
-     1 '        to correct a problem with the water balance',/
-     1 '      Revised Riginp to prevent reservoir rights from',/
-     1 '        being turned off (it somehow had been revised to ',/
-     1 '        turn off all reservoir rights)',/
-     1 '      Revised GetplnW to include variable dimensions',/
-     1 '      Miscellaneous clean up of compiler warnings and',/
-     1 '        code comments',/
-     1 '    - 2010/08/29 (12.3000)',/     
-     1 '      Compiled under Lahey Professional 7.2',/
-     1 '      Revised plan dimensions maxPlan 102 = 501',/
-     1 '        and maxrtnPP 402 = 502',/ 
-     1 '      Revised Outmon to fix a problem when reporting',/
-     1 '        depletion data that showed up with an application',/
-     1 '        that had data in the plan return file (*.prf)',/ 
-     1 '    - 2010/02/08 (12.2931)',/     
-     1 '      Revised Report to fix a problem with Call Riginp',/
-     1 '        and to require a random response file (*.rsp)',/
-     1 '        Revised several subroutines with array issues',/
-     1 '        after compling and testing with the detailed ',/
-     1 '        -trk (track) and -chk (check) compiler options on',/
-     1 '    - 2010/01/25 (12.2930)',/     
-     1 '      Revise Divcar, & Divcar1 to include a reoperation',/
-     1 '        check. Added OutGVC to provide detailed',/
-     1 '        output for the Grand Valley Check',/     
-     1 '    - 2009/11/05 (12.29.29)',/     
-     1 '        Revise Divcar, Divcar1, DivcarR & DsaMod to',/
-     1 '        to allow CU when rtnmax is called the second time',/    
-     1 '    - 2009/10/25 (12.29.27)',/     
-     1 '      Revise DsaMod to reset the iterate due to return',/
-     1 '        flow indicator (ireop=0)if no diversion occurrs',/
-     1 '    - 2009/10/20 (12.29.26)',/
-     1 '      Revised DsaMod to allow a diversion when avail',/
-     1 '        is zero downstream but the diversion is ',/
-     1 '        non-consumptive. Note required for the Orchard',/
-     1 '        Mesa Check operation on the Colorado, etc.',/
-     1 '    - 2009/08/12 (12.29.25)',/
-     1 '      Revised type 11 (Divcar) to correct a problem',/
-     1 '        when multiple operating rules use the same'/
-     1 '        water right as a source',/ 
-     1 '    - 2009/06/26 (12.29.24)',/
-     1 '      Revised type 7 (carrpl) to correct another problem',/
-     1 '        related to recognizing the destination operating',/
-     1 '        rule may divert at a location other than the source',/
-     1 '    - 2009/06/25 (12.29.23)',/
-     1 '      Revised type 7 (carrpl) to recognize the destination',/
-     1 '        operating rule may divert at a location other',/
-     1 '        than the source (e.g. if the destination is a type',/
-     1 '        11 operating rule variable ciopso(2) is not NA',/
-     1 '      Revised the header on the diversion station',/
-     1 '        output from From River By Exc_Pln to From',/
-     1 '        River By Other to recognize this column contains',/
-     1 '        diversions by an exchange, plan & carrier',/
-     1 '      Revised DivcarL to adjust a carriers capacity',/
-     1 '        when the source is a reservoir water right',/
-     1 '        diverted at a carrier',/
-     1 '      Revised Vircom, WelRig3P, and Welrig3P to fix a',/
-     1 '        problem when calculating CU for well only lands',/
-     1 '        with sprinklers.',/   
-     1 '      Revised WelRig3P, and Welrig3P to fix a',/
-     1 '        problem when simulating well pumping when the',/
-     1 '        demand type = 3 (Structure Demand) where the',/
-     1 '        demand for D&W lands is in *.ddm and the demand',/
-     1 '        for well only lands is in *.wem',/
-     1 '    - 2009/06/09 (12.29.22)',/
-     1 '      Revised SetQdivC and its calling routines to correct',/
-     1 '        the variables passed for local plan arrays',/
-     1 '      Revised Riginp and its calling subroutines to include',/
-     1 '        more information for reservoir right processing',/
-     1 '    - 2009/06/01 (12.29.21)',/
-     1 '      Revised type 2 ResRg1 to decrease available right',/
-     1 '        to correct a problem with convergence when ',/
-     1 '        operating in a daily mode',/
-     1 '      Revised Dayset to recalculate a reservoir storage',/
-     1 '        right when operating in a daily mode and there',/
-     1 '        is no administration date set (rdate = -1)',/
-     1 '      Revised DayOutR to correct a problem when printing',/
-     1 '        reservoir data',/     
-     1 '    - 2009/05/31 (12.29.20)',/
-     1 '      Revised Mis routines to remove variable ipy that is',/
-     1 '        not used',/
      1 '    - 2009/05/12 (12.29.19)',/
      1 '      Revised RivRtn to exit when the change in diversion',/
      1 '        is less than small (0.001 cfs)',/
@@ -1252,8 +1728,8 @@ c     Formats
      1 '        to be limited by a miscellaneous diversion or ',/
      1 '        reservoir demand data',/
      1 '      Revised Bomsec to correct the Type 47 annual limit',/
-     1 '        initilization',/
-     1 '      Revised Oprinp to correct an initilization problem',/
+     1 '        initialization',/
+     1 '      Revised Oprinp to correct an initialization problem',/
      1 '        associated with a bad array size',/
      1 '      Revised the following to correct a problem with the',/
      1 '        type 45 rule (DivCarL) that caused return flows',/
@@ -1272,7 +1748,7 @@ c     Formats
      1 '        (iopsou(2,1) to be the month limits are reset',/
      1 '      Revised GetPln to allow a Release Limit Plan (type 12)',/
      1 '        to be initialized using the initial plan storage ',/
-     1 '        varaiable in the plan data file (*.pln)',/
+     1 '        variable in the plan data file (*.pln)',/
      1 '      Revised OutPlnMo for a Release Limit Plan (type 12)',/
      1 '        output to to print the maximum release as the annual',/
      1 '        value',/
@@ -1323,7 +1799,7 @@ c     Formats
      1 '        of a diversion with a supplemental well are both',/
      1 '        located at the same river node',/
      1 '      Revised report list, type 12 = Stream Comparison',/
-     1 '      Revised miscellaneous files related to initilizing ',/
+     1 '      Revised miscellaneous files related to initializing ',/
      1 '        variables that were identified by compiling with',/
      1 '        detailed checks turned on',/
      1 '      Added Diversion to Recharge (*.dre) and Reservoir',/
@@ -1368,7 +1844,7 @@ c     Formats
      1 '         a given well structure.',/
      1 '       Revised Riginp & Common to save the on/off switch.',/ 
      1 '       Revised OprFind to use above in order to allow',/
-     1 '         more than one operating rule to refrence a',/
+     1 '         more than one operating rule to reference a',/
      1 '         water right.',/
      1 '    - 2008/09/15 (12.29.00)',/
      1 '        Revised DirectEx (Type 24) & DirectBy (Type 25),',/
@@ -1393,7 +1869,7 @@ c     Formats
      1 '        Revised Type 24 (DirectEx) to correct a problem',/
      1 '          when the destination is a reservoir',/
      1 '        Revised the RivRtn approach to adjusting a diversion',/
-     1 '          when a shortage occurrs',/
+     1 '          when a shortage occurs',/
      1 '        Enhanced the file version operation by revising',/
      1 '          Oprinp & ChkVer to work when no operating rule',/
      1 '          is provided.',/
@@ -1402,7 +1878,7 @@ c     Formats
      1 '          structur typs is not in the data set (e.g. search',/
      1 '          for a reservoir when no reservoir data is provided',/
      1 '    - 2008/09/08 (12.28.08)',/
-     1 '        Revised RivRtn to correct a problem that occurrs',/
+     1 '        Revised RivRtn to correct a problem that occurs',/
      1 '          when carrier and carier returns do not make flow',/
      1 '          available to a diversion',/
      1 '    - 2008/09/05 (12.28.07)',/
@@ -1427,7 +1903,7 @@ c     Formats
      1 '    - 2008/08/06 (12.28.03)',/
      1 '        Added a data check for Type 45 (Carrier with Loss)',/
      1 '          when a carrier is not supplied',/
-     1 '        Added variable initilization to remove water right',/
+     1 '        Added variable initialization to remove water right',/
      1 '          sharing capability begun in version 12.28.0',/
      1 '    - 2008/07/15 (12.28.02)',/
      1 '        Corrected a data check in DivCarL',/
@@ -1623,7 +2099,7 @@ c     Formats
      1 '    - 2007/11/27 (12.09)',/
      1 '        Revised Welrig3 to handle M&I demands (area=0 and/or',/
      1 '          efficiency=0',/
-     1 '        Removed all refrences to variable icuapp in Datinp,',/
+     1 '        Removed all references to variable icuapp in Datinp,',/
      1 '          Getipy2, Getipy4, Mdainp, Rtnsec, Rtnsecw, and',/
      1 '          Vircom. The code now initializes and uses the same',/
      1 '          variables when either a 2 or a 4 supply-irrigation',/
@@ -1700,7 +2176,7 @@ c     Formats
      1 '          practice file (*.ipy) to contain 2 land use types',/
      1 '          (Total GW and Total Sprinkler) or 4 land use types',/
      
-     1 '          (SwFlood, SwSprinkler, GwFlood and Gw Sprinker)',/     
+     1 '          (SwFlood, SwSprinkler, GwFlood and Gw Sprinkler)',/
      1 '        Note checking for the above is not yet complete',/
      1 '        Revised the structure summary output',/
      1 '        Added GetIpy4 to allow the irrigation practice',/
@@ -1828,7 +2304,7 @@ c
      1 '        Revised Oprinp.f for a type 11, carrier, rule',/
      1 '           to print a warning and stop if the Admin location',/
      1 '           and Destination location are the same',/     
-     1 '        Cleaned up DirectEx.f, type 24, to remove refrences',/
+     1 '        Cleaned up DirectEx.f, type 24, to remove references',/
      1 '          to an exchange point based on 11.53 updates',/
      1 '    - 2007/03/19 (11.53)',/ 
      1 '        Revised DirectFS, type 16, to limit the number of',/
@@ -1962,7 +2438,7 @@ c
      1 '          iopsou(3,k) and iopsou(4,k)',/
      1 '    - 2006/11/21 (11.44)',/ 
      1 '        Simplified the replacement reservoir output (*.xrp)',/
-     1 '        Revised initilization of ishort in divres.f and',/
+     1 '        Revised initialization of ishort in divres.f and',/
      1 '          divrpl.f to allow a replacement reservoir to',/
      1 '          operate correctly (when ishort is incorrect',/
      1 '          a replacement reservoir may not be called)',/
@@ -1979,7 +2455,7 @@ c
      1 '    - 2006/11/15 (11.43)',/ 
      1 '        Revised divres.f and divrpl.f to pass water right',/
      1 '          limits (dcrdivx and divdx) rather than common.inc',/
-     1 '   **   Removed incorrect initilization of water right',/
+     1 '   **   Removed incorrect initialization of water right',/
      1 '          limit (dcrdivx) in divrpl.f when called by a ',/
      1 '          replacement reservoir',/
      1 '        Revised Oprinp.f to read Type 4 using oprfind.f ',/
@@ -2131,8 +2607,8 @@ c
      1 '        Revised Execut.f to provide more data when printing',/
      1 '          reoperation data (ichk=9)',/     
      1 '        Revised Mdainp.f to use acreage data from *.ipy when',/
-     1 '          initilizing soil moisture if the *.ipy file is ',/
-     1 '          provided. Note befor this edit soil moisture was',/
+     1 '          initializing soil moisture if the *.ipy file is ',/
+     1 '          provided. Note before this edit soil moisture was',/
      1 '          initialized using data from the station files ',/
      1 '          (*.dds and *.wes). These (especilly *.wes) may not',/
      1 '          equal data in the *.ipy file if they were',/
@@ -2319,7 +2795,7 @@ c
      1 '        Finished enhancements to type 29 rule, Plan to Mis.',/
      1 '          that allow reservoir seepage (Recharge Pits) to',/
      1 '          be a water supply for a plan',/
-     1 '        Revised Virset to initilze CU for Baseflow reporting',/
+     1 '        Revised Virset to initialize CU for Baseflow reporting',/
      1 '        Revised Outbal2 to include reservoir seepage in the ',/
      1 '          water balance calculations',/
      1 '        Revised Outbal2 to include reservoir seepage loss in ',/
@@ -2335,7 +2811,7 @@ c
      1 '        Replaced Getfn, GetRes, Common to read reservoir',/
      1 '          return data.',/
      1 '        Revised Oprinp to correct the date when a diversion',/
-     1 '          right is controlled by a type 16 operating rule',/     
+     1 '          right is controlled by a type 16 operating rule',/
      1 '        Revised Powsea, a type 9 opr rule to limit the',/
      1 '          minimum release to target to 0.1 af per time step',/
      1 '          This eliminates unnecessary reoperations with a',/
@@ -2454,7 +2930,7 @@ c
      1 '    - 2005/11/12 (10.74)',/     
      1 '        Revised reservoir plan operations to include evap',/
      1 '        Revised Execut, Bomsec, Outmon, Dayset, DirectEx,'/
-     1 '          DirectBy, DivresR, DivRplR and Common for above',/     
+     1 '          DirectBy, DivresR, DivRplR and Common for above',/
      1 '        Revised Oprinp to correct a problem that caused ',
      1 '          a Type 8 (out-of-priority) operating right to be ',/
      1 '          turned off',/
@@ -2477,7 +2953,7 @@ c
      1 '          (e.g. *.dds = *.dst, *.def, and *.drf)',/          
      1 '    - 2005/10/25 (10.70)',/
      1 '        Revised Bomsec to correct La Plata demand',/
-     1 '          initilzation',/
+     1 '          initialization',/
      1 '    - 2005/10/22 (10.69)',/
      1 '        Revised Dapinp and Mdainp to operate if no diverions',
      1 '          are provided',/
@@ -2539,7 +3015,7 @@ c
      1 '        Corrected a reporting problem with type 28 (divrplP)',/
      1 '        Revised Execut to use a lower reoperation value for a',/
      1 '        daily model and now report value to *.log',/
-     1 '        Revised DirectEx initilization values for diversions',/
+     1 '        Revised DirectEx initialization values for diversions',/
      1 '        Added detailed check ability to DirectEx, DirectBy, ',/
      1 '        and DivrplP',/
      1 '    - 2005/06/22 (10.61)',/
@@ -2795,7 +3271,7 @@ c
      1 '    - 2001/12/27 (10.04)',/       
      1 '        Revised to operate under f95 by',
      1        ' adding variable dimension to several routines',/
-     1 '        and initilization to several routines.',/
+     1 '        and initialization to several routines.',/
      1 '    - 2001/12/10 (10.03)',/
      1 '        Added iday=2 capability to allow the daily model',
      1        ' to use a monthly running demand.',/
@@ -2875,7 +3351,7 @@ c
      1 '        Went back to old evapsec (fixed again 9.94)',/
      1 '    - 2001/08/03 (9.91)',/ 
      1 '        Revised evasec to correct a problem when more rain',
-     1 '        than evaporation occurrs.', /
+     1 '        than evaporation occurs.', /
      1 '  ***   Impacts all prior results when rain > evaporation.',/ 
      1 '        Revised mdainp to accept a monthly ppt file.',
      1        ' Revised bomsec when soil moisture exceeds capacity.',/ 
@@ -3105,6 +3581,7 @@ c
      1 '        Revised dimension for max number of returns',/
      1 '        (maxrtnw) 3002 = 9002 and delay (maxdly) 200=980',/  
      1 '        Corrected I/O problem in outtbl.f (check option)')
+     
  213      format(
      1 '    - 2000/04/13 (9.46)',/
      1 '        Revised oprfind.f & oprinp.f to allow idum = -8 ',/
@@ -3207,7 +3684,7 @@ c
      1 '    - 1999/11/05 (9.25)',/
      1 '        Revised outtbl.f to print opr rules 14-16',/
      1 '        Removed misc. log output (idumx) from oprinp.f',/ 
-     1 '        Mdainp.f temporarily uses pfacto to weight delay data',/ 
+     1 '        Mdainp.f temporarily uses pfacto to weight delay data',/
      1 '    - 1999/10/16 (9.24)',/
      1 '        Revised oprinp.f & directfs.f to allow operating',/
      1 '        rule type 16 (DFS) to handle a water right that',/
@@ -3315,11 +3792,11 @@ c
      1 '          resoop, & powsea to include variable small=0.001',/
      1 '    - 98/06/19 (8.07) ',/
      1 '        Removed the temporary fix of the dimension of intern',/
-     1 '        Revised divres.for all refrences to l2 = lr',/
-     1 '        Revised divrpl.f all refrences to l2 = lr',/
-     1 '        Revised execut.f to remove last l2 refrence ',/
+     1 '        Revised divres.for all references to l2 = lr',/
+     1 '        Revised divrpl.f all references to l2 = lr',/
+     1 '        Revised execut.f to remove last l2 reference ',/
      1 '        in call divres and call divrpl',/
-     1 '        Revised replace.f to remove last l2 refrence ',/
+     1 '        Revised replace.f to remove last l2 reference ',/
      1 '        and pass lr in the l2 position ',/
      1 '        in call divres and call divrpl',/
      1 '    - 98/06/13 (8.06) ',/
@@ -3367,7 +3844,7 @@ c    1          ' six replacement reservoirs',/
 c    1 '      Revised vircom.f to correct average printout related ',/
 c    1 '        to missing data (-999) on reservoir delta storage',/
 c    1 '    - 10/17/97 (7.21) ',/
-c    1 '      Revised oprinp.f & resrpl fot water right constraint',/
+c    1 '      Revised oprinp.f & resrpl for water right constraint',/
 c    1 '        on operating rule per Bethel 10/10/97 Email',/
 c    1 '      Revised repsort.f for error if multiple replacement ',/
 c    1 '        reservoirs & real*8 per Bethel 10/13 & 10/20/97 Email',/
@@ -3375,7 +3852,7 @@ c    1 '      Revised execut.f, datinp.f & common.inc to allow ',/
 c    1 '        detailed calling information',/
 c    1 '      Revised divres to initialize relact per Bethel 10/15 ',
 c    1          'Email',/
-c    1 '      Revised divrpl and divres to check for 0.01 befor',
+c    1 '      Revised divrpl and divres to check for 0.01 before',
 c    1          'Call Takout per Bethel 10/17 Email',/
 c    1 '      Revised divrig to include small and regarding ishort',/
 c    1 '    - 09/29/97 (7.20) ',/
@@ -3396,7 +3873,7 @@ c     1 '        limit bookover transfers',/
 c     1 '    - 06/15/97 (7.16) ',/
 c     1 '      Revised per Bethel 06/97 the following 3 items',/
 c     1 '              1. resrg1.f to remove prior filling ',/
-c     1 '                 constraing on OOP storage (Dillon)',/
+c     1 '                 constraint on OOP storage (Dillon)',/
 c     1 '              2. oprinp.f, execut.f & added divcar1.f',/
 c     1 '                 to provide Rule 14 which includes ',/
 c     1 '                 a demand constraint (Windy Gap)',/
@@ -3421,7 +3898,7 @@ c     1 '      Revised forcast in bomsec.for, mdainp.f &',
 c     1              ' common.for',/
 c     1 '      Revised *.out error messages in getin.f',/
 c     1 '      Revised outdeb.f to print flow gages as default',/
-c     1 '      Revised outifr.f and outmon.f regardind numifr = 0',/
+c     1 '      Revised outifr.f and outmon.f regarding numifr = 0',/
 c     1 '      Revised divrpl.f and divres.f re Bethel comments',
 c     1              ' related to repact vs divact',/
 c     1 '      Revised oprint.f float = ifix',/
@@ -3458,7 +3935,7 @@ c    1        ' to include larger dimensions per linked model',/
 c    1 '    - 10/02/96 (7.05) ',/
 c    1 '      Revised datinp.f to check returns to',
 c    1        ' diverting node',/
-c    1 '      Revised bomsec.f re one fill initilization',/,
+c    1 '      Revised bomsec.f re one fill initialization',/,
 c    1 '    - 08/27/96 (7.04) ',/
 c    1 '      Revised outres.f re reservoir owners ',/,
 c    1 '      Revised datinp.f, outsp.f, report.f,',   
@@ -3592,7 +4069,7 @@ c    1 '                      Revised outtbl.f to include more',/
 c    1 '                      Revised outbal.f to print af not kaf',)
 c
 c     1 '    - 03/25/96 (5.14) Revised outtbl.f to print operation',
-c     1        ' informatin',/
+c     1        ' information',/
 c     1 '                      Revised common.for, outcui.f, outdivc.f,',
 c     1        ' outresc.f to use memory better',/ 
 c     1 '    - 03/22/96 (5.13) Revised riginp.f for type 2 Carrier',/
@@ -3641,7 +4118,7 @@ c     1 '    - 01/17/96 (5.00) Misc refinements'/,
 c     1 '               rtnsec.f, execute.f & common.for - automatic',
 c     1        ' reoperation for non downstream returns',/,
 c     1 '               outres.f & outmon - print annual total',
-c     1        ' and consisent reservoir output',/
+c     1        ' and consistent reservoir output',/
 c     1 '               outcu.f - prints % supplied, short',/
 c     1 '               rsrsup.f - additional checks for negatives',/
 c     1 '               divcar.f & divres - revised check to .01 cfs',/
@@ -3709,14 +4186,14 @@ c     1 '      ouflow.f, outmon.f, outriv.f, and vircom.f',/
 c     1 '    - 9/01/95 Added chekpor to simplify mdainp.f, virgen.f',
 c     1        ' and report.f',/
 c     1 '    - 9/01/95 Revised vircom.f to print cal year properly',/
-c     1 '    - 8/22/95 Enhanced the river statin output ',/
+c     1 '    - 8/22/95 Enhanced the river station output ',/
 c     1 '    - 8/17/95 Enabled the monthly detailed node ',
 c     1        'accounting (*.xnm)',/
 c     1 '    - 8/17/95 Cleaned up version and date prints in statba.f',/
 c     1 '    - 8/01/95 Enhanced the -help option ',/
 c     1 '    - 8/01/95 Revised open files in mdainp to allow baseflow ',
 c     1        'and simulate to operate with same response file'/
-c     1 '    - 8/01/95 Enhanced the reoperation initilization in ',
+c     1 '    - 8/01/95 Enhanced the reoperation initialization in ',
 c     1        ' execut.for and powres.for',/
 c     1 '    - 8/01/95 Enhanced the stream and diversion comparison in',
 c     1        ' outdivc.for',/
@@ -3794,9 +4271,10 @@ c     1 '    - Output files have been renamed for scenario mgt')
      1 '    Suggest you revise Statem.f and Common.inc')
  340  format(/,
      1 '  StateM; Dimension Problem',/
-     1 '    The maximum years in a delay table (MAXdlA) = ', i5,' and',/
+     1 '    The maximum years in a daily delay table (MAXdlAd) = ',i5,
+     1    ' and',/
      1 '    the maximum days in a delay table (MAXdlD)  = ', i5,/
-     1 '    MAXdlD should be MAXdla (years) * 366 (days per) = ',i5,
+     1 '    MAXdlD should be MAXdlAd (years) * 366 (days per) = ',i5,
      1      ' not ', i5,/
      1 '    Suggest you revise Statem.f and Common.inc')
        

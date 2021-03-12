@@ -4,7 +4,7 @@ c            (Bypassed) to a Diversion, Reservoir or Plan
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-c     Last change:  RRB  18 Dec 100    2:29 pm
 c
       SUBROUTINE DirectBy(IW,L2,ISHORT,divactX,ncallx)
 c
@@ -40,6 +38,9 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2019/07/30; Revise to not  report the bypass as carried
+c                 (qdiv(38,) if the destination is a plan 
+c                 (idtype=7 = iopdesr(l2)
 c rrb 2008/06/10; Allow return to river then diversion
 c		  from a carrier again (internT = 1 Carrier, 2=Return)
 c		  Also redefine nCarry (see documentation)       
@@ -167,8 +168,8 @@ c			                  Set in oprinp
 c	       divdS          Diversion at source in previous iteration (cfs)
 c	       dcrdiv1        Remaining water right at source source (cfs)
 c
-c	       dcrdivE        Fraction of water right availabe to the ByPass
-c	       divdE          Diversoin at source in previous iterations (cfs)
+c	       dcrdivE        Fraction of water right available to the ByPass
+c	       divdE          Diversion at source in previous iterations (cfs)
 c	       dcrdiv2        Remaining water right at bypass (cfs)
 c
 c        divcap         Structure capacity
@@ -252,25 +253,31 @@ c		Dimensions
      1  cwhy*48, cdestyp*12, ccarry*3, cpuse*3, csour*12,
      1  rec12*12, cresid1*12, cTandC*3, criver*12, 
      1  corid1*12, cCallBy*12, cstaid1*12, ctype1*12, cImcdR*12,
-     1  cwhy2*48
+     1  cwhy2*48, subtypX*8
 c
 c
 c_____________________________________________________________
-c               Step 1; Common Initilization
+c               Step 1; Common Initialization
 c
-c		              iout=0 no detials
+c		              iout=0 no details
 c		                   1 details
 c		                   2 summary
 c                      3 details for adjustment to avail for a bypass
 c                 ioutX=1 detailed output specified in the control file 
+c                 ioutA=1 details on diverting more at the Source if
+c                         the bypass is shorted
+c
 c                 ioutiw=n water right for detailed output set in
 c                          control file
-c     write(nlog,*) ' DirectBy; nplan', nplan     
-
+c     write(nlog,*) ' DirectBy; nplan', nplan    
+c 
+      subtypX='directby'
       iout=0
       ioutX=0
+      ioutA=0
       ioutiw=0
-      
+      ioutP=0
+     
       if(ichk.eq.125) ioutX=1
       if(corid(l2).eq. ccall) ioutiw=iw
       
@@ -363,7 +370,7 @@ c		Output variables
       
       divactB = 0.0
 c
-c rrb 2008/09/03; Initilize      
+c rrb 2008/09/03; Initialize      
       divactL = 0.0
       divact1 = 0.0
       divact0=0.0
@@ -430,7 +437,7 @@ c
 c ---------------------------------------------------------
 c               l. Check Avail array coming in
 c     if(iout.eq.1) write(nlog,*) ' DirectBy; Calling Chekava In'
-      call chekava(21, maxsta, numsta, avail)
+      call chekava(21, maxsta, numsta, avail, subtypX)      
 c
 c _________________________________________________________
 c               Step 2; Exit if not on this month (iwhy=1)
@@ -465,8 +472,8 @@ c		For a daily model set demand for end of season
 c      
 c ________________________________________________________
 c               Step 2b; Set Plan pointer
-c		ipTC  = T&C plan
-c		ipUse = Reuse plan
+c		                     ipTC  = T&C plan
+c		                     ipUse = Reuse plan
       ipTC=iopsou(3,l2)
       if(ipTC.gt.0) cTandC='Yes'
       ipUse=ireuse(l2)
@@ -482,15 +489,16 @@ c		Step 2c; Detailed header
         else
 c         write(nlog,*) ' '
         endif  
-      endif  
-      
+      endif     
 c
 c _________________________________________________________ 
 c               Step 3; Set Source Data
 c
       lr=iopsou(1,l2)
       nd=idivco(1,lr)
+
 c
+c ---------------------------------------------------------  
 c		Exit if source structure is off (iwhy=2)
       if(idivsw(nd).eq.0) then
         iwhy=2
@@ -510,6 +518,19 @@ c
       else
         divreqx=divsw(iuse)
       endif
+c
+c ---------------------------------------------------------  
+c rrb 2018/10/21; Option to operate once per time step    
+c		              a0. Check reoperation control and exit
+c                     if already operated one time
+c rrb 2018/10/31; Allow reoperation to occur
+cx       icallOP(l2)=icallOP(l2) + 1
+cxc
+cx       if(icallOP(l2).gt.1) then
+cx         iwhy=2
+cx         cwhy='Reoperation not allowed'
+cx         goto 260
+cx       endif      
 c
 c ---------------------------------------------------------
 c		b. Set CU limit switch      
@@ -549,9 +570,18 @@ c rrb 2005/11/27; Add CuFac
 c      
 c ---------------------------------------------------------
 c               d. Set decree limits
-c		note l2 is a pointer to the water right
+c		               note dcrdivS & dcrdivE are set in Oprinp.f
+c		               note l2 is a pointer to the water right
       dcrdiv1=amax1(0.0, dcrdivS(l2)-divdS(l2))
       dcrdiv2=amax1(0.0, dcrdivE(l2)-divdE(l2))
+      
+      if(ioutP.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) '  DirectBy; decree limits = ',
+     1    dcrdivS(l2),divdS(l2),dcrdiv1*fac
+        write(nlog,*) '  DirectBy; decree limits = ',
+     1    dcrdivE(l2),divdE(l2),dcrdiv2*fac
+      endif
 c
 c ---------------------------------------------------------
 c		e. Set Capacity limits      
@@ -621,7 +651,7 @@ c
 c _________________________________________________________
 c rrb 2006/03/28; 
 c               Step 4b; Set destination data 
-c		         Destination is a plan
+c		                     Destination is a plan
       nd2=iopdes(1,L2)
 c 
 c rrb 2006/03/29; Allow a plan destination     
@@ -673,7 +703,7 @@ c		  or Special (10) or Admin Plan (11)
 c _________________________________________________________
 c
 c               Step 4c; Set destination data 
-c			Destination is a reservoir
+c			                   Destination is a reservoir
 c rrb 2011/11/27; Revise to use ntype and iopdesr
 cx    if (nd2.lt.0) then
       if(ndtype.eq.2) then
@@ -685,7 +715,7 @@ cx      nr2=-nd2
         ndd2=0
         np2=0
         cdestyp='Reservoir'
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nr2)+iopdes(2,l2)-1
 cr      iuse2x=irow
 c     
@@ -699,7 +729,7 @@ c
         iuse2=-1
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 c		  Note use nr2 (not nr)
         nro=1
         if(iopdes(2,l2).lt.0) then
@@ -779,7 +809,10 @@ cx    if(ioutX.eq.1 .and. iw.eq.ioutiw) then
      1    iwx, iw,nwrord(1,iw),l2,lr,nd2,
      1    np2,iuse2x,imcdX,  idcd2x, idcd2C, idcd2, iscd, nriver,
      1    Divreqx*fac, DIVREQx2*fac,
-     1    AVAIL(imcdX)*fac, divaloS*fac,
+c
+c rrb 2018/10/13; Print avail before being adjusted
+cx   1  AVAIL(imcdX)*fac,divaloS*fac,     
+     1    availX*fac, divaloS*fac,
      1    dcrdiv2*fac, divactS*fac, divCU*fac, divByP*fac,
      1    pavail*fac,  culimit*100., oprmax1*fac, pfail1,
      1    divcarry*fac,divactB*fac, dcrdiv1*fac,  pdem1*fac,
@@ -806,10 +839,26 @@ c
 c_____________________________________________________________
 c               Step 5; Begin generic water supply checks
 c
+c
+c ---------------------------------------------------------
+c rrb 2018/11/08; Correction to allow diversion when monthly switch
+c                 is off
+c                     5a Exit to Source (250) if monthly switch for 
+c                        exchange is off
+      if(ioff.eq.1) then
+        divactE=0.0
+        iwhy= 11
+        cwhy='Monthly exchange switch is off'
+        goto 250
+      endif  
+      
       CALL DNMFSO2(maxsta, AVAIL, IDNCOD, idcd2, NDNS2, IMCD,
      1  cCallBy)
       imcdX=imcd
       availx=avail(imcd)
+cx      do n=1,10
+cx        write(nlog,*)'  DirectBy;', n, imcdX, cstaid(n), avail(n)*fac
+cx      end do
 c             
 c               Print warning if negative available flow
       IF(AVAILx.le.(-1.*small)) then
@@ -846,8 +895,9 @@ c
 c
 c
 c_____________________________________________________________
-c               Step 10 Finally calculate diversion at source (divact1)
-c			limited by decree remaining, demand and capacity
+c               Step 7 Finally calculate diversion at source (divact1)
+c			                 limited by decree remaining, demand and capacity
+c                      BUT NOT WATER SUPPLY
       if(divCap1.le.small) then
         iwhy=10
         cwhy='Avail capacity (DivCap1) = 0' 
@@ -866,6 +916,9 @@ c
      1   icx, iout, l2, imcd, iscd, ndns, nd, iuse, ieff2, 
      1   fac, pavail, divalo, divact, oprEffTS, divactL, 
      1   iwhy2, icase, ishort, iresw, cCallBy, cstaid1, cwhy2)
+c
+c rrb 2018/09/22; Correction; Store amount diverted by source structure
+      divact1=divact
 c
 c rrb 2011/11/21; Save for printing
       pavail1=pavail
@@ -894,11 +947,12 @@ c
 c
 c_____________________________________________________________
 c               Step 11a Exit if monthly switch is off
-      if(ioff.eq.1) then
-        iwhy= 1
-        cwhy='Monthly switch is off'
-        goto 250
-      endif  
+c rrb 2018/11/08 Move this code to sep 5a (before bypass calculations)
+cx      if(ioff.eq.1) then
+cx        iwhy= 1
+cx        cwhy='Monthly switch is off'
+cx        goto 250
+cx      endif  
 c_____________________________________________________________
 c               Step 11b Exit if T&C plan is in failure
 
@@ -928,7 +982,9 @@ c     write(nlog,*) '  DirectBy; iscd', iscd
       else 
         divactS=avail(imcd)        
       endif
-cx    write(nlog,*) '  Directby; imcd, divactS ', imcd, divactS*fac
+      if(ioutX.eq.1) then
+        write(nlog,*) '  Directby; imcd, divactS ', imcd, divactS*fac
+      endif
         
       if(divactS.le.small) then
         iwhy=12
@@ -948,7 +1004,7 @@ c rrb 2006/03/29; Diversion Destination
      1                divcap(nd2) - divmon(nd2),
      1                divcap(nd)  - divmon(nd))
 c
-c rrb 2007/05/25; Add carrier Loss befor transfer limit      
+c rrb 2007/05/25; Add carrier Loss before transfer limit      
         divaloB=divaloB/OprEffT             
         divaloB=amin1(divaloB, oprmax1)     
         divaloB=amax1(0.0, divaloB)            
@@ -1000,7 +1056,7 @@ c rrb 2006/03/29; Plan Destination
      1      divcap(nd)-divmon(nd))
         endif
 c
-c rrb 2007/05/25; Add carrier Loss befor transfer limit      
+c rrb 2007/05/25; Add carrier Loss before transfer limit      
         divaloB=divaloB/OprEffT     
 c
 c		Limit to annual or monthly limit (oprmax1)        
@@ -1030,12 +1086,12 @@ c		Note goto 250 since source may still divert
       endif      
 c 
 c ---------------------------------------------------------     
-c		12c. Destination is a reservoir      
+c		            Step 12c. Destination is a reservoir      
 c	             Limit to maximum bypass limit (oprmax1)
       if(nr2.gt.0) then
         divaloB=amin1(divactS*pctE, dcrdiv2, divreqX2)
 c
-c rrb 2007/05/25; Add carrier Loss befor transfer limit      
+c rrb 2007/05/25; Add carrier Loss before transfer limit      
         divaloB=divaloB/OprEffT     
         
         divaloB=amin1(divaloB, oprmax1)         
@@ -1093,7 +1149,7 @@ c       write(nlog,*) ' DirectBy; out of Setcarl, ncarry',ncarry
         endif
 c
 c ---------------------------------------------------------
-c		13b. Exit if bypass = 0      
+c		            13b. Exit to source (250) if bypass = 0      
         if(divaloB.le.small) then
           iwhy=20
           cwhy = 'Carrier capacity (divCarry) = 0'
@@ -1202,11 +1258,13 @@ c rrb 2010/10/15; Update to allow operation with a depletion release
           cwhy='Available flow with River Return = 0'
           goto 250
         endif  
+c
+c               Endif for nriver > 0         
       endif      
       
 cx      if(iout.eq.3) write(nlog,*) '  DivactB_2; avail(13), 49',
 cx     1  avail(13)*fac, avail(49)*fac       
-c     write(nlog,*) ' DirectBy; ', divactB*fac
+c     write(nlog,*) ' DirectBy; divactB = ', divactB*fac
 c
 c		Exit if no available flow 
       if(divactB.lt.small) then
@@ -1233,7 +1291,7 @@ c rrb 2011/05/25; Correction divert from carrier if appropriate
           ndnsBy=ndns-ndns2
         endif 
 c
-c               Endif for nriver       
+c               Endif for nriver = 0    
       endif  
            
 c         
@@ -1287,6 +1345,8 @@ c		            Step 17b; RESERVOIR DESTINATION (nd2<0)
 c		            Note return flows are stored in Psuply but
 c		            not added to river system. Therefore 
 c		            no need to redivert them from system  
+c               Note WWSP Plans get updated here (they have a
+c               reservoir destination (ndtype=2)  
       if(nr2.gt.0 .and. ipUse.gt.0) then  
         ircp=ipsta(ipUse)
 c
@@ -1299,8 +1359,13 @@ cx      psto2(ipUse)=psto2(ipUse)+divactB*fac
         divactL=divactB*OpreffT                        
         psuply(ipUse)=psuply(ipUse)+divactL
         psuplyT(ipUse)=psuplyT(ipUse)+divactL
-        psto2(ipUse)=psto2(ipUse)+divactL*fac
-          
+        
+        if(ndtype.eq.2) then
+          psto21=psto2(ipUse)          
+          psto2(ipUse)=psto2(ipUse)+divactL*fac
+          psto22=psto2(ipUse)          
+        endif  
+         
         ipsta1=ipsta(ipUse)
       endif
 
@@ -1336,50 +1401,83 @@ c		              dcrdiv1 = remaining decree at source
 c		              dcrdiv2 = remaining decree at bypass
 c		              dcrdivT = total remaining decree
 c			
-     	
- 250  dcrdivT=dcrdiv1+dcrdiv2
+c
+c rrb 2018/11/08; Revise to be consistent with Directex     	
+cx 250  dcrdivT=dcrdiv1+dcrdiv2
+ 250  continue
 c
 c ---------------------------------------------------------
+c rrb 2018/10/21; Provide control on ability to divert
+c                 more water at the Source if the
+c                 bypass was shorted.
+      iadd=oprlimit(l2)
+      iadd=0     
+      if(ioutA.eq.1) write(nlog,*) '  DirectBy; iadd = ', iadd 
+      if(iadd.eq.0) then 
+c
+c rrb 2018/11/08; Revise to allow the entire water right to be 
+c                   diverted at the source.  Note:
+c                    - This allows the source to divert 100% of the
+c                      water right if the monthly switch is off.
+c                    - This allows the source to divert any water not
+c                      taken by the bypass.
+c                    - The amnout reported to the operating rule file
+c                      (Divo) is the amount bypassed, not the amount
+c                      diverted at the source.
+        dcrdivT=dcrdiv1+dcrdiv2
+c
 c rrb 2008/09/22; Adjust source demand nd if it is the same
-c		  structure as the destination (nd2)
-      if(nd.eq.nd2) divreqX=amax1(0.0, divreqX-divactB)
-      
-      divactS1=amax1(0.0, divactS-divact1-divactB)
-      divact0=divact1
-      divAdd=amin1(divactS1, dcrdivT,
-     1              divreqX, divcap(nd)-divmon(nd)) 
-      if(iout.eq.1) then
-        write(nlog,*) ' DirectBy; ', divAdd*fac, divactS1*fac,
-     1  divreqX*fac, (divcap(nd)-divmon(nd))*fac
-      endif
+c		              structure as the destination (nd2)
+        if(nd.eq.nd2) divreqX=amax1(0.0, divreqX-divactB)
+        
+        divactS1=amax1(0.0, divactS-divact1-divactB)
+        divact0=divact1
 c
-c ---------------------------------------------------------
-c rrb 2008/03/28; Check available flow (again) 
-      CALL DNMFSO2(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD,
-     1  cCallBy)
-      
-      PAVAIL=avail(IMCD)
-      divAdd=amin1(divAdd, pavail)         
-      divAdd=amax1(0.0, divAdd)
-      
-      divact1=divact1+divAdd
-c
-c ---------------------------------------------------------
+c rrb 2018/11/08; Correction
+cx        divAdd=amin1(divactS1, dcrdivT,
+cx     1              divreqX, divcap(nd)-divmon(nd)) 
+        divAdd=amin1(dcrdivT,
+     1                divreqX, divcap(nd)-divmon(nd))      
 c     
-      if(iout.eq.1) then
-        write(nlog,*) ' DirectBy; Source Use of ByPass Right',
+     
+     
+        if(iout.eq.1) then
+          write(nlog,*) ' DirectBy; ', divAdd*fac, divactS1*fac,
+     1    divreqX*fac, (divcap(nd)-divmon(nd))*fac
+        endif
+c      
+c ---------------------------------------------------------
+c rrb   2008/03/28; Check available flow (again) 
+        CALL DNMFSO2(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD,
+     1  cCallBy)
+        
+        PAVAIL=avail(IMCD)
+        divAdd=amin1(divAdd, pavail)         
+        divAdd=amax1(0.0, divAdd)
+        
+        divact1=divact1+divAdd
+c      
+c ---------------------------------------------------------
+c       
+        if(iout.eq.1) then
+          write(nlog,*) ' DirectBy; Source Use of ByPass Right',
      1    dcrdiv1*fac, dcrdiv2*fac, dcrdivT*fac,
      1    divact0*fac, divAdd*fac, divact1*fac 
-      endif
-c
+        endif
+c      
 c ---------------------------------------------------------
-c
-      if(divAdd.gt.small) then
-        CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
+c      
+        if(divAdd.gt.small) then
+          CALL TAKOUT(maxsta, AVAIL ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              divAdd, NDNS,  ISCD  )                     
-        CALL RTNSEC(icx,divAdd,L2,iuse,ISCD,nd,ieff2)
-        DIVMON(ND)=DIVMON(ND)+divAdd
-      endif  
+          CALL RTNSEC(icx,divAdd,L2,iuse,ISCD,nd,ieff2)
+          DIVMON(ND)=DIVMON(ND)+divAdd
+        endif 
+         
+c
+c ---------------------------------------------------------     
+c                 Endif for adding more diversion
+      endif
 c
 c_____________________________________________________________
 c               Step 20; Double Check available flow 
@@ -1446,7 +1544,7 @@ cx    DIVMON(ND)=DIVMON(ND)+divact1
       USEMON(iuse)=USEMON(iuse)+divact1
 c
 c		c. Update diversion by this source structure and user
-cx !!!! TEST
+c
       IF(IRTURN(iuse).ne.4) then
         QDIV(5,ISCD)=QDIV(5,ISCD)+divact1
       else
@@ -1564,15 +1662,21 @@ c               b. Check reservoir roundoff when exiting routine
       endif
 c
 c _________________________________________________________
-c               Step 22; Update Qdiv and Carrier for all destinations
+c               Step 23a; Set Efficiency
       EffmaxT1=(100.0-OprLossC(l2,1))/100.0    
 c     
 c
 c _________________________________________________________
-c               Step 23; set Qdiv at the souce for the
+c               Step 23b; Set Qdiv at the souce for the
 c                        exchanged amount as carried water
 c rrb 2015/10/04; Set exchanged water as carried at the source
-      qdiv(38,iscd) = qdiv(38,iscd) + divactB
+c rrb 2019/07/30; Revise to not  report the exchange as carried
+c                 (qdiv(38,) if the destination is a plan 
+c                 (idtype=7 = iopdesr(l2)
+cx      qdiv(38,iscd) = qdiv(38,iscd) + divactE
+      if(ndtype.ne.7) then
+        qdiv(38,iscd) = qdiv(38,iscd) + divactE
+      endif
 c _________________________________________________________
 c               Step 24; set Qdiv at the destination.  Also set
 c                        the source if the source is the same
@@ -1590,7 +1694,7 @@ c                        as the destination
       endif  
 c      
 c ---------------------------------------------------------
-c		Step 24b; Update Qdiv for the carrier
+c		            Step 25; Update Qdiv for the carrier
       if(ncarry.gt.0) then
         call SetQdivC(
      1    nlog, ncarry, ncnum, nd, nd2, l2, iscd, idcd2X,idcd2C,
@@ -1611,7 +1715,7 @@ cx   1    maxrtnw, maxdivw, OprEff1, ipuse,
       endif  
 c
 c _________________________________________________________
-c               Step 25; Update maximum diversion rate (Oprmax1)
+c               Step 26; Update maximum diversion rate (Oprmax1)
       oprmaxM(l2)=oprmaxM(l2) - divactB*fac
       oprmaxM(l2)=amax1(0.0, oprmaxM(l2))
       
@@ -1620,13 +1724,13 @@ c               Step 25; Update maximum diversion rate (Oprmax1)
       
 c
 c _________________________________________________________
-c		Step 26; Set total diversion
+c		            Step 27; Set total diversion
       divactX=divact1+divactB/culimit      
 c
 c _________________________________________________________
-c		Step 27; Update diversion by this water right
+c		            Step 28; Update diversion by this water right
 c		   by amount at source (divact1) and by amount
-c		   bypassd (divactB) befor CU adj (culimit)
+c		   bypassed (divactB) before CU adj (culimit)
       divd(lr) = divd(lr)+divactX
       divdS(l2)= divdS(l2)+divact1
 c
@@ -1641,7 +1745,7 @@ c rrb 2007/07/03; Update for detailed reporting
       
 c
 c _________________________________________________________
-c               Step 28; Update diversion by this Operating Rule
+c               Step 29; Update diversion by this Operating Rule
 c		         Note only show bypassd amount, not
 c                        bypassd and source
       divactL=divactB*OprEffT       
@@ -1660,7 +1764,10 @@ c     IF(-IOPOUT.eq.ISCD .or. iout.ge.1) then
      1    iwx, iw,nwrord(1,iw),l2,lr,nd2, 
      1    np2,iuse2x,imcdX,  idcd2x, idcd2C, idcd2, iscd, nriver,
      1    divreqx*fac, DIVREQx2*fac,divcap1*fac,
-     1    AVAIL(imcdX)*fac,divaloS*fac,
+c
+c rrb 2018/10/13; Print avail before being adjusted
+cx   1  AVAIL(imcdX)*fac,divaloS*fac,  
+     1    AVAILX*fac,divaloS*fac,
      1    dcrdiv2*fac, divactS*fac, divCU*fac,       divByP*fac, 
      1    pavail1*fac,  culimit*100,     oprmax1*fac, pfail1,
      1    divcarry*fac,divactB*fac, pdem2*fac, dcrdiv1*fac,        
@@ -1687,7 +1794,7 @@ c                 switch and actual diversion (divact)
 c
 c _________________________________________________________
 c               
-c               Step 32; Set Call for 
+c               Step 32; Set Call data at source 
 c rrb 2008/06/10	      
       if(nd.gt.0) then
         ctype1='Diversion'
@@ -1698,7 +1805,7 @@ c _____________________________________________________________
 c               
 c               Step 33 - Check Avail going out of the routine
       if(iout.eq.1) write(nlog,*) ' DirectBy; Calling Chekava Out'
-      call chekava(21, maxsta, numsta, avail)
+      call chekava(21, maxsta, numsta, avail, subtypX)
       
 c
 c_____________________________________________________________
@@ -1722,7 +1829,7 @@ c
      1  '  nRiver',
      1  ' DivReqX DivReqX2 divcap1 availX divaloS dcrdiv2',
      1  ' divactS   divCU',
-     1  '  divByP  pavail culimit oprmax1  pfail1 divCarry DIVACTB',
+     1  '  divByP  pavail culimit oprmax1  pfail1 divCary DIVACTB',
      1  ' dcrdiv1   PdemX divact0 divAdd DivAct1    iwhy Comment',/
      1  ' ___________ ____ ____ ____',
      1  ' ____________ ____________', 
@@ -1779,7 +1886,10 @@ c		Print detailed output if a problem
      1  iwx, iw,nwrord(1,iw),l2,lr,nd2, 
      1  np2,iuse2x,imcdX, idcd2x, idcd2C, idcd2, iscd, nriver,
      1  divreqx*fac, DIVREQx2*fac, divcap1*fac,
-     1  AVAIL(imcdX)*fac,divaloS*fac,
+c
+c rrb 2018/10/13; Print avail before being adjusted
+cx   1  AVAIL(imcdX)*fac,divaloS*fac,
+     1  availX*fac, divaloS*fac,
      1  dcrdiv2*fac, divactS*fac, divCU*fac,       divByP*fac, 
      1  pavail*fac,  culimit*100,     oprmax1*fac, pfail1,
      1  divcarry*fac,divactB*fac, pdem2*fac, dcrdiv1*fac,        

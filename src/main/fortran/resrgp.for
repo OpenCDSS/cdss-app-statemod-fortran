@@ -5,7 +5,7 @@ c          Also limits to target contents.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c		iout = 0 no details
 c		       1 details
@@ -179,7 +179,7 @@ C
       NDNR=NDNNOD(IRCD)       
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
       nro=1
       if(iopdes(2,l2).lt.0) then
         nro=-iopdes(2,l2)

@@ -3,7 +3,7 @@ c           Generate matrix tables of diversions.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -30,6 +30,10 @@ c         Generate matrix tables of diversions
 c
 c _________________________________________________________
 c       Update History
+c
+c
+c rrb 2020-04-03; Redefine column 11 from Carried, Exchang, Bypass to'
+c                 Carried, Exchang, Other'
 c
 c rrb 99/12/17; Add structure type to *.xdd title
 c rrb 01/04/03; Add variable unit capability
@@ -66,7 +70,7 @@ c     dimension  dat1(40), cname(6), dat1t(40)
      1           rec24*24, rec4*4, ccallID*12, cname1*24
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
 c
 c		iout=1 print multiple structure warning     
@@ -448,7 +452,7 @@ c rrb 2008/06/10; Correction
               dat1(ndiv)=-1.0
             endif
 c
-c		The following occurrs for structures with no water 
+c		The following occurs for structures with no water 
 c		right (e.g. imcdx=-1; its initial value)
             if(imcdX.lt.0 .and. ishort.gt.0) then
               ccallID='NA          '
@@ -544,7 +548,11 @@ c 220 FORMAT('',/,'    Gage  Summary ',a5, /,3x,20a4,/,
      1  '   Avail Control          Control',/
      1  'Structure   River                 ',
      1  '   Total      CU Priorty Storage   Other    Loss    Well',
-     1  ' Priorty   Other    Loss  Bypass   SoilM  Supply   Short',
+c
+c rrb 2020-04-03; Redefine column 11 from Carried, Exchang, Bypass to'
+c                 Carried, Exchang Other'
+c     1  ' Priorty   Other    Loss  Bypass   SoilM  Supply   Short',
+     1  ' Priorty   Other    Loss   Other   SoilM  Supply   Short',
      1  '   Short',
      1  '      CU   SoilM   Other    Loss  Inflow    Gain',
      1  '    Flow Deplete GW Stor  Inflow  Divert by Well Outflow',

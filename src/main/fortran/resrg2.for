@@ -2,7 +2,7 @@ c resrg2 - standard reservoir routine
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ C        IW         : OVERALL WATER RIGHT ORDER
 C        L2         : LOC. OF WATER RIGHT (IW) ON RES. RIGHT TABLE
 c        nrown(l2)  : Number of owners associated with right l2
 c                     begins with owner 1 of that reservoir but may
-c                     not include all owners of a given reseroir
+c                     not include all owners of a given reservoir
 C
 c
 c _________________________________________________________
@@ -66,7 +66,7 @@ c
       include 'common.inc'
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
       availx = 0.0
       stoalo = 0.0

@@ -2,7 +2,7 @@ c outdeb - print data check information
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+C
       SUBROUTINE OUTDEB(idat,nreach)
 c
 c
@@ -36,7 +36,7 @@ c
      1 rec12*12, cname1*24, cname2*24
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 
       iout=0
       if(iout.eq.1) then
@@ -515,14 +515,11 @@ c              Formats
      1 '#                   5=Operational,',/
      1 '#                   6=Well,',/
      1 '#  3. Admin #        = Administration Number',/
-     1 '#  4. On/Off         = On or Off switch',/
-     1 '#     Note: Certain operating rules may cause a structure to',/
-     1 '#           be turned off since if it is controlled by an',/
-     1 '            operating rule',/
-     1 '#                   0=off',/
-     1 '#                   1=on',/
-     1 '#                  +n=begin in year n',/
-     1 '#                  -n=stop in year n',/
+     1 '#  4. On/Off (1)     = On or Off switch',/
+     1 '#                      0=off',/
+     1 '#                      1=on',/
+     1 '#                     +n=begin in year n',/
+     1 '#                     -n=stop in year n',/
      1 '#  5. Str Id #1      = Primary structure for this right',/,
      1 '#  6. Str Id #2      = Secondary structure for this right ',
      1                        '(-1=N/A)',
@@ -530,7 +527,12 @@ c              Formats
      1 '#  8. Right Name     = Water right name',/,
      1 '#  9. Str Name #1    = Primary structure for this right',/
      1 '# 10. Str Name #2    = Secondary structure for this right ',
-     1                        '(-1=N/A)')
+     1                        '(-1=N/A)',/
+     1 '#',/
+     1 '# (1) Certain operating rules may cause a structure to be',/
+     1 '#     be turned off since if it is controlled by an ',/
+     1             'operating rule')
+     
  460  format(a12, 1x, a24, 1x, a3, 1x, i5)
  462  format(a12, 1x, a24, 1x, a3, 1x, i5)
  470  format(

@@ -2,7 +2,7 @@ c ouflow - prints selected matrix data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ c      data ihisid/850*0/
 c
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
         iout=0
         unitc = 1.0
@@ -51,11 +51,11 @@ c
 C
 C-------------------------------------------------------------------
 C
-C------  Initilize once per run
+C------  Initialize once per run
 C
 C------------------------------------------------------------------
 c 
-c rrb 10/15/95; Initilize once per run
+c rrb 10/15/95; Initialize once per run
 c     IF(IP.NE.0) GO TO 130
       IF(IP.eq.0) then
 c
@@ -66,7 +66,7 @@ c       call outtop(10, 1, 25)
         call outtop(13, 1, 25)
 c 
 c rrb 10/15/95
-c          Initilize annual average values
+c          Initialize annual average values
         do 128 is=1,numsta
           do 128 im=1,13
             dum2(im,is) = 0.0
@@ -123,7 +123,7 @@ c rrb 2008/03/03
         end do
         goto 460
 c
-c               End of once per simulation initilization
+c               End of once per simulation initialization
       endif
 C
 C----------------------------------------------------------

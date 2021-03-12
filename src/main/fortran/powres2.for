@@ -2,7 +2,7 @@ c powres2 - simulates a reservoir release to an instream flow reach, similar to 
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine powres2(iw,l2,divact,ncallx)
 c
 c
@@ -30,7 +30,7 @@ c
 c _________________________________________________________
 c       Update History
 c
-c rrb 1996/03/13; Initilize divact, send returns to bottom & set divo
+c rrb 1996/03/13; Initialize divact, send returns to bottom & set divo
 c rrb 1996/08/07; Instream Flow reach included by reoperating instream
 c                 right to insure whole reach is available to releases
 c rrb 2002/10/25; Allow monthly on/off switch
@@ -41,7 +41,7 @@ c       Documentation
 c
 c       iw                      water right loop counter
 c       l2                      instream right counter
-c       nf=iifrco(l2)           instrem structure counter
+c       nf=iifrco(l2)           instream structure counter
 c       ifcd=ifrsta(nf)         river location of instream structure
 c       dcrifr(l2)              water right from riginp.f
 c
@@ -67,7 +67,7 @@ c
 c
 c _________________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
       iw = iw
       iout=0
       ioutiw=0
@@ -352,7 +352,7 @@ c               Formats
      1  ' Carrier (Y/N) = ',a3, ' Reuse Plan (Y/N) = ', a3/
      1  ' PowRes2      iyr  mon  day ID          ',
      1  '    Iter      Iw  nwrord      l2      l2      nF   ipUse', 
-     1  '   imcdX  availX demandX divaloS psuplyT divactX',
+     1  '   imcdX  availX demandX divaloS      NA divactX',
      1  '    iwhy Comment',/
      1  ' ___________ ____ ____ ____ ____________', 
      1  ' _______ _______ _______ _______ _______ _______ _______', 

@@ -2,7 +2,7 @@ c outresc -  prints a comparison of reservoir data historic vs simulated
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ c
 c _________________________________________________________
 c
 c                                 
-c               Step 1 Initilize
+c               Step 1 Initialize
 c
 
 c     write(6,*) ' '
@@ -96,7 +96,7 @@ c
 c rrb 2006/01/21; Columns of data impacted by a new file size		
 c               nbom = column of BOM data (1)
 c		nemo = column of EOM data (16)
-c		ntar = column of Tartet data (17)
+c		ntar = column of Target data (17)
 c		none = column of One fill or BOM limit (18)
 c		nidr = columns of irdr (account))
 c		naccX = columns of nacc ( )
@@ -135,8 +135,8 @@ c _________________________________________________________
 c
 c               Step 2; Get historic EOM data
 
-c     write(io99,*) '  Outresc; gettin historic EOM data'
-c     write(6,*) '  Outresc; gettin historic EOM data' 
+c     write(io99,*) '  Outresc; getting historic EOM data'
+c     write(6,*) '  Outresc; getting historic EOM data' 
 
       nd=0
       iin2=55
@@ -177,7 +177,7 @@ c     write(io99,*) '  Outresc; calling average'
 c     write(6,*) '  Outresc; calling average'
 
 c 
-c               Initilize Basin Total data
+c               Initialize Basin Total data
 c      call average(maxsta,-1,1,numres,0,nyr1,
        call average(maxsta,-1,1,im,iy1,nyr1,
      1              1.0,d1,d2,d3,d4,d5,dum,dum2,
@@ -185,12 +185,12 @@ c      call average(maxsta,-1,1,numres,0,nyr1,
 c 
 c               Begin Reservoir Station loop
 c     write(io99,*) '  Outresc; beginning reservoir loop'
-c     write(6,*) '  Outresc; beginning reseroir loop'
+c     write(6,*) '  Outresc; beginning reservoir loop'
 
       do 200 ir=1,numres
         if(iressw(ir).eq.0) goto 200
 c 
-c               Initilize structure average
+c               Initialize structure average
 c      call average(maxsta,0,1,numres,0,nyr1,
        call average(maxsta,0,1,im,iy1,nyr1,
      1              1.0,d1,d2,d3,d4,d5,dum,dum2,

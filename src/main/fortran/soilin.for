@@ -2,7 +2,7 @@ c soilin - calculates inflow to soil moisture
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
+c _________________________________________________________
 c	Update History
 c
 
@@ -56,7 +57,7 @@ c
        character cdividx*12, ccall*12
 c
 c _________________________________________________________       
-c		Step 1; Initilize       
+c		Step 1; Initialize       
        iout=0
 c
 c		iout=0 no details
@@ -64,7 +65,10 @@ c		    =1 details
 c		    =2 summary
 c		    =  details
        if(cdividx.eq.ccall) iout=1
-       iout=0
+c
+c rrb 2020/03/25 Test
+cx       write(nlog,*) ' Soilin;', cdividx, ccall, iout
+cx       iout=1
        
        small=0.001     
        c1 = amax1(0.0, cumax-cuact)

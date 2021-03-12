@@ -2,7 +2,7 @@ c getipy4 - reads a *.ipy file with two land use types
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ c
 c
 c _________________________________________________________
 c
-c		Step 1; Initilize      
+c		Step 1; Initialize      
 
       filena = '*.ipy'
       ipIpy=1
@@ -489,7 +489,7 @@ c                 1=Maximum Supply, 2= Mutual Supply
           igwmode(ix) = 0
         endif
 c
-c               Set annual flood (effmaxw) and sprinker (effmaxs)
+c               Set annual flood (effmaxw) and sprinkler (effmaxs)
 c               efficency
 	      effmaxw(ix)=x(2)*100.0
 	      effmaxs(ix)=x(3)*100.0
@@ -644,13 +644,13 @@ c 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
      1 '  GetIpy4; Problem',
      1  ' Structure ID ',a12,' in *.ipy or *.tsp has conveyance,',
      1  ' flood or',/ 
-     1 10x, ' sprinker efficiency less than 0 or greater than 1.',/ 
+     1 10x, ' sprinkler efficiency less than 0 or greater than 1.',/ 
      1 10x, ' To do; Revise efficiency data.', 20f8.2)
 
  1319 FORMAT(/,
      1  72('_'),//  
      1 '  GetIpy4; Warning in *.ipy or *.tsp',/
-     1 '          Sprinker area > ground water area, ',
+     1 '          Sprinkler area > ground water area, ',
      1           ' setting sprinkler = GW area or',/
      1 '          GW area > Total Area ',
      1           ' setting GW area = Total area',//

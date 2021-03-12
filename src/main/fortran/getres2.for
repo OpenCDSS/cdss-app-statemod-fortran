@@ -2,7 +2,7 @@ c getres2 - reads in reservoir data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -117,11 +117,11 @@ c		    =2 print reservoir return flow details
         nrtnRP(i)=0
       end do  
 c
-c rrb 2008/09/30; Initilze reservoir to plan, etc      
+c rrb 2008/09/30; Initialize reservoir to plan, etc      
       do i=1,maxres
         iresP(i)=0
 c
-c rrb 2009/05/21; Initilze Id, etc used by Bintop             
+c rrb 2009/05/21; Initialize Id, etc used by Bintop             
         cresid(i)='NA          '
         irssta(i)=0
         iressw(i)=0
@@ -550,7 +550,7 @@ C
 c
 c _________________________________________________________
 c
-c		Initilize selected variables
+c		Initialize selected variables
       DO 450 NR=1,NUMRES
       IF(IRESSW(NR).NE.0) NRSACT=NRSACT+1
   450 CONTINUE

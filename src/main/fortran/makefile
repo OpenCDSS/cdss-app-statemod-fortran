@@ -1,19 +1,61 @@
 # Makefile for compiling StateMod using gfortran
+#
+# ======================================================================
+# Use 'make' or 'make help' to see usage.
+# ======================================================================
+#
 # - initial version taken from Jim Brannon's work
 # - significant updates to add documentation, help target, make portable
-# - should be able to update to work with Windows, Linux, and Lahey compiler
+# - should be able to update to work with Windows, Linux, and Lahey compiler;
+#   however, Lahey currently still uses the AM.bat and AUTOMAKE.RSP files
+# - all filenames were converted to lowercase during initial repository load
+#   to ensure easy comparison (because different case was used in different versions)
+# - files added since then use mixed case and file system names must be used in this
+#   makefile to work on case-specific systems like Linux
+# - operating system is determined by checking for OS environment variable,
+#   which indicates Windows, otherwise Linux variant is assumed
+#
+# Modification history from Ray Bennett:
+# - TODO smalers 2021-03-11 remove these after testing since repo history includes changes.
+# rrb; Try to remove *.exe in case compile fails
+# rm -f statemod-gfortran-32bit.exe
+# rrb 2018-08-05; Add new programs FlowRes and DivmultR
+# rrb 2018-10-25; Add new jmstore in 2 spots
+# rrb 2018-11-05; Add new jmflow in 2 spots
+# rrb 2018-11-23; add new jmout in 2 spots
+# rrb 2018-12-16; Add new chekav3 in 1 spot
 
 # ======================================================================
 # Declarations
 # ======================================================================
 # The compiler
 FC = gfortran
+
 # Determine the StateMod version
 # - used in the executable name
 # - also used for installer upload folder, etc.
 # - "dev" at the end of the version (e.g., 15.00.14dev) indicates the software is under development
 STATEMOD_VERSION := $(shell cat statem.for | grep 'ver =' | grep -v 'xx' | cut -d '=' -f 2 | sed "s/'//g" | tr -d ' ' )
-# The flags for debugging or for maximum performance, comment as necessary
+
+# Number of bytes for executable
+# - used because executable has been 32-bit until 2021
+# - use in filename to clearly differentiate between 32-bit and 64-bit versions until transition to 64-bit is complete
+# - TODO smalers 2021-03-11 focus on Windows and deal with Linux when there is time
+ifdef OS
+	# Windows
+	EXE_BITS = 32
+	ifeq ($(MSYSTEM),MINGW32)
+		EXE_BITS = 32
+	endif
+	ifeq ($(MSYSTEM),MINGW64)
+		EXE_BITS = 64
+	endif
+else
+	# Linux
+	EXE_BITS = 64
+endif
+
+# Below are the flags for debugging or for maximum performance, commented to explain use.
 
 # -cpp
 #
@@ -131,9 +173,10 @@ endif
 # Main targets
 # ======================================================================
 
-# all: compile all programs
+# all:
 # - the default if make is called without arguments
-# - may want to change so default is 'help'
+# - use default of 'help' to force intentional actions such as 'make statemod'
+# - uncomment line with 'printenv' if troubleshooting the environment
 #all: printenv $(PROGRAMS)
 all: help
 
@@ -145,6 +188,7 @@ help:
 	@echo "all        Default target that prints this help message."
 	@echo "clean      Remove dynamically created files (but not final executable)."
 	@echo "help       Print this message."
+	@echo "printenv   Helper to print which operating system is used, controls configuration."
 	@echo "statemod   Compile the StateMod executable, recompiling any .o if .for modified."
 	@echo "veryclean  Make the 'clean' target, and also remove the final executable."
 	@echo ""
@@ -155,16 +199,22 @@ help:
 	@echo ""
 	@echo "FC (compiler) = $(FC)"
 	@echo "STATEMOD_VERSION (from statem.for) = $(STATEMOD_VERSION)"
+	@echo "EXE_BITS (from environment) = $(EXE_BITS)"
 	@echo "--------------------------------------------------------------------------------"
 	@echo "Important environment variables that are used:"
 	@echo ""
-	@echo "OS (to determine operating system) = $(OS)"
+	@echo "OS (to determine if Windows) = $(OS)"
+	@echo "MSYSTEM (to determine EXE_BITS on Windows) = $(MSYSTEM)"
+	@echo "--------------------------------------------------------------------------------"
+	@echo "To force compile of files even if errors:  make -k statemod"
+	@echo "To force compile and save output to file:  make -k statemod 2>&1 | tee somefile"
 	@echo "--------------------------------------------------------------------------------"
 
 # Dependencies for object files
 # - because statemod is the main output (not library, etc.) only concern is the include file
-# - need to make this simpler, but something like makedepends may be too much
+# - TODO smalers 2021-03-11 need to make this simpler, but something like makedepends may be too much
 # - not every file depends on common.inc (do `grep -i common.inc *.for` to find)
+# - list alphabetically, ignoring case in order
 bintop.o: common.inc
 bomsec.o: common.inc
 calldat.o: common.inc
@@ -196,6 +246,7 @@ divcarr.o: common.inc
 divimpr.o: common.inc
 divimpr2.o: common.inc
 divmulti.o: common.inc
+divmultR.o: common.inc
 divres.o: common.inc
 divresp.o: common.inc
 divresp2.o: common.inc
@@ -207,12 +258,13 @@ divrplp2.o: common.inc
 divrplp.o: common.inc
 divrplr.o: common.inc
 dsamod.o: common.inc
-evasec.o: common.inc                      
+evasec.o: common.inc
 execut.o: common.inc
+FlowRes.o: common.inc
 getcall.o: common.inc
 getdiv.o: common.inc
 getdiv2.o: common.inc
-geteomx.o: common.inc      
+geteomx.o: common.inc
 getid.o: common.inc
 getipy2.o: common.inc
 getipy4.o: common.inc
@@ -235,6 +287,8 @@ ifrrig2.o: common.inc
 ifrrigsp.o: common.inc
 ifrrigx.o: common.inc
 intersup.o: common.inc
+JMFlow.o: common.inc
+JMStore.o: common.inc
 mdainp.o: common.inc
 oopbook.o: common.inc
 oopbook2.o: common.inc
@@ -253,6 +307,7 @@ outdivw.o: common.inc
 outgvc.o: common.inc
 outichk.o: common.inc
 outifr.o: common.inc
+OutJM.o: common.inc
 outmon.o: common.inc
 outopr.o: common.inc
 outpln.o: common.inc
@@ -281,9 +336,10 @@ outwelc.o: common.inc
 outwelp.o: common.inc
 outwr.o: common.inc
 outwr2.o: common.inc
+OutWW.o: common.inc
 outxss.o: common.inc
 outxssmo.o: common.inc
-planeva.o: common.inc                      
+planeva.o: common.inc
 powres.o: common.inc
 powres2.o: common.inc
 powresp.o: common.inc
@@ -320,9 +376,9 @@ rtnxcup.o: common.inc
 sepsec.o: common.inc
 setdem.o: common.inc
 seteff.o: common.inc
-setgw.o: common.inc        
+setgw.o: common.inc
 setplano.o: common.inc
-sjrip.o: common.inc       
+sjrip.o: common.inc
 soilm.o: common.inc
 splatte.o: common.inc
 spruse.o: common.inc
@@ -352,6 +408,7 @@ xdebug.o: common.inc
 #	getpath_windows.o
 #	putpath_windows.o 
 #
+# If necessary, temporarily copy files with errors into a comment below this line to let all compile.
 statemod: \
 	statem.o \
 		namext.o \
@@ -374,6 +431,7 @@ statemod: \
 			calldat.o \
 			carrpl.o \
 			chekav2.o \
+			chekav3.o \
 			chekava.o \
 			chekpor.o \
 			chekres.o \
@@ -414,6 +472,7 @@ statemod: \
 			divimpr.o \
 			divimpr2.o \
 			divmulti.o \
+			divmultR.o \
 			divres.o \
 			divresp2.o \
 			divresr.o \
@@ -428,6 +487,7 @@ statemod: \
 			dnmfso2.o \
 			dsamod.o \
 			evasec.o \
+			FlowRes.o \
 			getcall.o \
 			getctlc.o \
 			getdiv.o \
@@ -463,6 +523,8 @@ statemod: \
 			ifrrig2.o \
 			interp.o \
 			intersup.o \
+			JMFlow.o \
+			JMStore.o \
 			mdainp.o \
 			oopbook2.o \
 			oopdiv.o \
@@ -482,6 +544,7 @@ statemod: \
 			outgvc.o \
 			outichk.o \
 			outifr.o \
+			OutJM.o \
 			outmon.o \
 			outopr.o \
 			outpln.o \
@@ -507,6 +570,7 @@ statemod: \
 			outwelc.o \
 			outwelp.o \
 			outwr2.o \
+			OutWW.o \
 			outxss.o \
 			outxssmo.o \
 			planeva.o \
@@ -584,15 +648,15 @@ statemod: \
 			year2.o
 ifdef OS
 	# Windows...
-	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-win-32bit.exe $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
-	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-win-32bit.exe"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe"
 	@echo "-----------------------------------------------------------------------"
 else
 	# Linux...
-	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-32bit $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
-	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-32bit"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit"
 	@echo "-----------------------------------------------------------------------"
 endif
 
@@ -645,6 +709,11 @@ else
 	@echo "Windows detected from OS environment variable:  no"
 	@echo "...assuming Linux"
 endif
+ifdef MSYSTEM
+	@echo "MINGW (gfortran) detected from MSYSTEM environment variable:  yes"
+else
+	@echo "MINGW (gfortran) detected from MSYSTEM environment variable:  no"
+endif
 	@echo "-----------------------------------------------------------------------"
 
 # Remove all intermediate files and the final executable
@@ -653,9 +722,11 @@ veryclean: printenv clean
 	@echo "Removing compile byproducts (make clean) and final executable..."
 	@echo "-----------------------------------------------------------------------"
 ifdef OS
-	# Windows...
+	# Windows
+	# - can rely on file extension to match executable files
 	rm -f *~ $(PROGRAMS) *.exe
 else
-	# Linux...
+	# Linux
+	# - can't rely on file extension for filename pattern to match
 	rm -f *~ $(PROGRAMS) *.exe statemod-$(STATEMOD_VERSION)-gfortran-lin-32bit statemod-$(STATEMOD_VERSION)-gfortran-lin-64bit
 endif

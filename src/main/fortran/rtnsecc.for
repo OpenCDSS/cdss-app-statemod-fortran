@@ -2,7 +2,7 @@ c rtnsecc - calculates FIXED future return obligations for a plans
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ c
 c       RtnsecC; It calculates FIXED future return obligations
 c                for a plans. Note:
 c		    It turns off future returns when a zero value 
-c		      occurrs after a non-zero value
+c		      occurs after a non-zero value
 c		    It operates on the amount diverted (divactT) not
 c		      unused water like most return calculations
 c		    The fixed return pattern assumes the first return
@@ -150,7 +150,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 c
 c     write(6,*)    ' RtnsecC;'
 c     write(nlog,*) ' RtnsecC;'
@@ -160,7 +160,7 @@ c ---------------------------------------------------------
 c		iout = 1 print detailed data
 c		       2 summary data for current time step
 c		       3 print summary data for current and future time
-c		       4 print detials on Standard and Fixed table types
+c		       4 print details on Standard and Fixed table types
       iout = 0
       ichkwr = 0
       l2 = l2

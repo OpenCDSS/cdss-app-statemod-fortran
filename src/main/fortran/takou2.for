@@ -3,7 +3,7 @@ c          It is similar to takout, but for instream flows do not adjust river a
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE TAKOU2(isub, maxsta, AVAIL ,IDNCOD,DIVACT,
      1                  NDNS  , ISCD)
 c
@@ -27,9 +27,10 @@ c _________________________________________________________
 c	Program Description
 c
 c       Takou2; It takes water from the available flow array
-c               It is similar to takout, but for instream flows
-c               do not adjust river and avinp.  Also
-c               removed qcheck
+c               It is similar to takout, but used when the
+c               destination is an instream flow
+c               or T&C plan (type 1) or Aug plan(type 2)
+c               It adjusts avail but not river and avinp. 
 c
 c _________________________________________________________
 c	Dimensions
@@ -38,7 +39,7 @@ c
 c
 c _________________________________________________________
 c
-c  Step 1; Initilize
+c  Step 1; Initialize
       iout=0
       nlog=99
       fac=1.9835 

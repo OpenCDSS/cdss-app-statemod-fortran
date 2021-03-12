@@ -2,7 +2,7 @@ c outxssmo - prints a structure Summary to a binary file
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ c	Dimensions
      1  totothw(numstax)
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
      
       iout=0
@@ -89,7 +89,7 @@ c		and GW supply (divmonw)
       endif
 c
 c _________________________________________________________
-c		Initilize constants
+c		Initialize constants
 c               fx (fmo) = units for output (cfs, af, kaf, or cms)
 c               fy (faf) = unit conversion af to cfs for a day
 c               fz (faf) = unit conversion cfs to af/mo 

@@ -2,7 +2,7 @@ c rtnsecrp - calculates return flows associated with a reservoir or canal seepag
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE RtnSecRP(iplan, nr, rettot, pctlosR1, rlossR1)
 c
 c
@@ -25,7 +25,7 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       RtnSecRP; It calculates return flows assocaited with a
+c       RtnSecRP; It calculates return flows associated with a
 c		    Reservoir or Canal Seepage
 c
 c		Called by DivcarL, DirectBy, & DirectEx 
@@ -72,7 +72,7 @@ c               interv = +n = number of returns for all patterns
 c                      = -n = variable number of returns per pattern
 c
 c               irnstaRP(irn) = ircd = return location node
-c               irnord      = set in datinp.  refers to river node??
+c               irnord      = set in datinp.  Refers to river node??
 c
 c               irtndlRP(irn) = idly = return table
 c
@@ -103,7 +103,7 @@ c                               at time 1 kk=1-5 at time 2 kk=2-4,1,
 c                               etc.
 c               psupD(kk,iplan)=same as above but for daily
 c
-c		            psuply(np)     =running suppoy for this month. It 
+c		            psuply(np)     =running supply for this month. It 
 c		  		                      increases or decreases based on opr 
 c                               rules
 c		            psuplyT(np)    =total demand this month (may increase 
@@ -118,7 +118,7 @@ c	Dimensions
 c
 c _________________________________________________________
 c
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 c
 c
 c		iout =  1 details
@@ -314,7 +314,6 @@ c _________________________________________________________
 c
 c               Step 4 - Calculate return flows 
 c                        in month 1 or day 1 (ret) by delay table dlyrat
-c			 Adjust demand (pdem) for this month
 c
         if(iday.eq.0) then
           RET=CONST*DLYRAT(1,IDLY)
@@ -344,8 +343,8 @@ c
 c _________________________________________________________
 c
 c		Step 6; Add to plan supply
-c		Note pdem is current demand (may go up or down)
-c		     pdemT() is total demand this day or month 
+c		Note psuply is current demand (may go up or down)
+c		     psuplyT() is total demand this day or month 
 c		             (can only go up)
 c
         if(iplan.gt.0) then

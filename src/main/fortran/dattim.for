@@ -2,7 +2,7 @@ c dattim - makes a system call to get the date and time
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
 c	Dimensions
 cc
        subroutine dattim(idat, itim, isgi)
@@ -31,7 +30,7 @@ c		the date and time
 c
 c _________________________________________________________
 c	Update History
-c		NAc
+c rrb 2020/07/28; Add iout and detailed output
 c               
 c _________________________________________________________
 c
@@ -51,7 +50,8 @@ c
        dimension idat(3), itim(4)        
 c
 c _________________________________________________________
-c		Initilzie
+c		Initialize
+       iout=0
        io99=99
        if(isgi.eq.0) then
 c
@@ -75,6 +75,11 @@ c       call time(rec8)
         read(rec8(7:8),'(i2)',end=928,err=928) itim(3)
       endif
   
+      if(iout.eq.1) then
+        write(io99,*) ' Dattim; rec8 = ', rec8
+        write(io99,*) ' Dattim; itim = ',(itim(j), j=1,4)
+      endif
+      
       return
 c
 c _________________________________________________________

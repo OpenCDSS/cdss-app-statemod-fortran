@@ -4,7 +4,7 @@ c            obligations associated with future depletions (T&C obligations)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -129,7 +129,7 @@ c
       character cstaid1*12, cStrOut*12
 c
 c ___________________________________
-c               Step 1 - Initilize
+c               Step 1 - Initialize
       iout = 0
       ioutwr = 0
       l2 = l2
@@ -137,7 +137,7 @@ c               Step 1 - Initilize
       depx=0.0
 
 c
-c				       Detalied data for a seleted structure      
+c				       Detailed data for a selected structure      
       cstaid1=cdividw(nd)
 cx    cStrOut='01_AWP031   '
       cStrOut='NA'

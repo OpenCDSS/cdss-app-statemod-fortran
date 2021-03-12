@@ -2,7 +2,7 @@ c getwel - reads in well station data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ c rrb; 2005/10/14; Separate return and depletion files
      1          cistat*12, rec3*3, cgotoX*24, cgotoX2*24
 c     
 c__________________________________________________________
-c               Initilize
+c               Initialize
 
 C		0=no details
 c		1=detailed of data read

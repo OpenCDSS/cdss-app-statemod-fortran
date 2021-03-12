@@ -2,7 +2,7 @@ c soilcu - calculates soil moisture use
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ c               not IWR and demand
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
       character cdividx*12
 
 
@@ -80,7 +80,7 @@ c                       soil moisture (cfs)
 c rrb01/02/27; Limit Soil Cu to demand, IWR and soil moisture
 c       divact = amin1(divreq,soils/fac)
 c
-c rrb 01/07/31; Limite Soil CU to IWR and soil moisture only
+c rrb 01/07/31; Limit Soil CU to IWR and soil moisture only
 c               e.g. Soil CU is OK if an IWR but no demand
 c                    key for historic operation
 c       divact = amin1(divreq,diwrreq,soils/fac)
@@ -97,7 +97,7 @@ c _________________________________________________________
 c
 c               Step 4; Update Demand (cfs)
 c
-c rrb 01/07/31; Limite Soil CU to IWR and soil moisture only 
+c rrb 01/07/31; Limit Soil CU to IWR and soil moisture only 
 c       divreq=divreq-divact
         divreq=amax1(divreq-divact, 0.0)
 c

@@ -2,7 +2,7 @@ c bintop - writes or reads the top of a StateMod binary data file
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -25,27 +25,27 @@ c ************************************************************
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Bintop it writes or reads the top of a StateMod
 c         binary data file
 c
 c
 c _________________________________________________________
-c	Update History
-c		NA
+c       Update History
+c       NA
 c _________________________________________________________
-c	Documentation
+c       Documentation
 c
 c               nf = file # to read or write
 c               in = 0 write
 c                  = 1 read
-c               nout= file # to print detailed results when
-c                     in=1 and iout>0
-c		  nout2=dummy, not currently used
+c               nout = file # to print detailed results when
+c                      in=1 and iout>0
+c               nout2=dummy, not currently used
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
         include 'common.inc'
 c        
@@ -151,7 +151,7 @@ c rrb 2005/12/02; Diversion Units
             end do
           endif    
 c
-c		Reservoir Units          
+c         Reservoir Units          
           if(nf.eq.44 .or. nf.eq.50) then
             nx=nres
             do j=1,nres-2
@@ -159,7 +159,7 @@ c		Reservoir Units
             end do
           endif    
 c
-c		Well Units          
+c         Well Units          
           if(nf.eq.42 .or. nf.eq.65) then
             nx=ndivw
             do j=1,ndivw
@@ -185,7 +185,7 @@ c
 c               Include one additional for numown (see reservoirs)
 c         numtop=numsta+numdiv+numifr+numres+numrun+5
 c
-c		Include one for version and 3*maxparm for parameters
+c         Include one for version and 3*maxparm for parameters
 c rrb 2005/12/19; Include units
 c         numtop=numsta+numdiv+numifr+numres+numrun+numdivw+5  
 c         numtop=numsta+numdiv+numifr+numres+numrun+numdivw+5+
@@ -195,7 +195,7 @@ c    1           1 + maxparm*3
 c
 c --------------------------------------------------------------
 
-c		Detailed output     
+c         Detailed output
           if(iout.eq.1) then
             write(nlog,*) ' BinTop; ', CodeName, ver, vdate
             write(nlog,*) ' BinTop; ', iystr0, iyend0
@@ -230,12 +230,12 @@ c rrb 99/03/25; Add wells
 c         read(nf,rec=2,err=900) numsta, numdiv, numifr, numres, 
 c    1                           numown, nrsact, numrun
 c
-c rrb 2005/12/02; Add parameter types		
+c rrb 2005/12/02; Add parameter types
           j1=j1+1
           read(nf,rec=j1,err=900) 
      1      numsta, numdiv, numifr, numres, 
      1      numown, nrsact, numrun, numdivw,
-     1      numdxw, maxparm           
+     1      numdxw, maxparm
      
           if(iout.eq.1) write(nout,164) j1, 1, 
      1      numsta, numdiv, numifr, numres, 

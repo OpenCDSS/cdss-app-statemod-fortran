@@ -2,7 +2,7 @@ c outplnmo - prints plan data to a binary file
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE outplnMo
 c
 c
@@ -28,9 +28,14 @@ c       outplnMo; It prints plan data to a binary file
 c
 c _________________________________________________________
 c       Update History
-c	2006/04/06	Revised to use plan to operating rule
-c		        arrays iplnoprE, iplnoprS, 
-c                       iplnoprR and iplnoprU
+c
+c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a
+c                   type 14 and a WWSP User Plan is a type 15
+c
+c rrb 2018/08/05  Revise to allow a WWSP tied to a reservoir (type 14)
+c
+c	rrb 2006/04/06	Revised to use plan to operating rule arrays:
+c		                iplnoprE, iplnoprS, iplnoprR and iplnoprU
 c
 c _________________________________________________________
 c       Documentation
@@ -41,13 +46,16 @@ c                         5 Reuse_Reservoir_Tmn,  6 Reuse_Diversion_Tmn
 c                         7 TransMtn Import       8 Recharge 
 c                         9 Out-of-Priority      10 Special Augmentation
 c                        11 Accounting Plan      12 Release_Limit
+c                        13 Changed Water Right  14 WWSP Supply 
+c                        15 WWSP User
 c
 c 
 c       iox       =    counter for plan output sources and uses
 c       ird       =    counter for re-diversion by a type 1
 c       maxTC     =    max number of T&C outputs before failure data
 c                      note more than max is stored in last plan
-c       iplnoprE(np,nop)= Ties evaporation for a plan to a operating rule
+c       iplnoprE(np,nop)= Ties evaporation for a plan to a operating
+c                         rule
 c       pwell     =    Pumping (depletion) in priority
 c
 c       psuply(np)=    Running plan volume for this month. It 
@@ -68,18 +76,23 @@ c
 c
 c _________________________________________________________
 c
-c              Step 1; Initilize
+c              Step 1; Initialize
 c
 c		ioutP=0 No details
 c		ioutP=1 Details
-c		ioutP=11 Details on operating rule 11
+c		ioutP=11 Details on plan type 11
+c   ioutP=12 Details on plan type 12
+c   ioutP=13 Details on plan type 13
+c
       ioutP=0
       small=0.1
       fac=mthday(mon)*factor
-      
-      if(ioutP.eq.1) then
-        write(6,101) 'OutPlnMo  ', nplan
-        write(nlog,101) 'OutPlnMo  ', nplan
+c
+c rrb 2019/11/17; test output     
+      if(ioutP.gt.0) then
+        write(nlog,*) ' '
+        write(6,101) 'OutPlnMo  ', nplan, mon
+        write(nlog,101) 'OutPlnMo  ', nplan, mon
       endif
  101  format(/,72('_'),/'  Subroutine ', a8, ' Number of plans = ',i4)
 c
@@ -135,6 +148,14 @@ cx         is=ipsta(np)
 cx
         is=ipsta(np)      
         ifound=0
+c
+c rrb 2018/09/08; Test
+        if(ioutP.gt.0) then
+          write(nlog,*) ' '
+          write(nlog,*) ' OutPlnMo; ', iyrmo(mon),xmonam(mon),
+     1      np, pon(np), iplntyp(np), pid(np), psuplyT(np)*fac    
+        endif
+        
         IF(pon(np).gt.0) then
 cx     
           if(ioutP.eq.1) then 
@@ -221,15 +242,16 @@ c rrb 2008/01/14; Qdiv(28 is from a reuse or admin plan
 cx          dat2(1) = qdiv(28,is)
             dat2(1) = psuplyT(np)
             if(ioutP.eq.11) then
-              write(nlog,*) ' OutPlnMo_X; ', 
-     1         np, pid(np), psuplyT(np)*fac
+              write(nlog,*) ' '
+              write(nlog,*) ' OutPlnMo_rrb; ', iyrmo(mon),xmonam(mon),
+     1          np, iplntyp(np), pid(np), psuplyT(np)*fac
             endif
          endif
 c
 c ---------------------------------------------------------
 c		Type 12 Release Limit Plan          
-c			Note psuplyT(np) is the limit at the
-c                       beginning of time step
+c			      Note psuplyT(np) is the limit at the
+c           beginning of time step
           if(iplntyp(np).eq.12) then
             iox=1
             ifound=1
@@ -256,7 +278,23 @@ cx          dat2(1) = qdiv(28,is)
               write(nlog,*) ' OutPlnMo_X; ', 
      1         np, pid(np), psuplyT(np)*fac
             endif
-         endif          
+          endif          
+c
+c ---------------------------------------------------------
+c	rrb 2018/08/05; Allow a WWSP tied to a reservoir (type 14)
+          if(iplntyp(np).eq.14) then
+            ifound=1
+            iox=1
+            dat2(1) = psuplyT(np)  
+          endif  
+c
+c ---------------------------------------------------------
+c	rrb 2019/04/20; Allow a WWSP User tied to a reservoir (type 15)
+          if(iplntyp(np).eq.15) then
+            ifound=1
+            iox=1
+            dat2(1) = psuplyT(np)  
+          endif  
         
 c
 c ---------------------------------------------------------
@@ -277,7 +315,7 @@ c _________________________________________________________
 c
 c		Step 4; Find all supplies and uses from the operating rules
 c		        Unless it is to a reservoir with 100% reuse
-c                       (iplntyp(np).eq.4) then it is handled above 
+c           (iplntyp(np).eq.4) then it is handled above 
 c
 c rrb 2006/06/12; Add maximum plan counter             
 cr      do 130 nop=1,10
@@ -330,23 +368,34 @@ c
 c --------------------------------------------------------
 c
 c		Use operating rules 
-c		Note associated with plan Types 3-7, 11 and 13
+c		Note associated with plan Types 3-7, 11, 12 and 13
           if(kU.gt.0 .and. kP.eq.0) then
             iox=iox+1
             iox=amin0(iox,mTot-1)                        
             dat2(iox) = dat2(iox) + divo(kU)
             dat2(mTot)  = dat2(mTot)    + divo(kU)
-c
+            
             if(ioutP.eq.11 .and. iplntyp(np).eq.11) then
-             write(nlog,*) ' '
-             write(nlog,*) ' OutplnMo_1; Use; np, iox, KU, divo(ku)*fac'
-             write(nlog,*) ' OutplnMo_1; Use',  np,iox,KU,divo(ku)*fac
+              write(nlog,*) ' '
+              write(nlog,*) ' OutplnMO_1; KU mon & ip1 = ', ku, mon, ip1
+              write(nlog,*) ' OutplnMo_1; Use; np, iox, KU, divo*fac'
+              write(nlog,*) ' OutplnMo_1; Use',  np,iox,KU,divo(ku)*fac
             endif
+c
+c rrb 2019/11/17; Test output
+            if(ioutP.eq.12 .and. iplntyp(np).eq.12) then
+              write(nlog,*) ' '
+              write(nlog,*) ' OutplnMO_1; KU mon & ip1 = ', ku, mon, ip1
+              write(nlog,*) ' OutplnMo_1; Use; np, iox, KU, divo*fac'
+              write(nlog,*) ' OutplnMo_1; Use',  np,iox,KU,divo(ku)*fac
+             endif
           endif  
 c
 c --------------------------------------------------------
 c
-c		Multiple Owners (opr type 46)
+c		Multiple Owners (opr type 46 and maybe a 
+c                   WWSP Supply plan (type 14) or WWSP User plan 
+c                   (type 15)
           if(kU.gt.0 .and. kP.gt.0) then
             iox=iox+1
             iox1=iox
@@ -365,8 +414,8 @@ c            dat2(iox)  = dat2(iox)  + qdiv(28,is1)
 c            dat2(mTot) = dat2(mTot) + qdiv(28,is1)
 c            dat2(iox)  = dat2(iox)  + psuply(kp)
 c            dat2(mTot) = dat2(mTot) + psuply(kp)
-            dat2(iox)  = dat2(iox)  + psuplyt(kp)
-            dat2(mTot) = dat2(mTot) + psuplyt(kp)
+            dat2(iox)  = dat2(iox)  + psuplyT(kp)
+            dat2(mTot) = dat2(mTot) + psuplyT(kp)
             
             if(ioutP.eq.1 .or. 
      1        (ioutP.eq.11 .and. iplntyp(np).eq.11)) then
@@ -474,11 +523,21 @@ cx          endif
 c        
 c --------------------------------------------------------
 c
-c		c. Reservoirs  and OOP Plans   
+c		c. Reservoirs (3 & 5), OOP Plans (9) and WWSP Plans (14 & 15) 
 c
 c rrb 2006/06/07; Add OOP plans
+c rrb 2018/08/05; Add WWSP (type 14)
+cx      if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1     iplntyp(np).eq.9) then
+c
+c rrb 2019/04/20; Revise to include a WWSP Supply (type 14) or
+c                 WWSP User (type 15)
+cx      if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1     iplntyp(np).eq.9 .or. iplntyp(np).eq.14) then
+cx
         if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
-     1     iplntyp(np).eq.9) then
+     1     iplntyp(np).eq.9 .or. iplntyp(np).eq.14 .or.
+     1     iplntyp(np).eq.15) then
      
 c smalers 2017-11-07 check for array index out of bounds
 c

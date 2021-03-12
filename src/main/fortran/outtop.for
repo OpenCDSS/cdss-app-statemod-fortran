@@ -2,7 +2,7 @@ c outtop - prints the header to a file
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
        subroutine outtop(nout, itype, nx)
 c
 c
@@ -80,8 +80,8 @@ c rrb 7/29/94 Additional Output
      1     '*.Ydc     ', '*.Ysc     ', '*.Ywb     ',
      1     '*.Yrc     ', '*.Ywc     ', '*.Ycu     ',
      1     '*.xrh     ', '*.xwp     ', '*.xpw     ',
-     1     '*.tmp     ', '*.xgn     ', '          ',
-     1     '          ', '          ', '          ',
+     1     '*.tmp     ', '*.xgn     ', '*.xww     ',
+     1     '*.xjm     ', '          ', '          ',
      1     '          ', '          '/
 
         data titleh/
@@ -149,10 +149,13 @@ c rrb 7/29/94 Additional Output
      2   ' Augmentation Plan Well Summary                   ', 
      3   ' Temporary                                        ',
      4   ' Unadjusted BaseFlow',
-     1    ' ', ' ', ' ', ' ', ' ', ' '/
+cx     1    ' ', ' ', ' ', ' ', ' ', ' '/    
+     5   ' Winter Water Storage Program                     ',
+     6   ' John Martin 1980 Storage Program                 ',
+     1   ' ', ' ', ' ', ' '/
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
        iout=0
        
@@ -163,7 +166,7 @@ c
 
        if(itype.eq.-1) cunit=cunitd
 c
-c rrb 2006/02/27; Establist a unit for standard outputs for baseflow       
+c rrb 2006/02/27; Establish a unit for standard outputs for baseflow       
        if(itype.eq.-2) cunit=cunitdX
        
        if(iday.eq.0)   cstep='Monthly '

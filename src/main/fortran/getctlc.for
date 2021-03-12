@@ -3,7 +3,7 @@ c           (e.g. Starting_Year = 1950).
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -119,7 +119,7 @@ c
      5 'Stop                    '/
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
 c		iout=0 no details
 c		iout=1 max details
 c		iout=2 summary detail
@@ -234,7 +234,7 @@ c
         if(rec132(i:i) .eq. '=') then
 c         write(nlog,*) ' GetCtlC; equal found at i = ', i
 c
-c		skip blanks befor =        
+c		skip blanks before =        
           ifound=1
           do ix=i+1,132
             if(rec132(ix:ix).eq.' ') then

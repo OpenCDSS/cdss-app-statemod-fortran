@@ -2,7 +2,7 @@ c bomsec - initializes data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,11 +17,8 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-c
-C     Last change:  RRB   9 Oct 2002    3:00 pm
-c
 C
-      SUBROUTINE BOMSEC
+      SUBROUTINE BOMSEC(iflow)
 c
 c _________________________________________________________
 c	Program Description
@@ -32,19 +29,33 @@ c	        Some once per year (if mon.eq.1)
 c              Some every month
 c	        Called by Execut & Vircom
 c
-c                           
-c
+c test
 c _________________________________________________________
 c
 c               Update history
-c rrb 96/05/29; UPdated to generalize dimension statements
+c
+c rrb 2019/07/28; For a WWSP-User plan (type 15) (iwwPlan>0)
+c                 Reset plan supply psuply(np) and direct diversion
+c                 supply (psupDD(np)) after a type 46 (multiple split)
+c                 has been executed.  Note the WWSP-Supply (type 14)
+c                 is reset in DivMulti
+c
+c rrb 2019/07/21; Reset plan supply psuply-cfs and direct diversion
+c                 (psupDD - af) for water taken by a 
+c                 direct diversion (type 45) after a type 46 
+c                 (multiple split) operating rule has been executed
+c
+c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a
+c                   type 14 and a WWSP User Plan is a type 15
+c
+c rrb 96/05/29; Updated to generalize dimension statements
 c rrb 00/11/24; If itsfile = 1,10 GW demand is limited to acres served
 c rrb 01/08/06; If soil moisture exceeds soil moisture capacity 
 c               because the area gets smaller the difference is no 
 c               longer accounted as a loss to avoid problems with the 
 c               *.xss reporting of return flows.
 c
-c rrb 00/12/09; For variable efficiency, initilize running 
+c rrb 00/12/09; For variable efficiency, initialize running 
 c               IWR for diversion (diwrreq) and well (diwrreqw) and
 c               CU from SW for Div and D&W (dcu), 
 c               CU from GW for Well only (dcuw),
@@ -53,8 +64,8 @@ c _________________________________________________________
 c	Documentation
 c
 c		ioutp = print detailed plan data
-c			1=detail plus summary
-c			2=summary
+c			   1=detail plus summary
+c			   2=summary
 c		ioutR = 1 Print one fill rule detailed data
 c		ioutR = 2 Print one fill rule summary #1
 c		ioutR = 3 Print one fill rule summary #2 
@@ -91,13 +102,17 @@ c     nrg=22
 c
       istart = 0
       if(iyr.eq.iystr .and. mon.eq.1) istart = 1
+      
+cx      write(nlog,*) '  Bomsec; iyr, iystr, mon, istart'
+cx      write(nlog,*) '  Bomsec;', iyr, iystr, mon, istart
+      
       if(istart.eq.1) iprintL=0
       iprintS=0
 
 
 c
 c _________________________________________________________
-c               Step 1; Initilize Annual limit (1x/yr) for
+c               Step 1a; Initialize Annual limit (1x/yr) for
 c                       a type 14 operating rule
 c
 c ---------------------------------------------------------
@@ -115,7 +130,7 @@ c               by an annual demand (divreqa)
 
 c
 c _________________________________________________________
-c               Step 1; Initilize Annual limit (1x/run) for
+c               Step 1b; Initialize Annual limit (1x/run) for
 c                       a type 47 operating rule
 c			   Note it reset on an annual basis based
 c			   on the reset month specified below.
@@ -127,8 +142,8 @@ c			   on the reset month specified below.
 	       
 cx          write(nlog,*) ' Bomsec; iout47_1 ', iout47	
 	           if(iout47.eq.1) then
-	             write(nlog,*) ' Bomsec; iout47_1 ', iout47	       
-               write(nlog,*) ' Bomsec; Type 47 data 1x per run'
+	             write(nlog,*) ' Bomsec_1; iout47_1 ', iout47	       
+               write(nlog,*) ' Bomsec_1; Type 47 data 1x per run'
                write(nlog,'(a12, 1x, 5i5, 20f8.0)') 
      1            corid(k), k, np, mon, 
      1            iyrmo(mon), imomo(mon), OprmaxA(k)
@@ -137,10 +152,34 @@ cx          write(nlog,*) ' Bomsec; iout47_1 ', iout47
 	       end do
 cx	  endif
       endif
-     
+c
+C_______________________________________________________
+C rrb 2018/08/05; 
+c               Step 1c; Initialize Flow Control 1x/run for
+c                       a type 51 operating rule
+      if(istart.eq.1) then
+        ix=isetOpr(51)  
+        if(ix.gt.0) then    
+          iflow=iopsou(2,ix)
+          write(nlog,*) ' Bomsec; Initialized type 51 iflow = ', iflow  
+        endif        
+      endif
+c 
+C_______________________________________________________
+c               Step 1d; Initialize a WWSP diversion to irrigate 1x/run
+c                        for a type 45 operating rule
+      if(istart.eq.1) then
+        do np=1,nplan
+          psupDD(np)=0.0
+        end do
+        if(ioutP.eq.1) then
+          write(nlog,*) ' Bomsec; Initialize WWSP divert to irrigate',
+     1                '(psupDD) 1x/run'
+        endif
+      endif
 c _________________________________________________________
-c               Step 2; Initilize Rio Grande Compact Data 1x/run
-c rrb 99/12/07; Note initilize carryover and binary input 1x per run  
+c               Step 2; Initialize Rio Grande Compact Data 1x/run
+c rrb 99/12/07; Note initialize carryover and binary input 1x per run  
 c
       if(ichk.eq.94) write(nlog,*)'  Bomsec; Rio Grande Compact'
 
@@ -168,7 +207,7 @@ c                    write(nlog,*) '  Bomsec, irec', irec
 c
 c
 c _________________________________________________________
-c               Step 3; Initilize reservoir data 1x/run
+c               Step 3; Initialize reservoir data 1x/run
 c                       or on reservoir admin date
 c			See ----
 c
@@ -184,145 +223,146 @@ cr    if(numres.eq.0) goto 160
 			        
 c
 c              Branch if this reservoir is not operated (iressw = 0)
-  	  IF(IRESSW(NR).EQ.0) GO TO 150
+  	      IF(IRESSW(NR).EQ.0) GO TO 150
 c
 c rrb 04/23/97
 c ---------------------------------------------------------
-c			Initilize reservoir data 1x/run or the admin date
-c			Note GetRes adjustes input so that
-c			1 in input corresponds to Jan for
-c			the simulation year 
+c			        Initialize reservoir data 1x/run or the admin date
+c			        Note GetRes adjusts input so that
+c			        1 in input corresponds to Jan for
+c			        the simulation year 
 c		
-         if(ifix(rdate(nr)).eq.mon .or. ifix(rdate(nr)).lt.0 
+          if(ifix(rdate(nr)).eq.mon .or. ifix(rdate(nr)).lt.0 
      1                      .or. istart.eq.1) then
 c
 c _________________________________________________________
-c               Step 4; Initilize account storage 1x/run or Admin Date
+c               Step 3b; Initialize account storage 1x/run or Admin Date
 c
 
-	    NOI=NOWNER(NR)
-	    NOE=NOWNER(NR+1)-1
-  	    cursto1=0.0
-	    cursto2=0.0
+	          NOI=NOWNER(NR)
+	          NOE=NOWNER(NR+1)-1
+  	          cursto1=0.0
+	          cursto2=0.0
 	    
-	    DO NO=NOI,NOE
-	      IF(N2OWN(NO).LE.1) THEN
-	        cursto1     = cursto1 + curown(no)
-	      ELSE
-	        cursto2     = cursto2 + curown(no)
-	      ENDIF    
-	      if(ioutr.eq.1) then
-	        write(nlog,*) ' Bomsec; no,noi,noe,curown(no),cursto1'                         
-	        write(nlog,*) ' Bomsec;', no,noi,noe,curown(no), cursto1
-	      endif  
-	    end do
+	          DO NO=NOI,NOE
+	            IF(N2OWN(NO).LE.1) THEN
+	              cursto1     = cursto1 + curown(no)
+	            ELSE
+	              cursto2     = cursto2 + curown(no)
+	            ENDIF    
+	            
+cx	            if(ioutr.eq.1) then
+cx	              write(nlog,*) ' Bomsec; no,noi,noe,curown(no),cursto1'                         
+cx	              write(nlog,*) ' Bomsec;',no,noi,noe,curown(no),cursto1
+cx	            endif  
+	          end do
 c                           
-	    do iw=1,maxrsr
+	          do iw=1,maxrsr
               tot1x(iw) = 0.0
               tot2x(iw) = 0.0
-	    end do
+	          end do
 c
 c ---------------------------------------------------------
 c rrb 2006/10/13; 
-c               b. Initilize 1x/run or on admin date
-c                  Initilize operating rule data tied to a
-c		   reservoir operating date
+c               b. Initialize 1x/run or on admin date
+c                  Initialize operating rule data tied to a
+c		               reservoir operating date
 
-      do k=1,numopr
-        divopr(k)=0.0
-      end do  
+            do k=1,numopr
+              divopr(k)=0.0
+            end do  
 	    
 c
 c ---------------------------------------------------------
-c               b. Initilize reservoir water right data 1x/run or
+c               b. Initialize reservoir water right data 1x/run or
 c		on Admin date
 c               Loop for all water rights in priority loop
 c               to set one fill constraint
 c		Note ntorig is the total of all rights
 c          if(ichk.eq.94) write(nlog,*)'  Bomsec; 5 Reservoir rights '
 
-  	    do 140 iw=1,ntorig
-	        l1 = nwrord(1,iw)
-	        l2 = nwrord(2,iw)
+  	        do 140 iw=1,ntorig
+	            l1 = nwrord(1,iw)
+	            l2 = nwrord(2,iw)
 c                                      
 c               For all reservoir rights
 c rrb 04/10/96; Skip for out of priority rights (ityrsr=-1)
-	      if(l1.eq.2) then
+	            if(l1.eq.2) then
 	      
 c
 c
 c rrb 2006/05/19; Do not calculate if the right is off	            
-                if(ioutr.eq.1) then
-	          write(nlog,*) ' Bomsec; nr,l2,irsrsw(l2),dcrres(l2)'
-	          write(nlog,*) ' Bomsec;',nr,l2,irsrsw(l2),dcrres(l2)
-	        endif  
+                 if(ioutr.eq.1) then
+	              write(nlog,*) ' Bomsec; nr,l2,irsrsw(l2),dcrres(l2)'
+	              write(nlog,*) ' Bomsec;',nr,l2,irsrsw(l2),dcrres(l2)
+	            endif  
 c
 c rrb 2006/06/19; Revise to check against iresopr not irsrsw.
 c		  Note iResOpr is defined to equal irsrsw in riginp.
 c		  It stays on even if the reservoir right
 c		  is part of an operating rule which turns off the
 c		  original right
-cr	        if(irsrsw(l2).eq.0) goto 140
-cr	        if(irsrsw(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 140
-cr	        if(irsrsw(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 140	      
+cr	          if(irsrsw(l2).eq.0) goto 140
+cr	          if(irsrsw(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 140
+cr	          if(irsrsw(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 140
 	        
-	        if(iResOpr(l2).eq.0) goto 140
-	        if(iResOpr(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 140
-	        if(iResOpr(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 140	      
-
-	        nr1=iresco(1,l2)
+              if(iResOpr(l2).eq.0) goto 140
+              if(iResOpr(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 140
+              if(iResOpr(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 140
+              
+	            nr1=iresco(1,l2)
 c
 c               We are within a reservoir loop; therefor
 c               branch to avoid duplicating calculations
-	        if(nr1.ne.nr) goto 140
+	            if(nr1.ne.nr) goto 140
 c
 c rrb 1996/04/10; Do not charge active storage to out of 
 c               priority rights (ityrsr=-1)
-	        if(ityrsr(l2).eq.-1) then
-		       ritrem(l2) = dcrres(l2)
-		       goto 140
-	        endif     
+	            if(ityrsr(l2).eq.-1) then
+		           ritrem(l2) = dcrres(l2)
+		           goto 140
+	            endif     
 
-	        IF(N2FILL(L2).LE.1) THEN
-c                 c = dcrres(l2) - cursto1(nr1)
-		         c = dcrres(l2) - cursto1     
-                   tot1x(l2) = tot1x(l2) + dcrres(l2)
-            
-		         if(c.ge.-0.1) then
-		           ritrem(l2) = c
-               cursto1      = amax1(cursto1 - tot1x(l2), 0.0)
-		         else
-		          ritrem(l2) = 0.0
-		          cursto1      = cursto1 - dcrres(l2)
-		         endif
-	        ELSE
-		         c = dcrres(l2) - cursto2  
-             TOT2x(L2) = TOT2x(L2) + DCRRES(L2)
-
-		         IF(C.GE.-0.1) THEN
-		           RITREM(L2) = C
-               cursto2      = amax1(cursto2 - tot2x(l2), 0.0)
-		         ELSE
-		           RITREM(L2) = 0.0
-		           cursto2      = cursto2 - dcrres(l2)
-		         ENDIF
-	        ENDIF
+	            IF(N2FILL(L2).LE.1) THEN
+c                     c = dcrres(l2) - cursto1(nr1)
+		             c = dcrres(l2) - cursto1     
+                       tot1x(l2) = tot1x(l2) + dcrres(l2)
+                
+		             if(c.ge.-0.1) then
+		               ritrem(l2) = c
+                   cursto1      = amax1(cursto1 - tot1x(l2), 0.0)
+		             else
+		              ritrem(l2) = 0.0
+		              cursto1      = cursto1 - dcrres(l2)
+		             endif
+	            ELSE
+		             c = dcrres(l2) - cursto2  
+                 TOT2x(L2) = TOT2x(L2) + DCRRES(L2)
+              
+		             IF(C.GE.-0.1) THEN
+		               RITREM(L2) = C
+                   cursto2      = amax1(cursto2 - tot2x(l2), 0.0)
+		             ELSE
+		               RITREM(L2) = 0.0
+		               cursto2      = cursto2 - dcrres(l2)
+		             ENDIF
+	            ENDIF
 c
 c rrb 2006/06/05; Paper Fill
-                RitPaper(l2)=RitRem(l2)	        
+              RitPaper(l2)=RitRem(l2)	        
 c
-                if(ioutR.eq.2) then
+               if(ioutR.eq.2) then
 c
 c rrb 2006/07/25; Enhancement                
-cr                if(nr.eq.1) write(nlog,130)
-                  if(l2.eq.1) write(nlog,130)
-                  write(nlog,132)  nr,cresid(nr), creswr(l2),
-     1              iyrmo(mon),xmonam(mon),l1, l2, n2fill(l2),nr,nr1,
-     1              rdate(nr), dcrres(l2),tot1x(l2),cursto(nr),
-     1              cursto1,cursto2, ritrem(l2), RitPaper(l2),
-     1              ritremx(nr)
-                  endif
-	      endif
+cr               if(nr.eq.1) write(nlog,130)
+                 if(l2.eq.1) write(nlog,130)
+                 write(nlog,132)  nr,cresid(nr), creswr(l2),
+     1             iyrmo(mon),xmonam(mon),l1, l2, n2fill(l2),nr,nr1,
+     1             rdate(nr), dcrres(l2),tot1x(l2),cursto(nr),
+     1             cursto1,cursto2, ritrem(l2), RitPaper(l2),
+     1             ritremx(nr)
+               endif
+	           endif
 c  
 c ---------------------------------------------------------
 c		End water right loop	      
@@ -368,7 +408,7 @@ c		End Reservoir If statement
       endif
 c
 c _________________________________________________________
-c               Step 6; Begin Monthly Reservoir Initilization
+c               Step 6; Begin Monthly Reservoir Initialization
 c
   160 IF(NUMRES.EQ.0) GO TO 250
       if(ichk.eq.94) write(nlog,*)'  Bomsec; 6 Monthly Reservoirs '
@@ -384,7 +424,7 @@ c               irsmin(nm) is a pointer to a reservoir ID
 
 c
 c _________________________________________________________
-c               Step 7; Initilize targets 1x/month
+c               Step 7; Initialize targets 1x/month
 c grb 12/04/94 added variable for max reservoir contents
 c
 	      tarmax(im)=targetx(mon,nm)
@@ -439,7 +479,7 @@ C
 	       IF(IRESSW(NR).EQ.0) GO TO 220
 c
 c _________________________________________________________
-c               Step 8; Initilize reservoir and account totals 1x/mo
+c               Step 8; Initialize reservoir and account totals 1x/mo
 c
 
 c       STOMON(NR)=0.
@@ -458,7 +498,7 @@ c                 Reservoir Seepage Plan (prRes)
         rlossR(nr)=0.0
 c
 c _________________________________________________________
-c               Step 9; Initilize reservoir account data 1x/mo
+c               Step 9; Initialize reservoir account data 1x/mo
 c rrb 01/05/95; I/O Addition; 
 
 	      noi=nowner(nr)
@@ -509,7 +549,7 @@ C
   240 OWNMON(NO)=0.
 c
 c __________________________________________________________
-c               Step 10; Initilize diversion (divmon), loss (rloss),
+c               Step 10; Initialize diversion (divmon), loss (rloss),
 c                       Diversion to soil moisture (qdivs) and from
 c                       soil moisture (qdivso) 1x/mo
 c
@@ -533,14 +573,14 @@ c
       end do
 c
 c ---------------------------------------------------------
-c               10v. Initilize ... 1x/mo
+c               10v. Initialize ... 1x/mo
       
       do no=1,numownd
         divownQ(no)=0.0
       end do  
 c
 c __________________________________________________________
-c               Step 11; Initilize well (divmonw), loss (rlossw),
+c               Step 11; Initialize well (divmonw), loss (rlossw),
 c                       Diversion to soil moisture (qdivsw) and from
 c                       soil moisture (qdivswo) and carried by
 c			   a well (carryW) 1x/mo
@@ -566,10 +606,10 @@ c rrb; Wells
       end do
 c
 c _________________________________________________________
-c               Step 12; Route any excess soil moisture ocurring 
+c               Step 12; Route any excess soil moisture occurring 
 c                       because area is reduced into loss
-c                       Note although this occurrs at most 1x/yr
-c                       locate here after loss (rloss) is initilized
+c                       Note although this occurs at most 1x/yr
+c                       locate here after loss (rloss) is initialized
       if(ichk.eq.94) write(nlog,*)'  Bomsec; 12 Soil Moisture '
 
 cr    iprints=0
@@ -632,7 +672,7 @@ cr    if(iprints.eq.0) then
 
 c
 c _________________________________________________________
-c               Step 13; Initilize running diversion by a right 1x/mo
+c               Step 13; Initialize running diversion by a right 1x/mo
 c grb add initialization for water right diversions
       if(ichk.eq.94) write(nlog,*)'  Bomsec; 13 Rights '
 
@@ -662,6 +702,15 @@ c grb add initialization for water right diversions
 	      divo(k)=0.
       end do
 c
+c rrb 2018/10/07 Add DivoWW(20,3701) to allow Detailed operating rule
+c                 output for a WWSP reporting
+      do k=1,numopr
+        divoWWX(k) = 0.0     
+        do i=1,maxopr2        
+          divoWW(i,k) =0.0
+        end do
+      end do
+c
 c _________________________________________________________
 c		Operational right maximum limit 1x/mo      
       
@@ -670,6 +719,10 @@ c		Operational right maximum limit 1x/mo
         divdE(k)=0.0
         oprmaxM(k)=oprmax(k,mon)
         preuse(k)=0.0  
+c
+c rrb 2018/09/11; Initialize plan diversion
+c rrb 2019/09/11; Back to where It was
+cx       psuply(k)=0.0
 c
 c rrb: 2015-07-08; Add capabiity to control the number of times
 c                  an operating rule has operated per time step. 
@@ -688,7 +741,7 @@ c		rule is reset
  	   
  	        if(iPlnTyp(np).ne.12) then
  	          write(nlog,*)
-     1        ' Bomsec; Problem with initilizing type 47 rule ',
+     1        ' Bomsec; Problem with initializing type 47 rule ',
      1        np, iPlnTyp(np)
  	          goto 9999
  	        endif
@@ -712,7 +765,7 @@ c
 cx        write(nlog,*) ' Bomsec; iout47_2', iout47   
           if(iout47.eq.1) then
             write(nlog,*)        
-            write(nlog,*) ' Bomsec; Type 47 data 1x per month'
+            write(nlog,*) ' Bomsec_2; Type 47 data 1x per month'
             write(nlog,'(a12, 1x, 5i5, 20f8.0)') 
      1        corid(k), k, np, mon, 
      1        iyrmo(mon), imomo(mon), OprmaxA(k),
@@ -745,7 +798,7 @@ c rrb 00/12/09; For variable efficiency add running CU for wells
       end do
 c     
 c _________________________________________________________
-c               Step 15; Initilize Instream flow demand (FLOWRQ) 1x/mo
+c               Step 15; Initialize Instream flow demand (FLOWRQ) 1x/mo
 c
       if(ichk.eq.94) write(nlog,*)'  Bomsec; 15 ISF '
 
@@ -786,7 +839,7 @@ c     write(nlog,*) ' Bomsec; Calling Seteff'
 c     write(nlog,*) ' Bomsec; Out of Seteff'
 cxc
 cxc _________________________________________________________
-cxc               Step 17; Initilize Diversion Demand (DIVREQ) 
+cxc               Step 17; Initialize Diversion Demand (DIVREQ) 
 cxc               Note may be adjusted to include well demands below
 cxc		1x/mo
 cxc rrb 2007/10/02; Already included in Demand
@@ -805,7 +858,7 @@ cxc
 cx      end do
 c
 c _________________________________________________________
-c               Step 17; Initilize well demand (divreqw) 1x/mo
+c               Step 17; Initialize well demand (divreqw) 1x/mo
 c
       maxdivx=maxdiv
       maxdivwx=maxdivw
@@ -815,7 +868,7 @@ c
       if(ichk.eq.94) write(nlog,*) ' Bomsec; Out of Demand'     
 c
 c _________________________________________________________
-c               Step 18; Initilize Call indicators 1x/mo
+c               Step 18; Initialize Call indicators 1x/mo
 c			Note ..L = call location
 c                            ... = print indicator
       do i=1,numsta
@@ -823,7 +876,7 @@ c                            ... = print indicator
       end do
 c
 c _________________________________________________________
-c               Step 19; Initilize River and Avinp 1x/mo
+c               Step 19; Initialize River and Avinp 1x/mo
 c
       DO IS=1,NUMSTA
 	      RIVER(IS)=0.
@@ -916,7 +969,7 @@ c rrb 2006/04/12; Moved to Execut
 cr    CALL SEPSEC             
 c
 c _________________________________________________________
-c               Step 27; Initilize qdiv 1x/mo
+c               Step 27; Initialize qdiv 1x/mo
 c
       DO I=1,NUMSTA
 	      DO J=1,maxqdiv
@@ -925,7 +978,7 @@ c
       end do
 c
 c _________________________________________________________
-c               Step 28; Initilize qres 1x/mo
+c               Step 28; Initialize qres 1x/mo
 c
       DO nr=1,NUMRES
 	      DO J=1,maxqdiv
@@ -934,7 +987,7 @@ c
       end do
 c
 c _________________________________________________________
-c               Step 29; Initilize interruptable supply once per year
+c               Step 29; Initialize interruptable supply once per year
 c rrb 99/06/29; Set opr switch and source water right switch on,
 c               if appropriate
 c
@@ -956,7 +1009,7 @@ c               Reset for new operating rule year
 	      endif
 	      end do
 c
-c rrb 99/06/29; Interruptable supply initilization
+c rrb 99/06/29; Interruptable supply initialization
 c               For the first month of potential operation (imonsw()=2)
 c               Check if the interruptable supply operation rule is
 c               in effect (it operates based on the flow at a certain
@@ -1076,10 +1129,10 @@ c    1    iyrmo(mon), xmonam(mon), 1, dcall1
       endif
 c
 c _________________________________________________________
-c               Step 32; Initilize plan demand (Pdem) 1x/mo
-c		Note pfail is in volume acft to maintain continuity
-c		note imo is the circular pointer for future arrays
-c		while mon is the month
+c               Step 32; Initialize plan demand (Pdem) 1x/mo
+c		            Note pfail is in volume acft to maintain continuity
+c		            note imo is the circular pointer for future arrays
+c		            while mon is the month
       do np=1,nplan
         pdem(np)=pobl(imo,np) + pfail(np)/fac
         pdemT(np)=pobl(imo,np) + pfail(np)/fac
@@ -1089,15 +1142,15 @@ c		while mon is the month
         pdrive(np)=0.0
 c
 c rrb Revise to carry over storage for reservoir plans (type 3 or 5)		        
-c     Note facm1/fac is ratio of days per month
-c     Note psto1 is in acft
+c               Note facm1/fac is ratio of days per month
+c               Note psto1 is in acft
         iPtype1=iPlnTyp(np)
 c
 c ---------------------------------------------------------
-c		Set supply data for 3-Reservoir Reuse,
-c               5-Tmtn Reservoir Reuse, and 9-OOP Plan
+c		Set supply data for plan type 3-Reservoir Reuse,
+c               5-Tmtn Reservoir Reuse, and 9-OOP Plan 1x/mo
         if(iPtype1.eq.3 .or. iPtype1.eq.5 .or. 
-     1     iPtype1.eq.9) then
+     1     iPtype1.eq.9) then     
           psuply1=psuply(np)
           psuply(np)=psup(imo,np) + psuply(np)*facm1/fac
 c
@@ -1115,9 +1168,69 @@ cx        psuplyT(np)=psuply(np)
      1        psuply1,psuply(np), psuplyT(np), psto1(np), psto2(np) 
           endif
         endif
+        
+        
 c
 c ---------------------------------------------------------
-c		Set supply data for 1-T&C, 2-Well Aug, 4-Div Reuse,
+c
+c rrb 2018/09/30; Set supply data for plan type 14-WWSP  1x/mo      
+c rrb 2019/04/20; Revise WWSP Supply (type 14) and WWSP User (type 15)
+c rrb 2019/07/21; Note psup(imo,np) is a resue plan supply in month imo
+c rrb 2019/07/21; Note psuplyT is Total reuse plan amount (goes up only)
+cx      if(iPtype1.eq.14) then        
+        if(iPtype1.eq.14 .or. iPtype1.eq.15) then        
+          psuply1=psuply(np)
+          psuply(np)=psup(imo,np) + psuply(np)*facm1/fac
+          psuplyT(np)=psup(imo,np)              
+          psto1(np)=psto2(np)
+C
+c rrb 2018/09/30; Check initialization of type 14 and 15 plans
+          if(ioutp.ge.1) then
+            write(nlog,*)
+     1        '  Bomsec; np, pid(np), psuply1*fac, psuply(np)*fac'
+            write(nlog,*)
+     1        '  Bomsec;', np, pid(np), psuply1*fac, psuply(np)*fac
+          endif
+        endif
+c
+c ---------------------------------------------------------
+c
+c rrb 2019/07/28; For a WWSP-User plan (type 15) (iwwPlan>0) 1x/month
+c                 Reset plan supply psuply(np) and direct diversion
+c                 supply (psupDD(np)) after a type 46 (multiple split)
+c                 has been executed.  Note the WWSP-Supply (type 14)
+c                 is reset in DivMulti
+c
+        if(iPtype1.eq.15) then
+        
+          monM1=amax0(1,mon-1)
+          if(iwwPlan.eq.monM1) then
+            psuply2=psuply(np)
+            psupDD2=psupDD(np)
+            
+            psuply(np)=amax1(0.0, psuply(np) - psupDD(np)/fac)
+            
+            psupDD(np)=0.0
+c            
+           if(ioutP.eq.1) then 
+              write(nlog,*) ' '
+              write(nlog,*) '  Bomsec; type   np  mon mon+1', 
+     1          ' pid          psuply2 psupDD2  psuply  psupDD'
+              write(nlog,'(a10,4i5,2x, a12, 20f8.0)')
+     1          '  Bomsec;', iptype1, np,  mon, mon+1,
+     1          pid(np), psuply2*fac, psupDD2, psuply(np)*fac,
+     1          psupDD(np)
+            endif
+          endif
+c
+c               Endif for a WWSP-User plan (type 15)
+        endif
+           
+
+c
+c ---------------------------------------------------------
+c		Set supply data for plan 1x/month for
+c               type 1-T&C, 2-Well Aug, 4-Div Reuse,
 c               6-Tmtn Div Reuse, 7-Tmtn Reuse, 8-Rech Plan,
 c               10-Special Well Aug, 11-Admin, 13-Changed Water Right
 c rrb 2015/03/07; Add a Changed Water Right Plan (type 13)
@@ -1158,12 +1271,12 @@ cxx          endif
 cxx        endif  
 c
 c ---------------------------------------------------------
-c		Initilize amount in a reuse plan here since at least
+c		Initialize amount in a reuse plan here since at least
 c               part of it is calculated from a diversion in a prior
 c               time step
 c
 c rrb 2006/04/18; Do not adjust for a Reservoir reuse plan since
-c		  returns are in the return array
+c		              returns are in the return array
 c rrb 2008/01/14; Correction
 cx        if(iPtype1.ne.8 .and. iPtype1.ne.12) then        
 cx          is=ipsta(np)        
@@ -1187,11 +1300,13 @@ c		Detalied Output
          write(nlog,*)
      1   ' Bomsec Demand; ', np,imo,pid(np),pdem(np)*fac,
      1    pdemT(np)*fac, psuplyT(np)
-        endif  
+        endif 
+c
+c               End do for number of plans 
       end do
 c
 c _________________________________________________________
-c       	Step 33; Initilze compact demand 1x/mo if a Type 13
+c       	Step 33; Initialize compact demand 1x/mo if a Type 13
 c               (La Plata Compact) operating rule is on.
 c		Note flowrX(im,nf) is the data read from *.ifa
 c

@@ -2,7 +2,7 @@ c stafind - reads various data for mdainp
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -50,11 +50,11 @@ c
         character cstaidx*12, cx*12, cstrtypX*12, cCallBy*12
         data cstrtypX/
      1   'InStream    ', 'Reservoir   ', 'Diversion   ', 'NA          ',
-     1   'NA          ', 'Well        ', 'Plan        ', 'NA          ', 
+     1   'NA          ', 'Well        ', 'Plan        ', 'NA          ',
      1   'NA          ', 'NA          '/        
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
         if(itype.ne.0) iout=0
         iout=0
 
@@ -62,7 +62,7 @@ c		Step 1; Initilize
      1    itype, nsta, cstaidx(1)
      
         do nx =1,nsta            
-          if(iout.eq.1) write(nlog,*) ' StaFind', nx, cx, cstaidx(nx)                              
+          if(iout.eq.1) write(nlog,*) ' StaFind', nx, cx, cstaidx(nx)
           if(cstaidx(nx).eq.cx) goto 500
         end do
         nx=0

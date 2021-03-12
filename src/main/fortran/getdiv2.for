@@ -2,7 +2,7 @@ c getdiv2 - reads in diversion station data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -75,17 +75,17 @@ C
 c
 c__________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c		iout =  0 No details
 c		ioutR = 0 No details for return flows
-c		ioutE = 0 No detials for efficiency
+c		ioutE = 0 No details for efficiency
       iout=0
       ioutR=0
       ioutE=0
       iin2=iin
 C
-c rrb 2006/04/12; Initilize at top of Datinp so that Reservoir 
-c		  return data can be read (befor Getdiv2 
+c rrb 2006/04/12; Initialize at top of Datinp so that Reservoir 
+c		  return data can be read (before Getdiv2 
 c                 and this value is not reset to zero
 cr    NUMRTN=0
       NDIVIN=0
@@ -361,7 +361,7 @@ C
 c
 c _________________________________________________________
 c
-c		Step 18; Initilize warning variable
+c		Step 18; Initialize warning variable
   210 numdiv=amax0(nd-1,0)
       write(nlog,211) numdiv
   211 format(/,
@@ -370,7 +370,7 @@ c		Step 18; Initilize warning variable
 c          
 c _________________________________________________________
 c
-c		Step 11; Read effieciency in new station format (*.def)              
+c		Step 11; Read efficiency in new station format (*.def)              
       if(inE.gt.0) then
 c
 c ---------------------------------------------------------
@@ -519,8 +519,8 @@ C
         NSTRTN=0
         DO 710 IS=1,NUMSTA
 c
-c rrb 2006/04/12; Initilize at top of Datinp so that Reservoir 
-c		  return data can be read befor GetDiv 
+c rrb 2006/04/12; Initialize at top of Datinp so that Reservoir 
+c		  return data can be read before GetDiv 
 c                 and this value is not reset to zero        
 cr        IRNORD(IS)=0
           IF(ITEMP(IS).EQ.0) Goto 710

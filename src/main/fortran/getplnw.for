@@ -2,7 +2,7 @@ c getplnw - reads plan well association relationship
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       Subroutine GetPlnW(maxdvrX)
 c
 c
@@ -61,7 +61,7 @@ c
 c     
 c _________________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
 c		iout =  0 no details
 c			1 details
 c			2 summary
@@ -451,8 +451,8 @@ c               Formats
      
  229  format(/,72('_'),/
      1 '  GetPlnW;  ',
-     1     'Warning well rights tied to more than one Augmentation Plan',/
-     1     'in the',/
+     1     'Warning well rights tied to more than one Augmentation ',
+     1     'Plan in the',/
      1 12x,'Plan Well file (*.plw) = ',i5,' of ',i5,' or ',f5.0,'%',/     
      1 12x,'See *.chk for a listing of all occurances')
      

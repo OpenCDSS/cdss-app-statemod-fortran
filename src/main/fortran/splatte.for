@@ -2,7 +2,7 @@ c splatte - Type 40 operating rule, releases water from the S Platte Compact pla
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -40,7 +40,11 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2020/07/28; Revise check if more can be diverted to not include 
+c                 the unit conversion(fac) and re format output warning
+c
 c rrb 2011/01/02; Copied DivRplP and simplified
+c
 c rrb 2011/05/19; Revised to call Dsamod to allow the routine
 c                 to account for immediate return flows
 c _________________________________________________________
@@ -76,9 +80,9 @@ c       iopsou(2,l2)   iown   N/A
 c       iopsou(3,l2)   Source Plan (source 2 for Splatte only)
 c			  associated with a release
 c       iopsou(5,l2)	1 Diversion limits are adjusted for the
-c		                    operatng rule = iopsou(5,l2).
+c		                    operating rule = iopsou(5,l2).
 c		                  2 Release limits are imposed for the
-c		                    operatng rule = iopsou(5,l2).
+c		                    operating rule = iopsou(5,l2).
 c       iopsou(6,l2)    Reservoir release type and efficiency
 c                       0 = release to meet demand
 c                       +n = release only if a CIR (IWR) exists
@@ -108,7 +112,7 @@ c      	idcd            Actual Diversion location. May be one
 c                          a Diversion, Reservoir or Plan or Carrier
 
 c	      idcdD		        Destination Diversion location on river
-c	      idcdR           Destination Reseroivr location on river
+c	      idcdR           Destination Reservoir location on river
 c	      idcdC           Destination carrier location on river
 c	      idcdP           Destination Plan on river
 c	      idcdX           Destination Diversion, Reservoir,
@@ -142,7 +146,7 @@ c
 c       small           a local limit used for convergence, etc.
 c       iouta           0 no detailed printout for avail
 c                       n yes detailed printout for avail
-c	      iwhy            1 reason for no diversoin
+c	      iwhy            1 reason for no diversion
 c
 c       ncallx		      number of times called per time step
 c
@@ -231,12 +235,12 @@ c	Dimensions
      1  corid1*12, cStaMin*12, cstaid1*12, cdivtyp1*12
      
 c     character corid1*12, ccallby*12, cwhy*48
-      character ccallby*12
+      character ccallby*12, subtypX*8
 
 c
 c _____________________________________________________________
 c
-c               Step 1a - Initilize general variables
+c               Step 1a - Initialize general variables
 c
 c ---------------------------------------------------------
 c               Control debut printout
@@ -244,6 +248,7 @@ c		iout=0 none, iout=1 detailed, iout=2 summary
 c		ioutiw = water right used for detailed output
 c		ioutE = detailed output for Exchange Reach
 c		ioutA = detailed output for ChekAva
+      subtypX='splatte '
       iout=0
       ioutiw=0
       ioutE=0
@@ -473,7 +478,7 @@ c                  OprEffT  = Total Carrier Efficiency
 c
 c ---------------------------------------------------------
 c		            p. Check Avail Array
-      call chekava(18, maxsta, numsta, avail)
+      call chekava(18, maxsta, numsta, avail, subtypX)
       if(iouta.gt.0) write(nlogx,*) ' SPlatte; OK going in for ', 
      1 ' ID = ', corid1
 c
@@ -868,7 +873,7 @@ c                 only undefined if there is no diversion
  300  if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
 cx    if(ndtype.eq.3 .and. divact+small.lt.divalo) ishort = 1
 c
-c rrb 2007/10/29; Set ishort for a quick exit. Reset initilized
+c rrb 2007/10/29; Set ishort for a quick exit. Reset initialized
 c		  divact to 0 from -1
       if(divact.lt.smalln) then
         ishort=1
@@ -941,7 +946,7 @@ c               Step 27; Print results to the chk file if non-zero.
 cc
 c _____________________________________________________________
 c
-c               Step 28 - Final printout befor exit
+c               Step 28 - Final printout before exit
 c
 c     if(iout.ge.1) then
 c     if(iout.gt.0 .and. ioutiw.eq.iw) then
@@ -1022,12 +1027,38 @@ cx        endif
         
 c
 c rrb 2011/04/18; Update
+c rrb 2020/07/28; Revise second check (pavail2) to not include unit 
+c                 conversion (fac) and reformat output
+cx       if(ndtype.eq.3 .and. divact+small.lt.divalo) then     
+cx         if(pavail2*fac.gt.small) then
+cx           write(nlogx,*) ' ***** Splatte(operating rule type 40)'
+cx           write(nlogx,*) ' ***** Problem more can be diverted'
+cx           write(nlogx,*) ' ***** Small = ', small*fac, 
+cx     1       ' Min flow = ', pavail2*fac, ' Diversion = ', divact*fac,
+cx     1       ' Unmet demand = ', divreq(iuse)*fac     
+cx         endif 
+cx       endif
+cx       
        if(ndtype.eq.3 .and. divact+small.lt.divalo) then     
-         if(pavail2*fac.gt.small) 
-     1     write(nlogx,*) ' ***** Problem more can be diverted',
-     1     ' Min flow = ', pavail2*fac, ' Diversion = ', divact*fac,
-     1     ' Unmet demand = ', divreq(iuse)*fac      
+         if(pavail2.gt.small) then
+       
+           c1 = (divact+small)*fac - divalo*fac
+           c2 = (pavail2-small)*fac
+           write(nlog,392) 
+     1       divact*fac, small*fac,(divact+small)*fac, divalo*fac, c1,
+     1       pavail2*fac, small*fac, c2
+         endif
        endif
+ 392   format(' ',/
+     1   '  Splatte; Warning opr type 40; ',
+     1      'more can be diverted (af/mo)'/
+     1   '    Divact        = ',f12.4,'; Small   = ', f12.4,/ 
+     1   '    Divact+small  = ',f12.4,'; Divalo  = ', f12.4,
+     1        '; Delta      = ',f12.4,/
+     1   '    Pavail2       = ',f12.4,'; Small   = ', f12.4,
+     1        '; Delta       = ',f12.4)
+     
+     
 c
 c _____________________________________________________________
 c               
@@ -1037,7 +1068,7 @@ c               Step 29 - Check Entire Avail array out
      1   ' ID = ', corid1
       endif 
       
-      call chekava(18, maxsta, numsta, avail)
+      call chekava(18, maxsta, numsta, avail, subtypX)
       
       if(iouta.gt.0) then
         write(nlogx,*) ' SPlatte; OK going out for ', 

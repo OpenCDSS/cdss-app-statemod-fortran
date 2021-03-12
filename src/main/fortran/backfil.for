@@ -2,7 +2,7 @@ c backfil - backfills blanks to the unused portion of character string
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ c_________________________________________________________________NoticeEnd___
         subroutine backfil(recin, recout)
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c               It backfills blanks to the unused portion of a
 c               character string
 c
@@ -30,15 +30,15 @@ c               recout character string out
 c
 c
 c _________________________________________________________
-c	Update History
-c		NA
+c       Update History
+c       NA
 c
 c _________________________________________________________
-c	Documentation
+c       Documentation
 c
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 cc
         character recin*12, recout*12
 

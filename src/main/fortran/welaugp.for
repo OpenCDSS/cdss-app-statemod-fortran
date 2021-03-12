@@ -3,7 +3,7 @@ c           to a meet a T&C or Well Augmentation Plan Demand
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE WelAugP(IW,L2,retx,divact,ncallX)
 c
 c
@@ -42,7 +42,7 @@ c        IW             Global water right ID
 c        L2             LOC. OF operation right  in opr RIGHT TABLE
 c        nwR            source water right
 c
-c        ceff           ratio of GW to SW efficicney
+c        ceff           ratio of GW to SW efficiency
 c
 c        depx           depletion in this month by pumping
 c        divact         total well pumping
@@ -66,13 +66,13 @@ c
 c        diveff(mon,nwe) Average diversion efficiency via *.dds
 c        diveffw(mon,nwe)Average well efficiency via *.wes
 c
-c        effmaxs(nwe)    Maximum sprinker efficiency via *.tsp
+c        effmaxs(nwe)    Maximum sprinkler efficiency via *.tsp
 c        effmaxw(nwe)    Maximum flood efficiency via *.tsp
 c
 c        effd           Average diversion efficiency via *.dds
 c        effa           Average well efficiency via *.wes
 c
-c        effs           Maximum sprinker efficiency via *.tsp
+c        effs           Maximum sprinkler efficiency via *.tsp
 c        efff           Maximum flood efficiency via *.tsp 
 c
 c        iout           Switch: 0 no print; 1 yes print
@@ -102,7 +102,7 @@ c
 c        iscd          River location of well (iscd = idvstaw(nwe))
 c
 c        ispr           =0 use flood efficiency in rtnsecw
-c                       =1 use sprinker efficiency in rtnsecw
+c                       =1 use sprinkler efficiency in rtnsecw
 c
 c        itsfile        Switch via datinp (*.ctl)
 c                       0=no GW acres by year provided
@@ -132,11 +132,12 @@ c	Dimensions
 c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
-     1          cidWR*12, rec12*12, cTandC*3, cidRiv*12, cidBal*12
+     1          cidWR*12, rec12*12, cTandC*3, cidRiv*12, cidBal*12,
+     1          subtypX*8
 c
 c
 c _________________________________________________________
-c       Step 1 Common Initilization
+c       Step 1 Common Initialization
 c
 c		iout = 0 No details
 c		       1 Details
@@ -146,6 +147,7 @@ c		       4 Sum
 c
 c ---------------------------------------------------------
 c		a. OutPut control
+      subtypX='welaugp '
       iout=0
       ioutiw=0
       
@@ -190,10 +192,10 @@ c rrb 00/12/26; Set variable efficiency (1=on, controlled by ieffmax)
 c
 c ---------------------------------------------------------
 c               d. Check Avail array
-      call chekava(19, maxsta, numsta, avail)
+      call chekava(19, maxsta, numsta, avail, subtypX)
 c
 c ---------------------------------------------------------
-c               e. Initilze temp array to store current 
+c               e. Initialize temp array to store current 
 c		   depletions and returns
       do is=1,numsta
         avtemp(is)=0.0
@@ -490,7 +492,7 @@ c
 c
 c ---------------------------------------------------------
 c		a. Set the net plan obligation (PNetObl) to the
-c                  mininum value in Avtemp that contains the impact 
+c                  minimum value in Avtemp that contains the impact 
 c                  of this well only on the entire network.
 c                  Note call dnmfso (not dnmfsoW) to get min from the
 c	           well (balance point) downstream
@@ -578,7 +580,7 @@ c rrb 2007/02/21; Add Wells to *.xdd
       
 c _________________________________________________________
 c
-c               Step 15.  Detalied output
+c               Step 15.  Detailed output
 c
 
  260  if(iout.ge.2 .and. iw.eq.ioutiw) then
@@ -614,7 +616,7 @@ c
 c _________________________________________________________
 c
 c               Step 16; Check Avail for Roundoff issues
-      call chekava(19, maxsta, numsta, avail)
+      call chekava(19, maxsta, numsta, avail, subtypX)
       
 c
       if(iout.eq.1) then

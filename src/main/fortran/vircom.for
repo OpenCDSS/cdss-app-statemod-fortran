@@ -2,7 +2,7 @@ c vircom - computes natural flows from historical data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -50,8 +50,8 @@ c                        Note: for option 2, need to redefine flow
 c                        at gauges and allow loosing (negative) flows
 c                        For option 1 do not allow negative flows
 c               ineg   = 0 naturalized flow is not negative
-c                        -n # of negative naturalized flow occurances at a gage
-c                        +n # of negative naturalized flow occurances at a
+c                        -n # of negative naturalized flow occurrences at a gage
+c                        +n # of negative naturalized flow occurrences at a
 c                           nongage
 c               iday   = 0 monthly model
 c                        1 daily model
@@ -94,7 +94,7 @@ c
 c     
 c
 c _________________________________________________________
-c		Step 1 - Initilize
+c		Step 1 - Initialize
 c
 c      
 c		iout = 1 details
@@ -150,7 +150,7 @@ c rrb 01/01/17; Call number
       end do
 c
 c ---------------------------------------------------------
-c		Initilize in year 1 only      
+c		Initialize in year 1 only      
       if(iyr.eq.iystr) then
         irec=0
         do is=1,numsta
@@ -502,7 +502,7 @@ c                       Sprinkler lands served before SW diversions)
           nd = idivcow2(nw) 
 c
 c                       Lands served by sprinkler handled in Step 5
-c                       (befor diversions).  Therefore adjust demand but 
+c                       (before diversions).  Therefore adjust demand but 
 c                       do not call rtnsecw
           divact=diverwx(nw)
 c
@@ -590,7 +590,7 @@ c		Detailed output
 c
 c ---------------------------------------------------------
 c
-c			Mutual Approach Calculate Pumping by Sprinkers
+c			Mutual Approach Calculate Pumping by Sprinklers
           if(demspr(nw).gt.small) then
            ispr=1
            divact=demspr(nw)

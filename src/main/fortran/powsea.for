@@ -1,9 +1,9 @@
 c powsea - Type 9 operating rule that makes a reservoir releases if contents are greater
-c          than amaximum target level.
+c          than a maximum target level.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,26 +18,31 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine powsea(iw,l2,divact,ncallX)
 c
 c
 c _________________________________________________________
 c	Program Description
 c
-c       Powsea; It simulates a type 9 opeating rule that
+c       Powsea; It simulates a type 9 operating rule that
 c               makes a reservoir releases if contents are greater
-c               than amaximum target level
+c               than a maximum target level
 c
 c _________________________________________________________
 c       Update History
 c
-c rrb 03/13/96; initilize divact, send returns to bottom & set divo
-c rrb 02/05/97; If source account (iopsou(2,l2) is 0,
+c 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
+c             From Storage to River for Exchangec Carried, Other 
+c
+c 2003/13/96; initialize divact, send returns to bottom & set divo
+c
+c 2002/05/97; If source account (iopsou(2,l2) is 0,
 c               allow target to release from all accounts by 
 c               distributing based on current ownership ratio.
-c               Also, miscelaneous clean up for clarity
-c rrb 02/10/25; Allow monthly on/off switch
+c               Also, miscellaneous clean up for clarity
+c
+c 2002/10/25; Allow monthly on/off switch
 c
 c _________________________________________________________
 c	Dimensions
@@ -187,7 +192,10 @@ c     RELAF=DIVACT*MTHDAY(MON)*FACTOR
 C
       POWREQ(NR) = POWREQ(NR)-RELAF
       POWREL(NR) = POWREL(NR)+DIVACT
-      
+c
+c rrb 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
+c                 From Storage to River for Exchangec, Carried, Other 
+      qdiv(38,iscd) = qdiv(38,iscd) + divact  
 C
 c rrb 02/05/97; Distribute to account assigned (iopsou>0) or
 c               based on current storage in all accounts

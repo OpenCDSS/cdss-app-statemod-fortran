@@ -2,7 +2,7 @@ c chekres - checks reservoir storage total vs account totals
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
        subroutine chekres(nlog, maxres, in, isub, iyr, mon, nr,
      1                    nowner,curown,cursto,cresid)
 c
@@ -46,24 +46,33 @@ c       Dimensions
 c
         dimension nowner(maxres), curown(maxres), cursto(maxres),
      1            cresid(maxres)
-        dimension subtyp(50)
+c
+c rrb 2018/07/29; Revise to include up to 60 operating rules
+cx      dimension subtyp(50)
+        dimension subtyp(60)
         character cresid*12, cin*6, subtyp*12
         data subtyp/
      1    'Powres', 'Divres',  'Divres',   'Divrpl',   'Resrpl',
      1    'Rsrspu', 'Carrpl',  'OopBook2', 'Powsea',   'Replace',
      1    'Divcar', 'Reoper',  'Ifrrigx',  'Divcar1',  'Sjrip',
-     2    'Evasec', 'DirectEx','ResRg1P',  'DivResP2', 'DivrplP',
+     1    'Evasec', 'DirectEx','ResRg1P',  'DivResP2', 'DivrplP',
      1    'DivresR','DivrplR', 'ResRg1 ',  'PowRes2',  'ResRgP',
-     3    'WelRech',' ',       ' ',        ' ',        ' ',
+     1    'WelRech',' ',       ' ',        ' ',        ' ',
      1    ' ',      ' ',       ' ',        ' ',        ' ',
-     4    ' ',      ' ',       ' ',        ' ',        ' ',
+     1    ' ',      ' ',       ' ',        ' ',        ' ',
      1    ' ',      ' ',       ' ',        ' ',        'DivCarL',
-     5    ' ',      ' ',       'PowResP    ','DivRplP2   ',' '/
+     1    ' ',      ' ',       'PowResP    ','DivRplP2 ',' ',
+     1    'FlowRes','DivMultR','WWSP ',    ' ',        ' ',     
+     1    ' ',      ' ',       ' ',        ' ',        ' '/
 
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
-        iout=0          
+        iout=0
+c
+c rrb 2018/07/29; Check for operating rule limit
+        if(maxoprin.gt.60) goto 900
+                
 c
 c rrb 2015/07/20; Test        
 cx      small2=0.1
@@ -74,11 +83,18 @@ cx      small2=0.1
         if(nr.gt.maxres) then
           write(nlog,*) '  Chekres; Problem nr < maxres', nr, maxres
           goto 9999
-        endif  
+        endif 
 
         if(nr.gt.0) then
           iri=nowner(nr)
           ire=nowner(nr+1)-1
+c
+c rrb 2020/07/28; Additoinal detailed output        
+        if(iout.eq.1) then
+          write(nlog,*) ' '
+          write(nlog,*) ' ChekRes; iyr, mon, nr, cresid(nr),iri,ire'
+          write(nlog,*) ' ChekRes;', iyr, mon, nr, cresid(nr),iri,ire
+        endif
 
           sum=0.0
           do ir=iri,ire
@@ -157,6 +173,13 @@ c
 c _________________________________________________________
 c
 c               Print warning
+ 900  write(nlog,910) 
+      write(nlog,920) 
+      call flush(6)
+ 910  format('    Stopped in Chekres',/,
+     1       '    See the *.log file')
+ 920  format('    Stopped in Chekres; number of operating rules > 60')
+ 
  9999 write(6,*) '  Stopped in Chekres, see the log file (*.log)'
       write(99,*) '  Stopped in Chekres'
       write(6,*) 'Stop 1' 
@@ -164,5 +187,6 @@ c               Print warning
       call exit(1)
 
       stop 
+      
         
       end

@@ -2,7 +2,7 @@ c dayoutr - prints daily binary data, same as outmon, but revised for daily data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
 c	Dimensions
 cC     Last change:  RRB   8 Jan 2002    5:23 pm
 C
@@ -62,6 +61,9 @@ c               Set diverirt(mon,nd) = diveritd(idy,nd)
 c rrb 2007/02/23; Revised *.xdy to include well only in the balance
 c		  Revised *.xdy output column 33 = rlossw2 (salvage)
 c
+c rrb 2020/03/01; Correction do not subtract qres(11 & qres(21 and 
+c                 accr(11& accr(21 from RStoUse
+c
 c _________________________________________________________
 c
 c       Documentation
@@ -100,7 +102,7 @@ c
 c
 c 
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
       small = 0.001
       if(iresop.eq.2) then
@@ -747,8 +749,13 @@ cx      carry(nr)=carry(nr)-avt(im)
 
         RTotSup = RRivPri + RCarPri  + RCarSto + RRivExc +
      1            RRivSto - RClossC - RClossR
-        RStoUse  = qres(8,nr) + qres(9,nr)  + qres(12,nr) -
-     1          qres(21,nr)- qres(11,nr)
+c
+c rrb 2020/03/01; Correction do not subtract qres(21 or qres(11
+c                 from RStoUse
+cx        RStoUse  = qres(8,nr) + qres(9,nr)  + qres(12,nr) -
+cx     1          qres(21,nr)- qres(11,nr)
+        RStoUse  = qres(8,nr) + qres(9,nr)  + qres(12,nr)
+     
         RStoExc  = qres(21,nr)
         RStoCar = qres(11,nr) + qres(16,nr) + qres(17,nr) + qres(22,nr)
         RTotRel = RStoUse        + RStoExc        + RStoCar
@@ -821,9 +828,13 @@ c              print account data
 c
           RRivExc  = accr(3,n) + accr(18,n) + accr(28,n)
           RTotSup  = RRivPri + RCarPri + RCarSto + RRivExc +
-     1               RRivSto - RClossC - RClossR     
-          RStoUse  = accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n) -
-     1               accr(11,n)                                 
+     1               RRivSto - RClossC - RClossR 
+c
+c rrb 2020/03/01; Correction do not subtract accr(21 & accr(11 
+c                 from RStoUse
+cx          RStoUse  = accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n) -
+cx     1               accr(11,n)                                 
+          RStoUse  = accr(8,n) + accr(9,n)  + accr(12,n)        
           RStoExc  = accr(21,n)
 c
           RStoCar = accr(11,n) + accr(22,n)

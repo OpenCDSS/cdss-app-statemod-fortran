@@ -5,7 +5,7 @@ c            (effectively reassigns the water right to the destination).
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -20,16 +20,15 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-      SUBROUTINE IfrRigSP(IW,L2,ISHORT,divactX,ncallx)
 c
+      SUBROUTINE IfrRigSP(IW,L2,ISHORT,divactX,ncallx)
 c
 c _________________________________________________________
 c	Program Description
 c
 c 	Type 50; South Platte Compact to a Plan 
 c		 Similar to DirectBy but it allows the source to be
-c		 an instream flow.  Also the diversion occurrs at the
+c		 an instream flow.  Also the diversion occurs at the
 c    destination, not the source right location (effectively
 c    reassigns the water right to the destination)
 c
@@ -39,6 +38,12 @@ c
 c _________________________________________________________
 c
 c	Update History
+c
+c rrb 2020/07/28; Version 16.00.38
+c                 Correction do not accrue the amount diverted
+c                 by this operating rule to the water right divi(l2)
+cx                divi(l2)     = divi(l2)      + divactX
+c
 c		   Copied DirectBY; revised to handle an instream flow
 c		     source and simplify for an ISF source
 c
@@ -51,7 +56,7 @@ c        L2 : LOC. OF operation right  in opr RIGHT TABLE
 c
 c        lr             source water right pointer
 c        iopsou(1,l2)   source water right
-c        iopsou(2,l2)   Not used (note % ownership gets transfered
+c        iopsou(2,l2)   Not used (note % ownership gets transferred
 c			                  to oprpct in Oprinp.f)
 c        iopsou(3,l2)   Plan id (for return flow obligation accounting)
 c        iopsou(4,l2)   CU switch 
@@ -61,7 +66,7 @@ c                       bypass point on the Stream
 c			   Calculated in Oprinp via call getExPt
 c        iopsou(7,l2)   bypass point (e.g. its a pointer the
 c
-c	       oprpct(l2)     Percent of the source water right to be bypassd
+c	       oprpct(l2)     Percent of the source water right to be bypassed
 c	
 c
 c        iopdes(1,l2)   if > 0 and < 10000 destination diversion ID 
@@ -101,7 +106,7 @@ c        ndns2          # of nodes downstream of destination
 c                       diversion (nd2) or reservoir
 c        iuse2          destination user 
 c
-c	       imcdX          pointer to avail array. It chnages from 1 (to allow
+c	       imcdX          pointer to avail array. It changes from 1 (to allow
 c                       debug printout to idcd2 (flow at destination) to
 c                       imcd flow at the minimum location
 c
@@ -127,7 +132,7 @@ c			                  Set in oprinp
 c	       divdS          Amount diverted at source in previous iterations (cfs)
 c	       dcrdiv1        Remaining water right at source source (cfs)
 c        
-c	       dcrdivE        Fraction of water right availabe to the ByPass
+c	       dcrdivE        Fraction of water right available to the ByPass
 c	       divdE          Amount diverted at source in previous iterations (cfs)
 c	       dcrdiv2        Remaining water right at bypass (cfs)
 c
@@ -189,13 +194,14 @@ c	Dimensions
      1  cwhy*48, cdestyp*12, ccarry*3, cpuse*3, csour*12,
      1  rec12*12, cresid1*12, cTandC*3, criver*12, 
      1  corid1*12, cCallBy*12, cstaid1*12, ctype1*12, cImcdR*12,
-     1  cwhy2*48
+     1  cwhy2*48, subtypX*8
 c_______________________________________________________________________
-c               Step 1; Common Initilization
-c		  iout=0 no detials
+c               Step 1; Common Initialization
+c		  iout=0 no details
 c		     1 details
 c		     2 summary
 c     write(nlog,*) ' IfrRigSP; nplan', nplan     
+      subtypX='ifrrigsp'
       isub=50
       iout=0
       ioutiw=0
@@ -289,7 +295,7 @@ c		f. Standard Carrier
 c_______________________________________________________________________
 c               l. Check Avail array coming in
 c     if(iout.eq.1) write(nlog,*) ' IfrRigSP; Calling Chekava In'
-      call chekava(21, maxsta, numsta, avail)
+      call chekava(21, maxsta, numsta, avail, subtypX)
 c_______________________________________________________________________
 c               Step 2; Exit if not on this month (iwhy=1)
 c		2a; Monthly switch off
@@ -445,7 +451,11 @@ c_______________________________________________________________________
 c               Step 22a; Update Source data
 c                         qdiv(26, ) From River by Other
       flowrq(nd)   = flowrq(nd)    - divactX
-      divi(l2)     = divi(l2)      + divactX
+c
+c rrb 2020/07/28; Correction the amount diverted accrues to the
+c                 operating rule (below) not to the ISF that uses a 
+c                 pointer to the operating rule
+cx    divi(l2)     = divi(l2)      + divactX
 c rrb 2011/05/22; set qdiv(31, From River by Other
 c                 (a reuse or Admin Plan) and show as a diversion
 c                 in *.xwb
@@ -510,7 +520,7 @@ c      if(nd.gt.0) then
 c_______________________________________________________________________
 c               Step 33 - Check Avail going out of the routine
       if(iout.eq.1) write(nlog,*) ' IfrRigSP; Calling Chekava Out'
-      call chekava(21, maxsta, numsta, avail)
+      call chekava(21, maxsta, numsta, avail, subtypX)
 c_______________________________________________________________________
 c               Step 34; Return
       RETURN

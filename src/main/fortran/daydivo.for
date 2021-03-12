@@ -2,7 +2,7 @@ c daydivo - prints daily diversion / stream file
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,16 +18,13 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-C     Last change:  RRB   8 Jan 2002   11:50 am
-C
-c *********************************************************
       subroutine Daydivo
 c
 c
 c _________________________________________________________
 c	Program Description
 c
-
+c
 c       Daydivo; it prints daily diversion / stream file
 c
 c               Note: Similar to outdiv.for; but daily
@@ -37,6 +34,10 @@ c
 c __________________________________________________________
 c
 c               Update History
+c
+c rrb 2020-04-03; Redefine column 11 from Carried or Exchang to'
+c                 Carried, Exchang, Other'
+c
 c rrb 99/12/28; New Id convention as follows:
 c                               0-5000 = reservoir
 c                               5001 - 7500 = ISF
@@ -537,17 +538,25 @@ c
      1  '     Carried                ________________',
      1  ' _______________________________', 
      1  ' _______________________________________', 
-     1  ' _______________________________',/
+     1  ' _______________________________',/   
      1  '                                    ',
      1  '     Total      CU _______________________________    From ', 
      1  '_______________________',
-     1  '      or    From   Total   Total      CU        ',
+c
+c rrb 2020-04-03; Redefine column 11 from Carried or Exchang to'
+c                 Carried, Exchang, Other'
+cx   1  ' Exchang    From   Total   Total      CU        ',
+     1  '      or    From   Total   Total      CU        ',     
      1  '      To   Total          Upstrm   Reach',
      1  '  Return    Well From/To   River   River   River   River',
-     1  '   Avail Control      Control',/
+     1  '   Avail Control      Control',/   
      1  'Structure   River                     ',
      1  '  Demand  Demand Priorty Storage   Other    Loss    Well',
-     1  ' Priorty Sto_Exc    Loss Exchang   SoilM  Supply   Short',
+c
+c rrb 2020-04-03; Redefine column 11 from Carried or Exchang to'
+c                 Carried, Exchang, Other'
+cx   1  ' Priorty Sto_Exc    Loss Exchang   SoilM  Supply   Short',
+     1  ' Priorty Sto_Exc    Loss   Other   SoilM  Supply   Short',
      1  '   Short',
      1  '      CU   SoilM  Return    Loss  Inflow    Gain',
      1  '    Flow Deplete GW Stor  Inflow  Divert by Well Outflow',

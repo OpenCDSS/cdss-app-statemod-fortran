@@ -2,7 +2,7 @@ c divrpl - allows a diversion by exchange with a reservoir
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,9 +17,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-C     Last change:  RRB  28 May 2002    4:31 pm
-c
 c
       subroutine divrpl(iw,lr,ishort,irep,tranlim,dcrdivx,divdx,
      1                  divactx,divacty,ncallx)
@@ -37,39 +34,39 @@ c        reservoir (Type 10) for a diversion by exchange
 c _________________________________________________________
 c	Update History
 c
-c rb 96/02/27; modified by Ross Bethel,
-c               to consider replacment of either headgate diversion
+c rb 1996/02/27; modified by Ross Bethel,
+c               to consider replacement of either headgate diversion
 c               lr (iousop(lr,4)>=0 or depletion (iousop(lr,4)<0
 c               above a predetermined exchange point (in riginp) which
-c               is the first downstream node the replacment reservoir
+c               is the first downstream node the replacement reservoir
 c               and exchange destination have in common.
 c
-c rrb 96/04/31; Add constraint for replacement limited by a bookover
+c rrb 1996/04/31; Add constraint for replacement limited by a bookover
 c               tranlim=0; Standard operation
 c                      >0; General Replacement Reservoir Rule call
 c                          (Constrained by second source storage or 
 c                          bookover water right)
-c rrb 98/03/03; Added daily capability (see fac)
+c rrb 1998/03/03; Added daily capability (see fac)
 c
-c rrb 98/06/26; lr, l2 clean up
+c rrb 1998/06/26; lr, l2 clean up
 c
-c rrb 00/12/26; Revised call rtnsec to include ieff2 for variable
+c rrb 2000/12/26; Revised call rtnsec to include ieff2 for variable
 c               efficiency considerations
 c
-c rrb 01/02/01; For Transmountain (irturn()=4)
+c rrb 2001/02/01; For Transmountain (irturn()=4)
 c               Add call rtnsec who calls return to calculate CU,
 c               reduce IWR and loss (as appropriate)
 c
-c rrb 01/08/27; Modified 01/08/23 by R. Bennett to have option to only 
+c rrb 2001/08/27; Modified 01/08/23 by R. Bennett to have option to only 
 c               take reservoir water if their is a CIR (IWR)
 c               See ireptyp
 c
-c rrb 02/03/15; Revised by R. Bennett to correct a problem when the
+c rrb 2002/03/15; Revised by R. Bennett to correct a problem when the
 c               exchange reservoir is on the same stream as the
 c               exchange structure (diversion or reservoir)
 c
-c rrb 02/04/02 and 02/05/28; Revised by R. Bennett to handle
-c               depletion option when the depletion offset occurrs
+c rrb 2002/04/02 and 02/05/28; Revised by R. Bennett to handle
+c               depletion option when the depletion offset occurs
 c               downstream of the exchange point.
 c               Approach is as follows (see step 8)
 c               1. (Steps 1-7) Calculate exchange with full
@@ -86,16 +83,21 @@ c               5. (Step 8d) Adjust reservoir release to be
 c                  min (avail from exchange point down and CU)
 c               6. (Step 8e) Check
 c               7. (Step 8f) Adjust avail by res release adjustment
-c rrb 02/05/29; Added several quick exits to improve performance
+c rrb 2002/05/29; Added several quick exits to improve performance
 c               Added call to chekava to simplify & use code elsewhere
 c               Added divacty to call statement. Note
 c               divactx is actual release divacty is actual diversion
 c               Miscellaneous clean up performed
-c rrb 02/10/25; Allow monthly on/off switch
+c rrb 2002/10/25; Allow monthly on/off switch
 c
-c rrb 2012/05/23; revise iopdesr(lr) to be the destinatoin type to
-c                 be consistent with other opeating rules
+c rrb 2012/05/23; revise iopdesr(lr) to be the destination type to
+c                 be consistent with other operating rules
 c                 and set iopdes(3,lr) to be the water right limit
+c
+c rrb 2020/04/17; Do not initialize Qres(8 & 9 to avoid recent
+c                 updates to avoid overlap with Qres(18 & 21
+c
+c
 c _____________________________________________________________
 c	Documentation
 c         iw                    water right order
@@ -179,21 +181,22 @@ c _________________________________________________________
 c	Dimensions
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3,cSource*12, 
-     1  cDest*12,  cRelTyp*12, cReplace*3, cDest1*12
+     1  cDest*12,  cRelTyp*12, cReplace*3, cDest1*12, subtypX*8
 c
 c _____________________________________________________________
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 
 c
-c               Step 0; Initilize
+c               Step 0; Initialize
 c		ioutX = 0 no details
 c		       1 details
 c                      2 summary      
-c	              99 summmary independent of ichk
+c	              99 summary independent of ichk
 
 cx      if(ichk.eq.4) write(nlog,*) ' Divrpl; Type 4 Processing ', 
 cx     1  corid(lr)
 
+      subtypX='divrpl  '
       iout=0
       ioutiw=0
       ioutX=0
@@ -233,7 +236,7 @@ c rrb 98/03/03; Daily capability
       smalln=-1.0*small
 c
 c ---------------------------------------------------------
-c		Initilize reporting varaibles      
+c		Initialize reporting variables      
       cwhy='NA'
       cdestyp='NA'
       cSource='NA'
@@ -241,7 +244,7 @@ c		Initilize reporting varaibles
       ccarry='No'
       cpuse='No'
 c
-c rrb 2006/11/20; Initilize to -1 and zero; critical for reoperation      
+c rrb 2006/11/20; Initialize to -1 and zero; critical for reoperation
 c		  e.g. if((divact+small).lt.divalo) ishort = 1
 c     divact = 0.0      
 c     divalo = -1.0/fac
@@ -268,7 +271,7 @@ c ---------------------------------------------------------
 c
       rcu=0.0
 c
-c rrb 2006/11/25; Do not initilize dcrdivx, may be set in replace      
+c rrb 2006/11/25; Do not initialize dcrdivx, may be set in replace      
 cr    dcrdivx=-1/fac
       avail0=-1.0
       avail1=-1.0/fac
@@ -279,15 +282,15 @@ cr    dcrdivx=-1/fac
       nr=0
       nd=0
 c
-c rrb 2012/05/23; revise iopdesr(lr) to be the destinatoin type to
-c                 be consistent with other opeating rules
-c                 and set iopdes(3,lr) to be teh water right limit      
+c rrb 2012/05/23; revise iopdesr(lr) to be the destination type to
+c                 be consistent with other operating rules
+c                 and set iopdes(3,lr) to be the water right limit      
 cx    nrig=iopdesR(lr)
       nrig=iopdes(3,lr)
 c
 c ---------------------------------------------------------
 c
-c rrb 02/04/28; Initilize water right and diversion to date
+c rrb 02/04/28; Initialize water right and diversion to date
 c               if not in replacement mode
 c               Note for a replacement reservoir dcrdivx and divdx
 c               are set in replace.for and passed in via the common
@@ -387,7 +390,7 @@ c     IF(IDIVSW(ND).EQ.0) goto 290
       NDND=NDNNOD(IDCD)
       divreq1=divreq(iuse)
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency      
+c rrb 2006/01/04; Correction to allow variable efficiency      
       if(ieff2.eq.0) then
         effX=diveff(mon,iuse)
       else
@@ -413,7 +416,7 @@ c
 c               Step 1e - Check entire Avail array
 c                         coming into the routine
 c rrb 05/20/96; Check Avail coming into the routine
-      call chekava(4, maxsta, numsta, avail)
+      call chekava(4, maxsta, numsta, avail, subtypX)
 c
 c _____________________________________________________________
 c
@@ -440,7 +443,7 @@ c
 c               Step 3 - Determine Demand
 c
 c rrb 96/03/11; Insure divalo has been defined for reoperation
-c grb 4-20-97 have any replacment constrained by its water right
+c grb 4-20-97 have any replacement constrained by its water right
 c
 c _____________________________________________________________
 c
@@ -596,7 +599,7 @@ c    1   alocfs*fac, curown(iown),cursto(nr), volmin(nr), iown,nr
       
 c
 c rrb 04/31/96; Add constraint for replacement limited by a bookover
-c               Occurrs for replacement reservoirs only)
+c               Occurs for replacement reservoirs only)
       if(tranlim.gt.small) then
 c
 c rrb 98/03/03; Daily capability
@@ -758,7 +761,7 @@ c
 c                Step 7c - Adjust River Type 3 (Need returns to
 c                          maximize Supply)
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency      
+c rrb 2006/01/04; Correction to allow variable efficiency      
 c 130 FORET=1.0-DIVEFF(mon,IUSE)/100.
   130 FORET=1.0-effX/100.
 
@@ -965,7 +968,7 @@ c ---------------------------------------------------------
 c               Step 8c - Calculate CU
 
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency      
+c rrb 2006/01/04; Correction to allow variable efficiency      
 c          rcu=diveff(mon,iuse)/100.*divact
            rcu=effX/100.*divact
 c
@@ -1112,18 +1115,21 @@ c
 c ---------------------------------------------------------  
 c               Step 10c; Update reservoir to in basin use data
 c
-c rrb 02/05/29; Simplify logic
-      IF (IRTURN(IUSE).ne.4) then
-        QRES(8,NR)=QRES(8,NR)-ACTACF
-        accr(8,iown)=accr(8,iown)-actacf
-      else
-c
-c ---------------------------------------------------------  
-c               Step 10d - Update Reservoir to Transmountain
-c                          (irturn(iuse)=4)
-c rrb 02/05/27; Simplify logic
-        QRES(9,NR)=QRES(9,NR)-ACTACF
-      endif
+c rrb 2020/04/17; Do not initialize Qres(8 & 9 to avoid recent
+c                 updates to avoid overlap with Qres(18 & 21
+c TEST
+cxc rrb 02/05/29; Simplify logic
+cx      IF (IRTURN(IUSE).ne.4) then
+cx        QRES(8,NR)=QRES(8,NR)-ACTACF
+cx        accr(8,iown)=accr(8,iown)-actacf
+cx      else
+cxc
+cxc ---------------------------------------------------------  
+cxc               Step 10d - Update Reservoir to Transmountain
+cxc                          (irturn(iuse)=4)
+cxc rrb 02/05/27; Simplify logic
+cx        QRES(9,NR)=QRES(9,NR)-ACTACF
+cx      endif
 
   290 continue
 c
@@ -1131,14 +1137,14 @@ c
 c ---------------------------------------------------------  
 c               Step 10e - Update data to be passed out
 c                          of this routine. Note
-c                          divact .NE. relact if relese
+c                          divact .NE. relact if release
 c                          for depletion only
 c
 c _____________________________________________________________
 c               
 c               Step 11 - Check Entire Avail array
 c rrb 05/20/96; Check Avail going out of the routine
-      call chekava(4, maxsta, numsta, avail)
+      call chekava(4, maxsta, numsta, avail, subtypX)
 c
 c _____________________________________________________________
 c
@@ -1161,7 +1167,7 @@ c rrb 99/05/10;
 c
 c _____________________________________________________________
 c
-c                Step 14 - Final printout befor exit
+c                Step 14 - Final printout before exit
   300 continue
 c
 c rrb 2006/05/02 Convergence 

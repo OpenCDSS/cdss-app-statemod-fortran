@@ -2,7 +2,7 @@ c resrpl - Type 5 operating rule, reservoir to reservoir exchange
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine resrpl(iw,l2,divactx,ncallX)
 c
 c
@@ -30,8 +30,22 @@ c
 c _________________________________________________________
 c       Update History
 c
-c rrb 96/03/13; initilize divact, send returns to bottom & set divo
-c rrb 02/10/22; Allow monthly on/off switch (imonsw)
+c
+c rrb 2020-04-03; Add qdiv(38 to .xdd reporting to include
+c                 From Storage to River for Exchange in column
+c                 Carried, Exchange, Other
+c       qdiv(38,ipcd) = qdiv(38,ipcd) + stocfs
+c
+c
+c rrb 2020-04-03; Correct *.xre reporting  to both
+c                 From Storage to River for Use and
+c                 From Storage to River for Exchange only
+cx      qres(9,nr)=qres(9,nr)+actacf
+cx      accr(9,iown)=accr(9,iown)+actacf
+c
+c rrb 2002/10/22; Allow monthly on/off switch (imonsw)
+c
+c rrb 1996/03/13; initialize divact, send returns to bottom & set divo
 c
 c _________________________________________________________
 c       Documentation
@@ -46,6 +60,14 @@ c      iownd = destination reservoir account
 c      ircd  = destination reservoir river station
 c      ndnr  = destination reservoir downstream info
 c
+c      qdiv(38 Carried water reported as Carried, Exchange 
+c              or Other at source but not used to calculate
+c              River Divert in Outmon.f  
+c
+c	     qres(3  From River by Other (e.g. Exchange, etc.)
+c      qres(21 From Storage for Exchange at Source
+
+
 c _________________________________________________________
 c	Dimensions
 c
@@ -55,7 +77,7 @@ c
       
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
 c		iout=0 No details
 c		iout=1 Details
@@ -170,7 +192,7 @@ C
       ndnr  = ndnnod(ircd)   
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr    iownd = nowner(nrd)+iopdes(2,L2)-1
       nro=1
       if(iopdes(2,l2).lt.0) then
@@ -362,11 +384,19 @@ c
 c
       curown(iown)=curown(iown)     - actacf
 c
-      qres(9,nr)=qres(9,nr)+actacf
+c rrb 2020-04-03; Add qdiv(38 to .xdd reporting to include
+c                 From Storage to River for Exchange in column
+c                 Carried, Exchange, Other
+       qdiv(38,ipcd) = qdiv(38,ipcd) + stocfs
 c
-c rrb 04/20/96; problem with *.xre
-c     accr(9,iown)=qres(9,iown)+actacf
-      accr(9,iown)=accr(9,iown)+actacf
+c rrb 2020-04-03; Correct *.xre reporting  to both
+c                 From Storage to River for Use and
+c                 From Storage to River for Exchange only
+cx      qres(9,nr)=qres(9,nr)+actacf
+cxc
+cxc rrb 04/20/96; problem with *.xre
+cxc     accr(9,iown)=qres(9,iown)+actacf
+cx      accr(9,iown)=accr(9,iown)+actacf
 c
 c _________________________________________________________
 c

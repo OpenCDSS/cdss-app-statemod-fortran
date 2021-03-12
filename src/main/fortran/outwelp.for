@@ -2,7 +2,7 @@ c outwelp - prints for every well structure every Aug plan with well pumping
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ c		qpA(i)= annual pumping by a ditch associated with plan i
 c
 c		qtAA(im) = Average total basin pumping in month im
 c		qpAA(im) = Average basin pumping to a plan in month im
-c		qxAA(im) = Aveage basin pumping not to a plan in month im
+c		qxAA(im) = Average basin pumping not to a plan in month im
 c
 c		iplan     = number of plans tied to this well
 c		cwellP(i) = augmentation plan ID associated with this well
@@ -73,7 +73,7 @@ c
       data qpAA/13*0.0/, qxAA/13*0.0/, qtAA/13*0.0/
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
       write(6,101) 'OutWelP  '
       write(nlog,101) 'OutWelP  '
  101  format(/,72('_'),/'  Subroutine ', a8)

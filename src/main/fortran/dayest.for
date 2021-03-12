@@ -2,7 +2,7 @@ c dayest - opens daily files and reads them 1x/month
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ c     dimension dumd(32,2001)
 c
 c
 c _________________________________________________________
-c		Initilzie
+c		Initialize
 c
 c     write(6,*) '  Dayest; iin, i12', iin, i12
 c
@@ -397,7 +397,7 @@ c ----------------------------------------------------------
 c               Step 9b; Return Flow - adjust units and total
 c
 c
-c rrb 01/11/30; Initilize 
+c rrb 01/11/30; Initialize 
 	     dlytot(idl)=0.0 
 c
 c rrb 01/11/30; Test set day 1 = 0
@@ -475,7 +475,7 @@ c rrb 05/06/21; revise to use correct year type
      1                infile, idummy, nCalX, fpath1, rec256)
 c
 c _________________________________________________________
-c               End of once per initilization
+c               End of once per initialization
 c
 c rrb 03/01/16; Provide header for detailed baseflow output
          if(ichk8.eq.1) then
@@ -885,7 +885,7 @@ c
 
 c
 c _________________________________________________________
-c               Step 22; End of Daily Initilization
+c               Step 22; End of Daily Initialization
 
  22	goto 500
       endif

@@ -2,7 +2,7 @@ c spruse - Type 21 Operating Rule, Sprinkler Use
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ c	Program Description
 c
 c       Spruse; It simulates a Type 21 Operating Rule for Sprinkler Use
 c
-c	 CAlled by Execut
+c	 Called by Execut
 c               
 c       Note datip checks if isprink.ne.1 or itsfile.ne.1 or
 c               ieffmax.ne.1 iwell.ne.1
@@ -48,7 +48,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
       iout=0
       if(ichk.eq.121) iout=1
 
@@ -109,7 +109,7 @@ c
 c               Skip if sprinkler acreage is small
         if(areasp(nw).lt.small) goto 200
 c
-c               Insure we have sprinker efficiency data
+c               Insure we have sprinkler efficiency data
         if(effmaxs(nw).lt.small) then
           write(io99,120) cdividw(nw)
           goto 9999

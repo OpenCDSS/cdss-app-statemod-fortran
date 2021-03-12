@@ -4,7 +4,7 @@ c          is critical when releasing to meet a depletion.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       Subroutine RelDep(nlog,  iyr, mon, iw, iwx, cidvri,cdivid1,
      1   maxsta, numsta, avail, avtemp, idncod,
      1   fac, ieffmax, ieff2, 
@@ -55,10 +55,10 @@ c _________________________________________________________
 c	Dimensions
 c
       dimension avail(maxsta), avtemp(maxsta),IDNCOD(maxsta)
-      character cidvri*12,cdivid1*12
+      character cidvri*12,cdivid1*12, subtypX*8
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c      
 c		iout=1 details
 c		iout=2 summary details
@@ -66,13 +66,18 @@ c		iout=2 summary details
       relact1=relact  
       relact2=0.0
       relact3=0.0
-      smalln=-1.*0.001
+      smalln=-1.*0.001   
+      
+      subtypX='reldep  '
 c
 c _________________________________________________________
 c
 c		Step 1; Check avail is OK (stop if AVAIL<0 (istop=1))
       istop=1		
-      call chekav2(22, maxsta, numsta, istop, fac, AVAIL, IMCD, AvMin1)
+c
+c rrb 2018/07/15; Revise number of operating rules      
+      call chekav2
+     1(22, maxsta, numsta, istop, fac, AVAIL, IMCD, AvMin1, subtypX)
 c
 c _________________________________________________________
 c
@@ -130,14 +135,17 @@ c
 c _________________________________________________________
 c
 c		Step 5; Adjust avtemp for return flow
-c		Assume it occurrs at the diversion point (ndnD, idcD)
+c		Assume it occurs at the diversion point (ndnD, idcD)
       call takou2(maxsta, AVTEMP, idncod, RETN, ndnD, idcD)
 c
 c _________________________________________________________
 c
 c		Step 6; Check Avtemp for negatives
       istop=0
-      call chekav2(2, maxsta, numsta, istop, fac, AVTEMP, IMCD, AvMin2)
+c
+c rrb 2018/07/15; Revise number of operating rules      
+      call chekav2
+     1  (2, maxsta, numsta, istop, fac, AVTEMP, IMCD, AvMin2, subtypX)
 c _________________________________________________________
 c      
 c		Step 7; If Avtemp >=0, Done (released to meet depletion)
@@ -155,8 +163,11 @@ c
 c _________________________________________________________
 c
 c	        Step 9; Check Avtemp
+c
+c rrb 2018/07/15; Revise number of operating rules
       istop=0
-      call chekav2(2, maxsta, numsta, istop, fac, AVTEMP, IMCD, AvMin3)
+      call chekav2
+     1  (2, maxsta, numsta, istop, fac, AVTEMP, IMCD, AvMin3, subtypX)
 c
 c		Step 10; Set new release      
  200  relact=relact2+relact3
