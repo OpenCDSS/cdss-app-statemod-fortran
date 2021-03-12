@@ -3,7 +3,7 @@ c         when the product of (return table sum) * (percent on the river) < 100%
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -38,16 +38,16 @@ c               Called by Dayest 1x per simulation for daily
 c                       return data icx=1
 c
 c _________________________________________________________
-c		Upate History
+c		Update History
 c rrb 2006/04/18 Add reservoir return flow loss
-c		 Initilize loss to 100% (applies when no return
+c		 Initialize loss to 100% (applies when no return
 c                  data is provided)
 c		     
 c _________________________________________________________
 c
 c               Documentation
 c
-c               idivsw(nd)      > 0 SW strcuture is on
+c               idivsw(nd)      > 0 SW structure is on
 c               idivsww(nw)     > 0 GW structure is on
 c
 c               nrtnw(nd)       # of well returns

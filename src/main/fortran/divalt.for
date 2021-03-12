@@ -4,7 +4,7 @@ c          Destination is a diversion or well.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,9 +19,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-c
-c     Last change:  RRB  18 Dec 100    2:29 pm
 c
       SUBROUTINE DivAlt(IW,L2,ISHORT,divactx,ncallx)
 c
@@ -126,11 +123,11 @@ c _____________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      character ctype1*12, corid1*12
+      character ctype1*12, corid1*12, subtypX*8
       character cwhy*45, cdestyp*12, ccarry*3, cpuse*3, cidvri*12
 c
 c_____________________________________________________________
-c               Step 1; Common Initilization
+c               Step 1; Common Initialization
 c		iout = 0 no details
 c		       1 details
 c          2 summary      
@@ -138,7 +135,8 @@ c          2 summary
       ioutiw=0
       isub=39
       
-      corid1=corid(l2)
+      corid1=corid(l2)  
+      subtypX='DivAlt  '
       
       if(ichk.eq.139) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw
@@ -361,7 +359,7 @@ c     write(nlog,*) ' DivAlt; #3a ndr ', ndr
       endif  
 c
 c_____________________________________________________________
-c               Step 9; Initilize avtemp
+c               Step 9; Initialize avtemp
 c
        DO IS=1,NUMSTA               
          AVTEMP(IS)=AVAIL(IS)       
@@ -538,9 +536,12 @@ c               Step 18; Find any negative values in Avail
 c			 May occur when the Alt Point is a well. Note:
 c			 istop =  0 DO NOT STOP if a negative is found
 c		                  1 DO STOP if a negative is found
-      istop=0      
-      call chekav2(
-     1  icall, maxsta, numsta, istop, fac, AVAIL, IMCD, AvMin)
+      istop=0 
+c
+c rrb 2018/07/15; Revise number of operating rules      
+      call chekav2
+     1  (icall, maxsta, numsta, istop, fac, AVAIL, IMCD, AvMin, subtypX)
+     
         AvailC2=avail(imcd)   
       
 c

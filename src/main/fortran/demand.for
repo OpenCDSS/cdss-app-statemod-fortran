@@ -3,7 +3,7 @@ c          and sets sprinkler demand
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,11 +19,8 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
-C     Last change:  RRB   8 Jan 2002    5:38 pm
       subroutine demand(ityp,maxdivx,maxdivwx)
 c
-c
-c _________________________________________________________
 c	Program Description
 c
 
@@ -35,12 +32,16 @@ c
 c _________________________________________________________
 c
 c       Update History
+c
+c rrb 2020/07/28; Version 16.00.38
+c                 Replaced diwrreqw(nw)=diwrwx(nd)* ca with
+c                          diwrreqw(nw)=diwrreqw(nw)* ca
 c rrb 01/04/13; Revised to test for zero efficiency for Closed Basin
 c rrb 01/12/17; Revised to allow daily model to operate using a
 c               running monthly demand.  Approach:
 c                 idaydem controls 0=off, 1=on
 c                 idaydem is read as iday in datinp and set
-c                 Define new varaible divreqd (daily demand)
+c                 Define new variable divreqd (daily demand)
 c
 c                 if daily and idaydem is on and day = 1
 c                   diverx = diverd(32,nd)*mthday(mon) Monthly value
@@ -77,7 +78,7 @@ c Well Inputs
 c	 diverW(mon,nw)			Well Demand (Mdainp *.ddm)
 c	 diverirW(mon,nw)		Well IWR (Mdainp *.ddm)
 c	 diwrW(mon,nw)			Well IWR (Mdainp *.ddc)
-c	 diwrWX(nw)			Well IWR (Demand *.ddm or *.ddc)
+c	 diwrWX(nw)			    Well IWR (Demand *.ddm or *.ddc)
 c	
 c Well Outputs
 c	 divreqW(nw) = diverx(nw) = diver(mon,nw) 	Well Demand
@@ -118,7 +119,7 @@ c     write(nlog,*) '  Demand; iout ', iout
 
 c
 c _________________________________________________________
-c               Step 1; Initilize Diversion Data based on
+c               Step 1; Initialize Diversion Data based on
 c               time step
 c
 c ---------------------------------------------------------
@@ -221,7 +222,7 @@ c         diwrwx(nw)=diwrdw(idy,nw)
 
       endif
 c _________________________________________________________
-c               Step 2; Initilize Diversion Demand (DIVREQ) 
+c               Step 2; Initialize Diversion Demand (DIVREQ) 
 c		Note Same calculations for Monthly or Daily
 c               Note may be adjusted to include well demands below
 c		Note numuse is number of diversion users
@@ -245,7 +246,7 @@ c		Note AreaSF(nd) is a fraction
 
 c
 c _________________________________________________________
-c               Step 3; Initilize well demand (divreqw) 
+c               Step 3; Initialize well demand (divreqw) 
 c                       and adjust diversion demand based on
 c                       how well data is provided
 c rrb 01/01/15;         Note for sprinkler demand (isprink>0), 
@@ -253,7 +254,7 @@ c                       datinp.f checks that we have appropriate data
       do nw=1,numdivw
 c
 c ---------------------------------------------------------
-c               Initilize
+c               Initialize
 c
         ca=1.0
         nd=idivcow2(nw)   
@@ -296,7 +297,10 @@ c		D&W Lands (nd>0)
               call coeffa(areawa(nw), area(nd), small, ca, 
      1                    izero, ioutX, io99, cdivid(nd)) 
             endif
-            diwrreqw(nw)=diwrwx(nd)* ca
+c
+c rrb 2020/07/28; Correction
+cx          diwrreqw(nw)=diwrwx(nd)* ca
+            diwrreqw(nw)=diwrreqw(nw)* ca
           endif
         endif
         

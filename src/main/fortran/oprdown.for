@@ -3,7 +3,7 @@ c           is downstream of a structure loacted at iss with ndns2 downstream no
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
         subroutine oprdown(nlog, maxsta, ndns2, iss, iscd, idncod, 
      1    cidvri, csource, cdest)
 c
@@ -42,7 +42,7 @@ c
         character cidvri*12, csource*12, cdest*12
 c
 c _________________________________________________________
-c		Step 1; Initilze        
+c		Step 1; Initialize        
         iout=0
         iss1=iss
         itype=1
@@ -52,7 +52,9 @@ c		Set data for debug output
         nsdest= iscd
 
         do is=1,ndns2
-c         write(nlog,*) '  Oprdown; ',is, iss, iscd
+          if(iout.eq.1) then
+            write(nlog,*) '  Oprdown; ',is, iss, iscd, ndns2
+          endif
           if(iss.eq.iscd) goto 500
           iss=idncod(iss)
         end do

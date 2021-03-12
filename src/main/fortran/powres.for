@@ -2,7 +2,7 @@ c powres - simulates a power or ISF right
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine powres(iw,l2,divact,ncallx)
 c
 c
@@ -29,9 +29,9 @@ c
 c _________________________________________________________
 c       Update History
 c
-c rrb 03/13/96; initilize divact, send returns to bottom & set divo
+c rrb 03/13/96; initialize divact, send returns to bottom & set divo
 c rrb 98/03/03; Daily Capability
-c rrb 02/10/25; Allowm monthly on/off switch
+c rrb 02/10/25; Allow monthly on/off switch
 c
 c _________________________________________________________
 c	Dimensions
@@ -40,7 +40,7 @@ c
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3 
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
       iw = iw
       
       iout=0
@@ -268,7 +268,7 @@ c               Formats
      1  ' Carrier (Y/N) = ',a3, ' Reuse Plan (Y/N) = ', a3/
      1  ' DivCar       iyr mon   day ID          ',
      1  '    Iter      Iw  nwrord      l2      l2      nF   ipUse', 
-     1  '   imcdX  availX demandX divaloS psuplyT divactX',
+     1  '   imcdX  availX demandX divaloS      NA divactX',
      1  '    iwhy Comment',/
      1  ' ___________ ____ ____ ____ ____________', 
      1  ' _______ _______ _______ _______ _______ _______ _______', 

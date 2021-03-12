@@ -2,7 +2,7 @@ c soilm - Type 22 Operating Rule, Soil Moisture Use
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ c       Type 22 Operating Rule Soil Moisture Use
 c       Approach
 c               Call 1x per time step
 c               Loop for every diversion
-c               Satisfy remaing demand with available Soil Storage
+c               Satisfy remaining demand with available Soil Storage
 c               Loop for every well only land
-c               Satisfy remaining demand with avalable Soil Storage
+c               Satisfy remaining demand with available Soil Storage
 c               
 c
 c rrb 01/07/31; Revised to allow CU as a function of IWR only 
@@ -51,7 +51,7 @@ c
       character cwhy*48
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c     write(nlog,*) '  Soilm; idy, mon, iyr', idy, mon, iyr
 c
@@ -125,7 +125,7 @@ c               Step 5; Check
       
 c
 c _________________________________________________________
-c               Step 2; Soil Moisure to Div Only & D&W 
+c               Step 2; Soil Moisture to Div Only & D&W 
       nw=0
       do nd=1,numdiv
         iuse1=nduser(nd)

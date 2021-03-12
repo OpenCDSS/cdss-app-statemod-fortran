@@ -2,7 +2,7 @@ c riginp - reads in water right data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ c       Update History
 c
 c 2008/09/22;   Store on/off switch read (e.g. idvrsw1 not idvrsw) in 
 c               order to allow more than one operating rule
-c	        to refrence a water right
+c	        to reference a water right
 
 c 2003/08/18;   Revise to allow random file read
 c 2003/10/24;   Revise to allow iresco(2,k) = 0 to allow

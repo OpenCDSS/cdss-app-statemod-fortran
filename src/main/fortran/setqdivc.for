@@ -3,7 +3,7 @@ c            It also calculates return flows from any losses.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ c	Program Description
 c
 c	  It sets qdiv data for carriers and return to River
 c	  Also it calculates return flows from any losses
+c   Note it does not set qdiv for the source
 c
 c	  Note:
 c	    1. If the source is also a carrier it is handled 100%
@@ -41,7 +42,7 @@ c	    	 in the Calling Program and SetQdiv.
 c	    2. If the destination is the carrier, it is handled
 c		     100% in SetQdiv
 c	    3. If the carrier is a return to river (ncar=intern(l2,i)<0    
-c		     nothing occurrs
+c		     nothing occurs
 c		
 c
 c _________________________________________________________
@@ -96,7 +97,7 @@ c
         character corid1*12
 c
 c _________________________________________________________
-c		Step 1; Initilize        
+c		Step 1; Initialize        
 c		    iout=0 No detailed output
 c           =1 Details
         iout=0
@@ -134,15 +135,15 @@ c		Detailed output
         endif  
 c   
 c _________________________________________________________
-c   Step 1b; Return (goto 150) if no carrier       
+c                Step 1b; Return (goto 150) if no carrier       
         if(ncarry.eq.0) goto 150
 c
 c _________________________________________________________
-c		Step 2; Set Loss data
+c		             Step 2; Set Loss data
 c
 c rrb 2010/10/15; Correction for a water balance
 c                 report system (tranloss) at the destination;
-c                 not befor water is carried.     
+c                 not before water is carried.     
 cx      OprLos1=divactX*TranLoss
         OprLos1=0.0
         OprLos2=(divactX-Oprlos1)*(1.0-EffmaxT1)
@@ -151,7 +152,7 @@ cx      OprLos1=divactX*TranLoss
         divactC=divactX*OprEff1
 c
 c _________________________________________________________
-c		Step 3; Set Carrier Data
+c		             Step 3; Set Carrier Data
 c			Note: 
 c       nlast=0 last structure in the carrier loop was a diversion
 c			       =1 last structure in the carrier loop was a river return
@@ -178,7 +179,7 @@ cx          divmon(ncar)=divmon(ncar)+divactC
             OprLosT=divactC*(1.0-effmaxT1)
 c
 c _________________________________________________________
-c		Case 1; Carrier is the Source 
+c		             Case 1; Carrier is the Source 
 c		Note diversion from river (source data)
 c		 is set in SetQdiv 
             if(inode.eq.iscd) then
@@ -187,8 +188,9 @@ c		 is set in SetQdiv
             endif  
 c
 c _________________________________________________________
-c		Case 2 Carrier is the Destination (diversion from the river)
-C		Note idcdX is the final destination (NOT THE CARRIER)
+c		             Case 2 Carrier is the Destination 
+c                (diversion from the river)
+C		             Note idcdX is the final destination (NOT THE CARRIER)
 c
 c
 c rrb 2018/02/24; Correction for water balance issues to allow
@@ -208,7 +210,7 @@ c
             endif  
 c
 c _________________________________________________________
-c		Case 3 Simple Carrier
+c		             Case 3 Simple Carrier
 c rrb 2008/02/04;	Set Loss             
 c		qdiv(18 Carrier passing through a structure
 c		qdiv(31 From River by Sto/Exc/Plan by type 27 or 28
@@ -238,8 +240,9 @@ cx	      if(icx.eq.45) ndest=19
             endif  
 c
 c _________________________________________________________
-c		Step 4;	Calculate return flows from transit losses
-c		Intvn = diversion ID or Use, Inode=stream location     
+c		             Step 4;	Calculate return flows from transit losses
+c		                      Intvn = diversion ID or Use, Inode=stream 
+c                                 location     
 
  100        if(OprLosT.gt.small) then
 cx              if (corid1(1:11).eq.'OpThBurl.01') then 
@@ -258,7 +261,7 @@ c		  Define Carried water for next carrier
           endif
 c
 c _________________________________________________________
-c		Step 5;	Set Releases back to the River
+c		             Step 5;	Set Releases back to the River
           
           if(internT(l2,i).eq.2) then
             icase=4
@@ -270,7 +273,7 @@ c           write(nlog,*) ' SetQdivc; qdiv(36', i, l2,inode,divactC*fac
 c
 c
 c ---------------------------------------------------------
-c		Detailed output
+c		             Detailed output
           if(iout.eq.1) then
             if(i.eq.1) write(nlog,200)
             write(nlog,210) 'SetQdivC OUT', icx, corid1, 
@@ -285,7 +288,7 @@ c		Detailed output
         end do  
 c
 c _________________________________________________________
-c		Step 5; Return        
+c		             Step 5; Return        
  150    return
 c
 c _________________________________________________________

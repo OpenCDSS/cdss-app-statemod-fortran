@@ -4,7 +4,7 @@ c          minimum available flow (pavail) given the demand (divalo).
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       Subroutine DsaMod(
      1   icx, ioutIN, l2, imcd, iscd, ndns, nd, iuse, ieff2, 
      1   fac, pavail,  divalo, divact, oprEffT, divactL, 
@@ -95,7 +95,7 @@ c    	Dimensions
      1  cwhy*48,    rec12*12,   cCallBy*12, corid1*12, cCallBy2*12
 c     
 c_____________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c		iout=0 No details
 c		    =1 details
@@ -105,13 +105,16 @@ c
 c		  iout6 = details of icase = 5
 c
 c		  ioutZ =0 NO details from Rtnsec
-c		      >0 Details from Rtnsec if iout=1
+c		        >0 Details from Rtnsec if iout=1
 c	  	Do not control detail from the calling program (ioutIN)
 c     iout=ioutIN
 c     ioutZ=0
+c
+c rrb 2018/07/29; Limit output from DivCarL
+cx    ioutZ=ioutIN
       iout=0
       iout6=0
-      ioutZ=ioutIN  
+  
 c
 c rrb Turn the following on to see details when the check
 c     option is on for a specified operating rule          
@@ -432,7 +435,7 @@ c ---------------------------------------------------------
 c rrb 2009/01/24; 
 c		 Step 3f; Exit for type 45 (DivCarL) since it is known:
 c	         returns will be increased by carrier losses (if any)
-c		  in DivCarL.
+c		       in DivCarL.
 c
       if(icx.eq.45) then
         icase=5

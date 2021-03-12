@@ -2,7 +2,7 @@ c accou - distributes a reservoir right to individual accounts
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ c
 c _________________________________________________________
 c
 c               Update History
-c	2006/09/25; Added icx calling subroutine
+c       2006/09/25; Added icx calling subroutine
 c       2003/10/27; Add ability to distribute based on ownership ratio
 c                   (e.g. iresty1 = 0)
 c
@@ -50,16 +50,17 @@ c                       water right
 c       cursta          total available in all ownership accounts
 c       actaf           amount stored
 c
-c       iresty1	        type of account distribution
-c			                  0 Ownership Ratio 
+c       iresty1         type of account distribution
+c                       0 Ownership Ratio 
 c                       1 Available Space 
-c                      -1 One Account  
-c	      ia		account to adjust
+c                       -1 One Account  
+c       ia              account to adjust (used by Outmon)
 c
-c       icx    		subroutine call ID
+c       icx             subroutine call ID
 c                             111=divcar,   114=divcar1,  116=DirectFS,
 c                             119=divcar2,  124=directEx, 125=directBy,
-c			                        126=directWR, 127=DivresP,  202=resrg1   
+c                             126=directWR, 127=DivresP,  202=resrg1,
+c                             145=DivCarL
 
 c _________________________________________________________
 c
@@ -73,7 +74,7 @@ c
 c
 c _________________________________________________________
 c
-c               Initilize
+c               Initialize
         iout=0
         nlog=99
         nr=nr
@@ -89,7 +90,7 @@ c               Initilize
 c _________________________________________________________
 c
 c               Distribute based on available space 
-c		            to first n accounts
+c               to first n accounts
 c
 cx      if(iresty1.ne.0) then
         if(iresty1.ge.1) then

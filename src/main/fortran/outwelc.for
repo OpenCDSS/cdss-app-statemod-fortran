@@ -2,7 +2,7 @@ c outwelc - prints a table of well pumping historic vs calculated
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ c
      1 rec12*12
 c
 c _________________________________________________________
-c	Initilize
+c	Initialize
 c
       iout=1
 c      
@@ -64,7 +64,7 @@ c     write(6,*) ' '
       write(99,*) ' Outwelc; cplot = ', cplot, 
      1  ' # of reaches = ',nreach
 c             
-c               Step 1; Initilize
+c               Step 1; Initialize
 c _________________________________________________________
 c
 c
@@ -156,7 +156,7 @@ c
 c
   140 continue
 c 
-c               Initilize Total Data
+c               Initialize Total Data
       call average(maxsta,-1,1,im,iy1,nyr1,
      1               1.0,d1,d2,d3,d4,d5,dum,dum2,
      1             iz, maxrch, maxyrs, dum3D)
@@ -185,7 +185,7 @@ c
 c               Step 3; Print Title
 c _________________________________________________________
 c 
-c               Initilize structure data
+c               Initialize structure data
 c       call average(maxsta,0,1,numres,0,nyr1,
         call average(maxsta,0,1,im,iy1,nyr1,
      1               1.0,d1,d2,d3,d4,d5,dum,dum2,

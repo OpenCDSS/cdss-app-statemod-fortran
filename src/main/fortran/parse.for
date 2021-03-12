@@ -2,7 +2,7 @@ c parse - parses thru the command line to find request
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
         subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)   
 c        
 c
@@ -35,7 +35,7 @@ c               wells with sprinklers get used first)
 c
 c rrb 02/05/07; Added gettyp and getpar for daily plotting capability
 c
-c rrb 03/06/02; Revise to recognize -NoLog as a seconary
+c rrb 03/06/02; Revise to recognize -NoLog as a secondary
 c               option and to print to a log file only if
 c               -NoLog is off
 c rrb 05/01/06  Add plan output type 21
@@ -51,9 +51,13 @@ c
         dimension want(15), want2(25), wantx(15), titleh(25)
 c
 c rrb 00/08/04; Revise maximum command line length
-        character command*127, want*12, want2*12, rec12*12, filenc*256,
+c rrb 2019-01/31; Revise maximum command line length from 127 to 256
+        character command*256, want*12, want2*12, rec12*12, filenc*256,
      1            getid*12,  wantx*10, titleh*50,
      1            gettyp*12, getpar*12, rec1*1
+c
+c rrb 2018/08/14; Update to allow larger file names
+        character rec36*36
 
         data want/
      1     '-baseflow   ', '-simulate   ',
@@ -110,12 +114,12 @@ c rrb 00/08/04; Revise maximum command line length
 
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c		iout = 	0 no details
 c			1 details
 c			2 summary
-        iout = 2
+        iout = 1
         
         if(iout.eq.1) write(99,*) '  Parse'
 c
@@ -123,11 +127,15 @@ c               Get command line data
         nin = 25
 c
 c rrb 00/08/04; Maximum command length
+c rrb 2019/01/31; Maximum command length
         maxcl = 127
-c       maxcl = 256
+cx      maxcl = 256
 c
 c               Maximum want size (a12)
-        maxwant=12
+c
+c rrb 2018/08/14; Increase file size
+cx      maxwant=12
+        maxwant=36
         nwant=15
 c
 c _________________________________________________________
@@ -147,7 +155,7 @@ c
 c               Find control file name, use statem as a default
         filenc = 'statem' 
 c
-c               Initilize
+c               Initialize
         ioptio  = 0
         ioptio2 = 0
         getid  = ' '
@@ -161,12 +169,21 @@ c               Step 3; Find control file name
 c                       (command is packed to left)
 c
 c rrb 2008/09/16; Allow operation without a control file name
+c rrb 2019/01/31; Detailed output
+        if(iout.eq.1) write(99,*) ' Parse; 0, command(1:1) ',
+     1                0, command(1:1)
+
         if(command(1:1) .ne. '-') then
           filenc = ' '
           do i=1,maxcl
 c
 c rrb 2004/08/23; Allow a full response name with .rsp
 c           if(command(i:i) .ne. ' ') then
+c
+c rrb 2019/01/31; Detailed output
+             if(iout.eq.1) write(99,*) ' Parse; i, command(i:i) ',
+     1                    i, command(i:i)
+c     
             if(command(i:i) .ne. ' ' .and. command(i:i).ne.'.') then
               filenc(i:i) = command(i:i)
               ii = i
@@ -175,12 +192,12 @@ c           if(command(i:i) .ne. ' ') then
             endif
           end do
         endif
+  110   if(iout.eq.1) write(nlog,*) ' Parse; filenc = ', filenc
 c
 c _________________________________________________________
 c
 c               Step 4; Get the primary option type (if any)
 c
-  110   if(iout.eq.1) write(nlog,*) ' Parse; filenc = ', filenc
         rec12 = ' '
         do i=ii+1,maxcl
           if(command(i:i).eq. '-') then
@@ -206,8 +223,8 @@ c rrb 2008/09/10; Revise to handle bad data better
 c         goto 500
           goto 400
         endif
-        
-        if(rec12.ne.'            ') then
+c            
+        if(rec12.ne.'            ') then      
           do i=1,nwant
             if(rec12.eq.want(i) .or. rec12.eq.wantx(i)) ioptio = i 
           end do                       

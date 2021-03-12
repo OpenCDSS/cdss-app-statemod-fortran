@@ -2,7 +2,7 @@ c dnmfso - finds the minimum flow at station iscd and downstream
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+C
       SUBROUTINE DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD,NDNS,IMCD)
 c
 c
 c _________________________________________________________
 c	Program Description
 c
-c       Dnmfso; It finds the minimum flow at station iscd
-c               and downstream
+c       Dnmfso; It finds the minimum flow node(IMCD) from
+c                station iscd and downstream
 c
 c _________________________________________________________
 c	Dimensions
@@ -36,7 +36,7 @@ c
 C
 C-------------------------------------------------------------------
 C
-C------  FIND THE DOWNSTEAM MINMUM FLOW NODE OF STATION ISCD
+C------  FIND THE DOWNSTEAM MINMUM FLOW NODE (IMCD) BELOW STATION ISCD
 C
 C-------------------------------------------------------------------
 C

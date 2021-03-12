@@ -2,7 +2,7 @@ c directfs - Type 16 operating rule, Direct Flow Storage
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -92,8 +92,8 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize
-c		iout=0 no detials
+c               Step 1; Initialize
+c		iout=0 no details
 c		     1 details
 c		     2 summary
       iout=0
@@ -216,7 +216,7 @@ cr      curown1=curown(iown)
 cr      ownmax1=ownmax(iown)
 c
 c ---------------------------------------------------------
-c rrb 2007/03/08; Allow multiple accounts - Initilize
+c rrb 2007/03/08; Allow multiple accounts - Initialize
 cr      irow=nowner(nd)+iopdes(2,lr)-1
 
         nro=1

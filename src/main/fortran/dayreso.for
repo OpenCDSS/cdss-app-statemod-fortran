@@ -2,7 +2,7 @@ c dayreso - prints daily reservoir data by account
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ c
 c
 c _________________________________________________________
 c
-c	Initilise
+c	Initialize
 c           
       write(6,*) ' Subroutine Dayreso'
       write(6,*) ' '
@@ -61,7 +61,7 @@ c
 c rrb 2006/01/21; Columns of data impacted by a new file size		
 c               nbom = column of BOM data (1)
 c		nemo = column of EOM data (16)
-c		ntar = column of Tartet data (17)
+c		ntar = column of Target data (17)
 c		none = column of One fill or BOM limit (18)
 c		nidr = columns of irdr (account))
 c		naccX = columns of nacc ( )
@@ -121,7 +121,7 @@ c
       ir1 = 0
       ir  = 0
 c
-c              Set parameters for a plot or non plot retrevial
+c              Set parameters for a plot or non plot retrieval
       idat = 0                     
 
       do 180 ip=1,nid
@@ -171,7 +171,7 @@ c               Get Owner name
         endif
 c
 c               Print header
-c       write(6,*) '  Dayreso befor headin nf = ', nf 
+c       write(6,*) '  Dayreso before headin nf = ', nf 
           write(nf,190) cunitd,
      1                  headin1(1), headin1(2),ip1,
      1                  cresid(ir), resnam1(ir),
@@ -191,7 +191,7 @@ c
           do im=1,12
 c
 c              Print title every month
-c           write(6,*) '  Dayreso befor year nf=', nf
+c           write(6,*) '  Dayreso before year nf=', nf
             write(nf,200) (i, i=1,nresY)
             call year(iy, iyrmo, imomo, cyr1)
 
@@ -215,7 +215,7 @@ c
 
 c             cx = cu
 c
-c               Daily Model capabiity
+c               Daily Model capability
 c             if(iresop.ne.1) cx=cu*mthday(im)
 c
 
@@ -241,7 +241,7 @@ cx              endif
               ida0 = ida + 1
               nacc = dat2(naccX)
 c
-c               Annual total, except for initial and ending stroage
+c               Annual total, except for initial and ending strorage
               do i=1,nresX
                 dat2(i)=dat2(i)*fdy(im)       
                 

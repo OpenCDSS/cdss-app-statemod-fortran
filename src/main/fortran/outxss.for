@@ -2,7 +2,7 @@ c outxss - prints a Structure Summary Output (*.xss)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ c
       call flush(6)
 c
 c _________________________________________________________
-c               Step 2; Initilize      
+c               Step 2; Initialize      
 c
 c rrb 2007/09/06; Revised format
 c     nss = 31

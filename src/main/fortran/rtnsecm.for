@@ -3,7 +3,7 @@ c           It turns off future returns when zero value occurs after a non-zero 
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ c
 c       RtnSecM; It calculates FIXED (constant) return obligations
 c		
 c                for a plans. It turns off future returns when
-c		 a zero value occurrs after a non-zero value
+c		 a zero value occurs after a non-zero value
 c
 c		icx = calling routine icx = type
 c                             24=directEx,  25=directBY, 
@@ -142,7 +142,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 c
 c     write(6,*)    ' RtnSecM;'
 c     write(nlog,*) ' RtnSecM;'

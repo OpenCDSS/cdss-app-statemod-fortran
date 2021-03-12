@@ -5,7 +5,7 @@ c           Note can exchange the diversion or depletion.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine divrplR(iw,l2,ishort,divactx,divacty,ncallx)
 c
 c
@@ -31,12 +31,37 @@ c     DivrplR; Type 33
 c              From a Reservoir and reuse plan to 
 c              To a diversion or reservoir or carrier
 c              with reuse by exchange 
-c	       Note can exchange the diversion or depletion
+c	             Note can exchange the diversion or depletion
 c
 c              Called by Execut
 c _________________________________________________________
 c
 c       Update History
+c
+c
+c ---------------------------------------------------------
+c
+c
+c rrb 2020/12/12; Corrected a problem related to using variable
+c                 ncarry as a stream location w/o realizing it
+c                 gets reset in SetLoss.  Therefore
+c                 revised ncarry to be 0 or 1 as follows:
+c                 0= no carrier and 1 = yes carrier
+c                 Set variable ncarid to be the carrier location
+c                 on the stream
+c
+c                 Set qdiv(xx,38) to report as carried at all
+c                   destination types (div, isf, res) 
+
+c
+c rrb 2020/12/10; Correction source is a reservoir & plan (not priority)
+cx        qres(2,nrD)=qres(2,nrD)+divafL
+c         qres(4,nrD)=qres(4,nrD)+divafL
+c
+c rrb 2020/12/07; Remove qdiv(28,xx) it is not used since 2010
+c rrb 2020/12/07; Correction should be 
+c                 qdiv(26,idcdd) = From River by Other not 
+c                 qdiv(20,idcdd) = From Carrier by Other       
 c
 c rrb 2011/11/29; Allow an instream flow destination
 c
@@ -45,8 +70,8 @@ c		  from a carrier again (internT = 1 Carrier, 2=Return)
 c
 c rrb 04/12/29; Copy divRplR. Adjust for plans by:
 c		source is a plan not a reservoir
-c		remove refrences to replacement reseroirs (irep>0)
-c		remove refrences to a water right limitation
+c		remove references to replacement reservoirs (irep>0)
+c		remove references to a water right limitation
 c		add destination is a diversion
 c
 c _____________________________________________________________
@@ -105,7 +130,7 @@ c
 c         iopdes(1,l2) = nd     destination diversion or reservoir
 c         iopdes(2,l2) = iuse   destination user
 c
-c	        nrD                   destination reseroivr
+c	        nrD                   destination reservoir
 c	        irow                  destination reservoir account
 
 c
@@ -115,9 +140,9 @@ c         ipsta(np) = iscd      Plan (supply) river station
 c         idvsta(np) = idcd     Diversion river station
 c
 c	        idcd                  Actual Diversion location. May be one 
-c                               anything inclduing a carrier
-c	        idcdd			            Destintaion Diversion location on river
-c	        idcdr                 Destination Reseroivr location on river
+c                               anything including a carrier
+c	        idcdd			            Destination Diversion location on river
+c	        idcdr                 Destination Reservoir location on river
 c	        idcdc                 Destination carrier location on river
 c	        idcdX			            destination but NOT A CARRIER
 c
@@ -141,27 +166,28 @@ c
 c         qdiv(5                Carrier passing thru a structure (e.g. divcar)
 c         qdiv(7                Source Reservoir
 c         qdiv(18               Carrier through a structure
-c         qdiv(19               Carrier used by a structure
-c         qdiv(20               From Carrier by Storage or Exchange 
-c                               (e.g. carrpl)
-c         qdiv(26  		          From River by a Direct Flow Exchange
-c                             	or Bypass (see DirectEx and DirectBY)
-c         qdiv(27               From River by Exc_Pln via a Direct Flow Exchange
-c         qdiv(28               Stored via a reuse plan in Rtnsec
+c
+c         qdiv(19               From Carrier by Priority
+c         qdiv(20               From Carrier by Other (Sto, Exc ...)
+c         qdiv(21               From River by Other (Sto, Exc ...)
+c                                 by Carrpl, DivrplR, ...
+c         qdiv(26  		          From River by Other (Sto, Exc ...)
 c	        qdiv(29               Exchange from a plan
+c         qdiv(38               Report as carried water  
 c
 c ---------------------------------------------------------
 c
-c	        qres(2,ix)            From carrier to Storage by Priority
+c	        qres(2,ix)            From carrier to by Priority
+c         qres(4.ix)            From carrier by Other
 c         qres(8,ix)            From storage to river for use
-c         qres(18,ix)           From River by Exchange
+c         qres(18,ix)           From River by Exchange, ... (Other)
 c
 c ---------------------------------------------------------
 c
 c         small                 a local limit used for convergence, etc.
 c         iouta                 0 no detailed printout for avail
 c                               n yes detailed printout for avail
-c	        iwhy                  1 reason for no diversoin
+c	        iwhy                  1 reason for no diversion
 c	        ncallx		            number of times called per time step
 c
 c ---------------------------------------------------------
@@ -193,23 +219,25 @@ c _________________________________________________________
 c	Dimensions
       include 'common.inc'
       character cwhy*24, cdestyp*12, cstaid1*12,
-     1          rec12*12, ccarry*3, cpuse*3, cresid1*12 
+     1          rec12*12, ccarry*3, cpuse*3, cresid1*12, subtypX*8 
 c
 c _____________________________________________________________
 c
-c               Step 1a - Initilize general variables
+c               Step 1a - Initialize general variables
 c
 c
 c               Control debut printout
 c		iout=0 none, iout=1 detailed, iout=2 summary
+      subtypX='divrplr '
       iout=0
       ioutiw=0
       ioutIR=0
       
       if(ichk.eq.133) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw
-      
 
+cx      write(nlog,*) '  DivRplR;  , corid(l2), ccall, ioutiw, iw'
+cx      write(nlog,*) '  DivRplR; ', corid(l2), ccall, ioutiw, iw
       iouta=0
       ioff=0
       nd=0
@@ -261,6 +289,9 @@ c
       avail1=-1./fac
       qdiv29=-1./fac
       
+      FrCarOth = -1./fac
+      FrRivOth = -1./fac
+      
       iwhy=-1
       cwhy='N/A'
       
@@ -288,7 +319,10 @@ c		f. Standard Carrier
       ccarry='No'
       if(intern(l2,1).gt.0) then
         ccarry='Yes'
-        ncarry=intern(l2,1)
+c
+c rrb 2020/12/12; ncarry gets reset in setloss
+cx      ncarry=intern(l2,1)
+        ncarry=1
       endif      
 c
 c ---------------------------------------------------------
@@ -300,43 +334,27 @@ c rrb 2007/06/06; Add Carrier Loss
 c
 c _________________________________________________________
 c
-c		Step 1b; Check avail array in
-      call chekava(18, maxsta, numsta, avail)
+c		             1b; Check avail array in
+      call chekava(18, maxsta, numsta, avail, subtypX)
       if(iouta.gt.0) write(nlog,*) '  divRplR; OK going in'
 c
 c _________________________________________________________
-c               Step 2. Check Printout on input or output
+c                Step 2. Check Printout on input or output
 c
-      ncallx=ncallx+1
-c     write(nlog,*) '  divRplR; ncallx = ', ncallx
 
       ND  =IOPDES(1,l2)
 c
-c rrb 2011/11/29; Update to ndtype
-cx      if(nd.gt.0) cdestyp='Diversion'      
-cx      if(nd.lt.0) cdestyp='Reservoir'
-
 c
 c _________________________________________________________
-c		Step X. Set CU limit switch      
+c		             Step 3. Set CU limit switch      
       rec12=cDivTyp(l2)
       icu=0
       if(rec12(1:9).eq.'Diversion') icu=0
       if(rec12(1:9).eq.'Depletion') icu=1
-      
-      if(iout.ge.1 .and. iw.eq.ioutiw) then
-        if(ncallx.eq.1) then
-          write(nlog,270) corid(l2), cdestyp, ccarry, cpuse,cDivTyp(l2)
-        else
-cr        write(nlog,*) ' '
-        endif  
-      endif
-      
 c
 c _________________________________________________________
 c
-c		Step 3: Branch if not on this month
-
+c		             Step 3: Branch if not on this month
       if(imonsw(l2,mon).eq.0) then
         iwhy=1
         cwhy='Monthly Switch is off'
@@ -365,18 +383,18 @@ c		For a daily model set demand for end of season
       
 c      
 c ________________________________________________________
-c               Step 4; Set pointer for destination reuse plan
-c		ipUse = Reuse plan for return flows
+c                Step 4; Set pointer for destination reuse plan
+c		                     ipUse = Reuse plan for return flows
       ipUse=ireuse(l2)
 c      
 c ________________________________________________________
-c               Step 5; Set pointer for source plan
+c                Step 5; Set pointer for source plan
 c	                 ipsource = Reuse plan for supply      
       np=iopsou(3,l2)
 c
 c _________________________________________________________
 c
-c               Step 6; Set source data Reservoir
+c                Step 6; Set source data Reservoir
 c                       Source reservoir (nr), source account (iown),
 c                       river station (iscd), & # downstream (ndnS)
       NR  =IOPSOU(1,l2)    
@@ -416,7 +434,9 @@ c               Exit if nothing available
 c
 c _________________________________________________________
 c
-c               Step 7; Set Source (Plan) data
+c                Step 7; Set Source (Plan) data 
+c                        that is required and checked in
+c                        Oprinp when data is read
 c
       IF(ifix(pon(np)).EQ.0) ioff=1
 c
@@ -437,12 +457,12 @@ cx    alocfsP = psuply(np) + psto2(np)/fac
 c
 c _________________________________________________________
 c
-c               Step 8; Limit supply to the min of reservoir and plan
+c                Step 8; Limit supply to the min of reservoir and plan
       alocfs=amin1(alocfsR, alocfsP)
 
 c _________________________________________________________
 c
-c               Step 9a; Set demand, etc for a Diversion destination
+c                Step 9; Set demand, etc for a Diversion destination
 c
       ND  =IOPDES(1,l2)
       nd2 = nd
@@ -456,7 +476,7 @@ c
 c     write(nlog,*) '  divRplR; nd ', nd  
 c
 c ---------------------------------------------------------
-c                  a. Destination is a diversion
+c                9a. Destination is a diversion
 c rrb 2011/11/29; Update      
 cx    if(nd.gt.0) then
       if(ndtype.eq.3) then
@@ -504,7 +524,7 @@ cr      endif
 c
 c _________________________________________________________
 c               
-c               Step 9b; Destination is a reservoir
+c                Step 9b; Destination is a reservoir
 c
 c rrb 2011/11/29; Update 
 cx    if (nd.lt.0) then
@@ -537,6 +557,9 @@ c
         iuseX=irow
 c     
         idcd=irssta(nrD)
+c
+c rrb 2020/12/10; Correction
+        idcdR=idcd
         idcdX=idcd
         ndnd=ndnnod(idcd)
 c
@@ -563,7 +586,7 @@ cr      divreq1=amin1(ownmax(irow)-curown(irow),
 c
 c _________________________________________________________
 c rrb 2011/11/29; Update to allow an ISD destination               
-c               Step 9b; Destination is an ISF
+c                Step 9b; Destination is an ISF
 c
       if(ndtype.eq.1) then
         ndI=nd
@@ -597,7 +620,7 @@ cx      write(nlog,*) '  DivResP2;', ndI, flowrq(ndI)*fac
 c
 c _____________________________________________________________
 c
-c               Step 9c; Exit if no demand
+c                Step 9c; Exit if no demand
       if(divalo.le.small) then
         iwhy=5
         cwhy='Demand or Capacity = 0'
@@ -606,7 +629,7 @@ c               Step 9c; Exit if no demand
 c
 c _________________________________________________________
 c
-c		            Step 10. Exit if source res or source plan or
+c		             Step 10. Exit if source res or source plan or
 c                       destination diversion is off      
       if(ioff.gt.0) then
         iwhy=6
@@ -620,11 +643,21 @@ c
 c               Step 11a; Destination is through a carrier
 c		               Adjust diversion location
       if(intern(l2,1).gt.0) then
-        IDCD=IDVSTA(ncarry)
+c
+c rrb 2020/12/12; Correction ncarry got reset in call SetcarL
+cx      IDCD=IDVSTA(ncarry)
+        ncarid=intern(l2,1)
+        IDCD=IDVSTA(ncarid)
+        
         idcdC=idcd
 c       idcdX=idcd        
         NDND=NDNNOD(IDCD)
-        divcarry=divcap(ncarry)-divmon(ncarry)        
+c
+c rrb 2020/12/12; Correction ncarry got reset in call SetcarL
+cx      divcarry=divcap(ncarry)-divmon(ncarry)  
+        divcarry=divcap(ncarid)-divmon(ncarid)  
+        write(nlog,*) ' DivRplR; ncarry, ncarid, idcd, idcdc'       
+        write(nlog,*) ' DivRplR;', ncarry, ncarid, idcd, idcdc       
       endif      
 c_____________________________________________________________
 c
@@ -634,11 +667,10 @@ c               Step 10; Process carrier limitations
      1 maxopr,  maxdiv, intern, OprLossC,
      1 ncarry,  ncnum,  noprS,  internT, 
      1 OprEff1, DivCap, DivMon, DivCarry, alocfs)
- 
 c
 c _____________________________________________________________
 c
-c               Step 11c; Exit if no carrier capacity
+c                Step 11c; Exit if no carrier capacity
       if(divalo.le.small) then
         iwhy=7
         cwhy='Carrier Capacity = 0'
@@ -647,7 +679,7 @@ c               Step 11c; Exit if no carrier capacity
 c
 c _____________________________________________________________
 c
-c               Step 12; Find minimum exchange potential from the 
+c                Step 12; Find minimum exchange potential from the 
 c                       diversion node (idcd) to the Exchange point
 c                       iopsou(6,l2)
 c
@@ -758,9 +790,7 @@ c                        Note adjust avail but not river
           avail(issr)=avail(issr)-divact
           issr=idncod(issr)      
         end do  
-      endif
-     
-     
+      endif 
 c
 c _________________________________________________________
 c
@@ -792,7 +822,10 @@ c
 c rrb 04/12/30; Qdiv(28 is the carried / exchanged water
 c		Note works outside river system
           ipsta1=ipsta(ipUse)
-          qdiv(28,ipsta1) = psuplyT(ipUse)     
+c
+c --------------------------------------------------------
+c rrb 2020/12/07; Remove qdiv(28,xx) it is not used since 2010
+cx        qdiv(28,ipsta1) = psuplyT(ipUse)     
         else
 c
 c		Reservoir Reuse          
@@ -805,15 +838,17 @@ c rrb 2006/01/01; Correction
           endif  
           
           ipsta1=ipsta(ipUse)
-          qdiv(28,ipsta1) = psuplyT(ipUse)                 
+c --------------------------------------------------------
+c rrb 2020/12/07; Remove qdiv(28,xx) it is not used since 2010
+cx          qdiv(28,ipsta1) = psuplyT(ipUse)                 
         endif  
       endif
 c
 c _____________________________________________________________
 c
-c               Step 18; Udate
+c                Step 18; Udate
 c
-c		a. Update a diversion Destination
+c		             18a. Update a diversion Destination
 c             
 c rrb 2011/11/29; Update
 cx    if(nd.gt.0) then
@@ -823,12 +858,24 @@ cx    if(nd.gt.0) then
         DIVMON(ND  )=DIVMON(ND  )+DIVACT
 c
 c rrb 2007/06/06; Add Loss in SetqdivC    
-c		Destination is a diversion        
-        qdiv(20,idcdd)=qdiv(20,idcdd)+divactL
+c		             18a. Destination is a diversion 
+c ------------------------------------------------------
+c rrb 2020/12/07; Correction should be 
+c                 qdiv(26,idcdd) = From River by Other not 
+c                 qdiv(20,idcdd) = From Carrier by Other       
+cx      qdiv(20,idcdd)=qdiv(20,idcdd)+divactL
+        if(ncarry.eq.0) then
+          qdiv(26,idcdd)=qdiv(26,idcdd) + divact
+          qdiv(38,idcdd)=qdiv(38,idcdd) + divact
+        endif
 c
-c		Destination is also the carrier
+c ---------------------------------------------------------
+
+c		             18b. Destination is also the carrier
         if(idcd.eq.idcdc) then
-          qdiv(26,idcd)=qdiv(26,idcd)+divact
+c ---------------------------------------------------------
+c rrb 2020/12/07; Correction qdiv(26,idcdd) is set in setqdiv?
+cx        qdiv(26,idcd)=qdiv(26,idcd)+divact
           qdiv(18,idcd)=qdiv(18,idcd)+divactL  
           qdiv(33,idcd)=qdiv(33,idcd)+OprLost  
         endif  
@@ -841,7 +888,7 @@ c		Destination is also the carrier
       endif  
 c      
 c -------------------------------------------------------------
-c		b. Updaee a destination reservoir
+c		             18c. Update a destination reservoir
 c
 c rrb 2011/11/29; Update
 cx    if(nd.lt.0) then
@@ -872,8 +919,13 @@ c		              ia   = account to adjust
         if(ncarry.eq.0) then
           ia=18
         else
-          ia=2
+c
+c
+c rrb 2020/12/10; Correction 2 is by Priority & 4 is by Other
+cx        ia=2
+          ia=4
         endif  
+        
         cresid1=cresid(nrX)
 c        
         call accou(maxacc, maxown, nrX, ownmon, curown, accr, ia, 
@@ -882,23 +934,39 @@ c
 c
 c ---------------------------------------------------------
 c
+c		             18d. Update carrier to a reservoir destination
+c
+c ---------------------------------------------------------
+c rrb 2020/12/12; Correction source is a res or plan (not priority)
+c	                    qres(2,ix)  From carrier to by Priority
+c                     qres(4,ix)  From carrier by Other
+c                     qres(18,ix) From River by Exchange, ... (Other)
+c
+c                     qdiv(20     From Carrier by Other (Sto, Exc ...)
+c                     qdiv(21     From River by Other (Sto, Exc ...)
+c                     qdiv(38               Report as carried water  
+cx        if(ncarry.eq.0) then
+cx          qres(18,nrD)=qres(18,nrD)+divafL
+cx        else
+cxc
+cxcx        qres(2,nrD)=qres(2,nrD)+divafL
+cx          qres(4,nrD)=qres(4,nrD)+divafL
+cx        endif  
+cx        
         if(ncarry.eq.0) then
           qres(18,nrD)=qres(18,nrD)+divafL
-        else
-          qres(2,nrD)=qres(2,nrD)+divafL
-c
-c rrb 05/06/28; Note idcd=idcdc for a carrier    
-c
-c rrb 2007/06/06; Add Loss in SetQdivC  
-c		  NOte only River Divert is presented in *.xdd 
-c                 for a reservoir     
-cx          if(idcd.eq.idcdc) then
-cx            qdiv(26,iscd)=qdiv(26,iscd)+divactL  
-cx            qdiv(18,idcd)=qdiv(18,idcd)+divactL  
-cx            qdiv(33,iscd)=qdiv(33,iscd)+OprlosT
-cx          endif  
-        endif  
           
+          qdiv(21,idcd)=qdiv(21,idcd) + divact
+          qdiv(38,idcd)=qdiv(38,idcd) + divact
+        else
+          qres(4,nrD)=qres(4,nrD)+divafL
+          
+          qdiv(21,idcdC)=qdiv(21,idcdC) + divact
+          qdiv(38,idcdC)=qdiv(38,idcdC) + divact
+ 
+          qdiv(20,idcdR)=qdiv(20,idcdR) + divact
+          qdiv(38,idcdR)=qdiv(38,idcdR) + divact
+        endif          
 c
 c               Check reservoir roundoff when exiting routine
         call chekres(nlog, maxres, 1, 22, iyr, mon, nrD,nowner,
@@ -907,8 +975,8 @@ c               Check reservoir roundoff when exiting routine
       endif
 c
 c -------------------------------------------------------------
-c rrb 2011/11/29; Allow an ISF destination
-c		b. Update a destination ISF
+c rrb 2011/11/29; 
+c		             18e. Update a destination ISF
       if(ndtype.eq.1) then
         flowrq(ndI)=amax1(0.0, flowrq(ndI) - divactL)
 c
@@ -919,24 +987,25 @@ c rrb 2011/08/04; Instream flow reach
           qdivr(i)=qdivr(i)+divact
         end do          
 c
-        qdiv(30,idcd)=qdiv(30,idcd)+DIVACT
-        qdiv30=qdiv(30,idcd)        
+        qdiv(30,idcd)=qdiv(30,idcd) + DIVACT
+        qdiv(38,idcd)=qdiv(38,idcd) + divact
       endif       
       
 c      
 c _________________________________________________________
-c               Step 24; Qdiv and Carrier for all destinations
-c
-     
+c                Step 19; Qdiv and Carrier for all destinations
+c  
       if(iout.eq.1) then
         write(nlog,*) '  DirectEx; Call SetCarry'
         call flush(nlog)
       endif  
 c      
 c ---------------------------------------------------------
-c		Step 24a; Set Qdiv for the carrier
+c		             19a; Set Qdiv for the carrier
 c rrb 2007/06/06; Add loss      
-c     write(nlog,*) ' DirectEx; nd, iuse', nd, iuse   
+      write(nlog,*) ' DivRplR #3a; qdiv(20,idcd)', qdiv(20,idcd)*fac
+      
+      
       if(ncarry.gt.0) then  
         call setQdivC(
      1    nlog, ncarry, ncnum, nd, nd2, l2, idcd, idcdX, idcdC,
@@ -950,7 +1019,8 @@ c     write(nlog,*) ' DirectEx; nd, iuse', nd, iuse
      
 c
 c -------------------------------------------------------------
-c		d. Update source plan
+c		             Step 20 Update source
+c                20a. Source is a plan
       psuply(np)=amax1(0.0, psuply(np) +relact)
 c
 c rrb 2006/01/01; Correction for a reservoir plan
@@ -959,7 +1029,7 @@ c rrb 2006/01/01; Correction for a reservoir plan
       endif  
 c
 c ---------------------------------------------------------
-c               e. Update source reservoir (nr) data
+c                20b. Source is a reservoir (nr) data
       ACTACF=RELACT*fac
       CURSTO(NR  )=CURSTO(NR  )+ACTACF
       PROJTF(NR  )=PROJTF(NR  )-RELACT
@@ -969,46 +1039,74 @@ c
       accr(8,iown) = accr(8,iown)-actacf
 c
 c ---------------------------------------------------------
-c               f. Update data to be passed out of this routine. 
+c rrb 2020/12/12; Set source for reservoir release  
+cx    if(ncarry.gt.0) then
+cx      qdiv(30,iscd)=qdiv(30,iscd)+DIVACT
+cx    endif  
+c  
+      if(ncarry.eq.0) then
+        qdiv(30,iscd)=qdiv(30,iscd)-DIVACT
+        qdiv(38,iscd)=qdiv(38,iscd) + divact
+      else
+        qdiv(26,iscd)=qdiv(26,iscd)-DIVACT
+        qdiv(38,iscd)=qdiv(38,iscd) + divact
+      endif    
+c
+c ---------------------------------------------------------
+c                20c. Update data to be passed out of this routine. 
 c                  Note divact .NE. relact if release for depletion 
       divactx=divact
       divacty=divact
 c
 c
-c ---------------------------------------------------------
-c               g. Update shortage
-c330  continue
  330  continue
 c
-c rrb 2011/11/29; Update
+c ---------------------------------------------------------
+c rrb 2011/11/29 
+c                20d. Update shortage
 cx    if(nd.gt.0 .and. (divact+small).lt.divalo) ishort = 1
       if((divact+small).lt.divalo) ishort = 1
 c
 c ---------------------------------------------------------
-c               h. Update operational rule data
-c		   to amount used from supply (relact) 
-c                  not amount diverted (divact)
-c		   Note this is required for consistency and
-c		   for plan output to be correct (it uses *.xop output)
+c                20e. Update operational rule data
+c		                  to amount used from supply (relact) 
+c                     not amount diverted (divact)
+c		                  Note this is required for consistency and
+c		                  for plan output to be correct (it uses 
+c                     *.xop output)
 cr    divo(l2)=divo(l2)+divact
       divo(l2)=divo(l2)-relact
       
 c
 c _____________________________________________________________
 c
-c               Step 19; Final printout befor exit
+c                Step 21; Final printout before exit
 c
       if(iout.ge.1 .and. iw.eq.ioutiw) then
 c
-c                a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
+c                21a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
          if(idcd.gt.0) then
            iss=IDcd
            NDNDS=NDND
            CALL DNMFSO(maxsta,avail,idncod,iSS,ndndS,imcd)
            avail1=avail(imcd)
            qdiv29=qdiv(29,idcd)
+c 
+c rrb 2020/12/10; Detailed output 
+           FrCarOth = qdiv(20,idcd)  
+           FrRivOth = qdiv(21,idcd) + qdiv(23,idcd) + qdiv(26,idcd) +
+     1                qdiv(29,idcd) + qdiv(30,idcd) + qdiv(31,idcd)
          endif
-       
+c
+c rrb 2020/12/08; Moved from above
+c		             21b. Detailed Header            
+         ncallX=ncallX+1
+         if(ncallX.eq.1) then
+           write(nlog,270) corid(l2),cdestyp, ccarry, cpuse,
+     1                     cDivTyp(l2)
+         endif  
+c
+c                21c. Print detailed data   
          if(iday.eq.0) then
            write(nlog,280) 'DivRplR    ',
      1       iyrmo(mon),   xmonam(mon), idy, iwx, iw, l2, ndX, iuseX, 
@@ -1016,7 +1114,12 @@ c                a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
      1       divreq1*fac,  alocfsR*fac, alocfsP*fac, alocfs*fac, 
      1       divaloX*fac,  pavail*fac,
      1       divcarry*fac, abs(relact*fac), divact*fac,  iwhy, cwhy,
-     1       imcd, avail1*fac, qdiv29*fac
+     1       imcd,  idcd, idcdC,
+     1       FrCarOth*fac,      FrRivOth*fac
+     
+cx             qdiv(20,idcd)*fac,
+cx     1       qdiv(21,idcd)*fac, qdiv(23,idcd)*fac, qdiv(26,idcd)*fac,
+cx     1       qdiv(29,idcd)*fac, qdiv(30,idcd)*fac, qdiv(31,idcd)*fac
          else
            write(nlog,282) 'DivRplR    ',
      1      iyrmo(mon),   xmonam(mon), idy, iwx, iw, l2, ndX, iuseX, 
@@ -1024,7 +1127,11 @@ c                a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
      1      divreq1*fac,  alocfsR*fac, alocfsP*fac, alocfs*fac,
      1      divaloX*fac,  pavail*fac,
      1      divcarry*fac, abs(relact*fac), divact*fac,  iwhy, cwhy,
-     1      imcd, avail1*fac, qdiv29*fac
+     1      imcd,  idcd, idcdC, FrCarOth*fac,      FrRivOth*fac
+     
+cx     ,      qdiv(20,idcd)*fac, 
+cx     1      qdiv(21,idcd)*fac, qdiv(23,idcd)*fac, qdiv(26,idcd)*fac,
+cx     1      qdiv(29,idcd)*fac, qdiv(30,idcd)*fac, qdiv(31,idcd)*fac
         endif
 cr      if(divact*fac.gt.small .and. avail(imcd)*fac.le.small)
 cr   1  write(nlog,*) '*****' 
@@ -1032,31 +1139,34 @@ cr   1  write(nlog,*) '*****'
 c
 c _____________________________________________________________
 c               
-c               Step 20; Check Entire Avail array out
-      call chekava(29, maxsta, numsta, avail)
+c               Step 22; Check Entire Avail array out
+      call chekava(29, maxsta, numsta, avail, subtypX)
       if(iouta.gt.0) write(nlog,*) '  divRplR; OK going out'
 c
 c _____________________________________________________________
 c
-c                Step 21; Return
+c                Step 23; Return
       return
 c _________________________________________________________
 c               Formats
  270    format(/, 
-     1  '  DivRplR (Type 28); Operation Right ID = ', a12,
+     1  '  DivRplR (Type 33); Operation Right ID = ', a12,
      1  ' Destination Type = ', a12,
      1  ' Carrier (Y/N) = ',a3, ' Reuse (Y/N) = ', a3, 
      1  ' Diversion Type ', a12/    
      1  '  divRplR      Iyr  Imo  Day Iter  iwx   l2 ndX iuseX Dep?',
      1  ' DivEff1 Divreq1 AlocfsR AlocfsP  Alocfs divaloX  Pavail',
      1  ' Divcary  RelAct  DIVACT',
-     1  '    iwhy cwhy                     imcd   avail',/
+     1  '    iwhy cwhy                     imcd idcd idcdC'
+     1  ' FrCarOt FrRivOt',/
+cx     1  ' qdiv(20 qdiv(21 qdiv(23 qdiv(26 qdiv(29 qdiv(30 qdiv(31',/
      1  '  ___________ ____ ____ ____ ____ ____ ____ ____ ____ ____', 
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ _______',
-     1  ' _______ ________________________ ____ _______')
- 280   format(1x,a12, i5, 1x,a4, 7i5, 10f8.1, i8, 1x,a24, i5, 20f8.1)
- 282   format(1x,a12, i5, 1x,a4, 7i5, 10f8.3, i8, 1x,a24, i5, 20f8.3)
+     1  ' _______ ________________________ ____ ____ ____')
+cx     1  9(' _______'))
+ 280   format(1x,a12, i5, 1x,a4, 7i5, 10f8.1, i8, 1x,a24, 3i5, 20f8.1)
+ 282   format(1x,a12, i5, 1x,a4, 7i5, 10f8.3, i8, 1x,a24, 3i5, 20f8.3)
 
  301   format(/,60('_'),/,
      1   '  divRplR;  iyr  mon iteration ', 3i5,/

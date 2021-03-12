@@ -2,7 +2,7 @@ c rtnsecw - calculate return flows for wells
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ c
 c _________________________________________________________
 c       Update History
 c
-c rrb 95/03/18; removed redundant refrence to over 50 tables
+c rrb 95/03/18; removed redundant reference to over 50 tables
 c                saved as old code f031596.zip
 c rrb 98/03/17; Revised to handle daily operation
 c rrb 00/12/26; Added variable efficiency capability by
@@ -53,7 +53,7 @@ c               divact =      diversion
 c               l2     =      water right counter unless called by
 c                             divres or divrpl, then its the opr. 
 c                             counter
-c               nw     =      well structure associted with this right
+c               nw     =      well structure associated with this right
 c               nd     =      associated diversion with this right
 c
 c               idcd   =      # of downstream nodes.  Note set to 0 for
@@ -133,7 +133,7 @@ c	Dimensions
 c
 c __________________________________________________________  
 c
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 c
 c     write(6,*)    '  Rtnsecw;'
 c     write(nlog,*) '  Rtnsecw;'

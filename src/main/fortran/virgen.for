@@ -2,7 +2,7 @@ c virgen - controls all virgin (base) flow calculations.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ C
 C      file 14 - IWR data (*.iwr)
 C      file 16 - base flow information
 C      file 17 - VIRGIN FLOWS AT HISTORICAL FLOW STATIONS
-C      file 19 - VIRGEN FLOWS IN THE FORMAT REQUIRED FOR SIMULATION
+C      file 19 - VIRGIN FLOWS IN THE FORMAT REQUIRED FOR SIMULATION
 C      file 20 - response file
 C
 C-------------------------------------------------------------------
@@ -248,7 +248,7 @@ c     write(6,*) ' virgen; into mdainp'
 c
 c _________________________________________________________
 c
-c               Step 7; Initilize binary return file
+c               Step 7; Initialize binary return file
 c                       for special CWCB request
 c rrb 0/03/28; 
 c     irec1=0
@@ -292,7 +292,7 @@ c rrb 01/06/18; Call year
 c
 c _________________________________________________________
 c
-c               Step 10; Annual Initilization
+c               Step 10; Annual Initialization
 c
       I12=12
       IYR=IYSTR-1

@@ -2,7 +2,7 @@ c chekts - checks that a time series data file has the right year type for the s
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine chekts(nlog, nf, ityp, coeff, idummy, cyr1)
 c
 c
@@ -30,7 +30,8 @@ c
 c
 c _________________________________________________________
 c	Update History
-c		NA
+c		2018/10/14; Add J_Martin Monthly by increasing dimension 
+c               from 80 to 90
 c
 c _________________________________________________________
 c	Documentation
@@ -39,7 +40,7 @@ c _________________________________________________________
 c	Dimensions
 c
 
-      dimension dtype(80), cunitX(10)
+      dimension dtype(90), cunitX(10)
       character cyr1*5, cyr*5, dtype*45, cunit*5, recin*132,
      1  filena*256, cyr1X*5, rec72*72, cunitX*5, 
      1  recout*132,
@@ -132,11 +133,21 @@ c
      7     'Reservoir_To_Recharge_Monthly (*.rre)',
      8     'Diversion_To_Recharge_Monthly (*.dre)',
      9     ' ',
-     8     ' ' /
-     
+     8     ' ',
+c    
+     1     ' ',
+     2     ' ',
+     3     ' ',
+     4     ' ',
+     5     ' ',
+     6     ' ',
+     7     ' ',
+     8     'J_Martin_Monthly (*.jmm) ',
+     9     ' ',
+     9     ' '/
      
       data cunitX/
-     1 ' AF/M', ' ACFT', '   AF', '  CFS', '   FT', '   IN', '   NA',
+     1 ' AF/M', ' ACFT', '   AF', '  CFS', '   FT', '   IN', '    %',
      1 ' ', ' ', ' '/
     
 c
@@ -173,7 +184,7 @@ c                 characters
       if(iout.eq.1) write(nlog,*) ' Chekts; cunit ', cunit
 
 c
-c              Assume a blank file if month, year and year type are zero
+c               Assume a blank file if month, year and year type are zero
  40   if(ibm+iby.eq.0 .and. cyr.eq.'     ') then
         write(nlog,130) dtype(ityp)
         idummy=1
@@ -182,7 +193,7 @@ c              Assume a blank file if month, year and year type are zero
       endif
 c
 c _________________________________________________________
-c		Check the year type and month are consistent 
+c		            Check the year type and month are consistent 
 c     write(nlog,*) ' Chekts; cyr = ', cyr
       cyr=adjustl(cyr)
 c     write(nlog,*) ' Chekts; cyr = ', cyr
@@ -214,29 +225,29 @@ c rrb 2007/09/04; Accept new ipy file format (without month)
       endif  
 c
 c _________________________________________________________
-c		Set the coefficient based on the units provided
+c		            Set the coefficient based on the units provided
 c               and what StateMod uses internally (cfs for most
-c		acft for storage)
+c		            acft for storage)
       coeff=-1.
       cunit=adjustl(cunit)
       recin(1:5)=cunit
 c
-c		Adjust to upper case
+c		            Adjust to upper case
       call AdjCase(nlog, recin, recout, 5, 2)
       cunit=recout(1:5)
       
 c
-c		The following recognizes time series files
-c		often do not include per month      
+c		            The following recognizes time series files
+c		            often do not include per month      
       if(cunit(1:4).eq. 'AF/M') coeff = 1.9835
       if(cunit(1:4).eq. 'ACFT') coeff = 1.9835
       if(cunit(1:4).eq. 'AF  ') coeff = 1.9835
 c
-c		Treat monthly storage terms uniquely
-c		itype  7 = *.tar (Tartget Monthly)
-c		itype 16 = *.tad (Target Daily)
-c		itype 24 = *.eod (End of Day)
-c		itype 25 = *.eom (End of Month)    
+c		            Treat monthly storage terms uniquely
+c		            itype  7 = *.tar (Tartget Monthly)
+c		            itype 16 = *.tad (Target Daily)
+c		            itype 24 = *.eod (End of Day)
+c		            itype 25 = *.eom (End of Month)    
 c
 c rrb 2006/03/21; Add Rio Grande Forecast (a storage term)
       if(ityp.eq. 7 .or. ityp.eq.16 .or.
@@ -249,7 +260,7 @@ c rrb 2006/03/21; Add Rio Grande Forecast (a storage term)
 c
 c rrb 2005/12/23; Do not adjust if in CFS since
 c                 Daily are always cfs and
-c	          monthly are adjusted by /c/mthday
+c	                monthly are adjusted by /c/mthday
       if(cunit(1:3).eq. 'CFS')  coeff = 0.0
       if(cunit(1:2).eq. 'FT')   coeff = 0.0
       if(cunit(1:2).eq. 'IN')   then
@@ -267,6 +278,13 @@ c rrb 2006/05/30; Clean up *.tsp or *.ipy unit treatment
 cx      write(nlog,146) cunit, ityp
         coeff=0.0
       endif  
+
+c _________________________________________________________
+c rrb 2018/111/17; JMartin data is in %
+      if(ityp.eq.88) then      
+cx      write(nlog,146) cunit, ityp
+        coeff=0.0
+      endif  
 c      
 c
 c _________________________________________________________
@@ -280,19 +298,30 @@ c _________________________________________________________
 c rrb 2006/04/10; Clarify *.tsp or *.ipy unit treatment
       if(ityp.eq.18) then      
         write(nlog,146) cunit, ityp
-      else  
-        if(abs(coeff).lt.small) then
-          write(nlog,140) cunit, ityp
-        else
-          if(ilength.eq.0) then
-            cex=500.0/coeff/30.
-            write(nlog,142) cunit, ityp, coeff, cunit, cex, 'CFS'
-          else
-            cex=500.0*coeff
-            write(nlog,144) cunit, ityp, coeff, cunit, cex, 'FT'
-          endif  
-        endif
+        goto 500
       endif
+c
+c rrb 2018/11/17; Allow JMartin to provide data in %
+      if(ityp.eq.88) then      
+        write(nlog,148) cunit, ityp
+        goto 500
+      endif
+c
+c rrb 2018/11/17; Allow JMartin to provide data in %      
+cx      else  
+      if(abs(coeff).lt.small) then
+        write(nlog,140) cunit, ityp
+      else
+        if(ilength.eq.0) then
+          cex=500.0/coeff/30.
+          write(nlog,142) cunit, ityp, coeff, cunit, cex, 'CFS'
+        else
+          cex=500.0*coeff
+          write(nlog,144) cunit, ityp, coeff, cunit, cex, 'FT'
+        endif  
+      endif
+cx      endif
+      goto 500
       
       
  140    format(
@@ -328,12 +357,14 @@ c rrb 2006/04/10; Clarify *.tsp or *.ipy unit treatment
      1   '          Therefore StateMod ignors the unit type provided',/
      1   '          and adjusts units internally to coincide with',/
      1   '          the file specifications.')
+ 148    format(
+     1   '  Chekts; Units provided = ', a5, ' for file type ', i4)
      
 c
 c _________________________________________________________
 c		Print error messages
 
-      if(ierror.eq.1) then
+ 500  if(ierror.eq.1) then
         write(nlog,110) dtype(ityp)
         write(nlog,120) ibm, iby, iem, iey, cunit, cyr, cyr1
         goto 9999

@@ -4,7 +4,7 @@ c           Note same as ifrrig2.for except it is called for a variable admin da
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ c		6=well
 c	       99=before moving to new time step
 c	dcall1 = admin number at this time step 
 c		 set in bomsec for monthly and dayset for daily
-c	dcallx = admin number it was comapred to befor calling
+c	dcallx = admin number it was comapared to before calling
 c       ncloc  = calling location
 c                1 = before type 1 instream flow
 c                2 = before type 2 instream reservoir
@@ -91,7 +91,7 @@ c
 c _________________________________________________________
 c
 c
-c               Initilize
+c               Initialize
 c
 c		iout = detailed output
 c		     = 0 None
@@ -171,7 +171,7 @@ c               Instream Reach Loop
 c
 c _________________________________________________________
 c
-c               1. Initilize
+c               1. Initialize
         actwrq  = 0.0
         actwrq1 = 0.0
         aloifr1 = 0.0

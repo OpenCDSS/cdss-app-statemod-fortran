@@ -2,7 +2,7 @@ c carrpl - Type 7 operating rule (reservoir to carrier system exchange)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-c     Last change:  C    19 May 97   11:53 pm
 c
       subroutine carrpl(iw,l2,divactx,ncallX)
 c
@@ -112,10 +110,11 @@ c
 c       Dimensions
 c
       include 'common.inc'
-      character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cresid1*12      
+      character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cresid1*12,
+     1          subtypX*8      
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c		a. Output Control      
       iout=0
@@ -131,7 +130,8 @@ c		b. Units
         fac=factor
       endif
 c
-c		c. Detailed Output      
+c		c. Detailed Output 
+      subtypX='carrpl  '     
       iwhy=0
       cwhy='N/A'
       cdestyp='N/A'
@@ -201,8 +201,7 @@ c
       ica=6  
 c
 c rrb; 2010/02/05; Correction      
-cx    call chekava(ica, maxsta, numstal avail)
-      call chekava(ica, maxsta, numsta, avail)      
+      call chekava(ica, maxsta, numsta, avail, subtypX)      
 c
 c _________________________________________________________
 c               Step 3a; Set Source Data (a reservoir)    
@@ -300,7 +299,7 @@ c
         
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nd)+iopdes(2,l2OPR)-1
         nro=1
 c rrb 2006/10/24; Correction      
@@ -550,7 +549,7 @@ c
 c _________________________________________________________
 c               Step 11; Destination is a reservoir; 
 c                        Take water out and replace
-c                        Note Avoid all refrences to return flows 
+c                        Note Avoid all references to return flows 
       if(iresw.eq.1) then
         availr=avail(ipcd)
         call takout(maxsta,avail,river,avinp,qtribu,idncod,
@@ -977,7 +976,7 @@ c               Formats
      1  ' CarRpl       iyr mon   day ID          ',
      1  '    Iter      Iw  nwrord      l2      lr      Nd      nr',
      1  '   ipUse', 
-     1  '   imcdX  availX demandX divaloS psuplyT qdiv181 qdiv(18',
+     1  '   imcdX  availX demandX divaloS      NA qdiv181 qdiv(18',
      1  ' divactX    iwhy Comment',/
      1  ' ___________ ____ ____ ____ ____________', 
      1  ' _______ _______ _______ _______ _______ _______ _______', 

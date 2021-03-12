@@ -2,7 +2,7 @@ c oprinout - prints results of reading data in Oprinp
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,13 +17,13 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
 	Subroutine OprinOut(nlog, maxopr, k, 
      1    ityopr1, cidvri, 
      1    ciopde,  iopdes1, iopdes2, 
-     1    ciopso1, iopSou1,iopsou2,
+     1    ciopso1, iopSou1, iopsou2,
      1    ciopso2, iopsou3,iopsou4, creuse, ireuse1,
-     1    oprloss1, oprlimit1, iopSou5, iopSou6, iopsou7,
+     1    oprloss1, oprlimit, iopSou5, iopSou6, iopsou7,
      1    cdivtyp1, intern, cntern, cAssoc, cAssoc2, cAssoc3)
 c
 c _________________________________________________________
@@ -43,12 +43,12 @@ c _________________________________________________________
 c		Step 1; Print operational rule data
 c
         write(nlog,2020) ityopr1, cidvri, ityopr1,    
-     1    ciopde, iopdes1, iopdes2, 
-     1    ciopso1, iopSou1,iopsou2,
-     1    ciopso2, iopsou3,iopsou4, creuse, ireuse1,
-     1    oprloss1,oprlimit1,
-     1    cAssoc,  iopSou5, 
-     1    cAssoc2, iopSou6, cAssoc3, iopSou7, cdivtyp1
+     1    ciopde, iopdes1,  iopdes2, 
+     1    ciopso1, iopSou1, iopsou2,
+     1    ciopso2, iopsou3, iopsou4, creuse, ireuse1,
+     1    oprloss1,oprlimit,
+     1    cAssoc,  iopSou5, cAssoc2, iopSou6, cAssoc3,
+     1    iopSou7, cdivtyp1
         
         do i=1,10
           if(intern(k,i).ne.0) then

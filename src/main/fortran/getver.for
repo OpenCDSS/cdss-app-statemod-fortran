@@ -2,7 +2,7 @@ c getver - checks a file for version number and skips up to 1000 other header ca
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,10 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
 c
-c		GetVer; it checks a file for version number
-c		and skips up to 1000 other header cards      
       subroutine GetVer(nlog, iin2, nfmt, filena)
 c
 c		nlog = log file
@@ -32,7 +29,7 @@ c
       character rec132*132, filena*256, rec1*1, rec18*18
       
       
-      iout=2  
+      iout=0  
 c
 c rrb 2008/03/12; Set the default to unknown          
 c     nfmt=1

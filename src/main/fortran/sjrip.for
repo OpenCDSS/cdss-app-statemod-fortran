@@ -3,7 +3,7 @@ c         per Draft Sjrip Hydrology Model Documentation (3/24/00)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ c _________________________________________________________
 c	Program Description
 c
 c       Sjrip; It simulates operating rule type 20
-c              San Juan RIP operation of Navajo Reseroir
+c              San Juan RIP operation of Navajo Reservoir
 c              per Draft Sjrip Hydrology Model Documentation 
 c              (3/24/00)
 c               Approach:
@@ -54,7 +54,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c               Temporary 
       iout=0
@@ -139,7 +139,7 @@ c
 c               Set counter
       isjon=isjon + 1 
 c
-c               Initilize annual release totals 
+c               Initialize annual release totals 
       if(iyr-iystr.eq.0) then
         sjrel0 = 0.0
         sjrel1 = 0.0

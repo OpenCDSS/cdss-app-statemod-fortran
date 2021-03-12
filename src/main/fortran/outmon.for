@@ -4,7 +4,7 @@ c          for D&W structures only, not well only structures.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,10 +19,9 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE OUTMON(numstax)
 c      
-c
 c _________________________________________________________
 c	Program Description
 c
@@ -57,25 +56,25 @@ c                                       processor delplt
 c               qdiv(1   Total demand
 c               qdiv(2   In-basin demand (w/o transmountain)
 c               qdiv(3   Not used but calculated to be total demand
-c               qdiv(4   Not used but refrenced
+c               qdiv(4   Not used but referenced
 c               qdiv(5   Total diversion from river by priority 
 c                        (e.g. divcar)
-c               qdiv(6   Not used but refrenced
+c               qdiv(6   Not used but referenced
 c               qdiv(7   From River by Storage
 c               qdiv(8   Total diversion from transmtn (e.g. divcar)
-c               qdiv(9   Refrenced in outmon but not set!!!
+c               qdiv(9   Referenced in outmon but not set!!!
 c               qdiv(10  From river by Storage Transmountain (e.g. 
 c                         divers, carrpl)
 c               qdiv(11  Remaining demand (shortage)
 c               qdiv(12  ISF demand set in outmon
 c               qdiv(13  Set in outmon but not used
 c               qdiv(14  Div by an instream flow (e.g. ifrrig)
-c               qdiv(15  Reservoir to power (e.g. powres) or
-c                        Reservoir to a T&C plan (Type 49 powresP)
+c               qdiv(15  From River by Storage to power (e.g. powres)
+c                        or to a T&C plan (Type 49 powresP)
 c                        or Res to Res by a carrier
 c                        Note shows as a diversion in *.xdd (From River 
 c                        by Storage) but is not a diversion in *.xwb
-c                        Non consumptivec               
+c                        Non consumptive               
 c               qdiv(16  Used to remove carrier water from 
 c			                   total diversion (qdiv(5))
 c               qdiv(17  Not used
@@ -90,6 +89,12 @@ c                        to calculate River Divert
 c               qdiv(21  From River by Exchange from a reservoir (e.g.
 c		                     carrpl)
 c               qdiv(22  From Storage to Carrier for Use 
+c                        a release To_Conduit by a type 3 or 32
+c                        Its used in OutBal2 to recognize a To conduit 
+c                        diversion
+c                        Its not used to report anything in the *.xdd 
+c                        report.  Note to show From Storage by Other
+c                        in *.xdd use Qdiv(20
 c               qdiv(23  From River by Exchange via an interruptable 
 c                        supply
 c               qdiv(24  Pumping (Well) at river ID 
@@ -98,29 +103,35 @@ c               qdiv(26  From River by a Direct Flow, Exchange, or
 c                        Bypass (see DirectEx and DirectBY)
 c                        or Carrier with loss (DirectL) or an alternate 
 c                        point (DivAlt) or by a changed water right 
-c                        (Directwr)
-c               qdiv(27  Other source via a Direct Flow Exchange
+c                        (Directwr) or JMStore
+c               qdiv(27  NOT USED as of 2010
+c                        Other source via a Direct Flow Exchange
 c                        or Bypass (see DirectEx and DirectBY)
-c		            qdiv(28  Carried, Exchange or Bypass (column 11)
-c                        Released from a reuse plan or Admin plan
+c		            qdiv(28  NOT USED as of 2010
+C                        OLD DEFINITION = Carried, Exchange or Bypass 
+C                          (column 11) Released from a reuse plan or 
+C                           Admin plan
 c		            qdiv(29  From river by exchange from a plan
 c		            qdiv(30  From River from a Res or Reuse Plan 
-c                        to a T&C or Aug Plan. Note non consumptive
-c                        Note shows as a diversion in *.xdd (From River 
-c                        by Storage or Other) but is not a diversion in *.xwb
-c                        Non consumptive          
+c                        to a T&C or Aug Plan. Note non consumptive &
+c                        it shows as a diversion in *.xdd (From River 
+c                        by Storage or Other) but is not a diversion
+c                        in *.xwb 
 c                        See type 49 Divrplp2
 c               qdiv(31  From River by Plan by DivresP2 or DivrplP
 c		            qdiv(32  From Carrier loss from a carrier (DivCar, DivcarL) 
 c		            qdiv(33  From River loss from a diversion by the river
 c                        (DivCar, DivcarL, DirectBy, DirectEx) 
 c		            qdiv(34  From River by an Out of Priority Diversion
-c              
-c 		          qdiv(35  Water with a Reuse or Admin plan source 
-c		            	         tracked at the destination from the following:
-c                          Operating rules: 26-DirectWR,
-c			                     27-DivResP2,     28-DivrplP, 29-PowSeaP,
-c			                     46-divMultip,    48-PowResP, 49-DivRplP2
+c     
+c               qdiv(35  Water with a Reuse or Admin plan source &
+c                          reported as From Plan in water balanace 
+c                          (Outbal2).  Tracked at the source by 
+c                          Divimpr( type 35)
+c                          Note qdiv(35 is no longer incremented in
+c                           the following operating rules in version
+c                           16.00.43 and 16.00.44: 27-DivResP2, 
+c                           28-DivrplP, 48-PowResP, & 49-DivRplP2                     
 c              
 c		            qdiv(36  Water released to the river (report as
 c			                     return flow). Set in SetQdivC, DivResp2 &
@@ -130,7 +141,7 @@ c                          Water released to the river by a spill in
 c                          PowseaP (type 29) Report as a negative  
 c                          diversion herein (OutMon) under Rivdiv   
 c               qdiv(38  Carried water reported as Carried, Exchange 
-c                          or Bypassed but not used to calculate
+c                          or Other but not used to calculate
 c                          River Divert in Outmon.f   
 c  
 c		            ClossDC From Carrier Loss
@@ -140,24 +151,32 @@ c
 c ______________________________________________
 c             
 c	            	qres(1  From river by Priority (ResRg1 or resRg1P)
-c	            	qres(2  From carrier to Storage by Priority
-c	              qres(3
+c	            	qres(2  From carrier by Priority to Storage
+c	              qres(3  From River by Other (e.g. Exchange, etc.)
 c               qres(4  From carrier to storage by Other
 c               qres(8  From storage to river for use
 c               qres(9  From storage to carrier for non Tmtn.
 c               qres(11 From storage to carrier
-c               qres(12 From storage to River for Use (Powres*)
-c               qres(18 From river by Exchange
+c                       Set in DivRes, DivResp2, DivRplP & divrplP2
+c               qres(12 From storage to River for Use 
+c                       Used by DivRes, DivResp2, DivRplP & divrplP2
+c               qres(18 From river by Exchange or Other DivCarL without 
+c                         a carrier
 c               qres(21 From storage for Exchange
-c		            qres(22 From storage to carrier
+c		            qres(22 From storage to carrier     !! SAME AS QRES(12?
+c                       Set in Rsrspu, RsrSpuP, DivMultr, DivResR & 
+c                       divResP
 c		            qres(25 Reservoir Seepage by Carrier Loss
 c               qres(26 From river by Storage to Reservoir
 c               qres(27 Carrier Loss (DivCar)
 c		            qres(28 From River by an Out of Priority Diversion
 c		            qres(29 Amount Booked over in the same reservoir (Rsrspu)
-c		               used in outbal2 to adjust for a 
-c			             diversion already included in reservoir storage
+c		                    used in outbal2 to adjust for a 
+c			                  diversion already included in reservoir storage
 c               qres(30 From River Loss
+c               qres(38 Carried water reported as Carried, Exchange 
+c                       or Other but not used to calculate
+c                       River Divert in Outmon.f   
 c
 c
 c		            RclossC Loss to a reservoir by a carrier
@@ -166,30 +185,47 @@ c
 c _________________________________________________________
 c       Update History
 c
-c rrb 99/06/12; Adjusted for qdiv(23 exchange by interruptable supply
-c rrb 99/12/24; New Id convention as follows:
+c rrb 2020/09/07; Update for a reservoir release direct 
+c                 (Rcarry = qres(38,nr)
+c                 that is currently reported as part of the total
+c                 release but in the future will be reported like
+c                 Carried, Exchanged & Other (column 11) of *.xdd
+c                 that does not impact the stream balance
+c
+c rrb 2020/03/03; Remove adjustment to AVT(is that is set to ävflow
+c                 the min flow downstream).  This is no longer needed
+c                 after adding reservoir reporting to *.xdd
+c
+c rrb 2020/03/01; Correction do not subtract qres(21 & accr(21 
+c                 from RStoUse
+c
+c rrb 2007/02/23; Revised *.xdd to include well only in the balance
+c		              Revised *.xdd output column 33 = rlossw2 (salvage)
+c
+c rrb 2001/12/07; Station balance total supply (column 19)
+c               should not include water diverted
+c               from carrier by priority (qres(2,nr)
+c               from carrier by storage (qres(4,nr)
+c
+c rrb 2001/01/24; Calculate and add IWR demand (diwrz), and 
+c               IWR short (shortiw).  Also add loss (rloss) to output.
+c
+c rrb 2000/07/03; For d&W structures added adjustment to 
+c               demand (demcon) based on supply to meet IWR demand
+c
+c rrb 1999/12/24; New Id convention as follows:
 c                                  1  -  5000 = diversion
 c                               5001  -  7500 = ISF
 c                               7501  - 10000 = reservoir
 c                                  0  -     0 = well only 
 c                               < -10000 = baseflow only
 c                               -1* above = baseflow plus a structure 
-c rrb 96/05/29; change to generalize dimensions
-c rrb 00/07/03; For d&W structures added adjustment to 
-c               demand (demcon) based on supply to meet IWR demand
-c rrb 01/01/24; Calculate and add IWR demand (diwrz), and 
-c               IWR short (shortiw).  Also add loss (rloss) to output.
 c
-c rrb 01/12/07; Station balance total supply (column 19)
-c               should not include water diverted
-c               from carrier by priority (qres(2,nr)
-c               from carrier by storage (qres(4,nr)
-c rrb 2007/02/23; Revised *.xdd to include well only in the balance
-c		             Revised *.xdd output column 33 = rlossw2 (salvage)
+c rrb 1999/06/12; Adjusted for qdiv(23 exchange by interruptable supply
 c
+c rrb 1996/05/29; change to generalize dimensions
 c
-c
-c _________________________________________________________
+c_______________________________________________________
 c	Dimensions
 c
       include 'common.inc'
@@ -208,7 +244,7 @@ C
      1  qtosoil(numstax), qfrsoil(numstax), rlossx2(numstax)
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c	     iout=1 details on reservoir output
 c	     iout=2 summary details on reservoir output
@@ -512,6 +548,12 @@ c rrb 2008/02/02; Adjust returns (Ret)for Return to River by a
 c         plan types 4 & 6 Reuse from a diversion & tmtn diversion
         RET(IS)=Ret(is) + qdiv(36,is)
 c
+c rrb 2020/11/15; TEST       
+cx        if(qdiv(36,is).gt.small) then
+cx          write(nlog,*)' '
+cx          write(nlog,*)'  OutMon TEST;', is,cstaid(is),qdiv(36,is)*fac
+cx        endif
+c
 c rrb 01/05/95; I/O Addition Constrained shortage
 
         c = demcon(mon,is)+qdiv(11,is)-qdiv(1,is)-qdiv(12,is)
@@ -531,29 +573,54 @@ c rrb 01/05/95; I/O Addition  irsord(2,is) is the reservoir number
           OFLz(IS)=AVINP(IS)+VIR(IS)+GAI(IS)+RET(IS)-QDIV(5,IS)
      1        -QDIV(6,IS)-QDIV(8,IS)-QDIV(9,IS)-QDIV(7,IS)-QDIV(10,IS)
      1        +gw2riv(is)-gw2gw(is)-dep(is) 
+c
+cx ---------------------------------------------------------
+cx rrb 2020/03/03; Check
+cx          write(nlog,*) '  Outmon;  is, avt(is), oflz(is), river(is)'
+cx          write(nlog,*) '  Outmon;',
+cx     1      is, avt(is)*fac, oflz(is)*fac, river(is)*fac
+cx     
+cx          write(nlog,*) '  Outmon; oflz'
+cx          write(nlog,*) 
+cx     1     OFLz(IS), AVINP(IS),VIR(IS),GAI(IS),RET(IS)
+cx          write(nlog,*) 
+cx     1     QDIV(5,IS), QDIV(6,IS), QDIV(8,IS), QDIV(9,IS),QDIV(7,IS)
+cx          write(nlog,*) 
+cx     1     QDIV(10,IS), gw2riv(is), gw2gw(is), dep(is), qdiv(38,is) 
 
         endif
         
   200 CONTINUE
 C
       DO 210 IS=1,NUMSTA
+c
+c ---------------------------------------------------------
+c rrb 2020/03/03; Check
+cx        if(is.eq.1) write(nlog,*) ' '
+cx        write(nlog,*) '  Outmon;',is, avail(is)*fac, stanam1(is)
   210   AVT(IS)=AVAIL(IS)
-  
   
 c
 c _________________________________________________________
 c               Step 10; Reservoir Calculations
 c
-      DO 220 NR=1,NUMRES
-        IF(IRESSW(NR).EQ.0) GO TO 220
-        IS=IRSSTA(NR)
-        AVT(IS)=AMIN1(AVT(IS),OFLz(IS))
 c
-c rrb 2010/10/15; Include loss at the destination  
-c rrb 2017/12/03; TEST; already adjusted with fixt to OutBal2.for
-c      
-cx        rlossX(is)=rlossX(is) + (qres(27,nr) + qres(30,nr))/fac
-  220 CONTINUE
+c ---------------------------------------------------------
+c rrb 2020/03/03; Remove adjustment to AVT(is that is set to ävflow
+c                 the min flow downstream).  This is no longer needed
+c                 after adding reservoir reporting to *.xdd
+cx      DO 220 NR=1,NUMRES
+cx        IF(IRESSW(NR).EQ.0) GO TO 220
+cx        IS=IRSSTA(NR)
+cx        avt1=avt(is)
+cx        AVT(IS)=AMIN1(AVT(IS),OFLz(IS))
+cxc
+cxc rrb 2010/10/15; Include loss at the destination  
+cxc rrb 2017/12/03; TEST; already adjusted with fixt to OutBal2.for
+cxc      
+cxcx        rlossX(is)=rlossX(is) + (qres(27,nr) + qres(30,nr))/fac
+cx  220 CONTINUE
+  
 c
 c _________________________________________________________
 c               Step 11; Summary Calculations
@@ -584,6 +651,13 @@ c
         IRECS=IREC+IS
         NDNN =NDNNOD(IS)
         CALL DNMFSO(maxsta, AVT, IDNCOD, IS, NDNN, IM)
+c
+c ---------------------------------------------------------
+c rrb 2020/03/03; Test
+cx        if(is.eq.1) write(nlog,*) ' '
+cx        write(nlog,*) ' Outmon;   is     im, avt(im)*fac'
+cx        write(nlog,'(a8,2i5,f8.0)') ' Outmon;',  is, im, avt(im)*fac
+         
 c rrb 01/10/95; Additional Output                                
 c              Subtract qdiv(16,is) to remove carrier water totaled
 c                in qdiv(5,is)       
@@ -876,7 +950,7 @@ cx     1                      ofl(is)*fac
 c
 c _________________________________________________________
 c
-c rrb 01/03/05; Step 17; Well Only
+c rrb 2001/03/05; Step 17; Well Only
 c               Reassign ID if a well only structure
 c
 c              Find a well only id (if it exists)
@@ -1089,7 +1163,7 @@ C
         CALL DNMFSO(maxsta, AVT, IDNCOD, IS, NDNN, IM)
 c
 c rrb 2006/10/03; Not used. Replace with carried used by Outbal
-c		Note qres(29,nr) is amount transfered between
+c		Note qres(29,nr) is amount transferred between
 c		accounts in the same reservoir in Rsrspu.for
 cr      CARRY(NR)=CARRY(NR)-AVT(IM)
 c
@@ -1121,11 +1195,27 @@ c rrb 03/14/96; Show powrel (release due to targets) as Seep and Spill
 c rrb 2015/07/18; Correction
 cx        RStoUse= qres(8,nr) + qres(9,nr)  + qres(12,nr) -
 cx     1           qres(21,nr)- qres(11,nr)
-        RStoUse= qres(8,nr) + qres(9,nr)  + qres(12,nr) - qres(21,nr)
+c
+c rrb 2020/03/01; Correction do not subtract qres(21 from RStoUse
+cx      RStoUse= qres(8,nr) + qres(9,nr)  + qres(12,nr) - qres(21,nr)
+        RStoUse= qres(8,nr) + qres(9,nr)  + qres(12,nr) 
      
         RStoExc  = qres(21,nr)
         RStoCar = qres(11,nr) + qres(16,nr) + qres(17,nr) + qres(22,nr)
-        RTotRel = RStoUse      + RStoExc        + RStoCar
+c
+c ________________________________________________________________________
+c rrb 2020/09/06; Update for a reservoir release direct (RCarry)
+cx      RTotRel = RStoUse      + RStoExc        + RStoCar
+c
+c rrb 2020/09/06; Back to original
+        RCarry = 0.0     
+        RCarry  = qres(38,nr)  
+        RTotRel = RStoUse      + RStoExc        + RStoCar + RCarry
+
+        if(ioutQ.eq.1) then
+          write(nlog,*) '  Outmon; qres(38,nr) Rcarry, RTotRel = ', 
+     1                qres(38,nr)*fac, RCarry*fac, RTotRel*fac
+        endif
         
 
 c rrb 03/14/96; Show powrel (release due to targets) as Seep and Spill
@@ -1147,7 +1237,16 @@ c       tot18x=RTotRel
 c
 c rrb 2006/10/27; Do not include seepage in release
 cr      tot18x=RTotRel - RStoCar + RSpill
-        tot18x=RTotRel - RStoCar + powrel(nr)
+c
+c ________________________________________________________________________
+c rrb 2020/09/07; Update for a reservoir release direct (RCarry)
+cx     tot18x=RTotRel - RStoCar + powrel(nr)
+       tot18x=RTotRel - RStoCar + powrel(nr) -Rcarry
+       
+       if(ioutQ.eq.1) then
+         write(nlog,*) '  Outmon; qres(38,nr) Rcarry,RTotRel,tot18x =', 
+     1        qres(38,nr)*fac, RCarry*fac, RTotRel*fac, tot18x*fac
+       endif
 
 c
 c rrb 01/12/07; Station balance total supply (column 19)
@@ -1191,7 +1290,7 @@ c		Step 20; Print Reservoir
         endif
      
 c
-c              Calculalte limit on storage for the entire reservoir
+c              Calculate limit on storage for the entire reservoir
 c                by subtracting the amount in each account
         tot15 = volmax(nr)
         do n=n1,n2
@@ -1203,11 +1302,11 @@ c
 c              Step 21; Print Reservoir account data
         do 450 n=n1,n2                                       
 c
-c rrb 2006/01/21; Do not adjust acc; it is constnat for a reservior 
+c rrb 2006/01/21; Do not adjust acc; it is constant for a reservoir 
 c                 ridr is hte account number        
 cx        acc=n
 c
-c              Initilize
+c              Initialize
           do  i=1,maxacc
             accr(i,n) = accr(i,n)/fz
           end do
@@ -1234,7 +1333,10 @@ c
 c rrb 2015/07/27; Correction
 cx          RStoUse= accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n) -
 cx     1            accr(11,n)          
-          RStoUse= accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n)
+c
+c rrb 2020/03/01; Correction do not subtract accr(21 from RStoUse
+cx        RStoUse= accr(8,n) + accr(9,n)  + accr(12,n) - accr(21,n)
+          RStoUse= accr(8,n) + accr(9,n)  + accr(12,n) 
      
                             
           RStoExc  = accr(21,n)
@@ -1284,16 +1386,25 @@ C
   460 CONTINUE        
 c
 c _________________________________________________________
-c               Step 25; Print Operating Rule Data (*.xop)
+c               Step 25a; Print Operating Rule Data (*.xop)
 c
   470 continue
 c     write(nlog,*) ' Outmon; numopr',  numopr
 c     write(6,*) ' Outmon; numopr',  numopr
   
       do i=1,numopr
-c
         IREC=(IYR-IYSTR)*12*NUMopr+(MON-1)*NUMopr + i
         write(45,rec=irec) divo(i)                
+      end do
+c
+c _________________________________________________________
+c               Step 25b; Print Operating Rule Data for WWSP &
+c                         JMartin report      
+      do k=1,numopr
+        IREC=(IYR-IYSTR)*12*NUMopr+(MON-1)*NUMopr + k
+        write(39,rec=irec) (divoWW(i,k), i=1,maxopr2), divoWWX(k)   
+cx      write(nlog,*) ' Outmon; mon, k, divoWWX(k)', 
+cx   1                mon,k,divoWWX(k)*fac  
       end do
 c
 c _________________________________________________________

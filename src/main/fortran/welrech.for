@@ -3,7 +3,7 @@ c           to a reservoir (typically a recharge reservoir).
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,21 +18,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-c _________________________________________________________
-c	Update History
-c
-
-c
-c _________________________________________________________
-c	Documentation
-c
-
-c
-c _________________________________________________________
-c	Dimensions
-cc
-c *********************************************************
 c
       SUBROUTINE WelRech(IW,L2,ncallX)
 c
@@ -63,7 +48,7 @@ c        IW             Global water right ID
 c        L2             LOC. OF operation right  in opr RIGHT TABLE
 c        nwR            source water right
 c
-c        ceff           ratio of GW to SW efficicney
+c        ceff           ratio of GW to SW efficiency
 c
 c        depx           depletion in this month by pumping
 c        divact         total well pumping
@@ -87,13 +72,13 @@ c
 c        diveff(mon,nd) Average diversion efficiency via *.dds
 c        diveffw(mon,nd)Average well efficiency via *.wes
 c
-c        effmaxs(nd)    Maximum sprinker efficiency via *.tsp
+c        effmaxs(nd)    Maximum sprinkler efficiency via *.tsp
 c        effmaxw(nd)    Maximum flood efficiency via *.tsp
 c
 c        effd           Average diversion efficiency via *.dds
 c        effa           Average well efficiency via *.wes
 c
-c        effs           Maximum sprinker efficiency via *.tsp
+c        effs           Maximum sprinkler efficiency via *.tsp
 c        efff           Maximum flood efficiency via *.tsp 
 c
 c        iout           Switch: 0 no print; 1 yes print
@@ -121,7 +106,7 @@ c
 c        iscd           River location of well (iscd = idvstaw(nwe))
 c
 c        ispr           =0 use flood efficiency in rtnsecw
-c                       =1 use sprinker efficiency in rtnsecw
+c                       =1 use sprinkler efficiency in rtnsecw
 c
 c        itsfile        Switch via datinp (*.ctl)
 c                       0=no GW acres by year provided
@@ -153,12 +138,12 @@ c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
      1          cidWR*12, rec12*12, cTandC*3, cidRiv*12, cidBal*12,
-     1          cresid1*12, ctype1*12
+     1          cresid1*12, ctype1*12, subtypX*8
 c
 c
 c _________________________________________________________
 c
-c       Step 1 Common Initilization
+c       Step 1 Common Initialization
 c
 c		iout = 0 No details
 c		       1 Details
@@ -168,6 +153,7 @@ c		       4 Sum
 c
 c ---------------------------------------------------------
 c		a. OutPut control
+      subtypX='welrech '
       iout=0
       ioutiw=0
       
@@ -218,10 +204,10 @@ c
 c
 c ---------------------------------------------------------
 c               d. Check Avail array
-      call chekava(19, maxsta, numsta, avail)
+      call chekava(19, maxsta, numsta, avail, subtypX)
 c
 c ---------------------------------------------------------
-c               e. Initilze temp array to store current 
+c               e. Initialize temp array to store current 
 c		   depletions and returns
       do is=1,numsta
         avtemp(is)=0.0
@@ -338,7 +324,7 @@ c
       endif  
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; a. Allow multiple accounts - Initilize
+c rrb 2006/09/25; a. Allow multiple accounts - Initialize
       nro=1
       if(iopdes(2,l2).lt.0) then
         nro=-iopdes(2,l2)
@@ -782,7 +768,7 @@ c
 c _________________________________________________________
 c
 c               Step 16; Check Avail for Roundoff issues
-      call chekava(19, maxsta, numsta, avail)
+      call chekava(19, maxsta, numsta, avail, subtypX)
       
 c
       if(iout.eq.1) then

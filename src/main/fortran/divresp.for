@@ -5,7 +5,7 @@ c           Note can release to meet a diversion or a depletion.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -20,9 +20,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-c
-C     Last change:  RRB  22 Oct 2002    4:12 pm
-c
 c
       subroutine divresP(iw,l2,ishort,divact,ncallX)
 c
@@ -121,11 +118,12 @@ c	Dimensions
 c
       include 'common.inc'
       character cwhy*24, cdestyp*12, rec12*12, ccarry*3, cpuse*3,
-     1 cresid1*12, cTandC*3
+     1 cresid1*12, cTandC*3, subtypX*8
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
+      subtypX='divresp '
       iout=0
       ioutiw=0
       
@@ -190,7 +188,7 @@ c rrb 00/12/26; Variable efficiency consideration
       
 c
 c               d. Check Avail array
-      call chekava(17, maxsta, numsta, avail)
+      call chekava(17, maxsta, numsta, avail, subtypX)
 c      
 c ________________________________________________________
 c               Step 2b; Set Reuse Plan pointer
@@ -330,7 +328,7 @@ c
         ndnd=ndnnod(idcd)
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nr)+iopdes(2,l2)-1
 cr      iuseX=irow
 
@@ -692,7 +690,7 @@ c _________________________________________________________
 c               
 c               Step 21; Check results
 c
-      call chekava(17, maxsta, numsta, avail)
+      call chekava(17, maxsta, numsta, avail, subtypX)
 c
 c _________________________________________________________
 c

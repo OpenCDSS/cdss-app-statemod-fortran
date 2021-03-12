@@ -4,7 +4,7 @@ c            It is the same as OopBook but has more functionality.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -65,19 +65,19 @@ c	If the destination is a Reservoir and the volume of water stored
 c       in the OOP Plan exceeds the remaining capacity of the subordinated
 c       (senior) reservoir, water is booked to another reservoir account
 c
-c	By having a bookover to both a resrvoir and plan depend on the amount
-c	stored in an OOP Plan, the user has the flexability to control
+c	By having a bookover to both a reservoir and plan depend on the amount
+c	stored in an OOP Plan, the user has the flexibility to control
 c	the priority of when water stored or diverted at several locations
 c       is booked over.
 c
 c       If the destination is a reservoir and the subordinated (senior)
 c       reservoir does not fill then a type 2 operating right is
-c       typically used to pay back the OOP storage by transfering
+c       typically used to pay back the OOP storage by transferring
 c       water from the out of priority reservoir account to the senior reservoir.
 c
 c       If the destination is a plan and the subordinated (senior)
 c       reservoir does not fill then a type XX operating right is
-c       typically used to pay back the OOP Plan by transfering
+c       typically used to pay back the OOP Plan by transferring
 c       water from another reservoir to the senior reservoir.
 c
 c _________________________________________________________
@@ -111,12 +111,12 @@ c ---------------------------------------------------------
 c	nrwr		iopsou(3,
 c		 	The subordinated (senior) reservoir right
 c	nSenior		The subordinated (senior) reservoir
-c	SeniorA		Avaliable storage in the subordinated (senior) 
+c	SeniorA		Available storage in the subordinated (senior) 
 c                       decree
 c
 c	divOpr		Amount current owed by an associated
 c		        OOP diversion or reservoir 
-c			Note store in acft since it cululates
+c			Note store in acft since it cumulates
 c			from one month to the next
 c	
 c ---------------------------------------------------------
@@ -139,7 +139,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1 Initilize
+c               Step 1 Initialize
 c
 c		iout=1 details
 c		iout=2 summary
@@ -290,7 +290,7 @@ cr    psuply1=psuply(iP)*fac
 c
 c _________________________________________________________
 c
-c               Step 6; Set desitnation data
+c               Step 6; Set destination data
 c
       ND  =IOPDES(1,L2)
 c
@@ -312,7 +312,7 @@ c		a. Destination is a reservoir
 cr      IDOW=NOWNER(ND)+IOPDES(2,L2)-1
 c
 c ---------------------------------------------------------      
-c               a. Roundoff check Destinatino Reservoir
+c               a. Roundoff check Destination Reservoir
         in1=0
         isub=8
         call chekres(nlog,maxres, in1, isub, iyr, mon, nr,nowner,
@@ -320,7 +320,7 @@ c               a. Roundoff check Destinatino Reservoir
 
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
         nro=1
         if(iopdes(2,l2).lt.0) then
           nro=-iopdes(2,l2)

@@ -3,7 +3,7 @@ c          same as Accou but includes loss to reservoir (resLoss)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@ c
 c               Program Description;
 c
 c       It distributes a reservoir right to individual accounts
-c	Same as Accou but includes loss to reservoir (resLoss)
+c       Same as Accou but includes loss to reservoir (resLoss)
 c
 c _________________________________________________________
 c
 c               Update History
-c	2006/09/25; Added icx calling subroutine
+c       2006/09/25; Added icx calling subroutine
 c       2003/10/27; Add ability to distribute based on ownership ratio
 c                   (e.g. iresty1 = 0)
 c
@@ -53,16 +53,16 @@ c                       water right
 c       cursta          total available in all ownership accounts
 c       actaf           amount stored
 c
-c        iresty1	type of account distribution
-c			0 Ownership Ratio 
+c       iresty1         type of account distribution
+c                       0 Ownership Ratio 
 c                       1 Available Space 
-c                      -1 One Account  
-c	ia		account to adjust
+c                       -1 One Account  
+c       ia              account to adjust
 c
-c       icx    		subroutine call ID
+c       icx             subroutine call ID
 c                             111=divcar,   114=divcar1,  116=DirectFS,
 c                             119=divcar2,  124=directEx, 125=directBy,
-c			      127=DivresP,  202=resrg1   
+c                             127=DivresP,  202=resrg1   
 
 c _________________________________________________________
 c
@@ -76,7 +76,7 @@ c
 c
 c _________________________________________________________
 c
-c               Initilize
+c               Initialize
         iout=0
         nlog=99
         nr=nr
@@ -92,7 +92,7 @@ c               Initilize
 c _________________________________________________________
 c
 c               Distribute based on available space 
-c		to first n accounts
+c               to first n accounts
 c
 cx      if(iresty1.ne.0) then
         if(iresty1.ge.1) then
@@ -108,7 +108,7 @@ cx      if(iresty1.ne.0) then
             curown(n1)=curown(n1)+c
             accr(ia,n1)=accr(ia,n1)+c
 c
-c rrb 2008/09/26; do not show loss at reservoir, it is with the carrier		         
+c rrb 2008/09/26; do not show loss at reservoir, it is with the carrier
 c           accr(27,n1)=accr(27,n1)+resLoss*f
             vola = vola + amax1(0.0, ownmax(n1)-curown(n1))
           end do
@@ -143,7 +143,7 @@ c               in this account
             curown(n1)=curown(n1)+c
             accr(ia,n1)=accr(ia,n1)+c
 c
-c rrb 2008/09/26; do not show loss at reservoir, it is with the carrier		                     
+c rrb 2008/09/26; do not show loss at reservoir, it is with the carrier
 c           accr(27,n1)=accr(27,n1)+resLoss*f
             vola = vola + amax1(0.0, ownmax(n1)-curown(n1))
           end do
@@ -162,7 +162,7 @@ c               Distribute to one account
           curown(n1)=curown(n1)+c
           accr(ia,n1)=accr(ia,n1)+c
 c
-c rrb 2008/09/26; do not show loss at reservoir, it is with the carrier		                   
+c rrb 2008/09/26; do not show loss at reservoir, it is with the carrier
 c         accr(27,n1)=accr(27,n1)+resLoss
           vola = vola + amax1(0.0, ownmax(n1)-curown(n1))
           write(nlog,*)' AccouL; ', n1, curown(n1), accr(27,n1), resloss

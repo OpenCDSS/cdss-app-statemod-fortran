@@ -2,7 +2,7 @@ c getwel2 - reads in well station data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ c rrb 2005/10/14; Separate return and depletion files
       character cyrX*5, cunit*5, recin*132, recout*132, cCallBy*12
 c__________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c		Details iout = well data
 c rrb 2005/10/14; Separate files
       write(nlog,90)
@@ -450,7 +450,7 @@ C
 c
 c _________________________________________________________
 c
-c		Step 10; Initilize warning variable
+c		Step 10; Initialize warning variable
   210 numdivw=nw-1
       write(nlog,1270) numdivwS, numdivwX, numdivw
   
@@ -460,7 +460,7 @@ c		Step 10; Initilize warning variable
 c          
 c _________________________________________________________
 c
-c		Step 11; Read effieciency in new station format (*.wef)              
+c		Step 11; Read efficiency in new station format (*.wef)              
       if(inE.gt.0) then
 c
 c ---------------------------------------------------------

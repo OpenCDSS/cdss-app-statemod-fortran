@@ -4,7 +4,7 @@ c            diversion, reservoir, ACCOUNTING PLAN, or carrier with reuse.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -20,10 +20,6 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-c	Update History
-c
-
-c
 c _________________________________________________________
 c	Documentation
 c
@@ -50,10 +46,10 @@ c
 c 	Update history
 c
 c	05/03/31	Copied Divres
-c			Removed ability to relase for depletion	only
+c			Removed ability to release for depletion only
 c                       Removed ability to be called by replacement res
 c			Removed stuff related to a transfer limit 
-c			Removed refrences to transmtn (IRTURN(IUSE).EQ.4)
+c			Removed references to transmtn (IRTURN(IUSE).EQ.4)
 c			Added Reservoir Reuse Plan as a source 2 option
 c       2014/07/31 jhb  copied DivImpR
 c                       first step - add acct plan (type 11) as destination
@@ -75,7 +71,7 @@ c
 c           ieff2 = 0 always use average efficiency
 c           ieff2 = 1 use max efficiency if ieffmax=1
 c           iopsou(1,l2) = source reservoir #1 
-c           iopsou(2,l2) = source reserovir #1 account
+c           iopsou(2,l2) = source reservoir #1 account
 c               Note the following source 2 data is only used when
 c               releases are tied to another type 6 operating rule  
 c           iopsou(3,l2) = if > 0 source reservoir #2    
@@ -114,17 +110,15 @@ c           nd           = destination (+=diversion, -=reservoir)
 c           ndnd         = # of downstream nodes for reservoir #1
 c
 c
-c	    intern(  )   = If > 0 carrier system with intervening
+c	          intern(  )   = If > 0 carrier system with intervening
 c                          structures
 c
-c        qdiv(18        Carrier passing thru a structure (e.g. divcar)
-c        qdiv(20        From Carrier by Storage or Exchange (e.g. carrpl)
-c        qdiv(28,       Stored via a reuse plan  
-c        qdiv(31,       Diversion from ReUse plan to a Res or Diversion
+c           qdiv(18        Carrier passing thru a structure (e.g. divcar)
+c           qdiv(20        From Carrier by Storage or Exchange (e.g. carrpl)
+c           qdiv(28,       Stored via a reuse plan  
+c           qdiv(31,       Diversion from ReUse plan to a Res or Diversion
 c
 c           qres(4,ix)   = From Carrier by Storage to Reservoir
-c           qres(8,ix)   = Reservoir Storage to Trans Mountain Carrier
-c           qres(9,ix)   = Reservoir Storage to Carrier??
 c           qres(26,ix)  = Reservoir Storage to River
 c           qres(11,ix)  = Reservoir Storage to Carrier
 c
@@ -132,11 +126,13 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      character cwhy*24, cdestyp*12, ccarry*3, cresid1*12
+      character cwhy*24, cdestyp*12, ccarry*3, cresid1*12, subtypX*8
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
+      subtypX='divimpr2'
+      
       iout=0
       if(ichk.eq.135) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw
@@ -190,7 +186,7 @@ c rrb 01/01/17; Call number
 cr    write(nlog,*) '  DivImpR iwx', iwx
 c
 c		Step 1b; Check avail array
-      call chekava(2, maxsta, numsta, avail)
+      call chekava(2, maxsta, numsta, avail, subtypX)
 c
 c _________________________________________________________
 c               Step 2; Branch if not on this month
@@ -270,7 +266,7 @@ c               a. Destination is a reservoir (nd<0 & iresw=1)
         NDND=NDNNOD(IDCD)
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nd)+iopdes(2,l2)-1  
 
         nro=1
@@ -642,7 +638,7 @@ c
 c               Step 15; Check results
 c
 c               a. Check that Avail flow > 0
-      call chekava(2, maxsta, numsta, avail)
+      call chekava(2, maxsta, numsta, avail, subtypX)
 c
 c               b. Detailed Check
 c

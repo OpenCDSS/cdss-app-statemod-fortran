@@ -2,7 +2,7 @@ c outbal2 - prints a water balance, same as outbal but this one includes a GW ba
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,10 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-c *********************************************************
-C     Last change:  C    20 May 97    0:03 am
-
+c
       subroutine outbal2(iys,iye,cplot)
 c
 c
@@ -33,15 +30,24 @@ c
 c ____________________________________________________
 c       Update History
 c
+c rrb 2011/11/15; Revise footnote 5 From Plan to indicate
+c                 it only shows water imported to system
+c
+c rrb 2020/08/30; Additional Output for iout43=1        
+c
 c rrb 2007/02/23; Revised to recognize *.b43 or *.xdd now has
-c		  well only lands reported. Also redefined 
-c		  column 33 to be salvage. Therefore no longer
-c		  need to read the well file (*.xwe). 
+c		                well only lands reported. Also redefined 
+c		                column 33 to be salvage. Therefore no longer
+c		                need to read the well file (*.xwe).
+c 
 c rrb 2007/02/20; Add Carrier to Well Output
+c
 c rrb 2006/04/18; Add Reservoir Seepage
+c
 c rrb 2005/11/29; Add River dat1(6) and Carrier dat1(10) Loss
+c
 c rrb 1999/02/20; Futile call capability, allow 100
-c                outflows (one main 99 futile call tribs)
+c                   outflows (one main 99 futile call tribs)
 c
 c ____________________________________________________
 c       Documentation
@@ -58,7 +64,7 @@ c              dat1(7)  = From Well
 c
 c              dat1(8)  = from carrier priority via priority
 c              dat1(9)  = from carrier via storage
-c	    xx dat1(10) = from carrier loss
+c	          xx dat1(10) = from carrier loss
 c              dat1(11)  = carried (pass thru) water
 c
 c           ** dat1(12) = from soil
@@ -85,7 +91,8 @@ c
 c              dat1(30) = From river to ISF by priority
 c              dat1(31) = From river to ISF by storage or
 c                         From river to Plan by storage or a reuse plan
-c              dat1(32) = From carrier by storage by operation type 3
+c              dat1(32) = From carrier by storage by operation type 3 
+c                         (A release To_Conduit)
 c              dat1(33) = Salvage
 c	             dat1(34) = Source is a reuse or admin plan	  
 c              dat1(35) = rid
@@ -116,7 +123,7 @@ c
 c
 c ____________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
 c		iout=0 no details
 c		iout =1 print all adjustments to balance
@@ -125,6 +132,8 @@ c		ioutD=1 print total diversion data
 c		ioutP=1 print plan data
 c		ioutI=1 print inflow data
 c   ioutS=1 print to storage data 
+c   ioutR=1 print binary read of reservoir (*.xre) data
+c   iout43=1 print binary read of diversion (*.xdd) data
 c
       iout=0
       
@@ -132,6 +141,10 @@ c
       ioutI=0
       ioutP=0
       ioutS=0
+      ioutR=0
+c
+c rrb 2020/08/30; Additional Output for iout43=1        
+      iout43=0
 
       nout=0
       noutD=0
@@ -253,7 +266,7 @@ c
       
 c ____________________________________________________
 c
-c rrb 2009/01/06;  Step 1b. Initilize adjustment averages
+c rrb 2009/01/06;  Step 1b. Initialize adjustment averages
         AdjDcT=0.0
         AdjRcT=0.0
         AdjRrT=0.0
@@ -276,7 +289,7 @@ c         ng = # of columns in gw balance
 c
 c ____________________________________________________
 c rrb 10/31/96;
-c              Step 1b. Initilize average annual arrays
+c              Step 1b. Initialize average annual arrays
       do 100 n=1,nb+ng
         do 100 im=1,13
           dum(im,n) = 0.0
@@ -341,7 +354,7 @@ c               Annual Total output
 c
 c ____________________________________________________
 c
-c		Step 7; Initilze annual totals
+c		Step 7; Initialize annual totals
 
         tint   = 0.0
         trett  = 0.0
@@ -437,7 +450,11 @@ c
             irecs=((iy-iystr0)*12+(im-1))*numsta+is+numtop
 c
             read(43,rec=irecs,err=270) (dat1(i),i=1,ndiv)
-c           write(nlog,*) '  Outbal2; 43', (dat1(i), i=1,ndiv)
+c
+c rrb 2020/08/30; Additional Output            
+            if(iout43.eq.1) then
+              write(nlog,*) '  Outbal2; 43', (dat1(i), i=1,ndiv)
+            endif
 c
 c ---------------------------------------------------------
 c		Set structure type
@@ -482,7 +499,7 @@ c			Print detailed inflow data
             endif
 c
 c ---------------------------------------------------------
-c rrb 2008/01/15; Store From Plan in dat1(34)
+c rrb 2008/01/15; Store From Plan in dat1(34 ) = qdiv(35 ) in outmon
 c			Note for detailed output there is no adjustment
 c			therefore do not add dat1(34) to AdjTot
 c
@@ -512,8 +529,8 @@ c ---------------------------------------------------------
 c	       The following are based on ndivO=39
 c              Total diversion = direct from river by priority (3)
 c                + river by storage (4) + river by exchange (5)
-c                - nonCU by priority (30) - NonCU by storage (31)
 c                + carrier by storage (32)
+c                - nonCU by priority (30) - NonCU by storage (31)
             tdiv = tdiv + dat1(3)  + dat1(4)  + dat1(5) 
      1                  + dat1(32) - dat1(30) - dat1(31)
      
@@ -526,10 +543,17 @@ c
 c ---------------------------------------------------------              
 c rrb 2008/01/11; If the structure is a reservoir (istrT=2)
 c                 adjust diversion information in *.xdd
-            if(istrT.eq.2) then
 c
-c		To Storage adjustment
-              AdjTs=dat1(3) + dat1(4)  + dat1(5)            
+            if(istrT.eq.2) then
+c		              To Storage adjustment
+c rrb 2020/09/06; Test to not adjust for diversion to other (dat1(5)
+c                 dat1(4) = From River to Storage
+c                 dat1(5) = From River to Other
+cx            AdjTs=dat1(3) + dat1(4)  + dat1(5)
+c
+c rrb 2020/10/10; Test with it back
+cx            AdjTs=dat1(3) + dat1(4)             
+              AdjTs=dat1(3) + dat1(4)  + dat1(5)
 c
               tdiv=tdiv-AdjTs
               
@@ -629,7 +653,10 @@ c ---------------------------------------------------------
 c							 Read Reservoir data
             irecr=((iy-iystr0)*12+(im-1))*nrsactx+irt+numtop
             read(44,rec=irecr,err=270) (dat2(i),i=1,nres)
-c           write(nlog,*) '  Outbal2, Res', (dat2(i), i=1,nres)
+            if(ioutR.eq.1) then
+              write(nlog,'(a14,2i5, 40f8.1)') 
+     1        '  Outbal2, Res', ir, irt, (dat2(i), i=1,nres)
+            endif
 c
 c ---------------------------------------------------------
 c              Skip account data
@@ -731,8 +758,9 @@ c               Step 12; Print Water Balance
         tgwint = tgwint + tgwin
         tfrsmt = tfrsmt + tfrsm
 c
-c rrb 05/02/18; Plans        
-        tplant = tplant + tplan        
+c rrb 05/02/18; Sum Plan data       
+        tplant = tplant + tplan   
+             
         tswint = tint   + trett + tgwint + tfrsmt + tplant
 
         tdivt  = tdivt  + tdiv
@@ -1310,13 +1338,18 @@ c 240 format(/,30x,'***  Stream Water Balance ', a5,' ***')
      1  '        (4) Salvage is not part of the Stream Water Balance.',/
      1  '            It is the portion of well pumping that does not ',
      1              'impact the stream.',/
-     1  '        (5) From Plan is water from a non-reservoir reuse ',
-     1              'plan (type 4) or an accounting plan (type 12).',/
-     1  '            Both a non-reservoir reuse and an accounting ',
-     1              'plan are water supplies in the water balance',/
-     1  '            because they store return flows which would have ',
-     1              'returned to the system if they were not assigned ',
-     1              'to a plan.',/
+c
+c rrb 2011/11/15; Revise footnote 5 From Plan
+cx     1  '        (5) From Plan is water from a non-reservoir reuse ',
+cx     1              'plan (type 4) or an accounting plan (type 12).',/
+cx     1  '            Both a non-reservoir reuse and an accounting ',
+cx     1              'plan are water supplies in the water balance',/
+cx     1  '            because they store return flows which would have ',
+cx     1              'returned to the system if they were not assigned ',
+cx     1              'to a plan.',/
+cx
+     1  '        (5) From Plan is water imported to the system by a ',
+     1               'Type 35 operating rule',/
      1  '        (6) Divert does not include diversions by an '
      1              'instream flow or a T&C plan. ',/
      1  '            To avoid double accounting with reservoir ',

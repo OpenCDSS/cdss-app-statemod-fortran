@@ -2,7 +2,7 @@ c divrig - calculates a standard diversion
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE DIVRIG(IW,L2,ISHORT,divactx,ncallx)
 c
 c _________________________________________________________
@@ -140,10 +140,10 @@ c
       character ctype1*12
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, 
      1 cRelTyp*12, cReplace*3,
-     1 OkIN*3, OkOut*3,  cCallBy*12, corid1*12
+     1 OkIN*3, OkOut*3,  cCallBy*12, corid1*12, subtypX*8
 c
 c_____________________________________________________________
-c               Step 1; Common Initilization
+c               Step 1; Common Initialization
 c
 c 
 c ---------------------------------------------------------
@@ -157,6 +157,7 @@ c		  ioutwr=details on water right ioutwr
 c
 c		  ioutIN=0 no details from DsaMod
 c		        2 yes details from DsaMod
+      subtypX='divrig  '
       iout=0
       ioutiw=0  
       ioutIN=0
@@ -204,7 +205,7 @@ c     f = mthday(mon) * factor
       endif   
 c
 c ---------------------------------------------------------
-c		Miscellaneous Initilization
+c		Miscellaneous Initialization
 c
       cdestyp='Diversion'
       ccarry='No'
@@ -243,7 +244,7 @@ c ---------------------------------------------------------
 c rrb 2006/10/31; Check avail coming in
       OkIn=' -1'
       OkOut=' -1'
-      call chekava(24, maxsta, numsta, avail)      
+      call chekava(24, maxsta, numsta, avail, subtypX)      
       OkIn='Yes'
 c
 c_____________________________________________________________

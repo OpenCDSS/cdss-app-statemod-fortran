@@ -2,7 +2,7 @@ c outpln - prints plan data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE OutPln
 c
 c
@@ -26,6 +26,13 @@ c	Program Description
 c
 c       Outpln; It prints plan data
 c
+c _________________________________________________________
+c       Update History
+c
+c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a
+c                   type 14 and a WWSP User Plan is a type 15
+c rrb 2018/08/05; Revise to allow a WWSP Plan or User (type 14) 
+c                   tied to a reservoir
 c
 c _________________________________________________________
 c
@@ -54,12 +61,14 @@ c
      1  iptotal(40),     datBeg(maxPlan)
 c _________________________________________________________
 c
-c              Step 1; Initilize
+c              Step 1; Initialize
 c		
-c		iout = detailed output
+c		iout = 1 detailed output
+c          2 summary of print arrays
 c		ioutN= plan pointer for detailed output 
+
       iout = 0
-c      ioutN=52
+c     ioutN=52
 
       rec12=' '
       rec24=' '
@@ -89,7 +98,7 @@ cr    maxResPX=12
         pfailx(np)=0.0
       end do
 c
-c		Initilze total per plan type      
+c		Initialize total per plan type      
       do np=1,maxPlnT
         do iy=1,100
           do i=1,40
@@ -99,6 +108,23 @@ c		Initilze total per plan type
         end do
       end do
 
+c ---------------------------------------------------------
+c		            Detailed Output of print arrays when iout.gt.1
+c                 (same as available in SetPlanO.for)
+
+      if(iout.ge.1) then
+        do np=1,nplan
+          write(nlog,400) np, pid(np), iplntyp(np), plntypC(np), maxplnU
+          write(nlog,410) (i, i=1,60)
+          
+          write(nlog,420) 'iplnoprE', (iplnoprE(np,nop), nop=1,maxplnU)
+          write(nlog,420) 'iplnoprS', (iplnoprS(np,nop), nop=1,maxplnU)
+          write(nlog,420) 'iplnoprR', (iplnoprR(np,nop), nop=1,maxplnU)
+          write(nlog,420) 'iplnoprO', (iplnoprO(np,nop), nop=1,maxplnU)
+          write(nlog,420) 'iplnoprU', (iplnoprU(np,nop), nop=1,maxplnU)            
+          write(nlog,420) 'iplnoprP', (iplnoprP(np,nop), nop=1,maxplnU) 
+        end do
+      endif        
       
 c
 c _________________________________________________________
@@ -110,7 +136,7 @@ c
 c _________________________________________________________ 
 c
 c               Step 4b. Process each plan
-c		Concept for every plan, find uses by scanning 
+c		            Concept for every plan, find uses by scanning 
 c               the operation right file.
        
         if(iout.eq.1) write(nlog,*) ' Outpln; nplan', nplan
@@ -134,7 +160,7 @@ c rb 2011/07/28; print the location to the header
 c smalers 2017-11-07 Check to avoid invalid array index
 c
 c
-c rrb 2017/12/11; Correction varible is is set in getpln
+c rrb 2017/12/11; Correction variable is is set in getpln
 cx        if (is.gt.0) then
             write(21,300) cunitm, np, iplntyp(np),plntypC(np),Pid(np),
      1        Pname1(np), Psource(np), cstaid(is)
@@ -166,8 +192,10 @@ c rrb 2006/08/08; Evap depends on the operating rule type
             
 c           if(iout.eq.1 .and. ioutN.eq.52) then
             if(iout.eq.1) then
-              write(nlog,*) ' OutPln;  np, nop, ke, ks, kr, ku, ko'
-              write(nlog,*) ' OutPln; ',  np, nop, ke, ks, kr, ku, ko
+              write(nlog,*) 
+     1         ' OutPln;   np   nop   ke   ks   kr   ku   ko   kp'
+              write(nlog,'(a10,20i5)') 
+     1          ' OutPln; ',  np, nop, ke, ks, kr, ku, ko,kp
             endif  
 c
 c
@@ -235,7 +263,14 @@ c		Source is a Plan
 c               Set Use based on opr right source 1 or 2
             if(kU.gt.0 .and. kP.gt.0) then
               iop=iop+1   
-              kUP=kUP+1
+c
+c rrb 2019/04/29; Test
+cx            kUP=kUP+1
+              if(kUP.eq.0) then
+                kUP=1
+              else
+                kUP=kUp+2
+              endif
               
               copOff=' On'                             
 c             write(nlog,*) ' OutPln; kUP ', kUP
@@ -278,7 +313,10 @@ c
 c _________________________________________________________ 
 c
 c               Step 5; Year Loop
-          if(iout.eq.1) write(nlog,*) ' OutPln; iystr, iyend ', iystr, iyend
+          if(iout.eq.1) then
+            write(nlog,*) ' OutPln; iystr, iyend ', iystr, iyend
+          endif
+          
           iy1=0
           DO IY=IYSTR,IYEND
             iy1=iy1+1
@@ -314,9 +352,8 @@ c           if(iplntyp(np).eq.2) then
             endif
 c
 c ---------------------------------------------------------
-c
 c		c. Reservoir Plans            
-            if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5) then
+            if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5) then            
               write(21,233) (i, i=1,maxResP+2)
             endif    
 c
@@ -359,8 +396,21 @@ c		h. Release Limit
             if(iplntyp(np).eq.12) then
               write(21,232) 'Release', 'Limit', (i, i=1,maxResPX)
             endif    
-            
 c
+c ---------------------------------------------------------
+c
+c rrb 2018/08/28; Allow type 14
+c		i. WWSP Supply Plan (type 14)
+            if(iplntyp(np).eq.14) then
+              write(21,236) (i, i=1,maxResPX+2)            
+            endif               
+c
+c rrb 2019/04/20; Allow type 15
+c		i. WWSP User Plan (type 15)
+            if(iplntyp(np).eq.15) then
+              write(21,236) (i, i=1,maxResPX+2)            
+            endif               
+cc
 c _________________________________________________________
 c
 c		Step 7; Month Loop              
@@ -377,6 +427,13 @@ c
 c		Step 8; Read Binary File
               irec1=((iy-iystr0)*12*nplan)+((im-1)*(nplan))+np
               ip1=iplntyp(np)
+c
+c rrb 2020/08/31; Check
+              if(ip1.lt. 1) then
+                write(nlog,*) '  Outpln; Problem ip1 = 0'
+                write(nlog,*) '  Outpln; np, pid(np)', np, pid(np)
+              endif
+              
               ipTotal(ip1)=1
 c
 c ---------------------------------------------------------
@@ -405,9 +462,17 @@ c smalers 2017-11-07 Check to avoid invalid array index
               endif
 c
 c ---------------------------------------------------------
-c		c. Reservoir Plans            
+c		c. Reservoir Plans  
+c
+c rrb 2018/08/05; Add WWSP Supply Plan (type 14) 
+c rrb 2019/04/20; Add WWSP User Plan (type 15)         
+cx            if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1           iplntyp(np).eq.9) then                   
+cx            if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1           iplntyp(np).eq.9 .or. iplntyp(np).eq.14) then                   
               if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
-     1           iplntyp(np).eq.9) then                   
+     1           iplntyp(np).eq.9 .or. iplntyp(np).eq.14 .or.
+     1           iplntyp(np).eq.15) then                   
 c smalers 2017-11-07 Check to avoid invalid array index
                 if (is.gt.0) then
                   read(68,rec=irec1) pid(np), cstaid(is),
@@ -465,8 +530,7 @@ cx            if(iplntyp(np).eq.12 .and. im.eq.1) datBeg(np)=dat2(1)*fac
                 datBeg(np)=dat2(1)*fac
               else
                 datBeg(np)=amax1(datBeg(np), dat2(1)*fac)
-              endif
-cxxxx              
+              endif             
               
               cfail2 = 'Off'
               if(ipfail(np).gt.0 .and. pfailX(np) .gt. small) then
@@ -543,9 +607,18 @@ c smalers 2017-11-07 Check to avoid invalid array index
               endif  
 c
 c ---------------------------------------------------------
-c		c. Reservoir Output        
-              if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
-     1           iplntyp(np).eq.9) then      
+c		c. Reservoir Output   
+c rrb 2018/08/05; Add WWSP (type 14)     
+cx            if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1           iplntyp(np).eq.9) then 
+c
+c rrb 2019/04/20; Revise to allow WWSP Supply Plan (type 14) and
+c                 WWSP User Plan (type 15)     
+cx            if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1           iplntyp(np).eq.9 .or. iplntyp(np).eq.14) then      
+              if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5  .or.
+     1           iplntyp(np).eq.9 .or. iplntyp(np).eq.14 .or.
+     1           iplntyp(np).eq.15) then      
      
                 if(isigfig.eq.0) then
 c smalers 2017-11-07 Check to avoid invalid array index
@@ -713,8 +786,18 @@ c smalers 2017-11-07 Check to avoid invalid array index
 
 c ---------------------------------------------------------
 c		c. Reservoirs        
+c rrb 2018/08/05; Add WWSP (type 14)
+cx          if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1         iplntyp(np).eq.9) then      
+c
+c rrb 2019/04/20; Revise to allow WWSP Supply Plan (type 14) and
+c                 WWSP User Plan (type 15)
+cx          if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
+cx   1         iplntyp(np).eq.9 .or. iplntyp(np).eq.14) then     
+cx 
             if(iplntyp(np).eq.3 .or. iplntyp(np).eq.5 .or.
-     1         iplntyp(np).eq.9) then      
+     1         iplntyp(np).eq.9 .or. iplntyp(np).eq.14 .or.
+     1         iplntyp(np). eq.15) then      
             
               write(21,253)
               if(isigfig.eq.0) then
@@ -1366,7 +1449,7 @@ c rrb 2015-03-24
 c
 c ---------------------------------------------------------
 c   
-c   Step 22; Print Annual Summary for Release Limit Plans (type 11)
+c   Step 22; Print Annual Summary for Changed Water Right (type 13)
         if(ipTotal(13).ne.0) then
           NumplnT=NumplnT+1        
           do np=13,13
@@ -1409,8 +1492,105 @@ c			Annual Average
             endif         
           end do 
         endif     
-       
-         
+ 
+ 
+c
+c _________________________________________________________
+c
+c   Step 23; Print Annual Summary for WWSP Source (type 14)
+        if(ipTotal(14).ne.0) then
+          NumplnT=NumplnT+1
+          do np=14,14
+            write(21,310) cunitm, np, plntypX(np)
+            write(21,232) ' Supply', 'Total', (i, i=1,maxResPX)
+            iy1=0
+            do iy=iystr,iyend  
+              iy1=iy1+1
+              if(isigfig.eq.0) then
+                write(21,242) 'Total       ', 'NA          ', iy, 
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+              
+              if(isigfig.eq.1) then
+                write(21,2421) 'Total       ', 'NA          ', iy,             
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+              
+              if(isigfig.eq.2) then
+                write(21,2422) 'Total       ', 'NA          ', iy,             
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+            end do
+c
+c			Annual Average          
+            write(21,252)
+            if(isigfig.eq.0) then
+              write(21,243) 'Total        ', 'NA          ', 
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif
+            
+            if(isigfig.eq.1) then
+              write(21,2431) 'Total       ', 'NA          ', 
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif         
+            
+            if(isigfig.eq.2) then
+              write(21,2432) 'Total       ', 'NA          ',
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif         
+          end do 
+        endif  
+        
+c
+c _________________________________________________________
+c
+c rrb 2019/04/20; Revise to include WWSP Source (type 14 and 
+c                 WWSP Use (type 15)
+c   Step 24; Print Annual Summary for WWSP Use (type 15)
+        if(ipTotal(15).ne.0) then
+          NumplnT=NumplnT+1
+          do np=15,15
+            write(21,310) cunitm, np, plntypX(np)
+            write(21,232) ' Supply', 'Total', (i, i=1,maxResPX)
+            iy1=0
+            do iy=iystr,iyend  
+              iy1=iy1+1
+              if(isigfig.eq.0) then
+                write(21,242) 'Total       ', 'NA          ', iy, 
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+              
+              if(isigfig.eq.1) then
+                write(21,2421) 'Total       ', 'NA          ', iy,             
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+              
+              if(isigfig.eq.2) then
+                write(21,2422) 'Total       ', 'NA          ', iy,             
+     1           'TOT', (planTot(np,iy1,i), i=1,MaxResPX)
+              endif
+            end do
+c
+c			Annual Average          
+            write(21,252)
+            if(isigfig.eq.0) then
+              write(21,243) 'Total        ', 'NA          ', 
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif
+            
+            if(isigfig.eq.1) then
+              write(21,2431) 'Total       ', 'NA          ', 
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif         
+            
+            if(isigfig.eq.2) then
+              write(21,2432) 'Total       ', 'NA          ',
+     1          'TOT', (planTot(np,iyX,i)/rn, i=1,MaxResPX)
+            endif         
+          end do 
+        endif        
+        
+              
 c
 c _________________________________________________________
 c
@@ -1620,7 +1800,35 @@ c		Type 8 Recharge
      1  ' _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______',
-     1  ' _______ _______ _______ _______ _______ _______')
+     1  ' _______ _______ _______ _______ _______ _______')  
+c
+c		Type 14 WWSP-Supply and type 15 WWSP-User Plans
+     
+  236   format(/,
+     1  '                                                    ',
+     1  'Plan Uses (1-20) '/
+     1  '                                    Initial  Supply',
+     1  ' _______________________________________',
+     1  '________________________________________',     
+     1  '________________________________________',
+     1  '________________________________________________  Ending',/
+     1  'Plan         River                 ',
+     1  ' Storage   Total',
+     1  '   Use 1   Use 2   Use 3   Use 4   Use 5',
+     1  '   Use 6   Use 7   Use 8   Use 9  Use 10',
+     1  '   Use 1   Use 2   Use 3   Use 4   Use 5',
+     1  '   Use 6   Use 7   Use 8   Use 9  Use 10   Total Storage',/
+     1  'ID           ID           Year   Mo     N/A     N/A',
+     1  '     (-)     (-)     (-)     (-)     (-)',
+     1  '     (-)     (-)     (-)     (-)     (-)',
+     1  '     (-)     (-)     (-)     (-)     (-)',
+     1  '     (-)     (-)     (-)     (-)     (-)     N/A     N/A',/
+     1  '                                   ', 24('    (',i2,')'),/
+     1  '____________ ____________ ____ ____ _______ _______',
+     1  ' _______ _______ _______ _______ _______',
+     1  ' _______ _______ _______ _______ _______',
+     1  ' _______ _______ _______ _______ _______',
+     1  ' _______ _______ _______ _______ _______ _______ _______')
      
  250  format(
      1  '____________ ____________ ____ ____ _______ _______',
@@ -1690,6 +1898,14 @@ c		Type 8 Recharge
  310  FORMAT(//,72('_'),//
      1 'Total Plan Summary', a5,/
      1 'Plan Type      = ',i5, 1x, a25)
+  
+ 400  format(/,  
+     1  'OutPln; Detailed output for Plan # = ', i5,
+     1  ' ID = ', a12, ' Type = ',i5, ' Name = ', a25, 
+     1  ' maxplnU = ', i5)
+ 410  format(/, 12x, 60('  ', i3),/
+     1          12('_'), 60(' ____'))      
+ 420  format(a12, 100i5)
 
 
 c

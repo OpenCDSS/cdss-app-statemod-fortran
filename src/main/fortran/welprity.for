@@ -4,7 +4,7 @@ c             Note current time step depletions are accounted as they occur in W
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE WelPrity(iw,l2,ncallX)
 c
 c _________________________________________________________
@@ -43,23 +43,23 @@ c        IW             Global water right ID
 c        L2             LOC. OF operation right  in opr RIGHT TABLE
 c        iout           Switch: 0 no print; 1 yes print
 c
-c	 ip		Well Augmentation pointer
+c	       ip		          Well Augmentation pointer
 c
 c        iscdx          River location of well (iscdx = idvstaw(nd))
-c	 imcd           River location of minimum flow
+c	       imcd           River location of minimum flow
 c
 c        ndnnod(iscdx)  Number of downstream nodes
 c        ndnsx          Number of downstream nodes (ndnsx=ndnnod(iscdx)
 c
-c	 PdemX		Pumping in priority
+c	       PdemX		      Pumping in priority
 c
-c	 Pdem(ip)       Running Augmentation requirement
-c	 Pdem1		Initial Augmentation requirement 
-c	 Pdem2		Final Augmentation requirement 
+c	       Pdem(ip)       Running Augmentation requirement
+c	       Pdem1		      Initial Augmentation requirement 
+c	       Pdem2		      Final Augmentation requirement 
 c
 c        divo(l2) )     Pumping in priority
-c	 PwellP1	Initial pumping in priority
-c	 pwellP2	Final pumping in priority
+c	       PwellP1	      Initial pumping in priority
+c	       pwellP2	      Initial pumping in priority
 c
 c        small          a small value for roundoff (0.0) concerns
 c
@@ -70,15 +70,16 @@ c
      
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, 
      1 cRelTyp*12, cReplace*3, 
-     1 cStaId1*12, cRivId*12, cMinId*12, cDesId*12
+     1 cStaId1*12, cRivId*12, cMinId*12, cDesId*12, subtypX*8
 c
 c _________________________________________________________
-c       Step 1 Common Initilization
+c       Step 1 Common Initialization
 c
 c		iout = 0 No details
 c		       1 Details
 c                      2 Summary      
 c		      99 Summary independent of ccall
+      subtypX='welprity'
       iout=0
       ioutiw=0
       
@@ -113,7 +114,7 @@ c		Title data
       cRivId='NA'
 c
 c ---------------------------------------------------------
-c		OUtput data      
+c		Output data      
       Avail1=-1./fac
       PdemX=-1/fac
       pdem1=-1./fac
@@ -124,7 +125,7 @@ c		OUtput data
 c
 c ---------------------------------------------------------
 c               Check Avail array
-      call chekava(19, maxsta, numsta, avail)
+      call chekava(19, maxsta, numsta, avail, subtypX)
 c
 c _________________________________________________________
 c               Step 3; Set Destination (ip) a plan

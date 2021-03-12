@@ -2,7 +2,7 @@ c deplete - calculates well depletion
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ c
       character cstaid1*12, cStrOut*12
 c
 c ___________________________________
-c               Step 1 - Initilize
+c               Step 1 - Initialize
 c							iout=1 details
 c							iout=2 less detail (includes current and future arrays)
 c							iout=3 less detail (w/o future arrays
@@ -131,7 +131,7 @@ c             ioutD=1 details for a given water right in the control file
       ioutwr = 0     
       cstaid1=cdividw(nd)
 c
-c				       Detalied data for a seleted structure   
+c				       Detailed data for a selected structure   
       cStrOut= 'NA'
 c     cstrOut= '01_AWP031   '  
 c     cstrOut= '6400503     '

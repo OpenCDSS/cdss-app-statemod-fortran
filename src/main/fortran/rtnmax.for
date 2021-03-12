@@ -8,7 +8,7 @@ c          Also it does not adjust Avail, the available water supply.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ c               ieffmax = variable efficiency 0=off, 1=on
 c               iday = daily model switch
 
 c               ndns = number of downstream nodes from diversion 
-c               small= small convergecy number passed into the routine
+c               small= small convergence number passed into the routine
 c		smallX=  small convergence number used herein
 c
 c
@@ -81,9 +81,9 @@ c               AreaSF= Area SW Sprinkler (fraction)
 c               AreaSF= Area GW Flood (fraction)
 c               AreaSF= Area GW Sprinkler (fraction)
 c
-c		dumx  = temproray array of return in cfs
+c		dumx  = temporary array of return in cfs
 c		effF  = Efficiency Flood (fraction)
-c		effS  = Efficiency Sprnkler (fraction)
+c		effS  = Efficiency Sprinkler (fraction)
 c
 c		foret = return flow fraction
 c               pavail=amount available                
@@ -95,7 +95,7 @@ c
        character corid1*12, cCallBy*12
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
 c		iout=0 no details
 c		iout=1 details

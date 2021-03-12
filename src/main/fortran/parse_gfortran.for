@@ -2,7 +2,7 @@ c parse - parses thru the command line to find request, for gfortran
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
         subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)   
 c        
 c
@@ -122,12 +122,12 @@ c rrb 00/08/04; Revise maximum command line length
 
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
 c		iout = 	0 no details
 c			1 details
 c			2 summary
-        iout = 2
+        iout = 1
         
         if(iout.eq.1) write(99,*) '  Parse'
 c
@@ -167,7 +167,7 @@ c
 c               Find control file name, use statem as a default
         filenc = 'statem' 
 c
-c               Initilize
+c               Initialize
         ioptio  = 0
         ioptio2 = 0
         getid  = ' '
@@ -180,10 +180,19 @@ c
 c               Step 3; Find control file name
 c                       (command is packed to left)
 c
-c rrb 2008/09/16; Allow operation without a control file namd
+c rrb 2008/09/16; Allow operation without a control file name
+c rrb 2019/01/31; Detailed output
+        if(iout.eq.1) write(99,*) ' Parse; 0, command(1:1) ',
+     1                0, command(1:1)
+     
         if(command(1:1) .ne. '-') then
+c     
           filenc = ' '
           do i=1,maxcl
+c
+c rrb 2019/01/31; Detailed output
+             if(iout.eq.1) write(99,*) ' Parse; i, command(i:i) ',
+     1                    i, command(i:i)
 c
 c rrb 2004/08/23; Allow a full response name with .rsp
 c           if(command(i:i) .ne. ' ') then

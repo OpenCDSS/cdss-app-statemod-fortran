@@ -2,7 +2,7 @@ c chkavail
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
        subroutine ChkAvail(nlog, icx, nchkA, maxsta, 
      1   avail, q, n1, n2, n3, fac)
      
@@ -32,7 +32,7 @@ cx     if(nchkA.eq.1) write(nlog,200) icx, nchkA
      1  avail(n2)*fac, n3, avail(n3)*fac
 
  200   format(/,
-     1 ' ChkAvail; Called by subroutine ', i5,' nchkA = ', i5/
+     1 ' ChkAvail; Called by subroutine ', i5,' nchkA = ', i5,/
      1 '    #    Divert   N1  Avail(1)   N2  Avail(2)   N3  Avail(3)',/
      1 ' ____ _________ ____ _________ ____ _________ ____ _________')
  210   format(20(i5, f10.2))

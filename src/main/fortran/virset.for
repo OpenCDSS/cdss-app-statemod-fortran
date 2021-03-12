@@ -1,8 +1,8 @@
-c virset - sets virgen (base) flow data for both daily and monthly model
+c virset - sets virgin (base) flow data for both daily and monthly model
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       Virset; It sets virgen (base) flow data for both
+c       Virset; It sets virgin (base) flow data for both
 c                 daily and monthly model
 c
 c
@@ -33,8 +33,8 @@ c	Documentation
 c
 c		Called by Vircom.f
 c
-c               ityp = 0 Monthly Initilization
-c               ityp = 1 Daily Initilization
+c               ityp = 0 Monthly Initialization
+c               ityp = 1 Daily Initialization
 c               ityp = 2 Daily Model Sum generics into monthly totals
 c               ityp = 3 Daily Model Set monthly totals to generics
 c               ityp = 4 Monthly Model Set qhisto(mon,is) = qhistox(is)
@@ -54,7 +54,7 @@ c
 c
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
 c     write(99,*)    '  Virset; ityp, numstax = ', ityp, numstax
 c
@@ -79,7 +79,7 @@ c               Monthly model
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize for monthly
+c               Step 1; Initialize for monthly
         fac = mthday(mon)*factor    
 
         do is=1,numsta
@@ -194,7 +194,7 @@ c rrb 2008/10/28; Reservoir to recharge
       endif
 c
 c =========================================================
-c               Daily model Initilize
+c               Daily model Initialize
       if(ityp.eq.1) then
 c
 c _________________________________________________________
@@ -233,7 +233,7 @@ c rrb 2008/10/28; Add Reservoir Seepage
 c
 c _________________________________________________________
 c
-c               Step 7; Initilize for monthly or daily model
+c               Step 7; Initialize for monthly or daily model
         do is=1,numsta
           qhistox(IS)=0.
           rtnacux(IS)=0.
@@ -241,7 +241,7 @@ c               Step 7; Initilize for monthly or daily model
           dumz(is)=0.
           depacu(is)=0.0
 c
-c rrb 01/12/31; Initilize on a daily basis
+c rrb 01/12/31; Initialize on a daily basis
           qcux(is)=0.0
 c
 c rrb 2006/07/31; Add loss         
@@ -302,7 +302,7 @@ c
           diverx(nd)=diverd(idy,nd)
           diwrx(nd)=diwrd(idy,nd)
 c
-c rrb 2008/01/10; Correction. Initilize to and from storage          
+c rrb 2008/01/10; Correction. Initialize to and from storage          
           qdivs(nd)=0.0
           qdivso(nd)=0.0          
 c
@@ -327,7 +327,7 @@ c
           diverwx(nw)=diverdw(idy,nw)
           diwrwx(nw)=diwrdw(idy,nw)
 c
-c rrb 2008/01/10; Correction. Initilize to and from storage          
+c rrb 2008/01/10; Correction. Initialize to and from storage          
           qdivsw(nw)=0.0
           qdivswo(nw)=0.0
  

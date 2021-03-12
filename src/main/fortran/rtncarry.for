@@ -2,7 +2,7 @@ c rtncarry - calculates return flows for carrier losses
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -37,13 +37,13 @@ c _____________________________________________________________
 c	Update	History
 c
 c
-c      2009/01/24; Copied SetQdivC and removed refrences to qdiv
+c      2009/01/24; Copied SetQdivC and removed references to qdiv
 c
 c
 c _____________________________________________________________
 c	Documentation
 c
-c      2009/01/24; Copied SetQdivC and removed refrences to qdiv
+c      2009/01/24; Copied SetQdivC and removed references to qdiv
 c
 c	  Note:
 c	       nCarry  = 0 No carrier
@@ -71,7 +71,7 @@ c
         character corid1*12
 c
 c _________________________________________________________
-c		Step 1; Initilize        
+c		Step 1; Initialize        
 c		iout=0 No detailed output
 c                   =1 Details
         iout=0
@@ -91,7 +91,7 @@ c
 c _________________________________________________________
 c		Step 2; Set Loss data
 c
-c rrb 2010/10/15; Correction TranLoss (system loss) occurrs
+c rrb 2010/10/15; Correction TranLoss (system loss) occurs
 c                 at the destination        
 cx      OprLos1=divactX*TranLoss
         OprLos1=0.0

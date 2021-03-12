@@ -2,7 +2,7 @@ c report - controls all StateMod reporting
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE REPORT(igui, istop, ioptio2, getid, nreach)
 c
 c
@@ -69,7 +69,7 @@ c
      1 filena1*256
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
 c      
 c      
@@ -1001,7 +1001,13 @@ C
           call namext(maxfn, filenc, 'xpl', filenOX) 
           open(21,FILE=filenOX,STATUS='Unknown')
         endif
-        
+c
+c rrb 2018/09/09; Add WWSP Report        
+        if(nplan.gt.0) then
+          call namext(maxfn, filenc, 'xww', filenOX) 
+          open(29,FILE=filenOX,STATUS='Unknown')
+        endif
+         
 c
 c               Open daily output files 
         if(iday.eq.1) then

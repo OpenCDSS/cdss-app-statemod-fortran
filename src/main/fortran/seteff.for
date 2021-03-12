@@ -2,7 +2,7 @@ c seteff - sets efficiency data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
       istart=0
       iout=0
@@ -189,7 +189,7 @@ c               Formats
      1  72('_'),//   
      1 '  SetEff; FYI the following structures have no data provided',/
      1 10x,'in the annual time series file (*.tsp)',/ 
-     1 10x, 'Setting max efficiency, sprinker area, etc. to default',/,
+     1 10x, 'Setting max efficiency, sprinkler area, etc. to default',/,
      1 10x, 'Note OK if the structure is non agricultural',/
      1 10x, 'Note this warning is printed only 1x per simulation', //,
      1 '                                            ',12('  EffMax'),/

@@ -4,7 +4,7 @@ c           Type 3; Reservoir to diversion, or reservoir by a carrier
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-C     Last change:  RRB  22 Oct 2002    4:12 pm
 c
       subroutine divres(iw,lr,ishort,irep,tranlim,dcrdivx,divdx,
      1           divactx,divacty,ncallX)
@@ -28,7 +26,7 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       Divres; It handles diversions by a reseroivr where
+c       Divres; It handles diversions by a reservoir where
 c           Type 2: Reservoir to diversion, reservoir,
 c                   or carrier by the river
 c           Type 3; Reservoir to diversion, or reservoir
@@ -38,40 +36,53 @@ c _________________________________________________________
 c
 c               Update history
 c
-c	          2006/03/20 Revised to turn off variable efficiency
-c		          and include soil moisture in water use
-c		          depletion calculations
-c		          Added more detailed output
-c           96/02/27 by R. Bethel so that if you want depletion 
-c             only release, code second source account as negative
-c             on Type 2 water right
-c           98/03/03 by R. Bennett to allow daily calculations
-c           98/12/03 by R. Bennett for well impact to rtnsec
-c           99/11/02 by R. Bennett to include steps in doc
-c           00/12/26 by R. Bennett to accomodate variable
-c             efficiency (see call rtnsec)
-c           01/08/23 by R. Bennett to have option to only 
-c             take reservoir water if their is a CIR (IWR)
-c           02/03/01 by R. Bennett to test IWR = 2 that allows
-c             reservoir releases to limit but not use variable
-c             efficiency capability
-c           02/10/19 by E. Wilson and R. Bennett to allow
-c             release for depletion only when iopsou(6,lr) > 0
-c           02/10/28 by R. Bennett clean up and document
-c             EW & rrb edits on 2/10/19. Note confirmed control
-c             should be iopsou(4,lr) not iopsou(6,lr)
+c      
+c 2020-09-06; Version 16.00.40
+c             If a type 3 - Reservoir to a Conduit (Carrier)
+c             Add qdiv(38,ipcd) to .xdd (column 11) reporting for a 
+c             reservoir to include From Storage to River for 
+c             Exchange, Carried, Other 
+
+c 2020-04-03 Add qdiv(38,ipcd) to .xdd column 11 for a reservoir
+c            reporting to include From Storage to River for 
+c            Exchange, Carried, Other
+c            qdiv(38,ipcd) = qdiv(38,ipcd) + divact
+c
+c 2006/03/20 Revised to turn off variable efficiency
+c            and include soil moisture in water use
+c            depletion calculations
+c            Added more detailed output
+c
+c 96/02/27   by R. Bethel so that if you want depletion 
+c            only release, code second source account as negative
+c            on Type 2 water right
+c 98/03/03   by R. Bennett to allow daily calculations
+c 98/12/03   by R. Bennett for well impact to rtnsec
+c 99/11/02   by R. Bennett to include steps in doc
+c 00/12/26   by R. Bennett to accomodate variable
+c            efficiency (see call rtnsec)
+c 01/08/23   by R. Bennett to have option to only 
+c            take reservoir water if their is a CIR (IWR)
+c 02/03/01   by R. Bennett to test IWR = 2 that allows
+c            reservoir releases to limit but not use variable
+c            efficiency capability
+c 02/10/19   by E. Wilson and R. Bennett to allow
+c            release for depletion only when iopsou(6,lr) > 0
+c 02/10/28   by R. Bennett clean up and document
+c            EW & rrb edits on 2/10/19. Note confirmed control
+c            should be iopsou(4,lr) not iopsou(6,lr)
 c
 c  ________________________________________________________
 c	Documentation
 c
 c ---------------------------------------------------------
 c	VARIABLES USED WHEN CALLED BY REPLACE (IREP>0)
-c	    irep          = Called by Replace (0=no, >0=yes)
+c	          irep          = Called by Replace (0=no, >0=yes)
 c           dcrdivx       = decree of destination diversion right
 c           divdx         = diversion to date of diversion right
 c
 c ---------------------------------------------------------
-c	VARAIABLES USED WHEN CALLED BY EXECUTE OR REPLACE 
+c	VARIABLES USED WHEN CALLED BY EXECUTE OR REPLACE 
 c
 c           divalo = demand
 c           relalo = available supply in reservoir (acft)
@@ -79,10 +90,10 @@ c           alocfs = available supply in reservoir (cfs)
 c           divact = actual amount diverted
 c           relace = actual amount released from the reservoir
 c
-c	    divactx=amount released and passed out of routine
-c	    divacty=amount diverted and passed out of routine
-c                   Note divactx and divacty are not equal 
-c                        if releasing for depletion
+c	          divactx=amount released and passed out of routine
+c	          divacty=amount diverted and passed out of routine
+c                     Note divactx and divacty are not equal 
+c                     if releasing for depletion
 c
 c           icx   = subroutine call #
 c
@@ -110,11 +121,17 @@ c
 c           iopdes(1,lr) = destination (+=diversion, -=reservoir)
 c           iopdes(2,lr) = destination user (account)
 c
+c           iopdesr(lr)  = Destination type
+c                          To_Conduit is a release to a structure 
+c                          To_River is a release to the river
+c
 c           iout         = 0 no detailed printout
 c                          1 yes detailed printout
 c
 c           iown         = source reservoir #1 account
 c           ipcd         = Source reservoir #1 river station
+c
+c           idcd         = destination 
 c
 c           imonsw()     = monthly on off switch  
 c           iowna        = source reservoir #2 account
@@ -147,15 +164,28 @@ c                  >0; General Replacement Reservoir Rule call
 c                      (Constrained by second source storage or 
 c                       bookover water right)
 c
-c	    intern(  )   = If > 0 carrier system with intervening
+c	          intern(  )   = If > 0 carrier system with intervening
 c                          structures
+c
+c           qdiv(7   From River by Storage
+c           qdiv(20  From Carrier by Storage or Exchange.  Note:
+c                    qdiv(20 gets added to TotSup1 that is used
+c                    to calculate River Divert
+c           qdiv(22  From Storage to Carrier for Use 
+c                    a release To_Conduit by a type 3 or 32
+c                    Its used in OutBal2 to recognize a To conduit 
+c                    diversion
+c                    Its not used to report anything in the *.xdd 
+c                    report.  Note to show From Storage by Other
+c                    in *.xdd use Qdiv(20
+c
 c
 c           qres(4,ix)   = From Carrier by Storage to Reservoir
 c           qres(8,ix)   = Reservoir Storage to Trans Mountain Carrier
-c           qres(9,ix)   = Reservoir Storage to Carrier??
+c           qres(9,ix)   = Reservoir Storage to Carrier for non Tmtn.
 c           qres(26,ix)  = Reservoir Storage to River
 c           qres(11,ix)  = Reservoir Storage to Carrier
-c	    qres(29,ix)  = Reservoir to Reservoir
+c	          qres(29,ix)  = Reservoir to Reservoir
 c
 c _________________________________________________________
 c	Dimensions
@@ -163,7 +193,7 @@ c	Dimensions
 c      
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, 
      1 cRelTyp*12, cReplace*3, cidvri*12, cSour*12, cresid1*12,
-     1 cDest*12, cDest1*12
+     1 cDest*12, cDest1*12, subtypX*8
 
 c      
 c _________________________________________________________
@@ -173,12 +203,15 @@ c		iout=0 No details
 c		iout=1 Details
 c		iout=2 Summary
 c		iout=99 Summary independent of ichk
+c   ioutQ=1 Print Qres data
 c     
+      subtypX='divres  '
       if(ichk.eq.94) write(nlog,*) ' DivRes; Type 2 or 3 Processing ',
      1   corid(lr)
      
       iout=0
       ioutiw=0
+      ioutQ=0
       
       cDest1='NA'
       cDest1='36_ADC019   '
@@ -216,10 +249,10 @@ c               c. Miscellaneous
       cwhy='NA'
       small=0.001
 c
-c rrb 2006/11/20; Initilize to -1 and zero; critical for reoperation      
+c rrb 2006/11/20; Initialize to -1 and zero; critical for reoperation      
 c		  e.g. if((divact+small).lt.divalo) ishort = 1
 c
-c rrb 2006/11/20; Initilize to -1 and zero; critical for reoperation      
+c rrb 2006/11/20; Initialize to -1 and zero; critical for reoperation      
 c		  e.g. if((divact+small).lt.divalo) ishort = 1
       divact = -1.0/fac
       divalo = 0.0      
@@ -298,7 +331,7 @@ c ---------------------------------------------------------
 c
 c ---------------------------------------------------------
 c		Step 1b; Check avail array
-       call chekava(2, maxsta, numsta, avail)
+       call chekava(2, maxsta, numsta, avail, subtypX)
 c
 c _________________________________________________________
 c               Step 2; Branch if not on this month
@@ -415,7 +448,7 @@ c
         endif  
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nd)+iopdes(2,lr)-1
 
         nro=1
@@ -448,14 +481,12 @@ c     write(nlog,*) ' Divres; 3'
       IUSE=NDUSER(ND)+IOPDES(2,Lr)-1
       divreq1=divreq(iuse)
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency      
+c rrb 2006/01/04; Correction to allow variable efficiency      
       if(ieff2.eq.0) then
         effX=diveff(mon,iuse)
       else
         effX=effmax(iuse)
       endif
-
-      
 c
 c               d. Check
 cx      WRITE(6,360)    lr,IDCD,NR,IPCD,IYR,IMO
@@ -660,7 +691,7 @@ c
 c _________________________________________________________
 c
 c               Step 10; Limit release (ALOCFS) to bookover (tranlim)
-c                 (Occurrs for replacement reservoirs only)
+c                 (Occurs for replacement reservoirs only)
       if(tranlim.gt.small) then
         tranlic = tranlim/fac
         alocfs1=alocfs
@@ -714,7 +745,7 @@ c                  (DIVACT - PAVAIL) or the depletion (divact*diveff)
           relact=divact-pavail
           relact=amax1(0.0, relact)       
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency                
+c rrb 2006/01/04; Correction to allow variable efficiency                
 c         relact=amax1(relact,(divact*diveff(mon,iuse)/100.))
           relact=amax1(relact,(divact*effX/100.))
           relact=-relact
@@ -724,7 +755,7 @@ c ---------------------------------------------------------
 c               c. If available flow >= demand (pavail>=divact)
 c                  set release to the depletion (divact*diveff)
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency      
+c rrb 2006/01/04; Correction to allow variable efficiency      
 c         relact=-1.*(divact*diveff(mon,iuse)/100.)
           relact=-1.*(divact*effX/100.)
         endif
@@ -734,7 +765,7 @@ c ---------------------------------------------------------
 c               d. If iout=1 print detailed results
         if(iout.eq.1) then
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency              
+c rrb 2006/01/04; Correction to allow variable efficiency              
 c         c = divact*diveff(mon,iuse)/100.0
           c = divact*effX/100.0
           write(nlog,390) 2, divact*fac, pavail*fac, relact*fac, c*fac
@@ -757,7 +788,7 @@ c _________________________________________________________
 c
 c               Step 14; Branch around return flow adjustments if
 c
-c                       1. ityopr(lr) = 3 to carrier
+c                       1. ityopr(lr) = 3 to conduit (carrier
 c                       2. releasing for diversion iopsou(4,lr>0) or
 c                       3. the destination is a reservoir (iresw=1) or
 c                       4. the destination is a transmtn with no
@@ -781,7 +812,7 @@ c
 c ---------------------------------------------------------
 c               b. DETERMINE RETURN FLOW PERCENTAGE OF DIVERSION
 c
-c rrb 2006/01/04; Correction to allow varaible efficiency      
+c rrb 2006/01/04; Correction to allow variable efficiency      
 c 170 FORET=1.0-DIVEFF(mon,IUSE)/100.
   170 FORET=1.0-effX/100.
 c  
@@ -955,9 +986,10 @@ c		   ia   = account to adjust
 c
 c ---------------------------------------------------------
 c
+c         Destination (nd) is a reservoir and there is a carrier
         if(ityopr(lr).ne.10 .and. intern(lr,1).gt.0) then
 c
-c                  qres(4,ix) =  From Carrier by Storage to Reservoir
+c               qres(4,ix) =  From Carrier by Storage to Reservoir
           qres(4,nd)=qres(4,nd)+divaf
 c
 c rrb 2006/10/27; Reservoir to Reservoir for water balance calculations
@@ -1039,7 +1071,7 @@ c
 c
 c
 c ---------------------------------------------------------
-c               g. Update From river by storage (Qidv(10,icdc)
+c               g. Update From river by storage (Qidv(10,idcd)
   290 QDIV(10,IDCD)=QDIV(10,IDCD)+DIVACT
   300 continue      
 c  
@@ -1048,13 +1080,28 @@ c ---------------------------------------------------------
 c               h. Update Source is a reservoir
 c		               destination is a carrier (qres(11,nr) &
 c                  accr(11,iown)
+c                  Note ityopr(lr)= 3 is a release to a conduit (carrier)
       if(ityopr(lr).eq.3) then
         qres(11,nr)=qres(11,nr)-relact*fac
         accr(11,iown)=accr(11,iown)-relact*fac  
+
+c      
+c 2020-09-06; If a type 3( - Reservoir to a Conduit (Carrier)
+c             Add qdiv(38,ipcd) to .xdd (column 11) reporting for a 
+c             reservoir to include From Storage to River for 
+c             Exchange, Carried, Other 
+        qdiv(38,ipcd) = qdiv(38,ipcd) + divact
+
 c
 c rrb 2015/07/18; Test
-cx        write(nlog,*) '  DivRes; corid(lr), nr, qres(11,nr)'
-cx        write(nlog,*) '  DivRes;', corid(lr), nr, qres(11,nr)   
+        if(ioutQ.eq.1) then
+          write(nlog,*) 
+     1    '  DivRes; corid(lr), nr, iown, ipcd, relact',
+     1      'qres(11,nr), accr(11,iown), qdiv(38,ipcd)'
+          write(nlog,*) 
+     1    '  DivRes;', corid(lr), nr, iown, ipcd, relact*fac,
+     1       qres(11,nr),accr(11,iown), qdiv(38,ipcd) 
+        endif  
       endif
 c
 c
@@ -1080,7 +1127,7 @@ c
 c
 c ---------------------------------------------------------
 c               k. Set Source is a Reservoir
-c		   From reservoir to carrier
+c		               From reservoir to carrier
 c                  for transmountain (Qres(8,nr) and accr(8,iown))
 c
 c rrb 2015/07/18; Revise to not set qres(8 or qres(9 when 
@@ -1091,6 +1138,13 @@ c                    when ityopr(lr.eq.3)
 c                 3. Outmon got revised to not subtract qres(11
 c                    when setting RStoCar (from storage to river) 
       if(ityopr(lr).ne.3) then 
+c      
+c 2020-04-03; If not a type 3(Reservoir to a Carrier)
+c             Add qdiv(38,ipcd) to .xdd (column 11) reporting for a 
+c             reservoir to include From Storage to River for 
+c             Exchange, Carried, Other 
+        qdiv(38,ipcd) = qdiv(38,ipcd) + divact
+     
         IF (iresw.eq.0.and.IRTURN(IUSE).EQ.4) GO TO 320
         QRES(8,NR)=QRES(8,NR)-ACTACF
         accr(8,iown) = accr(8,iown)-actacf
@@ -1140,7 +1194,7 @@ c
 c               Step 25; Check results
 c
 c               a. Check that Avail flow > 0
-      call chekava(2, maxsta, numsta, avail)
+      call chekava(2, maxsta, numsta, avail, subtypX)
 c
 c
 c ---------------------------------------------------------

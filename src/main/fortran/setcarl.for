@@ -3,7 +3,7 @@ c           and its impact on the demand (divaloX) for various operating rules
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ c		ncarry is indicator at least 1 carrier
 c		ncnum is the number of carriers (set in SetLoss)
 c		OprEff1 is the lost (oprlost(lw)
 c		Divalo gets reduced by carrier capacity
-c		DivCarry is the limitating carrier capacity
+c		DivCarry is the limiting carrier capacity
 c
 c		noprS is the structure id of the structure
 c		  that supplied water to the accounting
@@ -61,7 +61,7 @@ c
 c
 c
 c _________________________________________________________
-c		Step 1;  Initilize
+c		Step 1;  Initialize
 c
       iout=0
       ifound=0

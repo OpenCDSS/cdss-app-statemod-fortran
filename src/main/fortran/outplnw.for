@@ -2,7 +2,7 @@ c outplnw - prints for every Aug plan the well pumping associated with that plan
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ c
       data qpAA/13*0.0/, qxAA/13*0.0/, qtAA/13*0.0/
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
       write(6,101) 'OutPlnW  '
       write(nlog,101) 'OutPlnW  '
  101  format(/,72('_'),/'  Subroutine ', a8)

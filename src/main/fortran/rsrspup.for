@@ -2,7 +2,7 @@ c rsrspup - Type 34 operating rule, reservoir to reservoir (bookover) with reuse
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE RsrspuP(IW,L2,ncallX)
 c
 c
@@ -29,12 +29,29 @@ c		It does Reservoir to Reservoir (Bookover) with Reuse
 c		It can constrain the bookover by:
 c		  1. The demand of a diversion structure, and
 c		  2. The amount diverted by another operating rule,
-c		  3. The amount in an OOP Plan, and
+c		  3. The amount in an OOP and a WWSP User Plan, and
 c		  4. A carriers capacity
 c
+c _________________________________________________________
+c	Update History
+c
+c rrb 2019/08/12; V16.00.16 Revised to pass psuply() in addition
+c                 to psto2() for a WWSP Supply (14) or WWSP-User 
+c                 (15) plan because DivMulti (46) uses psuply() 
+c
+c rrb 2019/08/11; Added several test printouts for testing
+c                   that were subsequently commented out.
+c
+c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a
+c                   type 14 and a WWSP User Plan is a type 15
+c
+c rrb 2018/10/21; Revised to allow a WWSP User Plan specified as
+c                 source 3 (iopsou(3,l2) to limit the
+c                 Bookover amount
+c
 c rrb 2008/04/01; Added capability to limit based on limits 
-c		  specified in another operating rule = iopsou(5,k)
-
+c		              specified in another operating rule = iopsou(5,k)
+c
 c _________________________________________________________
 c	Documentation
 c
@@ -51,17 +68,21 @@ c	       		            = 7 plan
 c	       		            = 14 operating rule
 
 c        iopsou(5,l2)   Operating rule with monthly and annual 
-c	       		              diverison limit data
+c	       		              diversion limit data
 c
-c	       iopdes(1,l2)  destination reservoir pointer
-c	       iopdes(2,l2)  destination reservoir account pointer
+c	       iopdes(1,l2)   destination reservoir pointer
+c	       iopdes(2,l2)   destination reservoir account pointer
+c
+c		     ipUse          Reuse plan ID (plan type 3, )
+c
 c
 c        iresT1	        Type of account distribution in Accou
 c			                  = 0 Ownership Ratio 
 c                       = 1 Available Space 
 c                       = -1 One Account  
 
-c
+c        qres(4          From carrier to storage by Other
+c		     qres(22         From storage to carrier
 c       qres(29,nr)     Amount diverted within the same reservoir
 c		                      used in Outbal2 for for basin balance
 c
@@ -70,7 +91,7 @@ c	Dimensions
 c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
-     1 cresid1*12
+     1 cresid1*12, pid1*12
 c
 c _________________________________________________________
 c
@@ -88,11 +109,14 @@ c		    99 summary independent of ccall
       if(corid(l2).eq. ccall) ioutiw=iw
       
 c     write(nlog,*) ' RseSpuP; ioprlim ',ioprlim(l2)
-      
+c
+c 2019/08/11; Test
+cx      write(nlog,*)
+cx     1  ' RsespuP; corid(l2) ', l2, corid(l2)      
 c
 c _________________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
 c
       small = 0.001
       nr=0
@@ -126,6 +150,7 @@ c rrb 98/03/03; Daily capability
       ccarry='No'
       cpuse='No'
       cstaid1='N/A'
+      pid1='N/A'
       
       iwhy=0
       cwhy='N/A'
@@ -177,7 +202,13 @@ c		Step 3; FIND Source 1 data (a RESERVOIR)
       ISCD=IRSSTA(NR)
       cstaid1=cresid(nr)
       IROW=NOWNER(NR)+IOPSOU(2,L2)-1
-
+c
+c 2019/08/11; Test
+cx      write(nlog,*)
+cx     1  ' RsespuP; nr, l2, iopsou(2,l2)-1, irow, curown(irow)'
+cx      write(nlog,*)
+cx     1  ' RsespuP;', nr, l2, iopsou(2,l2)-1, irow, curown(irow)
+cx
 c ---------------------------------------------------------
       IF(IRESSW(NR).EQ.0) then
         iwhy=2
@@ -204,7 +235,7 @@ c ---------------------------------------------------------
 C
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple destination accounts - Initilize
+c rrb 2006/09/25; Allow multiple destination accounts - Initialize
 cr    IDOW=NOWNER(ND)+IOPDES(2,L2)-1
       nro=1
       
@@ -229,7 +260,7 @@ c                 number of accounts
 c
 c _________________________________________________________
 c
-c		Step 5; Set carrier data 
+c		            Step 5; Set carrier data 
 c                       Treated as pipe outside the river system
 c
       if(intern(l2,1).gt.0) then
@@ -246,8 +277,8 @@ c
       endif
 c      
 c ________________________________________________________
-c               Step 6; Set Reuse Plan pointer
-c		ipUse = Reuse plan
+c               Step 6; Set Reuse Plan pointer for the destination
+c		                    ipUse = Reuse plan ID
       ipUse=ireuse(l2)
       if(ipUse.gt.0) cpuse='Yes'
 c     if(iout.eq.1) write(nlog,*) '  RsrSpuP; ipUse = ', ipUse      
@@ -255,7 +286,7 @@ c
 c _________________________________________________________
 c
 c		Step 7; Limit to the diversion demand (3) specified 
-c		  as source 2 (iopsou(3,l2)>0)
+c		        as source 2 (iopsou(3,l2)>0)
 c
       if(iopsou(4,l2).eq.3) then
         np=iopsou(3,l2)
@@ -274,7 +305,8 @@ cx        Goto 140
 c
 c _________________________________________________________
 c
-c		Step 8; Limit to an operating rule (14) diversion 
+c		Step 8; Limit to an operating rule (iopsou(4,l2=14)
+c
       if(iopsou(4,l2).eq.14) then
 c
 c rrb 2008/03/26; Correction not a negative in Oprinp      
@@ -295,12 +327,19 @@ c
 c _________________________________________________________
 c
 c rrb 2006/10/03; Addition
-c		Step 9; Limit to an OOP plan volume 
+c rrb 2018/10/21; The following is OK for both a OOP and WWSP
+c                 plan limit
+c		Step 9; Limit to an OOP or WWSP User plan volume as source 2
       if(iopsou(4,l2).eq.7) then
         np=iopsou(3,l2)
+        pid1=pid(np)
         nlimP=np
         capremP=psto2(nP)/fac
         caprem =amin1(caprem, capremP)
+c
+c rrb 2019/08/12; Check
+cx        write(nlog,*) '  RsrSpuP;  np, nlimp, pid1, capremP, caprem'
+cx        write(nlog,*) '  RsrSpuP;', np, nlimp, pid1, capremP, caprem
         
         if(capremP.lt.small) then
           iwhy=7
@@ -315,7 +354,7 @@ c _________________________________________________________
 c               
 c rrb 2008/04/01; 
 c               Step 10; Limit to monthly and annual limits
-c		provided in an operating rule
+c		                     provided in an operating rule
 c		
 c     write(nlog,*) ' RsrSpuP; ',ioprlim(l2), iopsou(5,l2)
       lopr=iopsou(5,l2)
@@ -368,6 +407,12 @@ C
       else
         RESAVL=AMAX1(AMIN1(CURSTO(NR)-VOLMIN(NR),CUROWN(IROW)),0.)
       endif
+c
+c 2019/08/11; Test
+cx      write(nlog,*)
+cx     1  ' RsespuP; nr, irow, cursto(nr), volmin(nr), curown(irow)'
+cx      write(nlog,*)
+cx     1  ' RsespuP;', nr, irow, cursto(nr), volmin(nr), curown(irow)
       
       RAVCFS=RESAVL/fac      
       if(ravcfs.lt.small) then
@@ -414,7 +459,7 @@ c _________________________________________________________
 c
 c		Step 13; CALCULATE ACTUAL DIVERSION
 c
-c rrb 2008/03/26; Revised to recognize caprem is initilized to BIG
+c rrb 2008/03/26; Revised to recognize caprem is initialized to BIG
 cx      if (iopsou(3,l2).ne.0) then
 cx        DIVACT=AMIN1(RAVCFS,RALCFS,CAPREM)
 cx      else
@@ -434,7 +479,8 @@ c
 c
 c
 c _________________________________________________________
-c		Step 14; Adjust Reservoir Reuse          
+c		Step 14; Adjust Reservoir Reuse (creuse) limit         
+c           ipUse; Reuse Plan ID used to limit a release  
       if(ipUse.gt.0) then
         psuply(ipUse)=psuply(ipUse)+divact
         psuplyT(ipUse)=psuplyT(ipUse)+divact
@@ -501,10 +547,43 @@ c
 c ---------------------------------------------------------
 c rrb 2006/10/02 
 c		d. Update Plan limitation
-      if (nLimP.gt.0) psto2(np)=psto2(np) - divaf
+c      The following works for both a OOP plan (plan type 9)
+c        and a WWSP User Plan (plan type 15)
+c
+c rrb 2019/08/12; V16.00.16 Revised to pass psuply() to DivMulti for 
+c                 a WWSP Supply (14) or WWSP User (15) plan
+cx      if (nLimP.gt.0) psto2(np)=psto2(np) - divaf
+      if(nlimP.gt.0) then
+        psto2a=psto2(np)
+        psto2(np)=amax1(0.0, psto2(np) - divaf)
+        
+cx        write(nlog,*) ' RsrSpuP; np, psto2a, divaf, psto2(np)'
+cx        write(nlog,*) ' RsrSpuP;', np, psto2a, divaf, psto2(np)
+        
+        iplnX=iplntyp(np)
+        write(nlog,*) ' '
+        write(nlog,*) '  RsrSpuP; np, iplnX', np, iplnX
+       
+        if(iplnX.eq.14 .or. iplnX.eq.15) then
+          psuply1=psuply(np)
+          psuply(np) = amax1(0.0, psuply(np) - divact)
+          
+          write(nlog,*) ' '
+          write(nlog,*) 
+     1      ' RsrSpuP; np, iplnX, psuply1, divact, psuply(np)'
+          write(nlog,*) 
+     1       ' RsrSpuP;', np, iplnX, psuply1*fac, divact*fac,
+     1         psuply(np)*fac
+        endif
+      endif
+
+
 c
 c ---------------------------------------------------------
 c		e. Update Reservoir Details
+c               qres(4  From carrier to storage by Other
+c		            qres(22 From storage to carrier
+
       QRES(4,ND)=QRES(4,ND)+DIVAF
       QRES(22,NR)=QRES(22,NR)+DIVAF
       
@@ -562,8 +641,8 @@ c		Step 16; Detailed Check
         endif  
       
         write(nlog,280) ' RsrSpuP;   ', iyrmo(mon),xmonam(mon), idy,
-     1    cstaid1,iwx, iw,nwrord(1,iw),l2,lr, ND,nr, iuse2x,imcdX,
-     1    qres291, qres292,  
+     1    cstaid1,pid1, iwx, iw,nwrord(1,iw),l2,lr, ND,nr, 
+     1    iuse2x,imcdX, qres291, qres292,  
      1    ResAvl, tarcon, capremD*fac, capremO*fac, capremP*fac, 
      1    capremL*fac, caprem*fac, divact*fac, iwhy, cwhy
       endif
@@ -587,19 +666,19 @@ c
 c		Formats
 
   280 FORMAT(a12, i5,1x,a4, i5, 1x,
-     1      a12,9i8,10F8.0,i8, 1x, a48)
+     1      a12,1x, a12, i7, 8i8,10F8.0,i8, 1x, a48)
      
   270   format(/, 
      1  ' RsrspuP (Type 34); Operation Right ID = ', a12,
      1  ' Destination Type = ', a12,
      1  ' Carrier (Y/N) = ',a3, ' Reuse (Y/N) = ', a3/    
      
-     1  ' RsrSpuP      iyr  mon  day Source ID   ',
+     1  ' RsrSpuP      iyr  mon  day Source 1     Source 2   ',
      1  '    Iter      Iw  nwrord      l2      lr      Nd      nr',
      1  '  iuse2X   ImcdX qres291 qres292  ResAvl  TarCon CapremD',
      1  ' CapremO CapremP CapremL  Caprem Divact',
      1  '    iwhy Comment',/
-     1  ' ___________ ____ ____ ____ ____________', 
+     1  ' ___________ ____ ____ ____ ____________ ___________', 
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______',

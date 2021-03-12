@@ -2,7 +2,7 @@ c getdiv - reads in diversion station data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ C
 c     
 c _________________________________________________________
 c
-c		Step 1; Initilize
+c		Step 1; Initialize
 c		0=no details
 c		1= print details of input
 c		2=print return flow details
@@ -61,8 +61,8 @@ c		99=print new input format (*.str, *.eff, *.rtn)
       iout=0
       ioutRF=0
 c
-c rrb 2006/04/12; Initilize at top of Datinp so that Reservoir 
-c		  return data can be read befor GetDiv 
+c rrb 2006/04/12; Initialize at top of Datinp so that Reservoir 
+c		  return data can be read before GetDiv 
 c                 and this value is not reset to zero
 cr    NUMRTN=0
       NDIVIN=0
@@ -105,7 +105,7 @@ c
 c     DO 650 ND=1,MAXDIW
       do 650 nd=1,maxdiv-1
 c
-c rrb 2009/05/21; Initilize
+c rrb 2009/05/21; Initialize
         idivco2(nd)=0      
         read(4,1200,end=660,err=928)
      1    cdivid(nd),rec24,cgoto,
@@ -532,8 +532,8 @@ C
 cr      NSTRTN=0
         DO 710 IS=1,NUMSTA
 c
-c rrb 2006/04/12; Initilize at top of Datinp so that Reservoir 
-c		              return data can be read befor GetDiv 
+c rrb 2006/04/12; Initialize at top of Datinp so that Reservoir 
+c		              return data can be read before GetDiv 
 c                 and this value is not reset to zero                
 cr        IRNORD(IS)=0
           IF(ITEMP(IS).EQ.0) Goto 710

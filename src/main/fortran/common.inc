@@ -2,7 +2,7 @@ c common.inc - common block data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,11 +17,35 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-C
 C
 C               Revised common block for linked model
 c
+c
+c rrb 2021/02/14;   Add maxcary (max # of carriers) and revise
+c                   cntern from 10 to 40.
+c
+c rrb 2019/07/21;   Add psupDDM (af) to store variable psuppDD on a 
+c                   daily basis in DayMon.f
+c
+c rrb 2019/07/21;   Add psupDD (af) to store water that goes to a WWSP 
+c                   supply plan (14) and WWSP-User by direct diversion
+c                   and iwwPlan an indicator set in oprinp.f that 
+c                   a WWSP plan is being simulated.
+c
+c rrb 2019/01/31; Increase Dimension for ArkDss.  Specifically
+c                   Daily delay values (maxdld) from 3660 to 7320
+c                   # of reservoir accounts (maxown) from 251 to 1001,
+c                   # of years with daily return data from 10 to 20
+c
+c rrb 2018/12/07; Add Ioppln(20,3701) to allow a type 52 right with 
+c                   multiple destinations to accrue to a WWSP Plan
+c rrb 2018/11/17; Add variables for JMartin monthly percent
+c rrb 2018/10/14; For J_Martin Monthly input file revise maxfile
+c                 from 80 to 90
+c rrb 2018/10/07; Add DivoWW(20,3701) to allow Detailed operating rule
+c                 output for a WWSP reporting
+c rrb 2018/08/05; Upgrade max operating rule source and demand 
+c                 from 20 to 40 
 c jhb 2014/11/01; Revise dimensions
 c   ISF rights			241-2241
 c                       because the IfrRigSP routine uses the op rule counter
@@ -48,9 +72,9 @@ c rrb 98/11/18; Wells
 c rrb 99/10/05; Return table total (dlytot)
 c rrb 00/02/07; increase dimension of return data from 49 to 200 
 c rrb 00/04/07; add primary sw/gw switch
-c rrb 00/04/24; change max # of gw returns 3402 = 5002
-c rrb 00/04/24; chagne max # of delay tables 200 = 550
-
+c rrb 00/04/24; changed max # of gw returns 3402 = 5002
+c rrb 00/04/24; chagned max # of delay tables 200 = 550
+c
 c rrb 00/05/02; change max # of gw returns from 9002 to 20000
 c rrb 00/06/16; add (idemtyp) to control source of well demands and 
 c               allow IWR data to be provided as a demand
@@ -118,14 +142,17 @@ c
 c
 c
 c _________________________________________________________
-
+c
        COMMON/WEL/
      1 iwell,
      1 numdivw,  numdxw,   numrtnw,  numrtnw2, 
      1 numdivwS, numdivwX, maxrtnw,  
      1 maxdivw,  maxdvrw,  ndivinw,  maxwr,
      1 numdvrw,  nstrtnw,  nstrtnw2, iprimary, idemtyp, 
-     1 maxfutil,        
+c
+c rrb 2021/02/14; Add maxcary to check number of carriers
+cx   1 maxfutil,      
+     1 maxfutil, maxcary,       
 cx     1 divnamw( 6,402),
      1 idivsww(402),    divcapw(402),     
      1 idvstaw(402),    idvcomw(402),     divefcw(402), areaw(402),  
@@ -153,7 +180,7 @@ c               Operations
      1 gwstor(5000),    gw2riv(5000),    gw2gw(5000),   gwmaxr(5000), 
 c
 c               Depletion
-     1 depl(240,3920), depld(3660,3920),  deplm(3920)
+     1 depl(240,3920), depld(7320,3920),  deplm(3920)
 c
 c
 c _________________________________________________________
@@ -180,7 +207,7 @@ c                   Streams
 
 
        COMMON/SY1/
-cx     2 STANAM( 6,5000),XFRNAM( 6, 2241),RESNAM( 6,  251),
+cx     2 STANAM( 6,5000),XFRNAM( 6, 2241),RESNAM( 6,1001),
 cx     3 DIVNAM( 6,3060),USENAM( 6,3060),
 cx     4 RUNNAM( 6,5000),
      6 MTHDAY(     12),IDATE (      3),ITIME (      4),
@@ -220,7 +247,11 @@ c
 c rrb 2007/10/26; Add Replacement Reservoir max release 
 c                 operating ID pointer (irepMax) and operating limit
 c		  code (iRepLim)  
-     1 irepMax(25), iRepLim(25)
+     1 irepMax(25), iRepLim(25),
+c
+c rrb 2018/12/08; Add (ioppln) to allow a type 52 with multiple
+c                 destinations to be tied to a WWSP Plan
+     1 ioppln(20,3701)
 c
 c
 c _________________________________________________________
@@ -228,7 +259,7 @@ c _________________________________________________________
 c rrb 04/15/96
 C
       COMMON/SY2a/
-     1 PREPRT(12,  251),EVAPRT(12,  251),RUNOFF(     12),
+     1 PREPRT(12,1001),EVAPRT(12,1001),RUNOFF(     12),
      1 DIVERM(     12)
 C
       COMMON/SY2b/
@@ -242,14 +273,13 @@ C
 c
 c _________________________________________________________
 c                   Unit Response
-
-
-      COMMON/SY3/
 c
 c rrb 2009/05/27; Revise      
+cx    COMMON/SY3/
 cx   1                 DLYRAT(240, 525),RETUR (240,5000,2),
+      COMMON/SY3/
      1                 DLYRAT(240, 525),RETUR (240,5000),
-     1 QDIV  (39,5000),QRES  (39,  251),CURRTN(   5000),
+     1 QDIV  (39,5000),QRES  (39,1001),CURRTN(   5000),
      1 irtnid(    525),
      1 dlytot(525)
 c
@@ -259,7 +289,7 @@ c _________________________________________________________
       COMMON/SY4/
      1 DUMMY (5000, 13), dummyd(500),     dumx(5000),
      1 dum(13,5000),     dum2(13,5000),   dum3(13,5000),
-     1 dumsta(5000),     dumown( 251,2),  dumrig(351,2),
+     1 dumsta(5000),     dumown(1001,2),  dumrig(351,2),
      1 dumusr(5000),     dumd(32,5000),
      1 idum(5000),       idum2(5000),     iwarn(5000),
      1 avtemp(5000),     avwret(5000)
@@ -315,44 +345,44 @@ c _________________________________________________________
 c                   Reservoirs
 
       COMMON/RS1/
-     1 VOLMIN(    251), VOLMAX(    251),FLOMAX(     251),
-     1 DEADST(    251), NOWNER(    251),NEVAPO(     251),
-     1 NPRECP(    251), IRESSW(    251),NRANGE(     251),
-     1 SUAREA(251,251), CONTEN(251,251),OWNMAX(     251),
-     1 CUROWN(    251), PCTEVA(    251),IEVAPO(     251),
-     1 WEIGEV(    251), IPRECP(    251),WEIGPR(     251),
-     1 SEPCON(251,251), SEPAGE(251,251),SEPACT(     251),
-     1 sepact1(251),    nSepCal(251),  
-     1 iresP(251),     
+     1 VOLMIN( 1001), VOLMAX( 1001),  FLOMAX(  1001),
+     1 DEADST( 1001), NOWNER( 1001),  NEVAPO(  1001),
+     1 NPRECP( 1001), IRESSW( 1001),  NRANGE(  1001),
+     1 SUAREA(1001,1001), CONTEN(1001,1001),OWNMAX(  1001),
+     1 CUROWN( 1001), PCTEVA( 1001),  IEVAPO(  1001),
+     1 WEIGEV( 1001), IPRECP( 1001),  WEIGPR(  1001),
+     1 SEPCON(1001,1001), SEPAGE(1001,1001),SEPACT(  1001),
+     1 sepact1(1001), nSepCal(1001),  
+     1 iresP(1001),     
 c
 c ---------------------------------------------------------
 c                    Reservoir Recharge (seepage)     
      1 idvRre(5000),
-     1 RrechM(13,251),   RrechD(32,251), Rrech(251)
+     1 RrechM(13,1001),   RrechD(32,1001), Rrech(1001)
 c
 c
 c _________________________________________________________
 
       COMMON/RS2/
-     1 IRSSTA(     251),EVAP  (     251),VOLINT(     251),
-     1                                   CURSTO(     251),
-     1 PROJTF(     251),SPILL (     251),CARRY (     251),
-     1 OWNMON(    251),                  IOWNER(    251),
-     1 REPLAC(     251),QMAINS( 2, 251)
+     1 IRSSTA(  1001),EVAP  (  1001),VOLINT(  1001),
+     1                               CURSTO(  1001),
+     1 PROJTF(  1001),SPILL (  1001),CARRY (  1001),
+     1 OWNMON(  1001),               IOWNER(  1001),
+     1 REPLAC(  1001),QMAINS( 2,1001)
 C
 c
 c _________________________________________________________
 
       COMMON/RS3/
-     1                 DCRRES(     351),IRESCO( 2,  351),
-     1 IRRGST(     351),NRIGOW(    251),IRIGOW(     351),
-     1 NRIGRS(     251),IRIGRS(    351),LAST  (     351),
-     1 RITREM(     351),RitPaper(351),  ITYRSR(     351),
-     1 IRSRSW(     351),irsrsw1(351), irestyp(351),   iresopr(351),
-     1 IRSMIN(     251),CONMIN(12,  251),
-     1 itarget(    251),targetx(12, 251),tarmax(251),
-     1 rdate  (    251),divr(351),targetn(12,251),conminn(12,251),
-     1 nextnr(251)
+     1                  DCRRES(   351), IRESCO( 2,  351),
+     1 IRRGST(    351), NRIGOW(  1001), IRIGOW(     351),
+     1 NRIGRS(   1001), IRIGRS(   351), LAST  (     351),
+     1 RITREM(    351), RitPaper(351),  ITYRSR(     351),
+     1 IRSRSW(    351), irsrsw1(351),   irestyp(351),   iresopr(351),
+     1 IRSMIN(   1001), CONMIN(12,1001),
+     1 itarget(  1001), targetx(12,1001),tarmax(1001),
+     1 rdate  (  1001), divr(351),targetn(12,1001),conminn(12,1001),
+     1 nextnr(1001)
 C
 c
 c _________________________________________________________
@@ -406,12 +436,12 @@ c _________________________________________________________
 c
 c		Operating Rule Data #2
       COMMON/OPR1/
-     1                  DCRPOW(     251),IPRGST( 2,  251),
-     2 POWDMD(12,  251),POWREQ(     251),POWREL(     251),
-     3 IPOWSW(     251),
-     4 imonsw(3701,12),  oprmax(3701,13),  oprmaxM(3701), oprmaxA(3701),     
+     1                   DCRPOW(   1001),  IPRGST( 2,1001),
+     2 POWDMD(12,1001),  POWREQ(   1001),  POWREL(   1001),
+     3 IPOWSW(   1001),
+     4 imonsw(3701,12),  oprmax(3701,13),  oprmaxM(3701),oprmaxA(3701),     
      1 oprPct(3701),     ireuse(3701),     
-     1 dcrdivS(3701),    divdS(3701),      dcrdivE(3701), divdE(3701),
+     1 dcrdivS(3701),    divdS(3701),      dcrdivE(3701),divdE(3701),
      1 divopr(3701),     OprEff(12, 3701)
 C
 c
@@ -419,36 +449,51 @@ c _________________________________________________________
 c
 c		Operating Rule Data #2
       COMMON/OPR2/
-     1 demopr(   1500),  iopsou(20, 3701), divreqa(3701),
+c
+c rrb 2018/08/05; Upgrade max operating rule source and demand 
+c                 from 20 to 40 
+cx   1 demopr(   1500),  iopsou(20, 3701),  divreqa(3701),
+     1 demopr(   1500),  iopsou(40, 3701),  divreqa(3701),
 c rrb 2018/04/08; Correction to fix water balance for South Platte to 
 c                 allow Divmulti to include up to 20 accounts)
-cx   1 IOPDES(20, 3701), ITYOPR(    3701), IORGST(    3701),     
-     1 IOPDES(40, 3701), ITYOPR(    3701), IORGST(    3701), 
-     1 IOPRSW(    3701), ICONFL(    3701), intern(3701,20),  
-     1 divo(3701),       iopid(351),       qdel(13,5),     
-     1 qindex(13,5),     
-     1 irg1,             irg2,             isp1,
-     1 forecast(13,2241), qcarry(5),        qdebt(5),
-     1 qdebtx(5),
+cx   1 IOPDES(20, 3701), ITYOPR(    3701),  IORGST(    3701),     
+     1 IOPDES(40, 3701), ITYOPR(    3701),  IORGST(    3701), 
+     1 IOPRSW(    3701), ICONFL(    3701),  intern(3701,40),  
+     1 divo(3701),       iopid(351),        qdel(13,5),     
+     1 qindex(13,5),                        
+     1 irg1,             irg2,              isp1,
+     1 forecast(13,2241),qcarry(5),         qdebt(5),
+     1 qdebtx(5),                           
      1 rgspill(2241),    iSetOpr(3701),     oprLoss(3701),
      1 oprLimit(3701),
-     1 iOprLim(3701),   ioBeg(3701),       ioEnd(3701),
-     1 numrg,           ideplete,          iexchang,       
-     1 iexPoint(3701),  OprLossC(3701,20), ropdes(3701,20),
+     1 iOprLim(3701),    ioBeg(3701),       ioEnd(3701),
+     1 numrg,            ideplete,          iexchang,       
+     1 iexPoint(3701),   OprLossC(3701,40), ropdes(3701,40),
 c
 c rrb 2015-07-08; Add reoperation control by water right
 cx   1 internT(3701,20)   
-     1 internT(3701,20), icallOP(3701)
+c
+c rrb 2018/10/07; Add DivoWW(40,3701) & DivoWWX to allow
+c                 Detailed operating rule
+c                 output for a WWSP reporting
+cx   1 internT(3701,20), icallOP(3701)
+     1 internT(3701,40), icallOP(3701), divoWW(40,3701),
+     1 divoWWX(3701)
+
 c
 c _________________________________________________________
 c  
       common/oprc/
-     1 ciopdeX(20,3701), ciopsoX(20,3701), 
-     1 ciopsoX2(3701),   ciopsoX5(3701),
+c 
+c rrb 2018/08/05; Correction max is 40
+cx   1 ciopdeX(20,3701), ciopsoX(20,3701), 
+     1 ciopdeX(40,3701), ciopsoX(40,3701),      
+     1 ciopsoX2(3701),   ciopsoX5(3701),  ciopsoX6(3701),
      1 creuseX(3701),    cdivTyp(3701),   ciopdeX2(3701)
      
       character
-     1 ciopdeX*12,   ciopsoX*12,   ciopsoX2*12,   ciopsoX5*12,
+     1 ciopdeX*12,   ciopsoX*12,  
+     1 ciopsoX2*12,  ciopsoX5*12,  ciopsoX6*12,
      1 creuseX*12,   cdivTyp*12,   ciopdeX2*12
      
 c
@@ -477,8 +522,8 @@ c
 c _________________________________________________________
 
       common/account/                                                   
-     1 accr(39,251), demcon(12,5000), ritremx(351), nrown(351),
-     1 n2fill(351), n2own(251) 
+     1 accr(39,1001), demcon(12,5000), ritremx(351), nrown(351),
+     1 n2fill(351), n2own(1001) 
 c
 c
 c _________________________________________________________
@@ -496,7 +541,7 @@ c
 c
       common/bases/
      1 qhisto(12,5000),  rtnacu(12,5000), divacu(12,5000),
-     1 resvol(12,251),   idtype(   5000), ioutx  
+     1 resvol(12,1001),   idtype(   5000), ioutx  
 c
 c
 c _________________________________________________________
@@ -504,18 +549,18 @@ c rrb 04/29/97; Daily model
       COMMON/daycom/
      1 iday, idaydem,    imd, idy,   maxdld, numdld, ido,     imstr,
      1 idays(5000),      idayd(3060),     idaydw(402),
-     1 idayi(2241),       idayr(251),      idaye(251), 
+     1 idayi(2241),       idayr(1001),      idaye(1001), 
      1 virind(32,5000),  diverd(32,3060), diverdw(32,402),
-     1 flowrd(32,2241),   targetd(32,251),  
+     1 flowrd(32,2241),   targetd(32,1001),  
      1 riverm(5000),     availm(5000),    avinpm(5000), returm(5000),
 c 
-     1 returd(3660,5000),dlyratd(3660,525),
+     1 returd(7320,5000),dlyratd(7320,525),
 
      1 divreqm(3060),    divreqwm(13110),
      1 flowrqm(2241),     qdivm(39,5000),  qdivrm(1002),
-     1 qresm(39,251),    accrm(39,251),   volintm(251), evapm(251),
-     1 sepactM(251), 
-     1 ritremm(351),     tarmaxm(251),    divom(3701),
+     1 qresm(39,1001),    accrm(39,1001),   volintm(1001), evapm(1001),
+     1 sepactM(1001), 
+     1 ritremm(351),     tarmaxm(1001),    divom(3701),
      1 rlossm(3060),     rlosswm(8500),   
      1 rlossw2m(8500),  divmonwm(402),
      1 rdepwm(13110),
@@ -525,28 +570,27 @@ c
      1 diverird(32,3060),diwrd(32,3060),
      1 diveridw(32,402), diwrdw(32,402),  carryWD(32,402),carryWM(402),
      1 divertd(32,3060), diveritd(32,3060)
-c    1 evapd(32,251),    
+c    1 evapd(32,1001),    
 c
 c
 c _________________________________________________________
 c               Daily data read
       COMMON/daycomc/    
      1 virindx(32,5000), diverdx(32,3060),diverdxw(32,402),
-     1 flowrdx(32,2241),  targex2(32,251), evapdx(32,251),
+     1 flowrdx(32,2241),  targex2(32,1001), evapdx(32,1001),
      1 diverd2(32,3060),  
 
      1 crunidx(5000),    cdividx(3060),   cdividxw(402), cifridx(2241), 
      1 crunidy(5000),    cdividy(3060),   cdividyw(13110),cifridy(2241),
-     1 cresidx(251),
-     1 cresidy(251)
+     1 cresidx(1001),
+     1 cresidy(1001)
 c
 c
 c _________________________________________________________
 c rrb 00/11/10; Data file for SJRIP
       common/sjripc/
      1 isjrip,           isjpertb,        sjmina,       sjrela, 
-     1 sjpertb,          sjtarget(12,251)
-c
+     1 sjpertb,          sjtarget(12,1001)
 c
 c _________________________________________________________
 c rrb 00/12/04; Data for variable efficiency (see also annual TS file)
@@ -618,7 +662,7 @@ c rrb 01/03/12; Data for daily base flow
      1 dumy(5000),       dumz(5000),    dumR(5000),    dumU(5000),
      1 diverx(3060),     diwrx(3060),
      1 diverwx(402),     diwrwx(402),
-     1 resvolx(251),     resvol1(251),
+     1 resvolx(1001),     resvol1(1001),
      1 qdivsx(5000),     qdivsox(5000), qcux(5000), qloss(5000),
      1 qpump(5000),
      1 qhistod(32,5000), ibout(5000)  
@@ -663,7 +707,7 @@ c
 c _________________________________________________________
 c rrb 2005/10/14; Character names     
        common/Name1/
-     1 DivNam1(3060), DivNamW1(402), ResNam1(251), RunNam1(5000),
+     1 DivNam1(3060), DivNamW1(402), ResNam1(1001), RunNam1(5000),
      1 StaNam1(5000), XfrNam1(2241),  Pname1(1440),  UseNam1(3060)
      
        character
@@ -683,20 +727,20 @@ cx     1 Pname(6,1440),
      1 iPlnOprE(1440,3701),  iplnOprS(1440,3701), iplnOprR(1440,3701),
      1 iplnOprU(1440,3701),  iplnOprO(1440,3701), iplnOprP(1440,3701),
      1 Pobl(240,1440),     Pdem(1440),        PdemT(1440), 
-     1 PoblD(3660,1440),   PdemM(1440),       PdemTm(1440),
+     1 PoblD(7320,1440),   PdemM(1440),       PdemTm(1440),
      1 Pdrive(1440),       PdriveM(1440),
 c
 c		Reuse Plan Data     
      1 iPlnTyp(1440),      ipnode(5000),     ipSource(1440), 
      1 Psup(240,1440),     Psuply(1440),      PsuplyT(1440), 
-     1 PsupD(3660,1440),   PsuplyM(1440),     PsuplyTm(1440),
+     1 PsupD(7320,1440),   PsuplyM(1440),     PsuplyTm(1440),
      1 Preuse(3701),       PresueM(1440),
      1 Peff(12,1440),      iPrf(1440),
      1 iPfail(1440),       Pfail(1440),       iPacct(1440),
 c
 c		Plan Augmentation
 c		Note 13110 is because well plans are tied to well rights
-     1 iplanWon,          iplanw(13110),     PlntypC(1440),          
+     1 iplanWon,           iplanw(13110),     PlntypC(1440),          
      1 PlanW(1440),        Psource(1440), 
      1 PwellC(1440),       PwellCM(1440),      rdvnkwp(1440),
 c
@@ -716,11 +760,18 @@ c		Reservoir return flow and recharge plans
      1 maxrtnRP, numRtnRP,
      1 iplnR(1440),       iplnD(1440),
 cx   1 ipRes(1440),       rlossR(1440),       rlossRM(1440), 
-     1                   rlossR(251),       rlossRM(251), 
-     1 nrtnRP(180),      pcttotRP(180),   
-     1 pctlosRP(180),    irtndlRP(180),     irnordRP(5005),
-     1 irnstaRP(180),
-     1 ipracct(251) 
+     1                   rlossR(1001),       rlossRM(1001), 
+     1 nrtnRP(1001),      pcttotRP(1001),   
+     1 pctlosRP(1001),    irtndlRP(1001),     irnordRP(5005),
+     1 irnstaRP(1001),
+     1 ipracct(1001),
+c
+c rrb 2019/07/21; 
+c    WWSP Plan reporting add psupDDD to store water that
+c      goes to a WWSP supply plan (14) and a direct diversion,
+c      psupDDM for a daily accumulator of psupDD()
+c      and iwwPlan an indicator we have a WWSP plan
+     1 psupDD(1440), psupDDM(1440), iwwPlan
 c
 c _________________________________________________________
 c
@@ -766,14 +817,17 @@ c
 c rrb 01/31/95; Code Addition IDs
       common/cID/
      1 cstaid(   5000),  crunid(   5000),  cifrid(    2241), 
-     1 cresid(    251),  cdivid(   3060),
+     1 cresid(   1001),  cdivid(   3060),
      1 cstadn(   5000),  cgoto,         
-     1 corid (    3701),  crigid(   6500),  cntern(10),
-     1 cevaid(    251),  cpreid(    251),
-     1 cevar (    251),  cprer (    251),  ownnam(251),
-     1 creswr(    351),  copid (     351), cretid(3060),
+c
+c rrb 2001/02/14; Increase # of carriers
+cx   1 corid (   3701),  crigid(   6500),  cntern(10),
+     1 corid (   3701),  crigid(   6500),  cntern(40),
+     1 cevaid(   1001),  cpreid(   1001),
+     1 cevar (   1001),  cprer (   1001),  ownnam(1001),
+     1 creswr(    351),  copid (    351),  cretid(3060),
      1 idreq (   5000),  cirtndl(  5000),  cirtndlw(13110),
-     1 cirtndl2( 13110),  cirtnid(    525),
+     1 cirtndl2( 13110), cirtnid(   525),
      1 cisfwr(    2241)
 c
       character *12
@@ -790,15 +844,15 @@ c
 c _________________________________________________________
 C
        common/filenum/
-     1 ifileNum(80)     
+     1 ifileNum(90)     
      
        common/charx/
      1 filena,    filenc,    fpath1, vdate,  ver, ccall, xmonam(14),
-     1 filetype(80), filename(80), fileSuf(80), rec256
+     1 filetype(90), filename(90), fileSuf(90), rec256
      
        CHARACTER
      1 FILENA*256, filenc*256, fpath1*256, 
-     1 ver*20,      vdate*10, ccall*12,  xmonam*4,   
+     1 ver*8,      vdate*10, ccall*12,  xmonam*4,   
      1 filetype*40, filename*256, fileSuf*5, rec256*256
 c
 c _________________________________________________________
@@ -828,4 +882,10 @@ c rrb 2006/12/22; Stream Gage (*rig) data
      
       character
      1 crunidG*12, runnamG*24
- 
+c
+c _________________________________________________________
+c rrb 2018/11/17; Data file for John Martin Monthly Model
+      common/jmartin/
+     1 ijm,         cjm(12,5), cjmID(5)
+      character
+     1 cjmid*12

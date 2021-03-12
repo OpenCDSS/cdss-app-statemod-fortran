@@ -2,7 +2,7 @@ c getres - reads in reservoir data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE GetRes(IIN, inx, numstax)
 c
 c _________________________________________________________
@@ -116,11 +116,11 @@ c		    =2 print reservoir return flow details
         nrtnRP(i)=0
       end do  
 c
-c rrb 2008/09/30; Initilze reservoir to plan, etc      
+c rrb 2008/09/30; Initialize reservoir to plan, etc      
       do i=1,maxres
         iresP(i)=0
 c
-c rrb 2009/05/21; Initilze Id, etc used by Bintop             
+c rrb 2009/05/21; Initialize Id, etc used by Bintop             
         cresid(i)='NA          '
         irssta(i)=0
         iressw(i)=0
@@ -518,7 +518,11 @@ C
 c 430 numres=NR-1
   430 numres=amax0(NR-1,0)
       write(nlog,432) numres
-  432 format(/, '  GetRes; Number of Reservoirs = ', i5)    
+  432 format(/, '  GetRes; Number of Reservoirs = ', i5)
+c
+c rrb 2020/07/28; Additional reservoir reporting    
+      write(nlog,433) numown
+  433 format(/, '  GetRes; Number of Reservoir Owners = ', i5)    
 c
 c _________________________________________________________
 c
@@ -549,7 +553,7 @@ C
 c
 c _________________________________________________________
 c
-c		Initilize selected variables
+c		Initialize selected variables
       DO 450 NR=1,NUMRES
       IF(IRESSW(NR).NE.0) NRSACT=NRSACT+1
   450 CONTINUE
@@ -593,12 +597,12 @@ C
 c      
 c _________________________________________________________
 c
-c		Step X; Get Reservoir return flow data (*.rrf)
-c		        NOte: Originally developed for Recharge Plans
-c			but works generically to route seepage
-c                       to the stream as a return flow 
+c               Step X; Get Reservoir return flow data (*.rrf)
+c               NOte: Originally developed for Recharge Plans
+c               but works generically to route seepage
+c               to the stream as a return flow 
 c
-c 		Open file
+c               Open file
       inR=0
       numrtnRP=0  
               
@@ -620,7 +624,7 @@ c       write(nlog,*) '  GetRes; inR', inR
 c
 c _________________________________________________________
 c
-c		Step X; IF a file is provided (inR>0) get 
+c               Step X; IF a file is provided (inR>0) get 
 c                       Return Flow data
 
       if(inR.gt.0) then
@@ -631,9 +635,9 @@ c                       Return Flow data
 c
 c _________________________________________________________
 c
-c		Step X; Get return data for every reservoir
-c			Note ityp=0 is for return flows
-c			istrTyp=2 for a reservoir
+c               Step X; Get return data for every reservoir
+c               Note ityp=0 is for return flows
+c               istrTyp=2 for a reservoir
         ityp=0
         istrTyp=2
         call getrtnX(
@@ -652,7 +656,7 @@ c
 c _________________________________________________________
 c
 c               Step X; Redefine # of returns (nrtnRP) and 
-c			Set Order and check array size limits
+c               Set Order and check array size limits
 cx      nrtnRP(1)=1
 cx      do nr=1,numRes
 cx        nrtnRP(nr+1) =nrtnRP(nr+1) +nrtnRP(nr)
@@ -692,7 +696,7 @@ cx      endif
 cxc
 cxc _________________________________________________________
 cxc
-cxc		Step X; Detailed Check for Reservoir Return File
+cxc             Step X; Detailed Check for Reservoir Return File
 cx      if(iout.eq.2) then
 cx        write(nlog,1430)
 cx        j2=0
@@ -709,12 +713,12 @@ cx      endif
 c
 c _________________________________________________________
 c
-c		Step X; Close Reservoir Return File
+c               Step X; Close Reservoir Return File
       close(inR)     
 c
 c _________________________________________________________
 c
-c		Step X; Return 
+c               Step X; Return 
  520  return
 c
 c _________________________________________________________

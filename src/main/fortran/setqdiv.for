@@ -5,7 +5,7 @@ c           IT DOES NOTHING FOR CARRIERS.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
         subroutine SetQdiv(nlog, nCarry, nRiver,
      1    nd2, nr2, iscd, idcdX, idcdC,
      1    divactX, TranLoss, EffmaxT1, OprEffT, fac, 
@@ -83,13 +83,14 @@ c		qdiv(18  Carrier passing through a structure
 c   qdiv(19  From Carrier by Priority (e.g. divcar)
 c            
 c   qdiv(20  From Carrier by Other (Storage, Exchange or Changed)
-c		qdiv(32  From Carrier Loss
 c
 c		qdiv(26  From River by Exc_Pln (Exc_Pln)
 c		qdiv(30  From River by a direct diversion or exchange
 c            to a T&C or well Aug Plan. Note non consumptive
 c
 c		qdiv(31 From River by Sto/Exc/Plan by type 27 or 28
+c		qdiv(32 From Carrier Loss
+c
 c		qdiv(33 From River Loss
 c   qdiv(38 Carried water reported as Carried, Exchange 
 c            or Bypassed but not used to calculate
@@ -104,7 +105,7 @@ c
         character corid1*12
 c        
 c__________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c
 c		iout=0 No details
 c		iout=1 details
@@ -119,8 +120,8 @@ cx      if(corid1(1:10) .eq.'5036680.75') iout=1
         if(iout.eq.1) then
           write(nlog,250)
           write(nlog,*) 
-     1     ' SetQdiv;       icx  ncarry    iscd   idcdX   idcdC'
-          write(nlog,'(12x,20i8)') icx, ncarry, iscd, idcdX, idcdC
+     1     ' SetQdiv;       icx  ncarry    iscd   idcdX   idcdC    nd2'
+          write(nlog,'(12x,20i8)') icx, ncarry, iscd, idcdX, idcdC, nd2
           call flush(nlog)          
         endif  
         
@@ -128,7 +129,7 @@ cx      if(corid1(1:10) .eq.'5036680.75') iout=1
 c        
 c rrb 2010/10/15; Correction for a water balance
 c                 report system (tranloss) at the destination;
-c                 not befor water is carried.     
+c                 not before water is carried.     
 cx      OprLos1=divactX*TranLoss        
         OprLos1=0.0
         OprLos2=(divactX-Oprlos1)*(1.0-EffmaxT1)
@@ -188,7 +189,8 @@ c rrb 2014-11-24
         if(nsou.eq.0) goto 400
 c
 c _________________________________________________________
-c   Step 3; Set Source (iscd) data only if iscd .eq. idcdC
+c   Step 3; Set Source (iscd) data only if the source is a carrier
+c           (iscd .eq. idcdC)
 c
 c		    qdiv(5  From River by Priority
 c       qdiv(26 From River by Exc_Pln (Exc_Pln) type other
@@ -210,11 +212,27 @@ c                 isccd = source node
 c                 idcdC = carrier node (0 if no carrier)
 cx      if(iscd.eq.idcdC) then
 cx      if(iscd.eq.idcdC .and. nr2.eq.0) then
-        if(iscd.eq.idcdC .and. nd2.ne.0) then        
+        if(iscd.eq.idcdC .and. nd2.ne.0) then 
+c
+c rrb 2020/11/22; Detailed output for a source adjustment   
+          if(iout.eq.1) then
+            write(nlog,*) ' '
+            write(nlog,'(a26,40i8)') 
+     1      ' SetQdiv; qdiv(iscd, IN   ', (j, j=1,38)
+            write(nlog,'(a26,40f8.0)') 
+     1      ' SetQdiv; qdiv(iscd, IN   ', (qdiv(j,iscd)*fac,j=1,38)
+          endif
+c    
           qdiv(nsou,iscd) = qdiv(nsou,iscd)+divactX 
           rloss(iscd)     = rloss(iscd) + OprLos1    
           qdiv(33,iscd)   = qdiv(33,iscd)+OprLos3                 
-          qdiv(18,iscd)   = qdiv(18,iscd)+divactX - OprLos3
+          qdiv(18,iscd)   = qdiv(18,iscd)+divactX - OprLos3        
+c
+c rrb 2020/11/22; Detailed output for a source adjustment            
+          if(iout.eq.1) then
+            write(nlog,'(a20,40f8.0)') 
+     1      ' SetQdiv; qdiv(iscd OUT   ', (qdiv(j,iscd)*fac,j=1,38)
+          endif
         endif
 c
 c
@@ -282,7 +300,9 @@ c
 c
 c rrb; Clarify the source from a type 45 as From Carrier by Priority (10)          
 cx        qdiv(20,idcdX) = qdiv(20,idcdX)+divactT
-          qdiv(ndest,idcdX) = qdiv(20,idcdX)+divactT
+c rrb 2020/11/22; Correction
+cx        qdiv(ndest,idcdX) = qdiv(20,idcdX)+divactT
+          qdiv(ndest,idcdX) = qdiv(ndest,idcdX)+divactT
           goto 100
         endif
           

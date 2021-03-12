@@ -2,7 +2,7 @@ c replace - Type 10 operating rule for a general replacement reservoir
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ c               ireptyp(n1)   = Replacement type from datinp.for
 c                             1 = 100% replacement
 c                            -1 = depletion replacement
 c                             0 =no replacement reservoir
-c                                  (checked in execut befor call)
+c                                  (checked in execut before call)
 c               iopsou(3,n1)  = 0 
 c               tranlim       = Transfer limit to amount in secondary
 c                                source storage or source right (nrwr)    
@@ -116,7 +116,7 @@ c
       character creptyp*8, cwhy*48, cDest*12, cDest1*12, cSour*12
 c
 c _________________________________________________________
-c               Step 1;Initilize
+c               Step 1;Initialize
 c
 c     iout=3 details for replacement results
       iout=0
@@ -131,10 +131,10 @@ cx      monout=1
       cDest1='500734      '
       monout=11
 c
-c rrb 2008/03/13; Initilize
+c rrb 2008/03/13; Initialize
       divactx=0.0     
 c
-c rrb 2015/09/06; Initilize
+c rrb 2015/09/06; Initialize
       divacty=0.0 
 c
 c ---------------------------------------------------------
@@ -156,7 +156,7 @@ cx        write(nlog,*)' ___________________________________________'
 cx        write(nlog,*) ' Replace; ccall, crigid(l2) = ', ccall, iw
 cx      endif  
 c
-c		iout=0 no detials
+c		iout=0 no details
 c		     1 details
 c		     2 summary
 c		     3 partial summary
@@ -174,7 +174,7 @@ cx      ioutiw=0
         fac=factor
       endif
 c
-c		Initilze first time replace is called per month
+c		Initialize first time replace is called per month
       iprint=0
       if(nrepcall.eq.0) then
         divtot=0.0

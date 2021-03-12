@@ -6,7 +6,7 @@ c           2. Surface Water Sprinkler Irrigated
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ c	Program Description
 c
 c     Return2; it calculates returns (rettot), IWR remaining
 c            (diwrx), and actual CU (dcux) given actual
-c             diversion (divact) and efficiecny (eff).
+c             diversion (divact) and efficiency (eff).
 c	      Same as Return.f but revised to treat the following
 c             uniquely:
 c		1. Surface Water Flood Irrigated
@@ -101,7 +101,7 @@ c               qdivs   diversion to soil moisture this iteration (cfs)
 c               qdivs1  total diversion to soil moisture this time step (cfs)
 c
 c               ichk    detailed output control
-c               cdividx Diversion or Well ID (print divesion for D&W)
+c               cdividx Diversion or Well ID (print diversion for D&W)
 c
 c               iout    0=print detailed results
 c                       1=do not print
@@ -127,7 +127,7 @@ c
        ctype(5)='NA              '
 c
 c _________________________________________________________
-c		Step 1; Initilize
+c		Step 1; Initialize
 c		iout=0 no details
 c		    =1 details
 c		    =2 summary (divert, CU, Soil, Return)
@@ -248,7 +248,7 @@ c ---------------------------------------------------------
 c		Surface Water Supply (diversion)
 c		  Apply Canal Loss
 c		  Spread to all 4 land use types
-c	          Note AreaT should equal 1.0, data is initilized
+c	          Note AreaT should equal 1.0, data is initialized
 c		  to zero above
        if(itype.eq.1) then
          ToFarm=divact*effc

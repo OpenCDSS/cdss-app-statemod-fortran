@@ -2,7 +2,7 @@ c demcons - calculates the demand constrained by water right and capacity
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ c	Dimensions
 c
 c _________________________________________________________
 c
-c               Step 1: Initilize
+c               Step 1: Initialize
 
 c
 c rrb 2009/05/21; correction 
@@ -81,14 +81,14 @@ c               Step 2; Calculate sum of rights
       if(ioptiox.eq.0) then
 c
 c -----------------------------------------------------
-c               Step 2a; Initilize
+c               Step 2a; Initialize
         do 100 k = 1, numdvr
           nd = idivco(1,k)
           if(nd.gt.0) demcond(nd) = 0.0
   100   continue          
 c
 c ---------------------------------------------------------
-c               Step 2b; Initilize Instream flow
+c               Step 2b; Initialize Instream flow
         do 110 k = 1, numfrr
           nf = iifrco(k)
           if(nf.gt.0) demconi(nf) = 0.0
@@ -124,7 +124,7 @@ c
 c =========================================================
 c              Every year, Limit diversion demand by their request
 c
-c              Initilize             
+c              Initialize             
 c     write(99,400)
                         
       do 140 iss = 1,numsta

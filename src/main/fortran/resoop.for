@@ -5,7 +5,7 @@ c          between Dillon and Green Mountain.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -54,9 +54,9 @@ c	   exceed the junior decree amount
 c	3. If water in the OOP account is greater than the senior
 c		decree, this routine (ResOOP) books it into an active
 c               account and decreases the junior's decree
-c	4. If more water is in teh OOP account than is available to 
-c		the junior decree spill. Note this should only occurr
-c		when hte one fill rule limitations through things out
+c	4. If more water is in the OOP account than is available to 
+c		the junior decree spill. Note this should only occur
+c		when the one fill rule limitations through things out
 c		of balance
 c
 c _________________________________________________________
@@ -96,7 +96,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 1 Initilize
+c               Step 1 Initialize
 c
 c		iout=1 details
 c		iout=2 summary

@@ -2,7 +2,7 @@ c divcar - Type 11 operating rule for carrier structures
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -117,7 +117,7 @@ c rrb 01/12/26; Revised to operate when iuse is undefined under f95
 c rrb 02/06/27; Revised logic for maximum efficiency to limit
 c               diversion to demand via divalo
 c
-c rrb 96/03/13; Initilize divact, send returns to bottom & set divo
+c rrb 96/03/13; Initialize divact, send returns to bottom & set divo
 c
 c rrb 01/02/28; Revised logic when destination is a reservoir since
 c               variable iuse does not make sense and causes problems
@@ -210,7 +210,7 @@ c
      1 cCallBy*12, corid1*12
 c     
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c               a. Convergence
       small=0.001
 c
@@ -299,7 +299,7 @@ c
       if(ndtype.eq.7) cdestyp='Plan     '      
       
 c
-c rrb 2008/09/26; Include source type varaible
+c rrb 2008/09/26; Include source type variable
       cSouTyp='NA'
       iopSouR1 = iopSouR(l2)
       if(iopSouR1.eq.3)  cSouTyp='Diversion'
@@ -595,7 +595,7 @@ c               Step 3b; Destination is a reservoir (nd2 is negative)
         endif  
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
         nro=1
         if(iopdes(2,l2).lt.0) then
           nro=-iopdes(2,l2)

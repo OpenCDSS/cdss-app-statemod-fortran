@@ -3,7 +3,7 @@ c           diversion, reservoir, or carrier with reuse
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -18,20 +18,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-c	Update History
-c
-
-c
-c _________________________________________________________
-c	Documentation
-c
-
-c
-c _________________________________________________________
-c	Dimensions
-cC     Last change:  RRB  22 Oct 2002    4:12 pm
-c
 c
       subroutine DivImpR(iw,l2,ishort,divact,ncallX)
 c
@@ -40,19 +26,46 @@ c	Program Description
 c
 c
 c       DivImpR; Type 35
-c       It handles diversions from a diversion (import) to a
-c           diversion, reservoir, or carrier with reuse
+c       It simulates imports that are provided as a source
+c           to the operating rule as a negative diversion (import)
+c           whose ID is also a type 7 (import) plan. 
+c           It has code to deliver water to a diversion, reservoir,
+c           carrier or plan with reuse.  However as of version 
+c           16.00.44 subroutine Oprinp.f requires the destination
+c           be a type 11 administration plan.
+c
 c           Called by Execut
 c _________________________________________________________
 c
 c 	Update history
 c
-c	05/03/31	Copied Divres
-c			Removed ability to relase for depletion	only
-c                       Removed ability to be called by replacement res
-c			Removed stuff related to a transfer limit 
-c			Removed refrences to transmtn (IRTURN(IUSE).EQ.4)
-c			Added Reservoir Reuse Plan as a source 2 option
+c rrb 2020/11/20; Version 16.00.44
+c                 Revised DivImpr (type 35) to increment qdiv(30',/
+c                   "From River by Other" but is not summed in the
+c                   water budget (*.xwb) in Step 14-d
+
+c rrb 2020/11/15; Version 16.00.44
+c                 Revised DivImpr (type 35) to increment qdiv(31',/
+c                   "From River by Other" in Step 14-d and other 
+c                   miscellaneous edits
+c
+c rrb 2020/10/27; Version 16.00.44
+c                 Revised DivImpr (type 35) to not increment qdiv(31',/
+c                   to help resolve double accounting of Divert',/
+c                   in water budget (*.xwb)',/ 
+c
+c
+c rrb 2020/07/28; Version 16.00.38  
+c                 Added detailed output when iout=1
+c                 Revised to remove references
+c                 to iuse when the source is a plan (iopdesr=7)
+c
+c	rrb 05/03/31	Copied Divres
+c			            Removed ability to release for depletion	only
+c                 Removed ability to be called by replacement res
+c			            Removed stuff related to a transfer limit 
+c			            Removed references to transmtn (IRTURN(IUSE).EQ.4)
+c			            Added Reservoir Reuse Plan as a source 2 option
 c			
 c
 c  ________________________________________________________
@@ -111,19 +124,17 @@ c
 c	          intern(  )   = If > 0 carrier system with intervening
 c                          structures
 c
-c           qdiv(18        Carrier passing thru a structure 
 c           qdiv(18        Carried, Exchange or Bypass
 c                            Carrier passing thru a structure.
-
 c           qdiv(20        From Carrier by Storage or Exchange 
 c           qdiv(28,       Stored via a reuse plan  
 c           qdiv(31,       Diversion from ReUse plan to a Res or 
 c                            Diversion
-c 		      qdiv(35        Water with a Reuse or Admin plan source 
-c		            	           tracked at the destination
+c           qdiv(35         Water with a Reuse or Admin plan source 
+c                            tracked at the destination & reported as
+c                            from Plan in water balanace (OutTbl2)
+
 c           qres(4,ix)   = From Carrier by Storage to Reservoir
-c           qres(8,ix)   = Reservoir Storage to Trans Mountain Carrier
-c           qres(9,ix)   = Reservoir Storage to Carrier??
 c           qres(26,ix)  = Reservoir Storage to River
 c           qres(11,ix)  = Reservoir Storage to Carrier
 c
@@ -131,23 +142,29 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      character cwhy*24, cdestyp*12, ccarry*3, cresid1*12, cpuse*3
+      character cwhy*24, cdestyp*12, ccarry*3, cresid1*12, subtypX*8
+c
+c rrb 2018/08/05; Update
+      character cpuse*3, cSouTyp*12, cplntyp*12
+      
 c
 c _________________________________________________________
-c               Step 1; Initilize
+c               Step 1; Initialize
 c
+      subtypX='divimpr'
+      
       iout=0
       if(ichk.eq.135) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw
 c
-c rrb 2018/03/05
-cx         
-cx    if(iout.ge.1 .and. ncallx.eq.0) then
-cx      write(nlog,102) corid(l2), iout, ioutiw, iw
-cx
-cx 102    format(/, 72('_'),/ 
-cx     1  '  DivImpR; ID = ', a12, 5i5)        
-cx      endif    
+c rrb 2020/07/28; Detailed output         
+      if(iout.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,102) corid(l2), iout, ioutiw, iw
+
+ 102    format(/, 72('_'),/ 
+     1  '  DivImpR; ID = ', a12, 5i5)        
+      endif    
 c      
 c		b. Daily capability
       if(iday.eq.0) then
@@ -197,7 +214,30 @@ cx    icx=32
 cr    write(nlog,*) '  DivImpR iwx', iwx
 c
 c		Step 1b; Check avail array
-      call chekava(2, maxsta, numsta, avail)
+      call chekava(2, maxsta, numsta, avail, subtypX)
+
+c
+c rrb 2020/07/28; Include source type in detailed reporting
+      cplntyp='NA          '
+      cSouTyp='NA'
+      iopSouR1 = iopSouR(l2)
+      if(iopSouR1.eq.3)  cSouTyp='Diversion'
+      if(iopSouR1.eq.13) cSouTyp='Diversion_WR'
+      if(iopSouR1.eq.12) cSouTyp='Diversion_WR'
+      if(iopSouR1.eq.11) cSouTyp='Admin  Plan  '
+      if(iopSouR1.eq.7)  cSouTyp='Import Plan  '
+c
+c rrb 2020/11/15; Include destination type
+      iopDesR1 = iopDesR(l2)
+      if(iopDesR1.eq.3)  cDesTyp='Diversion'
+      if(iopDesR1.eq.2 ) cDesTyp='Reservoir'
+      if(iopDesR1.eq.7)  cDesTyp='Plan  '
+c
+c rrb 2020/07/28; Detailed output               
+      if(iout.eq.1) then
+        write(nlog,*)'  DivImpr; cSouTyp = ', cSouTyp
+        write(nlog,*)'  DivImpr; cDesTyp = ', cDesTyp
+      endif
 c
 c _________________________________________________________
 c               Step 2; Branch if not on this month
@@ -235,6 +275,8 @@ c
 c _________________________________________________________
 c
 c               Step 4; Set source data (a transmountain import plan)
+c                       Note Oprinp.f checks and requires the source
+c                       be a type 7 plan
 c
       np  =IOPSOU(1,l2)    
       iscd=ipsta(np)
@@ -266,7 +308,7 @@ cr    write(nlog,*) '  Divers; l2, ityopr = ', ityopr(l2)
 c
 c ---------------------------------------------------------
 c
-c               a. Destination is a reservoir (nd<0 & iresw=1)
+c               5-a. Destination is a reservoir (nd<0 & iresw=1)
       if(nd.lt.0) then
         cdestyp='Reservoir'        
         iresw=1
@@ -275,7 +317,7 @@ c               a. Destination is a reservoir (nd<0 & iresw=1)
         NDND=NDNNOD(IDCD)
 c
 c ---------------------------------------------------------
-c rrb 2006/09/25; Allow multiple accounts - Initilize
+c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nd)+iopdes(2,l2)-1  
 
         nro=1
@@ -316,15 +358,22 @@ c     destination is a plan, iopdesr(l2) = 7
 c       nd > 0, when destination is a plan id that is found in the list of plans
 c       nd = plan index
 c ---------------------------------------------------------
-
+c
+c               5-b Destination is a plan or diversion      
       if(nd.gt.0) then
+c
+c ---------------------------------------------------------
+c               
+c               5-c Destination is a plan or diversion
         if(iopdesr(l2).eq.7) then
-c         b. Destination is a plan (nd>0 & iopdesr(l2)=7), set iresw=0
+c         
           cdestyp='Plan     '
           iresw=0
           idcd=ipsta(nd)
           NDND=NDNNOD(IDCD)
-          IUSE=NDUSER(ND)+IOPDES(2,l2)-1
+c
+c rrb 2020/07/28; A plan does not have multiple users
+cx        IUSE=NDUSER(ND)+IOPDES(2,l2)-1
 c
 c rrb 2018/03/02; Control output
 cx        write(nlog,*) '  DivImpR; destination is plan!'
@@ -336,7 +385,9 @@ c         check that the destination plan is on
             goto 330
           endif
         else
-c         b. Destination is a diversion (nd>0 & iopdesr(l2)=3), set iresw=0
+c ---------------------------------------------------------
+c               5-d Destination is diversion
+c                   (nd>0 & iopdesr(l2)=3), set iresw=0
           cdestyp='Diversion'
           iresw=0
           idcd=idvsta(nd)
@@ -351,43 +402,36 @@ c         b. Destination is a diversion (nd>0 & iopdesr(l2)=3), set iresw=0
         endif
       endif
 c
+c rrb 2020/07/28; Additional output
+      if(iout.eq.1) write(nlog,*)'  DivImpr; cDesTyp = ', cDesTyp
+c
 c ---------------------------------------------------------
-c               e. Carrier system data 
+c               5-e. Carrier system data 
 c jhb 2014/08 obviously, ityopr(l2) = 35, so...
 c 120  if(ityopr(l2).ne.10) then
  120   continue
-cr      if(intern(l2,1).eq.0) go to 130
-        if(intern(l2,1).gt.0) then
-          ccarry='Yes'
-          ndr=intern(l2,1)
+cr    if(intern(l2,1).eq.0) go to 130
+      if(intern(l2,1).gt.0) then
+        ccarry='Yes'
+        ndr=intern(l2,1)
 
-          idcd=idvsta(ndr)  
-          ndnd=ndnnod(idcd)
-c         write(nlog,*) '  DivImpR; l2, idcd', l2, idcd
-cr        go to 140
-        endif  
-c      endif
+        idcd=idvsta(ndr)  
+        ndnd=ndnnod(idcd)
+c       write(nlog,*) '  DivImpR; l2, idcd', l2, idcd
+cr      go to 140
+      endif  
 c
-c
-c _____________________________________________________________
-c               f. Check printout 
-c
-c rrb 2018/03/05; Correction
-cx      IF(-IOPOUT.eq.ISCD .or. iout.ge.1) then
-cx        if(iwx.eq.1) then
-cx          write(nlog,270) cdestyp, ccarry
-cxcr      else
-cxcr        write(nlog,*) ' '
-cx        endif  
-cx      endif  
+c ---------------------------------------------------------
+c               5-f. Check printout 
 c
 c rrb 2018/03/05; Correction
       if(iout.ge.1 .and. iw.eq.ioutiw) then      
         ncallX=ncallX+1
         if(ncallX.eq.1) then
-          write(nlog,270) corid(l2), cdestyp, ccarry, cpuse          
+          write(nlog,270) corid(l2),cdestyp, cSouTyp, ccarry, cpuse,
+     1                    cplntyp
         else
-          write(nlog,*) ' '
+cx        write(nlog,*) ' '
         endif 
       endif 
 cx    
@@ -403,6 +447,10 @@ c                        is a diversion
 c jhb 2014/08            or a plan
 c        
       if(iresw.eq.0) then
+c
+c ---------------------------------------------------------
+c               6-a Destinaiton is a plan
+   
         if(iopdesr(l2).eq.7) then
 c ---------------------------------------------------------
 c          from DirectBy for a plan destination
@@ -421,7 +469,7 @@ c          else
 c            divreqx2=99999./fac
 c            np11=1
 c          endif
-c          if(iout.eq.1) write(Nlog,*)'  DirectBy; np2', pdem(np2)*fac,
+c          if(iout.eq.1) write(Nlog,*)'  DivimpR; np2', pdem(np2)*fac,
 c     1      pdemT(np2)*fac, pdem(2)*fac, pdemT(2)*fac
 c ---------------------------------------------------------
 c         essentially, the above says treat a type 11 as if it has infinite demand,
@@ -434,7 +482,7 @@ c          DIVALO=pdem(nd)
           DIVALO=divreqx2
         else
 c ---------------------------------------------------------
-c               a. Diversion demand 
+c               6-b. Destination is a Diversion
           DIVALO=AMIN1(DIVREQ(IUSE),DIVCAP(ND)-DIVMON(ND))
           divcapX=DIVCAP(ND)-DIVMON(ND)
           divmonX=divMon(nd)
@@ -470,7 +518,7 @@ c
 c
 c ---------------------------------------------------------
 c
-c               b. Reservoir Demand
+c               6-c. Destination is a Reservoir
       if (iresw.eq.1) then
 c
 c ---------------------------------------------------------
@@ -512,9 +560,9 @@ c
 c
 c _________________________________________________________
 c
-c               Step 7; Limit release (ALOCFS) to capacity of
+c               Step 7; Carrier provided.
+c                       Limit release (ALOCFS) to capacity of
 c                       intervening structures
-c                       if required for type 2 & 3 only
 cr    if(ityopr(l2).ne.10) then
       do 150 i61=1,10
         if (intern(l2,i61).eq.0) go to 160
@@ -553,18 +601,32 @@ c
       AVAILR=AVAIL(iscd)
       call takout(maxsta,avail,river,avinp,qtribu,idncod,
      1            relact,ndns,iscd)
+       
       avail(iscd)=availr
 c
-c rrb 2018/03/05; Add import to qdiv( ) From Plan for water balance
+c rrb 2020/11/22; Detailed output         
+      if(iout.eq.1) then     
+        write(nlog,*) '  DivImpr; iyrmo(mon),xmonam(mon),idy, ',
+     1              'cstaid(iscd), iscd, availr*fac, avail(iscd)*fac'
+        write(nlog,*) '  DivImpr;', iyrmo(mon),xmonam(mon),idy, 
+     1               cstaid(iscd), iscd, availr*fac, avail(iscd)*fac
+      endif
 c
 c _________________________________________________________
 c
 c               Step 11 Remove diversion (DIVACT) from stream
 
+      AVAILR=AVAIL(idcd)
       CALL TAKOUT(maxsta,AVAIL,RIVER,AVINP,QTRIBU,IDNCOD,
      1            DIVACT,NDND,IDCD)
-c     write(nlog,*) '  DivImpR; idcd,divact,relact = ',idcd,divact,relact
-c     write(nlog,*) '  DivImpR; iscd,divact = ', idcd, divact, relact
+c
+c rrb 2020/11/22; Detailed output         
+      if(iout.eq.1) then     
+        write(nlog,*) ' '
+        write(nlog,*) '  DivImpR; idcd, divact, availR, avail(idcd)'
+        write(nlog,*) '  DivImpR;',idcd, divact*fac,
+     1                   availR*fac, avail(idcd)*fac
+      endif
 c
 c _________________________________________________________
 c
@@ -582,10 +644,13 @@ c         it's a diversion, so it has return flows...
 c
 c _________________________________________________________
 
-c		Step 13; Calculate reuse
+c		            Step 13; Calculate reuse
 c jhb 2014/08 note that ipUse should equal 0 if NA is entered
 c             in the reuse plan field when the destination is a type 11 plan
       if(ipUse.gt.0) then
+c
+c ---------------------------------------------------------
+c               13a Diversion reuse
         if(nd.gt.0) then            
           CALL RtnsecR(icx,divact,l2,iuse,idcd,nd,
      1         ieff2,ipUse)
@@ -593,10 +658,14 @@ c
 c rrb 04/12/30; Qdiv(28 is the carried / exchanged water
 c		Note works outside river system
           ipsta1=ipsta(ipUse)
-          qdiv(28,ipsta1) = psuplyT(ipUse)     
+c
+c rrb 2011/11/15; qdiv(28 is not used since 2010
+cx        qdiv(28,ipsta1) = psuplyT(ipUse)     
         else
 c
-c		Reservoir Reuse          
+c
+c ---------------------------------------------------------
+c		            13-b Reservoir Reuse          
 cr        ircp=ipsta(ipUse)
           psuply(ipUse)=psuply(ipUse)+divact
           psuplyT(ipUse)=psuplyT(ipUse)+divact
@@ -607,7 +676,9 @@ c rrb 2006/01/01; Correction
           endif  
           
           ipsta1=ipsta(ipUse)
-          qdiv(28,ipsta1) = psuplyT(ipUse)                 
+c
+c rrb 2011/11/15; qdiv(28 is not used since 2010
+cx          qdiv(28,ipsta1) = psuplyT(ipUse)                 
         endif  
       endif
 c
@@ -616,7 +687,7 @@ c
 c               Step 14; Update storage, demand, etc.
 c
 c ---------------------------------------------------------
-c               a. Destination is a reservoir, update storage data
+c               14-a. Destination is a reservoir, update storage data
       if(iresw.eq.1) then
 c
         divaf=divact*fac
@@ -662,41 +733,65 @@ c               From Reservoir Storage to River
 cr        accr(26,irow)=accr(26,irow)+divaf
         endif
 cr      go to 260
+c               Endif for a Reservoir Destination
       endif
 c
 c ---------------------------------------------------------
-c               b. Destination is a diversion update demand data
+c               14-b. Destination is a diversion or Plan update
 c
       if(iresw.eq.0) then
 c jhb 2014/08 put stub of code in place for plan destinations
+c
+c ---------------------------------------------------------
+c               14-b1. Destination is a plan Update
         if(iopdesr(l2).eq.7) then
-          USEMON(IUSE)=USEMON(IUSE)+DIVACT
-          if(iout.eq.1) write(nlog,*) '  DirectBy; Update Plan Data'
+c
+c rrb 2020/07/28; A plan (iopdesr=7) does not have a use
+cx        USEMON(IUSE)=USEMON(IUSE)+DIVACT
+          if(iout.eq.1) write(nlog,*) '  DivimpR; Update Plan Data'
           call flush(nlog)
           psuply(nd)=psuply(nd) + divact
           psuplyT(nd)=psuplyT(nd) + divact
         else
+c
+c ---------------------------------------------------------
+c               14-b2. Destination is a diversion Update
           USEMON(IUSE)=USEMON(IUSE)+DIVACT
           DIVREQ(IUSE)=DIVREQ(IUSE)-DIVACT
           DIVMON(ND  )=DIVMON(ND  )+DIVACT
         endif
 c
-c ---------------------------------------------------------
-c               c. From Carrier Qdiv(20
-c
-        if(intern(l2,1).ne.0) then
-          inode=idvsta(nd)
-          qdiv(20,inode)=qdiv(20,inode)+divact               
-        endif                                             
-c
-c ---------------------------------------------------------
-c               d. From River by Exch or Plan Qdiv(31 
-cr      QDIV(7,IDCD)=QDIV(7,IDCD)+DIVACT
-        qdiv(31,idcd)=qdiv(31,idcd)+divact
+c rrb 2020/11/15; Add endif for reservoir update
       endif
 c
 c ---------------------------------------------------------
-c               e.  Carrier passing throught a structure Qdiv(18
+c               14-c. Destinaion has a Carrier update
+      if(intern(l2,1).ne.0) then
+        inode=idvsta(nd)
+        qdiv(20,inode)=qdiv(20,inode)+divact               
+      endif                                             
+c
+c ---------------------------------------------------------
+c               14-d. Destination is a reservoir, diversion or plan
+c                     update qdiv(31 From "River by Other"
+c rrb 2020/10/27; Revised DivImpr (type 35) to not increment qdiv(31
+c                 to help resolve double accounting of Divert',/
+c                 in water budget (*.xwb)',/ 
+c rrb 2020/11/15; Revise Divimpr (type 35) to increment qdiv(31
+c                 "From River by Other" to resolve mass balance
+cx        qdiv(31,idcd)=qdiv(31,idcd)+divact
+c rrb 2020/11/20; Revise Divimpr (type 35) to increment qdiv(30
+c                 "From River by Other" in *.xdd but not summed
+c                 in *.xwb
+      qdiv(31,idcd)=qdiv(31,idcd)+divact
+cx    qdiv(30,idcd)=qdiv(30,idcd)+divact
+c
+c rrb 2020/11/15; Move endif for a reservoir to step 14-b
+cx    endif
+c
+c ---------------------------------------------------------
+c               14-e. Carrier adjust carrier thru a structure 
+c                     Qdiv(18
       do i11=1,10
         if (intern(l2,i11).eq.0) go to 282
         intvn=intern(l2,i11)
@@ -707,7 +802,7 @@ c               e.  Carrier passing throught a structure Qdiv(18
   282 continue
 c
 c ---------------------------------------------------------
-c               i. Adjust source (import) data
+c               14-f. Source plan Update
       PImport(np)=amax1(0.0, PImport(np)-divact)
       PImportT(np)=PImportT(np)+divact
 c
@@ -724,52 +819,75 @@ c                        passing thru a structure.
       qdiv(35,iscd)=qdiv(35,iscd)+divact
 cx      
 cx      end of update
-cx            
+c
       qdiv(18,iscd)=qdiv(18,iscd)+divact
-     
 c
 c _________________________________________________________
 c               
-c               Step 23;  Set shortage switch (ishort)
+c               Step 15;  Update shortage and opr rule results
+c ---------------------------------------------------------
+c               15-a Set shortage switch (ishort)
   330 if((divact+small) .lt. divalo) ishort=1
 c  
 c ---------------------------------------------------------
-c               h. Update operating value
+c               15-b. Update operating results (divo)
       divo(l2)=divo(l2)+divact
 c
 c _________________________________________________________
 c               
-c               Step 15; Check results
+c               Step 16; Check results
 c
-c               a. Check that Avail flow > 0
-      call chekava(2, maxsta, numsta, avail)
+c ---------------------------------------------------------
+c               16-a. Check that Avail flow > 0
+      call chekava(2, maxsta, numsta, avail, subtypX)
 c
-c               b. Detailed Check
-c
+c ---------------------------------------------------------
+c               16-b. Detailed Check
 c rrb 2018/02/05; correction
 cx    if(iout.eq.2) then
-      if(iout.ge.1 .and. iw.eq.ioutiw) then                      
-         write(nlog, 280)  ' DivImpR    ',
-     1    iyrmo(mon),xmonam(mon),idy, cstaid(iscd),
-     1    iwx, iw,nwrord(1,iw),l2,ns, ND,iuse,ipUse,
-     1      float(iopsou(6,l2)), effmax1, float(ireltyp), 
-     1      divreqX*fac,divcapX, diwrreqX*fac, 
-     1      divmax*fac, relalo*fac, 
-     1      divmonX*fac, divact*fac, iwhy, cwhy
-       endif
-  280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,
-     1   8i8,10F8.1,i8,1x, a24)
+      if(iout.ge.1 .and. iw.eq.ioutiw) then  
+c
+c
+c ---------------------------------------------------------
+c               16-c. Print detail header 
+c rrb 2020/07/19; Update to include header
+        ncallX=ncallX+1
+        if(ncallX.eq.1)then
+c
+c rrb 2020/07/27; Print more info to detailed check
+cx        write(nlog,270) corid(l2), cdestyp, ccarry, cpuse    
+          write(nlog,270) corid(l2),cdestyp, cSouTyp, ccarry, cpuse,
+     1                    cplntyp                
+        else
+c          write(nlog,*) ' '
+        endif  
+c
+c ---------------------------------------------------------
+c               16-d. Print detailed results 
+c                          
+        write(nlog, 280)  ' DivImpR    ',
+     1   iyrmo(mon),xmonam(mon),idy, cstaid(iscd),
+     1   iwx, iw,nwrord(1,iw),l2,ns, ND,iuse,ipUse,
+     1     float(iopsou(6,l2)), effmax1, float(ireltyp), 
+     1     divreqX*fac,divcapX, diwrreqX*fac, 
+     1     divmax*fac, relalo*fac, 
+     1     divmonX*fac, divact*fac, iwhy, cwhy
+      endif
 c
 c _________________________________________________________
 c
-c               Step 16; Return
+c               Step 17; Return
       RETURN
 
 c               Formats
   270   format(/, 
-     1    ' DivImpR (Type 35) Destination Type = ', a12,
-     1    1x,a3,' Carrier'/
-     1    ' Carrier (Y/N) = ',a3, ' Reuse Plan (Y/N) = ', a3/      
+     1  '  DivImpR (Type 35); Operation Right ID = ', a12,
+     1  ' Destination Type = ', a12, ' Source Type = ', a12,
+     1  ' Carrier (Y/N) = ',a3, ' Plan (Y/N) = ', a3, 
+     1  ' Plan Type = ', a12,/
+cx     1    ' DivImpR (Type 35) Destination Type = ', a12,
+cx     1    1x,a3,' Carrier'/
+cx     1    ' Carrier (Y/N) = ',a3, ' Reuse Plan (Y/N) = ', a3/      
      1  ' DivImpR      iyr mon   day ID          ',
      1  '    Iter      Iw  nwrord      l2      ns      nd',
      1  '    iuse   ipUse',
@@ -782,6 +900,9 @@ c               Formats
      1  ' _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______',
      1  ' __________________________')
+c
+  280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,
+     1   8i8,10F8.1,i8,1x, a24)
      
 c
 c               Error warnings

@@ -4,7 +4,7 @@ c           But instead of stopping, it returns the most negative value.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -19,9 +19,12 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+C
+c rrb 2018/07/15; Revise number of operating rules
+cx      SUBROUTINE chekav2(
+cx     1 icall, maxsta, numsta, istop, fac, AVAIL, IMCD, AvMin)
       SUBROUTINE chekav2(
-     1 icall, maxsta, numsta, istop, fac, AVAIL, IMCD, AvMin)
+     1 icall, maxsta, numsta, istop, fac, AVAIL, IMCD, AvMin, subtypX)
 c
 c
 c _________________________________________________________
@@ -29,13 +32,16 @@ c	Program Description
 c
 c       Chekav2; Similar to Chekava.
 c                It checks the entire Avail array by finding the
-c                minimum value and warning if < 0.
-c		 But instead of stopping, it returns the most 
+c                mininum value and warning if < 0.
+c		             But instead of stopping, it returns the most 
 c                negative value. 
 c
 c _________________________________________________________
 c	Update History
 c		NA
+c
+c	Called By:
+c   Divalt, Reodep, RivRtn
 c
 c _________________________________________________________
 c
@@ -44,27 +50,21 @@ c		icall	calling routine
 c		maxsta	dimension for maximum number of stations
 c
 c	       istop   0 DO NOT STOP if a negative is found
-c		        1 DO STOP if a negative is found
-c             numsta  number of downstream stations
-c		avail   array to check for min value
-c		imcd    pointer to min value
-c             Avmin   minimum value in array
+c		             1 DO STOP if a negative is found
+c        numsta  number of downstream stations
+c        maxoprin maximum number of operating rules (see Statem.f)
+c		     avail   array to check for min value
+c		     imcd    pointer to min value
+c        Avmin   minimum value in array
 c
 c _________________________________________________________
 c
 c		Dimensions
-
       DIMENSION AVAIL(maxsta)
-      dimension subtyp2(30)
-      character subtyp2*8
-      data subtyp2/
-     1 'Powres',    'Divres',   'Divres',  'Divrpl', 'Resrpl',
-     1 'Rsrspu',    'Carrpl',   'Resoop',  'Powsea', 'Replace',
-     1 'Divcar',    'Reoper',   'Ifrrigx', 'Divcar1','Sjrip',     
-     1  'Evasec',   'DivResP2', 'DivRplP', 'Welrig', 'DirectEx',
-     1  'DirectBy', 'PowResP',  'OopDiv',  'Divrig', 'DivrplP2',
-     1  'DivCarL',  'RivRtn',   'DivAlt',  ' ',      ' '/     
 c
+c rrb 2018/07/15; Revise to make oerating rules type a scalar
+cx    dimension subtyp2(55)
+      character subtypX*8
 c _________________________________________________________
 c
 c               Step 1; Check entire array avail
@@ -82,7 +82,7 @@ c
       end do    
 c
 c	
-      if(istop.eq.1 .and. AvMin.lt.smalln) goto 9999
+      if(istop.eq.1 .and. AvMin.lt.smalln) goto 520
 c
 c _________________________________________________________
 c               Return
@@ -92,11 +92,16 @@ c
 c _________________________________________________________
 c               Error Processing
 c
- 9999 write(6,1050) 
-      write(nlog,1052) subtyp2(icall), ix, AvMin, AvMin*fac
+ 510  write(6,1050)
+      write(nlog,*) 
+     1 '  CheckAv2; Problem max  # of operating rules exceeded'
+      goto 550
+      
+ 520  write(6,1050) 
+      write(nlog,1052) subtypX, ix, AvMin, AvMin*fac
       write(nlog,1051)
 
-      write (6,*) 'Stop 1'
+ 550  write (6,*) 'Stop 1'
       call flush(6)
       call exit(1)
 c _________________________________________________________
@@ -118,4 +123,3 @@ c _________________________________________________________
 c               End
 c
       end
-

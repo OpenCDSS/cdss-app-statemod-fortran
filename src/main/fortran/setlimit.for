@@ -2,7 +2,7 @@ c setlimit - adjusts monthly and annual release limits for operating rule (lopr)
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,33 +17,43 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       subroutine SetLimit(
      1    nlog, icx, lopr, ipLim, ioprlimX, fac,
      1    divact,  OprmaxMX,  OprMaxAX, 
      1    OprmaxX, Oprmax13, OprmaxM1, OprmaxM2, 
      1    psto1x,  psto2X, coridX)
+c _________________________________________________________
+c	Program Description
 c
+c      SetLimit; It adjusts monthly and annual release limits 
+c		             for an operating rule (lopr)
+c	        Called by DivResP2 (type 27), DivRplP (type 28), 
+c                   RsrspuP (type 34) and DivCarL (type 45),
+c
+c _________________________________________________________
+c	Update History
+c
+c
+c rrb 2019/09/07; Revised to allow iOprlimX to be 14
 c
 c rrb 2009/01/23; Revise to operate on storage (psto2), not 
-c	plan supply (psuplyX)
+c                	plan supply (psuplyX)
 c _________________________________________________________      
 c		Documentation
-c	   SetLimit adjusts monthly and annual release limits 
-c		 for operating rule (lopr)
-c
-c   Called by: DivResp2; DivCarL; DivRplP; & RsrSpuP
 c	
-c       If iOprLimX     = 1 limits are are increased
-c          iOprLimX     = 2 limits are decreased and
-c                           if(iplim>0) plan supplies are decreased
 c       nlog            = log file
 c       icx             = calling routine (100+opr rule type)
 c       lopr            = associated operating rule with limits
-c       iplim           = associated plan (if any)
-c       ioprlimX        = 1 limits are increased
-c                       = 2 limits are decreased and 
+c       iplim           = associated plan (if any).  If > 0 it
+c                         adjusts psto2x when iOprLimX .ne.1
+c
+c       iOprLimX        = 1 limits are are increased.  Note this
+c                           option is only operational for RsrSpuP
+c                           (type 34)
+c       iOprLimX        = 2,4, 7, 9 & 14 limits are decreased and
 c                           if(iplim>0) plan supplies are decreased
+c
 c       fac             = factor cfs to af/mo
 c       
 c       divact          = diversion (cfs)
@@ -62,6 +72,18 @@ c
 c _________________________________________________________      
       iout=0
       small=0.001
+
+
+      if(iout.eq.1 .and. abs(divact).gt.small) then
+          write(nlog,*) ' '
+          write(nlog,*) 
+     1      ' SetLimit; Adjusting Monthly and Annual Limits'
+          write(nlog,*)
+     1      ' SetLimit;      coridX        icx ioprLimt   lopr',
+     1      '   iplim'     
+          write(nlog,'(a12, 1x,a12,1x, 4i8, 20f10.0)') 
+     1      ' SetLimit; ',coridX, icx, ioprLimX, lopr, iplim
+      endif
 c
 c _________________________________________________________      
 c               Step 2; Adjust monthly or annual diversion limits UP
@@ -89,6 +111,7 @@ c rrb 2015/02/03; Correction
      1      ' SetLimit;      coridX        icx ioprLimt   lopr',
      1      '   iplim  oprmaxM1    divact  oprmaxMX',
      1              '  OprmaxA1  OprmaxAX    psto1X    psto2X'
+
      
           write(nlog,'(a12, 1x,a12,1x, 4i8, 20f10.0)') 
      1      ' SetLimit; ',coridX, icx, ioprLimX, lopr, iplim,
@@ -105,9 +128,14 @@ c rrb 2011/10/15; Allow a type 4 by a type 45 rule
 cx    if(iOprLimX.eq.2 .and. lopr.gt.0) then
 c
 c rrb 2015/03/23; Allow Oprlimit to range from 1-9
-cx    if((iOprLimX.eq.2 .or. iOprLimX.eq.4).and. lopr.gt.0) then 
+cx    if((iOprLimX.eq.2 .or. iOprLimX.eq.4).and. lopr.gt.0) then
+c rrb 2019/09/07; Allow OprliomX to be 14 
+cx      if((iOprLimX.eq.2 .or. iOprLimX.eq.4 .or.
+cx     1    iOprlimX.eq.7 .or. iOprLimX.eq.9).and. lopr.gt.0) then  
+     
       if((iOprLimX.eq.2 .or. iOprLimX.eq.4 .or.
-     1    iOprlimX.eq.7 .or. iOprLimX.eq.9).and. lopr.gt.0) then       
+     1    iOprlimX.eq.7 .or. iOprLimX.eq.9 .or.
+     1    iOprlimX.eq.14).and. lopr.gt.0) then       
 cx      oprmaxM1=amin1(oprmaxMX, oprmaxAX)
 cx      oprmaxMX=amax1(oprmaxMX - divact*fac, 0.0)
         oprmaxM1=oprmaxMX
@@ -122,6 +150,7 @@ c _________________________________________________________
 c
 c		Step 4; Tie to plan for reporting
 c		Note OprmaxA(lopr) = psuply(iplim)
+c
         if(iplim.gt.0) then
 c
 c rrb 2009/01/23; Revise to operat on storage only         
@@ -134,13 +163,17 @@ cx          psuply2=psuplyX
         
         if(iout.eq.1 .and. abs(divact).gt.small) then
           write(nlog,*) ' '
+          
           write(nlog,*) 
      1      ' SetLimit; Adjusting Monthly and Annual Limits Down'
-          write(nlog,'(a12, 1x,a12,1x, 4i5, 20f8.0)') 
-     1      '  SetLimit; ',coridX, icx, ioprlimX, lopr,iplim, 
-     1      oprmaxM1, divact*fac, oprmaxMX, 
-     1      OprmaxA1, OprmaxAX,
-     1      psto1X, psto2X                
+          write(nlog,*)
+     1      ' SetLimit;      coridX        icx ioprLimt   lopr',
+     1      '   iplim  oprmaxM1    divact  oprmaxMX',
+     1              '  OprmaxA1  OprmaxAX    psto1X    psto2X'
+          write(nlog,'(a12, 1x,a12,1x, 4i8, 20f10.0)') 
+     1      '  SetLimit; ',coridX, icx, ioprlimX, lopr,
+     1      iplim, oprmaxM1, divact*fac, oprmaxMX, 
+     1      OprmaxA1, OprmaxAX, psto1X, psto2X                
         endif
       endif
 c

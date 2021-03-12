@@ -2,7 +2,7 @@ c chekava - checks array Avail by finding the minimum value and warning if < 0.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,21 +17,30 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-      SUBROUTINE chekava(icall, maxsta, numsta, AVAIL)
+C
+      SUBROUTINE chekava(icall, maxsta, numsta, AVAIL, subtypX)
 c
 c
 c _________________________________________________________
 c	Program Description
 c
 c       Chekava; it checks array Avail by finding the
-c                minimum value and warning if < 0.
+c                mininum value and warning if < 0.
 c
 c
 c _________________________________________________________
 c	Update History
 c		NA
 c
+c _________________________________________________________
+c
+c Called by: 
+c   CARRPL,   DirectBy, DirectEx, DirectWR, DivImpR,  
+c   DivimpR2, DivMulti, DIVRES,   DivResP,  DivResP2,
+c   DivresR,  DIVRIG,   Divrpl,   divrplP,  divrplP2, 
+c   divrplR,  flowres,  ifrrigSP, OopDiv,   PowResP, 
+c   Splatte,  WelAugP,  WelPrity, FlowRes
+
 c _________________________________________________________
 c
 c	Documentaion
@@ -47,15 +56,10 @@ c	Dimensions
 c
 
       DIMENSION AVAIL(maxsta)
-      dimension subtyp2(30)
-      character subtyp2*8
-      data subtyp2/
-     1  'Powres',   'Divres',   'Divres2', 'Divrpl',  'Resrpl',
-     1  'Rsrspu',   'Carrpl',   'Resoop',  'Powsea',  'Replace',
-     1  'Divcar',   'Reoper',   'Ifrrigx', 'Divcar1', 'Sjrip',
-     1  'Evasec',   'DivResP2', 'DivRplP', 'Welrig',  'DirectEx',
-     1  'DirectBy', 'PowResP',  'OopDiv',  'Divrig',  'DivrplP2',
-     1  'DivCarL',  'RivRtn',   'DivRplR', 'DivResR ','DirectWR'/
+c
+c rrb 2018/07/29; Replace subtyp2 with a scalar passed in
+cxx   dimension subtyp2(60)
+      character subtypX*8
 c
 c _________________________________________________________
 c
@@ -71,13 +75,17 @@ c
       do ix=1,numsta
         ax1=ax
         ix1=ix
+        if(iout.eq.1) then
+          write(nlog,*) '  Chekava; ', ix, avail(ix), avail(ix)*fx
+        endif
+        
         ax=amin1(ax, avail(ix))
         if(ax.lt.ax1) ix1=ix
         if(ax.lt.smalln) goto 9999
       end do
       
       if(iout.eq.1) then
-        write(nlog,1054) subtyp2(icall), ix1, ax, ax*fx
+        write(nlog,1054) subtypX, ix1, ax, ax*fx
       endif
 c
 c _________________________________________________________
@@ -106,7 +114,7 @@ c _________________________________________________________
 c               Error Processing
 c
  9999 write(6,1050) 
-      write(nlog,1052) subtyp2(icall), ix, ax, ax*fx
+      write(nlog,1052) subtypX, ix, ax, ax*fx
       write(nlog,1051)
 
       write (6,*) 'Stop 1'

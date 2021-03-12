@@ -2,7 +2,7 @@ c outres - prints reservoir data *.xre by reservoir then account
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -207,7 +207,7 @@ cr        write(nf,200) (i, i=1,nres-3)
           write(nf,220)
           call year(iy, iyrmo, imomo, cyr1)
 c
-c rrb 01/15/95 Initilize annual total
+c rrb 01/15/95 Initialize annual total
 c               Note 15 = target, 16 = one fill limit
 c               Note ntar = target, none = one fill limit
           do 130 i=1,nres

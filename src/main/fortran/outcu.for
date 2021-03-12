@@ -2,7 +2,7 @@ c outcu - prints average cu data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
        subroutine outcu(maxwx,maxgrpx,nreach)
 c
 c
@@ -83,7 +83,7 @@ c		iout=1 print ID information
        iout=2       
        if(iout.ge.1) write(nlog,300)
 c
-c		Initilize a reach that may not be found
+c		Initialize a reach that may not be found
 c rrb 2008/12/24; Update reach processing
 
 cx       nreachX=nreachD
@@ -129,7 +129,7 @@ c      fac=1.0
 c      if(iresop.eq.2)  fac=factor
 c      if(iresop.eq.3)  fac=factor*0.001                        
 c
-c               Initilize average annual arrays
+c               Initialize average annual arrays
       do n=1,numdiv+1
         do im=1,13
           dum(im,n) = 0.0
@@ -138,7 +138,7 @@ c               Initilize average annual arrays
         end do
       end do
 c
-c rrb 99/01/23; Initilize Wells
+c rrb 99/01/23; Initialize Wells
       do n=1,numdivw+1
         do im=1,13
           dumw(im,n) = 0.0
@@ -147,7 +147,7 @@ c rrb 99/01/23; Initilize Wells
         end do
       end do
 c
-c rrb 07/08/97; Initilize ave, max and min group arrays
+c rrb 07/08/97; Initialize ave, max and min group arrays
       do n=1,maxwd
         iymax(n) = 0
         iymin(n) = 0
@@ -161,7 +161,7 @@ c rrb 07/08/97; Initilize ave, max and min group arrays
         end do
       end do
 c
-c Initilize ineg and inegw
+c Initialize ineg and inegw
         do i=1,numdiv
           ineg(i)=0
         end do
@@ -170,7 +170,7 @@ c Initilize ineg and inegw
           inegw(i)=0
         end do
 c
-c rrb 20100205; Initilize diversion Groups        
+c rrb 20100205; Initialize diversion Groups        
       	do n=1,maxgrpx	
       	  do im=1,13	     
       	    dumng(im,n) = 0.0
@@ -586,9 +586,9 @@ c rrb 07/08/97;        Store ave, min and max by group
      	     dumaveD(im,ig)= dumaveD(im,ig)+ dumngD(im,ig)
 c
 c rrb test
-           if(im.eq.1 .and. ig.eq.1 .and. dumave(im,ig).gt.0.01) then
-             write(nlog,*) 'Outcu; im, ig, dumave',im,ig,dumave(im,ig)
-           endif 	     
+cx         if(im.eq.1 .and. ig.eq.1 .and. dumave(im,ig).gt.0.01) then
+cx           write(nlog,*) 'Outcu; im, ig, dumave',im,ig,dumave(im,ig)
+cx         endif 	     
 	      end do
 
 	      IF(dumng(13,ig).LT. dummin(13,ig)) then

@@ -2,7 +2,7 @@ c oprfind - reads various operational right data called by OprInp
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c  
 c rrb 2011/07/28; Revised to pass in ioprsw1 to turn off the
 c                 operating rule if the source or destination
 c                 is off
@@ -38,28 +38,36 @@ c
 c _________________________________________________________
 c	Update History
 c	
-c       2008/09/22; Revise to check on/off switch read 
-c		                (e.g. idvrsw1 not idvrsw) in order
-c		                to allow more than one operating rule
-c		                to refrence a water right
-c       2008/09/10; Revise to allow the number of structures
-c		                to be zero to allow sequential searches.
+c
+c 2020/12/05 Turn carrier losses back on oprlossC(k,i)
+c
+c 2020/12/01 TEST without carrier losses oprlossC(k,i)
+c
+c 2018/08/13; Revise to read case 27, a operational
+c               right ID and on/off switch
+c 2008/09/22; Revise to check on/off switch read 
+c             (e.g. idvrsw1 not idvrsw) in order
+c             to allow more than one operating rule
+c             to reference a water right
+c 2008/09/10; Revise to allow the number of structures
+c             to be zero to allow sequential searches.
 c	2006/03/21; Revise to all Well Right Special 
 c                   (no ..W or ..W.01)
 c	2004/09/20; Revise to allow a diversion and a water right
 c		                 owner to be > 1 (e.g. iops2=iops2)
 c
 c _________________________________________________________
-c       Documentaiton               
+c       Documentation               
 c
 c               ion=-1 means do not check right on/off switch
 c               ion= 0 means do not turn off opr right 
 c               ion= 1 means turn off source right (controlled by
 c		                an operating rule
 c
-c		            iacc=1 Check the account varaible (iops2) > 0
+c		            iacc=1 Check the account variable (iops2) > 0
 c		            iacc=0 Do not check the account variable
-c		                   (e.g. for type 24 and 25 it is ownership %)
+c		                   (e.g. for type 24 and 25 it is ownership %
+c                      type 51 it initializes project to on(1) or off (0)
 c               
 c		            istop=0 Stop if a structure is not found
 c		            istop=1 Do not stop if a structure is not found
@@ -70,7 +78,7 @@ c               ityopr1 If called by Oprinp Operational rule type
 c                       If called by other, -1
 c		            rops2   Source 2 as a Real value (see type 25)
 c
-c               itype = 0       find stream struture
+c               itype = 0       find stream structure
 c                       1       find ISF structure
 c                       2       find reservoir structure
 c                       3       find diversion structure
@@ -92,8 +100,10 @@ c		                    22      read monthly and annual maxima
 c			                  23      read intervening structures with loss %
 c			                  24      read Operating Rule ID 
 c			                  25      read multiple destinations and percent
+c                                (not used)
 c			                  26      read 12 efficiency values (for a T&C
 c                                 obligation)
+c                       27      read Operating Rule ID and on/off switch
 c _________________________________________________________
 c	Dimensions
 c                       
@@ -114,10 +124,9 @@ c
         ioutP=0
         ioutR=0
 c        
-        iecho=1
+        iecho=0
         small=0.001
-        
-        
+              
         iops1=0
         nx=0
         
@@ -136,6 +145,13 @@ c
           do is =1,numsta                                              
             if (cstaid(is).eq.cx) then
               iops1 = is
+c
+c rrb 2018/09/03; Additional output
+              if(iout.eq.1) then
+                write(nlog,180) cidvri, ityopr1, itype,
+     1            'Str', cx, 'Str',iops1, is
+              endif
+
               goto 500
             endif
           end do
@@ -366,9 +382,11 @@ c
 c ---------------------------------------------------------
 c         loop through all the plans
           do nx =1,nplan
+c
 c           debugging output
             if(ioutP.eq.1 .or. iout.eq.1)
      1        write(nlog,*) ' Oprfind; ',nx, cx, pid(nx)
+c
 c           check to see if this plan id matches the given structure id
             if (pid(nx).eq.cx) then
 c             found a match, it's a plan, save the plan index
@@ -884,7 +902,7 @@ c ---------------------------------------------------------
           
           do nx =1,numdvrw
 c
-c		Remove any ..W or ..W.01 befor the test          
+c		Remove any ..W or ..W.01 before the test          
             rec12=' '
             rec12X=crigidw(nx)
             ifound=0
@@ -1056,7 +1074,7 @@ c ---------------------------------------------------------
               do nx=1,numdiv                                              
                 if(cdivid(nx).eq.cntern(i)) then
                   intern(k,i)=nx
-c                 write(nlog,*) '  OprFind; nx = ', nx
+c                 write(nlog,*) '  OprFind; carrier nx = ', i, nx
                   ifound=nx
                 endif
               end do
@@ -1114,6 +1132,13 @@ c
 c
               read(55,*,end=2000,err=2000) cntern(i), OprLossC(k,i),
      1          rec12
+c
+c rrb 2020/12/01 TEST without carrier losses
+c rrb 2020/12/05 Turn carrier losses back on
+cx            oprlossC(k,i) = 0.0
+cx              write(nlog,*) '  Oprfind; warning carrier loss = ', 
+cx     1           oprlossc(k,i)
+c     
               if(iout.eq.1) write(nlog,*)  cntern(i), OprLossC(k,i),
      1          rec12
               if(iecho.eq.1) write(nchk,'(36x,a12,1x, f8.2,1x,a12)') 
@@ -1191,8 +1216,10 @@ c _________________________________________________________
 c
 c rrb 2007/07/03
 c               Type 24; Read and locate an operating rule
-c		                     to allow monthly and annual limits
+c		                     to allow monthly and annual limits 
+c                        or other control
         case(24)
+cx        iout=1
           ifound=0
 c         read(55,'(36x,10a12)',end=2004,err=2004) cx
           read(55,*,end=2004,err=2004) cx
@@ -1223,7 +1250,7 @@ c _________________________________________________________
 c
 c rrb 2007/07/03
 c               Type 25; Read and locate multiple plan destinations
-c			 with % ownership
+c			                   with % ownership
 cx        case(25)
 cx          write(nlog,*) ' Oprfind; type 25, nplan = ', nplan, ioutP
 cx          ifound=0
@@ -1277,6 +1304,42 @@ c
           if(iout.eq.1) then
             write(nlog,*) ' Oprfind; OprEff=', (oprEff(im,k), im=1,12)
           endif
+c
+c
+c _________________________________________________________ 
+c
+c rrb 2018/00/13
+c               Type 27; Read and locate an operating rule and 
+c                        on/off code
+c		                     to allow monthly and annual limits
+        case(27)
+          ifound=0
+c         read(55,'(36x,10a12)',end=2004,err=2004) cx, ix
+          read(55,*,end=2004,err=2004) cx, ix
+          if(iout.eq.1) write(nlog,'(36x,a20,1x,i5)')
+     1      ' Oprfind; cx, ix =  ', cx,ix
+          if(iecho.eq.1) write(nchk,'(36x,a20,1x,i5)') cx, ix
+          
+c ---------------------------------------------------------          
+          do nx=1, k-1
+            if(corid(nx).eq.cx) then
+              iops1 = nx
+              iops2 = ix
+              if(iout.eq.1) then
+                write(nlog,180) cidvri, ityopr1, itype,
+     1            'Opr', cx, 'Opr',iops1, k
+              endif 
+              goto 500                
+            endif
+          end do
+c
+c ---------------------------------------------------------
+c               Warn user source water right or opr rule not found
+          nx=-1
+          if(ifound.eq.0 .and. istop.eq.0) then
+            write(nlog,1500) 'Problem', cidvri, cx
+            goto 9999
+          endif
           
 c _________________________________________________________
 c
@@ -1316,11 +1379,11 @@ c __________________________________________________________
 
   180 format(/,
      1 '  Oprfind; Detatiled Output for ',/
-     1 11x, 'Operating Right or Calling Routine = ', a12, 
+     1 11x, 'Operating Right or Calling Routine = ', a12,/
      1 11x, 'Calling Type ',i4,' Data Type ',i4,/
      1 11x, 'Found ', a8, '  ID        =    ', a12,/
      1 11x, 'Found ', a8, '  Pointer   = ', i4,/
-     1 11x, 'Number of values searched = ', i5)
+     1 11x, 'Number of values searched = ', i4)
      
   182 format(/,72('_'),/
      1 '  Oprfind; Warning Operating Right ', a12, ' Type ',i4,
@@ -1447,8 +1510,8 @@ c _________________________________________________________
      1 ' Oprfind; Problem with *.opr rule ID = ', a12,' type ', i5, 
      1 ' Data Type ',i4,/     
      1 10x,'Cannot read monthly on/off or intervening structures',/
-     1 10x,'or (for a Oprfind type 24 or 25) exchange % and ',
-     1 '13 maximum exchange values (one per month plus an annual)' ) 
+     1 10x,'or (for a Oprfind type 24 or 25) exchange % and ',/,
+     1 10x,'13 max exchange values (one per month plus an annual)' ) 
       goto 9999
       
  2002 write(nlog,2012) cidvri, ityopr1, itype      

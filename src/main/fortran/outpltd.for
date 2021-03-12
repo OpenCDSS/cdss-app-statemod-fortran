@@ -2,7 +2,7 @@ c outpltd - generates a plot file of diversion, instream or stream gage data
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2018 Colorado Department of Natural Resources
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
 c 
 c StateMod is free software:  you can redistribute it and/or modify
 c     it under the terms of the GNU General Public License as published by
@@ -17,21 +17,7 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
-c	Update History
-c
-
-c
-c _________________________________________________________
-c	Documentation
-c
-
-c
-c _________________________________________________________
-c	Dimensions
-cC     Last change:  C    20 May 97    0:06 am
-C
-c *********************************************************
+C     Last change:  C    20 May 97    0:06 am
 
       subroutine outpltd(igui, istop, cplot)
 c
@@ -41,6 +27,22 @@ c	Program Description
 c
 c       Outpltd; It generates a plot file of diversion, instream or
 c              stream gage data
+c
+c _________________________________________________________
+c	Update History
+c
+c
+c rrb 2020/04/26; Revised 'Stop 2' to 'Stop' to compile
+c                 with Gfortran compiler downloaded on 04/2020
+c
+c _________________________________________________________
+c	Documentation
+c
+
+c
+c _________________________________________________________
+c	Dimensions
+c
 c
 c _________________________________________________________
 c       Documentation
@@ -55,7 +57,7 @@ c
       character  cplot*12            
 c
 c _________________________________________________________
-c		Step 1; Initilze
+c		Step 1; Initialize
 c                           
                            
       write(6,*) ' Subroutine Outpltd'
@@ -207,7 +209,11 @@ c               Error Warning
 
         stop 
       else
-        stop 2
+c
+c rrb 2020/04/26; Revised 'Stop 2' to 'Stop' to compile
+c                 with Gfortran compiler downloaded on 04/2020
+cx      stop 2
+        stop
         return
       endif
 c
