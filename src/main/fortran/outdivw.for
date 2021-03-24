@@ -402,7 +402,12 @@ cr        write(nout,230) (i, i=1,ndiv-8+2)
 
           call year(iy, iyrmo, imomo, cyr1)
           do 150 i=1,ndiv
-  150       dat1t(i) = 0.0
+c
+c rrb 2021/03/20; Compiler Update
+cx  150       dat1t(i) = 0.0
+            dat1t(i) = 0.0   
+  150     continue
+  
 c _________________________________________________________
 c
 c		Month Loop

@@ -665,9 +665,15 @@ c       if (iss.eq.iExPoint(lr)) goto 110
 
         if (iss.eq.iExPoint(lr)) goto 110
         IF(AVAIL(IMCD).GT.AVAIL(ISS)) IMCD=ISS
-  100 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  100 ISS=IDNCOD(ISS)
+        ISS=IDNCOD(ISS)
+  100   continue
+  
 c
   110 pavail=amax1(0.0,avail(imcd))
+c
       if(pavail.le.small) then
         iwhy=11
         cwhy='Available flow (Pavail) is zero'
@@ -819,10 +825,14 @@ c ---------------------------------------------------------
 c		
 c
 C------  7c.5 STORE RETURN FLOW PERCENTAGES IN TEMPORARY ARRAY
-      ISS=IRCD
-      DO 160 NS=1,NDNR
-        AVWRET(ISS)=AVWRET(ISS)+RET
-  160 ISS=IDNCOD(ISS)
+        ISS=IRCD
+        DO 160 NS=1,NDNR
+          AVWRET(ISS)=AVWRET(ISS)+RET
+c
+c rrb 2021/03/20; Compiler Update
+cx  160   ISS=IDNCOD(ISS)
+          ISS=IDNCOD(ISS)
+  160   continue
   170 CONTINUE
 
       if(iout.eq.1) then
@@ -851,13 +861,19 @@ c       dumx(iss) = (1.0-AVWRET(ISS)*FORET)
         endif
 c
 c ---------------------------------------------------------  
-c		
-        GO TO 190
+c
+c rrb 2021/03/20; Compiler Update
+cx      GO TO 190
+        goto 189
 c
 c rrb 02/11/12; Simplify detailed output
 c 180   AVWRET(ISS)=1.0E10
   180   AVWRET(ISS)=1.0E10/fac
-  190 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  190 ISS=IDNCOD(ISS)
+  189   ISS=IDNCOD(ISS)
+  190 continue
       AVWRET(IdCD)=AVTEMP(IdCD)
 c
 c
@@ -885,7 +901,11 @@ c     if (iss.eq.iExPoint(lr)) goto 210
 c
       if (iss.eq.iExPoint(lr)) goto 210
       IF(AVwret(IMCD).GT.avwret(ISS)) IMCD=ISS
-  200 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  200 ISS=IDNCOD(ISS)
+        ISS=IDNCOD(ISS)
+  200 continue
 
   210 PAVAIL=AVWRET(IMCD)
 c     write(nlog,*) '  Divrpl; imcd nr 210 = ', imcd

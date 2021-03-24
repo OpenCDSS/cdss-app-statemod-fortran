@@ -529,7 +529,12 @@ C
   450 DO 460 ND=1,NUMOVR
       read(23,*,end=470,err=928) idyr
 
-      IF(IDYR-IYSTR) 460,510,490
+c
+c rrb 2021/03/20; Compiler Update
+cx      IF(IDYR-IYSTR) 460,510,490
+      IF((IDYR-IYSTR).lt.0) goto 460
+      IF((IDYR-IYSTR).eq.0) goto 510
+      IF((IDYR-IYSTR).gt.0) goto 490
   460 CONTINUE
       GO TO 450
 C
@@ -2175,9 +2180,20 @@ c _________________________________________________________
 C
 C------  CONVERT TOTAL VIRGIN FLOW TO REACH GAIN 
 C
-        DO 1140 NP=1,NUMRUN
-        DO 1140 IM=1,12
- 1140     DUM(IM,NP)=VIRINP(IM,NP)
+c
+c rrb 2021/03/20; Compiler Update
+cx      DO 1140 NP=1,NUMRUN
+        DO 1141 NP=1,NUMRUN
+          DO 1140 IM=1,12
+c
+c rrb 2021/03/20; Compiler Update
+cx 1140     DUM(IM,NP)=VIRINP(IM,NP)
+            DUM(IM,NP)=VIRINP(IM,NP)
+ 1140       continue
+c
+c rrb 2021/03/20; Compiler Update
+ 1141   continue
+cx 
 C
         DO 1160 IR=1,NUMRUN
           IRR=IRUDND(IR)
@@ -2573,12 +2589,21 @@ C
 C
  1400 IF(dfacto.LE.small) GO TO 1420
       DO 1410 I=1,12
- 1410 DIVERM(I)=DIVERM(I)/dfactoO/MTHDAY(I)
+c
+c rrb 2021/03/20; Compiler Update
+cx 1410 DIVERM(I)=DIVERM(I)/dfactoO/MTHDAY(I)
+        DIVERM(I)=DIVERM(I)/dfactoO/MTHDAY(I)
+ 1410 continue
 c
 c rrb 01/31/95; Code Addition
  1420 continue
+c
       DO 1430 I=1,12
- 1430 DIVER(I,IUSE)=DIVERM(I)
+c
+c rrb 2021/03/20; Compiler Update
+cx 1430 DIVER(I,IUSE)=DIVERM(I)
+        DIVER(I,IUSE)=DIVERM(I)
+ 1430 continue
  1460 CONTINUE
 c
       goto 1490

@@ -253,12 +253,20 @@ C
       ISS=ircd
       DO 100 IS=1,NDNr
         AVTEMP(ISS)=AVAIL(ISS)
-  100 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  100 ISS=IDNCOD(ISS)
+        ISS=IDNCOD(ISS)
+  100 continue
 C
       ISS=IPCD
       DO 110 IS=1,NDNP
         AVTEMP(ISS)=AVAIL(ISS)+ALOCFS
-  110 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  110 ISS=IDNCOD(ISS)
+        ISS=IDNCOD(ISS)
+  110 continue
 C
 C------  Find minimum flow available to the destination
 C

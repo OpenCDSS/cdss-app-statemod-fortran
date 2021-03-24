@@ -36,10 +36,19 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
       DO 10 I=1,N
-   10 L(I)=I
+c
+c rrb 2021/03/20; Compiler Update
+cx   10 L(I)=I
+        L(I)=I
+   10 continue
+   
       M=N
    20 M1=M-1
-      IF(M1) 60,60,30
+c
+c rrb 2021/03/20; Compiler Update
+cx      IF(M1) 60,60,30
+      if(m1.le.0) goto 60
+      
    30 DO 50 I=1,M1
       II=N-I+1
       J=L(II)
@@ -52,7 +61,10 @@ c		Step 1; Initialize
       endif
 
    50 CONTINUE
-      IF(M-M1) 20,20,60
+c
+c rrb 2021/03/20; Compiler Update
+cx      IF(M-M1) 20,20,60
+      IF((M-M1).le.0) goto 20
    60 RETURN
 c
 c _________________________________________________________

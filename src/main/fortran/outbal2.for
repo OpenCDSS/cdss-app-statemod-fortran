@@ -290,10 +290,14 @@ c
 c ____________________________________________________
 c rrb 10/31/96;
 c              Step 1b. Initialize average annual arrays
-      do 100 n=1,nb+ng
+c
+c rrb 2021/03/20; Compiler Update
+cx      do 100 n=1,nb+ng
+      do 101 n=1,nb+ng
         do 100 im=1,13
           dum(im,n) = 0.0
-  100 continue
+  100   continue
+  101 continue
 c
 c ____________________________________________________
 c              Step 2. Find outlet station 

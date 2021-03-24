@@ -231,7 +231,11 @@ C
 C------  ADD RETURN FLOW FROM PREVIOUS WATER RIGHTS
 C
       DO 130 IS=1,NUMSTA
-  130 AVTEMP(IS)=AVAIL(IS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  130 AVTEMP(IS)=AVAIL(IS)
+        AVTEMP(IS)=AVAIL(IS)
+  130 continue
 C
       IF(iresw.eq.0.and.(IOPRTN.EQ.0.OR.IRTURN(IUSE).EQ.4)) GO TO 140
 C
@@ -408,7 +412,11 @@ c
   220 FORET=1.0-DIVEFF(mon,IUSE)/100.
 C
       DO 230 IS=1,NUMSTA
-  230 AVWRET(IS)=0.
+c
+c rrb 2021/03/20; Compiler Update
+cx  230 AVWRET(IS)=0.
+        AVWRET(IS)=0.
+  230 continue
 c
 c               STEP THROUGH RETURN FLOWS FOR CURRENT DIVERSION.
       DO 250 IRT=IRI,IRE
@@ -433,7 +441,11 @@ c       FACDLY=DLYRAT(1,IDLY)
         ISS=IRCD
         DO 240 NS=1,NDNR
           AVWRET(ISS)=AVWRET(ISS)+RET
-  240   ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  240   ISS=IDNCOD(ISS)
+          ISS=IDNCOD(ISS)
+  240   continue
   250 CONTINUE
 c
 c               COMPUTE THE ALLOWABLE AMOUNT FOR THE CURRENT DIVERSION
@@ -442,9 +454,16 @@ c               COMPUTE THE ALLOWABLE AMOUNT FOR THE CURRENT DIVERSION
 c       IF(ABS(AVWRET(ISS)*FORET-1.).LE.0.00001) GO TO 260
         IF(ABS(AVWRET(ISS)*FORET-1.).LE.small) GO TO 260
          AVWRET(ISS)=AVTEMP(ISS)/(1.0-AVWRET(ISS)*FORET)
-        GO TO 270      
+c
+c rrb 2021/03/20; Compiler Update
+cx      GO TO 270  
+        GO TO 269    
   260   AVWRET(ISS)=1.0E10
-  270 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  270 ISS=IDNCOD(ISS)
+  269   ISS=IDNCOD(ISS)
+  270 continue
       AVWRET(ISCD)=AVTEMP(ISCD)
 c
 c               FIND THE UPDATED DOWNSTREAM MIN FLOW NODE

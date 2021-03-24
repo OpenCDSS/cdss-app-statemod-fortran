@@ -127,12 +127,17 @@ c
 c              Initialize             
 c     write(99,400)
                         
-      do 140 iss = 1,numsta
+c
+c rrb 2021/03/20; Compiler Update
+cx      do 140 iss = 1,numsta
+      do 141 iss = 1,numsta
         do 140 im=1,12
           demcon(im,iss) = 0.0
           dum(im,iss) = 0.0
-  140 continue
-
+  140   continue
+c
+c rrb 2021/03/20; Compiler Update
+  141 continue
 c
 c              Calculate the total demand
       do 170 nd=1,numdiv
@@ -204,10 +209,16 @@ c -----------------------------------------------------
 c
 c------  initialize STATION array
 c
-      do 180 is=1,numsta+1
-      do 180 i=1,12
-      dum(i,is)=0.
-  180 continue
+c
+c rrb 2021/03/20; Compiler Update
+cx    do 180 is=1,numsta+1
+      do 181 is=1,numsta+1
+        do 180 i=1,12
+          dum(i,is)=0.
+  180   continue
+c
+c rrb 2021/03/20; Compiler Update
+  181 continue
 c
 c------ compute instream demand at each node
 c

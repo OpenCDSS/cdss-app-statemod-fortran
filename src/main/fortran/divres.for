@@ -666,7 +666,11 @@ c
           if (intern(lr,i61).eq.0) go to 160
           intvn=intern(lr,i61)
 
-  150     alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn))) 
+c
+c rrb 2021/03/20; Compiler Update
+cx  150     alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn)))
+            alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn)))
+  150     continue 
           alocfs=amax1(0.0,alocfs)
   160   continue
       endif
@@ -822,10 +826,18 @@ c               c. FILL AVTEMP AND RF ARRAYS USED IN RETURN FLOW CHECK
       ISS=IDCD
       DO 180 IS=1,NDND
         AVTEMP(ISS)=avail(ISS)
-  180 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  180 ISS=IDNCOD(ISS)
+        ISS=IDNCOD(ISS)
+  180 continue
 
       do 190 is=1,numsta
-  190 avwret(is)=0
+c
+c rrb 2021/03/20; Compiler Update
+cx  190 avwret(is)=0
+        avwret(is)=0
+  190 continue
 c
 c
 c ---------------------------------------------------------
@@ -858,7 +870,11 @@ c                f. STORE RETURNS AS % OF DIVERSIONS AT RF LOCATIONS
         ISS=IrCD
           DO 200 NS=1,NDNr
           AVWRET(ISS)=avwret(iss)+(RET*foret)
-  200   ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  200   ISS=IDNCOD(ISS)
+          ISS=IDNCOD(ISS) 
+  200   continue
   210 CONTINUE
 c
 c
@@ -867,7 +883,11 @@ c                g. COMPUTE THE AMOUNT FOR THE CURRENT DIVERSION
       ISS=IdCD
       DO 220 NS=1,NDNd
         avtemp(iss)=avtemp(iss)+(divact*avwret(iss))
-  220 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  220 ISS=IDNCOD(ISS)
+        ISS=IDNCOD(ISS)
+  220 continue
 c
 c
 c ---------------------------------------------------------

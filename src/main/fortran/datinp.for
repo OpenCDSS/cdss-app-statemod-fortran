@@ -1051,7 +1051,12 @@ C
 c
 c rrb 06/28/96; Check for a network looping onto itself
         do 240 isx=1,numsta
-  240   dumsta(isx) = 0.0
+c
+c rrb 2021/03/20; Compiler Update
+cx240   dumsta(isx) = 0.0
+        dumsta(isx) = 0.0
+  240   continue
+  
   
   250   NDNNOD(IS)=NDNNOD(IS)+1
           ISS=IDNCOD(ISS)
@@ -1230,7 +1235,11 @@ c
 
 
       DO 750 IS=1,NUMSTA
-  750 ISTARU(IS)=0
+c
+c rrb 2021/03/20; Compiler Update
+cx750 ISTARU(IS)=0
+      ISTARU(IS)=0
+  750 continue
 C
       MAXRUO=MAXRUN+1
 C
@@ -1505,7 +1514,11 @@ c            endif
               ifrst2(nf) = iss
               goto 880
             endif
-  870     iss=idncod(iss)
+c
+c rrb 2021/03/20; Compiler Update
+cx870       iss=idncod(iss)
+            iss=idncod(iss)
+  870     continue
 
           write(nlog,1350) cgoto, crtnid
           goto 9999  

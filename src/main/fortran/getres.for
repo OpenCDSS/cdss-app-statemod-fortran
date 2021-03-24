@@ -528,7 +528,10 @@ c _________________________________________________________
 c
 
 c              Check to insure only one reservoir per node
-      do 440 i=1,numres
+c
+c rrb 2021/03/20; Compiler Update
+cx    do 440 i=1,numres
+      do 441 i=1,numres
         do 440 j=1,numres          
           if(i.eq.j) goto 440
           if(irssta(i).eq.irssta(j)) then
@@ -536,6 +539,9 @@ c              Check to insure only one reservoir per node
             goto 9999
           endif
   440 continue
+c
+c rrb 2021/03/20; Compiler Update
+  441 continue
 c
 c _________________________________________________________
 c
@@ -560,7 +566,11 @@ c		Initialize selected variables
 C
       DO 460 IS=1,NUMSTA
       IRSORD(1,IS)=0
-  460 IRSORD(2,IS)=0
+c
+c rrb 2021/03/20; Compiler Update
+cx  460 IRSORD(2,IS)=0
+        IRSORD(2,IS)=0
+  460 continue
 C
       NRSDUM=0
       DO 470 NR=1,NUMRES

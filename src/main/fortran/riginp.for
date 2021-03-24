@@ -192,7 +192,11 @@ c _________________________________________________________
 c               Step 2; Read Reservoir rights (*.rer)
 c
       DO 140 NR=1,NUMRES                                                
-  140   IWR(NR)=0
+c
+c rrb 2021/03/20; Compiler Update
+cx140   IWR(NR)=0
+        IWR(NR)=0
+  140 continue
 C                                                                       
       write(nlog,102)
       write(6,102)
@@ -232,10 +236,18 @@ C
       NUMRSR=0                                                          
 C
       DO 150 NO=1,NUMOWN
-  150 NRIGOW(NO+1)=0
+c
+c rrb 2021/03/20; Compiler Update
+cx  150 NRIGOW(NO+1)=0
+        NRIGOW(NO+1)=0
+  150 continue
 C
       DO 160 NR=1,NUMRES
-  160 NRIGRS(NR+1)=0
+c
+c rrb 2021/03/20; Compiler Update
+cx  160 NRIGRS(NR+1)=0
+        NRIGRS(NR+1)=0
+  160 continue
 C
       MAXRSS=MAXRSR+1
 C
@@ -439,14 +451,26 @@ C
 C                                                                       
       NRIGRS(1)=1                                                       
       DO 230 NR=1,NUMRES                                                
-  230 NRIGRS(NR+1)=NRIGRS(NR+1)+NRIGRS(NR)                              
+c
+c rrb 2021/03/20; Compiler Update
+cx  230 NRIGRS(NR+1)=NRIGRS(NR+1)+NRIGRS(NR) 
+        NRIGRS(NR+1)=NRIGRS(NR+1)+NRIGRS(NR)
+  230 continue                             
 C                                                                       
       NRIGOW(1)=1                                                       
       DO 240 NO=1,NUMOWN                                                
-  240 NRIGOW(NO+1)=NRIGOW(NO+1)+NRIGOW(NO)                              
+c
+c rrb 2021/03/20; Compiler Update
+cx  240 NRIGOW(NO+1)=NRIGOW(NO+1)+NRIGOW(NO)  
+        NRIGOW(NO+1)=NRIGOW(NO+1)+NRIGOW(NO)
+  240 continue                            
 C                                                                       
       DO 250 IW=1,NUMRSR                                                
-  250 LAST(IW)=0
+c
+c rrb 2021/03/20; Compiler Update
+cx  250 LAST(IW)=0
+        LAST(IW)=0
+  250 continue
 C
       DO 260 NR=1,NUMRES
         K=IWR(NR)

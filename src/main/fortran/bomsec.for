@@ -546,7 +546,11 @@ C------  INITIALIZE MONTHLY OWNERSHIP
 C
       DO 240 NO=1,NUMOWN
  	      QMAINS(1,NO)=0.
-  240 OWNMON(NO)=0.
+c
+c rrb 2021/03/20; Compiler Update
+cx240 OWNMON(NO)=0.
+       OWNMON(NO)=0.
+  240 continue
 c
 c __________________________________________________________
 c               Step 10; Initialize diversion (divmon), loss (rloss),
@@ -902,7 +906,11 @@ c
 	     DO 360 ND=1,NDNN
 	       RIVER (ISS)=RIVER (ISS)+VIRINP(MON,IRU)
 	       AVINP (ISS)=AVINP (ISS)+VIRINP(MON,IRU)
-  360  ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  360  ISS=IDNCOD(ISS)
+       ISS=IDNCOD(ISS)
+  360  continue
   370 CONTINUE
 C
       DO 380 ND=1,NUMDIV
@@ -930,7 +938,11 @@ c
 c     
 	        RIVER (ISS)=RIVER(ISS)+retur(IMO,IRN) -depl(imo,irn)
 	        AVINP (ISS)=AVINP(ISS)+retur(IMO,IRN) -depl(imo,irn)
-  390     ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  390     ISS=IDNCOD(ISS)
+          ISS=IDNCOD(ISS)
+  390   continue
   400 CONTINUE
 c
 c _________________________________________________________       

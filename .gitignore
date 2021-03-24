@@ -8,6 +8,9 @@
 # Temporary Windows files
 ~$*
 
+# Zip files used to transfer files.
+*.zip
+
 # Reused junk file for temporary files.
 # - any file that starts with "junk"
 junk*
@@ -20,6 +23,8 @@ junk*
 *.a
 *.so
 *.log
+# Many additional artifact files from 64-bit Fortran compiler.
+*.for.*r.*
 
 # Lahey compiler dynamic files
 src/main/fortran/AMTEMP.BAT
