@@ -351,7 +351,11 @@ c                        Skip if idcd = 0, to allow vircom.for to work
           idwn=idncod(idcd)
           do 100 nst1=1,ndnnt
             if (ircd.eq.idwn) goto 110
-  100       idwn=idncod(idwn)
+c
+c rrb 2021/03/20; Compiler Update
+cx100       idwn=idncod(idwn)
+            idwn=idncod(idwn)
+  100     continue
 c
             ireop=1
   110     continue
@@ -433,7 +437,11 @@ c rrb 2008/06/25; Do not allow upstream return flows
 c		  to increase the flow at the diversion
 cx          avtemp(iss)=avtemp(iss)+ret
             if(iss.ne.idcd) avtemp(iss)=avtemp(iss)+ret
-  120     ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  120     ISS=IDNCOD(ISS)
+            ISS=IDNCOD(ISS)
+  120     continue
 
           if(iout.eq.2) then
             write(nlog,*) ' '

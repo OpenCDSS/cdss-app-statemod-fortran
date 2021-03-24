@@ -18,10 +18,9 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-      SUBROUTINE OutIchk(ichkX, ichk4n,l1, l2, iw, itypeX, 
-     1           ishort, fac, 
-     1           uDem, divactx, divX, divsum,
-     1           ichk9, div9, rec12b)  
+      SUBROUTINE OutIchk(
+     1           ichkX, ichk4n, l1, l2, iw, itypeX, ishort, fac,
+     1           uDem, divactx, divX, divsum, ichk9, div9, rec12b)  
 c
 c	OutIchk; It prints detailed data for various values of Ichk
 c      

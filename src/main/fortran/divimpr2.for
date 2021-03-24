@@ -439,7 +439,11 @@ c
           if (intern(l2,i61).eq.0) go to 160
           intvn=intern(l2,i61)
 
-  150     alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn))) 
+c
+c rrb 2021/03/20; Compiler Update
+cx  150     alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn))) 
+            alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn)))
+  150     continue
           alocfs=amax1(0.0,alocfs)
   160   continue
 cr    endif

@@ -104,7 +104,11 @@ c               Adjust total flow downstream
             flowx(iss) = flowx(iss) + qhistox(is)
           endif            
 
-  380   iss=idncod(iss)
+c
+c rrb 2021/03/20; Compiler Update
+cx380     iss=idncod(iss)
+          iss=idncod(iss)
+  380   continue
   390 continue
 
       return

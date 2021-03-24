@@ -46,12 +46,17 @@ ifdef OS
 	EXE_BITS = 32
 	ifeq ($(MSYSTEM),MINGW32)
 		EXE_BITS = 32
+		FFLAGS_ARCH =
 	endif
 	ifeq ($(MSYSTEM),MINGW64)
 		EXE_BITS = 64
+		# The following is needed for 64-bit
+		# - see: https://github.com/actions/virtual-environments/issues/2721
+		FFLAGS_ARCH = -Wl,--default-image-base-low
 	endif
 else
 	# Linux
+	# - always compile 64-bit version
 	EXE_BITS = 64
 endif
 
@@ -116,7 +121,19 @@ endif
 #
 # -g 
 #
-# ALWAYS INCLUDE.
+# ALWAYS INCLUDE.  Actually, may want to comment this out for production versions
+# when using -O so that executables are smaller and faster.
+#
+# This is from the gcc compiler (see: https://gcc.gnu.org/onlinedocs/gcc-10.2.0/gcc/Debugging-Options.html#Debugging-Options).
+#
+# Produce debugging information in the operating system’s native format (stabs, COFF, XCOFF, or DWARF).
+# GDB can work with this debugging information.
+#
+# On most systems that use stabs format, -g enables use of extra debugging information that only GDB can use;
+# this extra information makes debugging work better in GDB but probably makes other debuggers crash or refuse to read the program.
+# If you want to control for certain whether to generate the extra information,
+# use -gstabs+, -gstabs, -gxcoff+, -gxcoff, or -gvms.
+#
 #------------
 #
 # -static
@@ -129,32 +146,38 @@ endif
 #FFLAGS = -g -cpp -fbounds-check -fno-align-commons -static
 # Extra checks that can be added for deep check of code logic
 # - Steve Malers added to track down remaining issues
-FFLAGS_EXTRA_CHECKS=-fcheck=do,mem,pointer
-FFLAGS = -g -cpp -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_EXTRA_CHECKS)
+FFLAGS_EXTRA_CHECKS = -fcheck=do,mem,pointer
+FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
 #FFLAGS = -O2
 # The flags for all cases (e.g. look for system .mod files, required in gfortran)
 FFLAGS += -I/usr/include
 # The libraries needed for linking
 #LDFLAGS = -li_need_this_lib
-# The list of executables to be built within the package
+# The list of executables to be built within the package.
 PROGRAMS = statemod
 
-# Set the source modules based on the operating system and compiler
+# Set the source modules based on the operating system and compiler:
 # - this allows this single makefile to work in multiple development environments (as long as GNU make is used)
 # - currently the focus is gfortran on Windows but could get from the environment and change modules
 
-# Compiler-specific routines to handle command line parsing and date/time processing
+# Compiler-specific routines to handle command line parsing and date/time processing.
+# - set COMPILER_CHAR to use with C preprocessor
+#   which can be used as an alternate way to support compiler-specific libraries
+#   (see test.for) for example code
+# - set COMPILER_ENUM to use with C preprocessor, because COMPILER_CHAR was having issues
 ifeq ($(FC),gfortran)
 	# gfortran code version
 	parse_o_file = parse_gfortran.o
 	dattim_o_file = dattim_gfortran.o
+	COMPILER_ENUM = 1
 else
 	# Legacy Lahey code version
 	parse_o_file = parse.o
 	dattim_o_file = dattim.o
+	COMPILER_ENUM= 2
 endif
 
-# Operating-system-specific code
+# Operating-system-specific code:
 # - Although there are other options, initially use code from Jim Brannon
 # - OS environment variable is specific to Windows (assuming the compile occurs
 #   in a Windows command shell) so if set assume Windows
@@ -173,14 +196,17 @@ endif
 # Main targets
 # ======================================================================
 
-# all:
+# all
+#
 # - the default if make is called without arguments
 # - use default of 'help' to force intentional actions such as 'make statemod'
 # - uncomment line with 'printenv' if troubleshooting the environment
 #all: printenv $(PROGRAMS)
 all: help
 
-# help: print the targets that are available
+# help
+#
+# Print the targets that are available.
 help:
 	@echo "--------------------------------------------------------------------------------"
 	@echo "StateMod makefile targets:"
@@ -210,7 +236,7 @@ help:
 	@echo "To force compile and save output to file:  make -k statemod 2>&1 | tee somefile"
 	@echo "--------------------------------------------------------------------------------"
 
-# Dependencies for object files
+# Dependencies for object files:
 # - because statemod is the main output (not library, etc.) only concern is the include file
 # - TODO smalers 2021-03-11 need to make this simpler, but something like makedepends may be too much
 # - not every file depends on common.inc (do `grep -i common.inc *.for` to find)
@@ -336,7 +362,7 @@ outwelc.o: common.inc
 outwelp.o: common.inc
 outwr.o: common.inc
 outwr2.o: common.inc
-OutWW.o: common.inc
+outWW.o: common.inc
 outxss.o: common.inc
 outxssmo.o: common.inc
 planeva.o: common.inc
@@ -397,7 +423,7 @@ welrig3.o: common.inc
 welrig3p.o: common.inc
 xdebug.o: common.inc
 
-# The rule for building the statemod executable
+# The rule for building the statemod executable:
 # - all source modules are listed as dependencies
 # - interdependencies are not accounted for, just the main program requirements
 # - the following were in Jim Brannon's code and have been integrated more generically:
@@ -570,7 +596,7 @@ statemod: \
 			outwelc.o \
 			outwelp.o \
 			outwr2.o \
-			OutWW.o \
+			outWW.o \
 			outxss.o \
 			outxssmo.o \
 			planeva.o \
@@ -633,6 +659,7 @@ statemod: \
 			stafind.o \
 			takout.o \
 			takou2.o \
+			test.o \
 			vircom.o \
 			virgain.o \
 			virin.o \
@@ -666,7 +693,7 @@ endif
 
 # General rule for building prog from prog.o; $^ (GNU extension) is
 # used in order to list additional object files on which the
-# executable depends
+# executable depends.
 %: %.o
 	$(FC) $(FFLAGS) -o $@ $^ $(LDFLAGS)
 
@@ -675,32 +702,62 @@ endif
 # % = wildcard to match file basename
 # $< = source file name
 
-# Compile files with extension .f90 into .o object files
+# Compile files with extension .f90 into .o object files.
 %.o: %.f90
 	$(FC) $(FFLAGS) -c $<
 
-# Compile files with extension .F90 into .o object files
+# Compile files with extension .F90 into .o object files.
 %.o: %.F90
 	$(FC) $(FFLAGS) -c $<
 
-# Compile files with extension .for into .o object files
+# Compile files with extension .for into .o object files.
 %.o: %.for
 	$(FC) $(FFLAGS) -c $<
 
-# Utility targets
+# Utility targets.
 .PHONY: clean veryclean
 
-# Remove intermediate files used when compiling
+# Remove intermediate files used when compiling:
 # - Do not remove *.obj because that is used with Lahey and want gfortran compile to be separate.
 clean: printenv
 	@echo "-----------------------------------------------------------------------"
-	@echo "Removing compile byproducts but not final executable..."
-	@echo "Use 'make veryclean' if necessary to also remove final executable."
+	@echo "clean"
+	@echo ""
+	@echo "Removing compile byproducts but not final executable."
 	@echo "-----------------------------------------------------------------------"
+	# Normal bi-products.
 	rm -f *.o *.mod *.MOD
+	# Additional bi-products due to compiler problem, for example as listed below.
+	# -it is not clear what the significance of the numbers are and how many types of files
+	#  may result so use a pattern
+	# parse_gfortran.for.236r.expand
+	# parse_gfortran.for.237r.vregs
+	# parse_gfortran.for.238r.into_cfglayout
+	# parse_gfortran.for.239r.jump
+	# parse_gfortran.for.251r.reginfo
+	# parse_gfortran.for.274r.outof_cfglayout
+	# parse_gfortran.for.275r.split1
+	# parse_gfortran.for.277r.dfinit
+	# parse_gfortran.for.278r.mode_sw
+	# parse_gfortran.for.279r.asmcons
+	# parse_gfortran.for.284r.ira
+	# parse_gfortran.for.285r.reload
+	# parse_gfortran.for.292r.pro_and_epilogue
+	# parse_gfortran.for.295r.jump2
+	# parse_gfortran.for.306r.split4
+	# parse_gfortran.for.307r.stack
+	# parse_gfortran.for.308r.alignments
+	# parse_gfortran.for.310r.mach
+	# parse_gfortran.for.311r.barriers
+	# parse_gfortran.for.316r.shorten
+	# parse_gfortran.for.317r.nothrow
+	# parse_gfortran.for.318r.dwarf2
+	# parse_gfortran.for.319r.final
+	# parse_gfortran.for.320r.dfinish
+	rm -f *.for.*r.*
 
-# Print important environment information to help understand setup
-printenv: 
+# Print important environment information to help understand setup.
+printenv:
 	@echo "-----------------------------------------------------------------------"
 	@echo "Environment information:"
 ifdef OS
@@ -716,17 +773,22 @@ else
 endif
 	@echo "-----------------------------------------------------------------------"
 
-# Remove all intermediate files and the final executable
+# Remove all intermediate files and the final executable.
+# - only remove the executable for current architecture in case want to run both
 veryclean: printenv clean
 	@echo "-----------------------------------------------------------------------"
-	@echo "Removing compile byproducts (make clean) and final executable..."
+	@echo "veryclean"
+	@echo ""
+	@echo "Removing compile byproducts (make clean) and final executable."
+	@echo "Only executable for current StateMod $(EXE_BITS)-bit version is removed."
 	@echo "-----------------------------------------------------------------------"
 ifdef OS
 	# Windows
-	# - can rely on file extension to match executable files
-	rm -f *~ $(PROGRAMS) *.exe
+	# - only remove the executable for the OS architecture of interest
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe
 else
 	# Linux
-	# - can't rely on file extension for filename pattern to match
-	rm -f *~ $(PROGRAMS) *.exe statemod-$(STATEMOD_VERSION)-gfortran-lin-32bit statemod-$(STATEMOD_VERSION)-gfortran-lin-64bit
+	# - only remove the executable for the OS architecture of interest
+	# - no file extension
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit
 endif

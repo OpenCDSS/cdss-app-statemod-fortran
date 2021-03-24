@@ -316,7 +316,11 @@ c                        Skip if idcd = 0, to allow vircom.for to work
           idwn=idncod(idcd)
           do 100 nst1=1,ndnnt
             if (ircd.eq.idwn) goto 110
-  100       idwn=idncod(idwn)
+c
+c rrb 2021/03/20; Compiler Update
+cx  100       idwn=idncod(idwn)
+              idwn=idncod(idwn)
+  100     continue
 c
             ireop=1
   110     continue
@@ -403,7 +407,11 @@ cx          AVAIL(ISS)=AVAIL(ISS)+RET
             
             RIVER(ISS)=RIVER(ISS)+RET
             AVINP(ISS)=AVINP(ISS)+RET
-  120     ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx  120     ISS=IDNCOD(ISS)
+            ISS=IDNCOD(ISS)
+  120     continue
 
 c
 c _________________________________________________________

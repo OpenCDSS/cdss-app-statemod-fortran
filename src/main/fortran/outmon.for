@@ -598,7 +598,11 @@ c ---------------------------------------------------------
 c rrb 2020/03/03; Check
 cx        if(is.eq.1) write(nlog,*) ' '
 cx        write(nlog,*) '  Outmon;',is, avail(is)*fac, stanam1(is)
-  210   AVT(IS)=AVAIL(IS)
+c
+c rrb 2021/03/20; Compiler Update
+cx210   AVT(IS)=AVAIL(IS)
+        AVT(IS)=AVAIL(IS)
+  210 continue
   
 c
 c _________________________________________________________

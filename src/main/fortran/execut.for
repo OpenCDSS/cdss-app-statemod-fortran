@@ -1079,9 +1079,14 @@ c           Instream Flow Operation with or without reach option
 c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output        
             if(ichk.eq.94 .or. ichk.eq.4) then
-              call outIchk(1, ichk4n, l1, l2, iw, 0, ishort, fac,
-     1                     uDem, divactx, divx, divsum,
-     1                     0, iwx, rec12b)
+c
+c rrb 2021/03/20; Correction            
+cx              call outIchk(
+cx     1          1, ichk4n, l1, l2, iw, 0, ishort, fac,
+cx     1          uDem, divactx, divx, divsum, 0, iwx, rec12b)         
+              call outIchk(
+     1          1, ichk4n, l1, l2, iw, 0, ishort, fac,
+     1          uDem, divactx, divx, divsum, 0, -1.0, rec12b)  
             endif  	    
 c rrb Test                
 cr          write(nlogx,*) 'Execut; 1 qdiv(14,17)', qdiv(14,17)
@@ -1128,9 +1133,14 @@ c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output        
             if(ichk.eq.94 .or. ichk.eq.4) then
               udem=short/fac
-              call outIchk(2, ichk4n,  l1, l2, iw, 0, ishort,
-     1                     fac, udem, divx, divx, divsum,
-     1                     0, iwx, rec12b)
+c
+c rrb 2021/03/20; Correction            
+cx              call outIchk(
+cx     1          2, ichk4n,  l1, l2, iw, 0, ishort, fac,
+cx     1          udem, divx, divx, divsum, 0, iwx, rec12b)
+              call outIchk(
+     1          2, ichk4n,  l1, l2, iw, 0, ishort, fac,
+     1          udem, divx, divx, divsum, 0, -1.0, rec12b)
             endif 
 c_______________________________________________________________________
 	        GOTO 410
@@ -1184,15 +1194,21 @@ c           Call Divrig to divert water
 c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output        
             if(ichk.eq.94 .or. ichk.eq.4) then
-              call outIchk(3, ichk4n, l1, l2, iw, 0, ishort, fac,
-     1                     udem, divx, divx, divsum, 0, iwx, rec12b)
+c
+c rrb 2021/03/20; Correction            
+cx              call outIchk(
+cx     1          3, ichk4n, l1, l2, iw, 0, ishort, fac,
+cx     1          udem, divx, divx, divsum, 0, iwx, rec12b)
+              call outIchk(
+     1          3, ichk4n, l1, l2, iw, 0, ishort, fac,
+     1          udem, divx, divx, divsum, 0, -1.0, rec12b)
             endif
 c_______________________________________________________________________
 c rrb 2011/01/02; South Platte Compact
 c                 isp1 is the operating right pointer for the Splatte 
 c                 operating rule set in Oprinp
             if(isp1.ge.1 .and. ishort.eq.1) then
-	          nd = idivco(1,l2)    
+	            nd = idivco(1,l2)    
               IUSE=NDUSER(ND)+IDIVCO(2,L2)-1   	        
               divreq1=divreq(iuse)
               if(ichk.eq.94) write(nlogx,*) ' Execut; Calling SPlatte'
@@ -1207,9 +1223,14 @@ c_______________________________________________________________________
 c rrb 2011/05/07; Detailed output  
                 if(ichk.eq.94 .or. ichk.eq.4) then 
                   divsum1=divsum+divactx*fac
-                  call outIchk(4, ichk4n, 5, isp1, iw, ityopr(isp1),
-     1                         ishort,fac,uDem, divactx, divx, divsum1,
-     1                         0, iwx, rec12b)
+c
+c rrb 2021/03/20; Correction            
+cx                  call outIchk(
+cx     1              4, ichk4n, 5, isp1, iw, ityopr(isp1), ishort, fac,
+cx     1              uDem, divactx, divx, divsum1, 0, iwx, rec12b)
+                  call outIchk(
+     1              4, ichk4n, 5, isp1, iw, ityopr(isp1), ishort, fac,
+     1              uDem, divactx, divx, divsum1, 0, -1.0, rec12b)
                 endif                
 c rrb 2011/04/25; Allow reoperaton
 c rrb 2011/05/12; Correction
@@ -1429,9 +1450,9 @@ c
 c rrb 2015/07/30; Add detailed output
       if(ichk.eq.94 .or. ichk.eq.4) then  
         rec12b='Opr Rule    '
-        call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2),
-     1               ishort, fac, uDem, divact2, divx, divsum,
-     1               4, divact2, rec12b) 
+        call outIchk(
+     1    ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac, 
+     1    uDem, divact2, divx, divsum, 4, divact2, rec12b) 
       endif       
         
 	    goto 410
@@ -1512,10 +1533,9 @@ c -------------------------------------------------------
 c Print detail for a type 12 reoperation
         if(iout.eq.1 .or. ichk.eq.9 .or. ichk.eq.109) then      
            rec12b='Opr Rule    '
-           call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2),
-     1                 ishort, fac,
-     1                 uDem, divact2, divx, divsum,
-     1                 1, divact1, rec12b)      
+           call outIchk(
+     1       ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac,
+     1       uDem, divact2, divx, divsum, 1, divact1, rec12b)      
         endif
 	      divsum=0.0  
 	      
@@ -2082,9 +2102,14 @@ c
 c ---------------------------------------------------------
 c rrb 2011/05/07; Detailed output        
       if(ichk.eq.94 .or. ichk.eq.4) then
-        call outIchk(6, ichk4n, l1, l2, iw, 0, ishort, fac,
-     1               uDem, divactx, divx, divsum,
-     1               o, iwx, rec12b)
+c
+c rrb 2021/03/20; Correction            
+cx        call outIchk(
+cx     1    6, ichk4n, l1, l2, iw, 0, ishort, fac,
+cx     1    uDem, divactx, divx, divsum, 0, iwx, rec12b)
+        call outIchk(
+     1    6, ichk4n, l1, l2, iw, 0, ishort, fac,
+     1    uDem, divactx, divx, divsum, 0, -1.0, rec12b)
       endif          
 c
 c rrb 2008/01/23; Correction 400 is an operating rule check
@@ -2119,9 +2144,15 @@ c
 c	  Step X; Detailed Operating Data (ichk=4 or 94)
 c rrb 2011/04/25; Limit output for ichk=4  
       if(l1.eq.5 .and. (ichk.eq.94 .or. ichk.eq.4)) then   
-        call outIchk(14, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac,
-     1               uDem, divact2, divx, divsum,
-     1               0, iwx, rec12b)
+c
+c rrb 2021/03/20; Correction            
+cx        call outIchk(
+cx     1    14, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac,
+cx     1    uDem, divact2, divx, divsum, 0, iwx, rec12b)
+        call outIchk(
+     1    14, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac,
+     1    uDem, divact2, divx, divsum, 0, -1.0, rec12b)
+c
 cx        write(nlog,*) 'Execut Type 5; 18, divo(18)', 18, divo(18)*fac
       endif
 c_______________________________________________________________________
@@ -2146,9 +2177,9 @@ c		  Detailed Reoperaton Output - Diversion return Flow
 c           Note ispOut =0 indicates Splatte was NOT called after divrig          
 	      if(l1.eq.3 .and. ispOpr.eq.0) then    
             rec12b='Div Return  '     
-            call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2), 
-     1                   ishort, fac, uDem, divact2, divx, divsum,
-     1                   2, divchkR, rec12b)  
+            call outIchk(
+     1        ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac, 
+     1        uDem, divact2, divx, divsum, 2, divchkR, rec12b)  
 c_______________________________________________________________________
 c rrb 20100123; OMID Check for Return Flows caused by Replace   
             if(ioutGVC.eq.1) then
@@ -2161,17 +2192,17 @@ c rrb 2011/05/17; Print when Splatte is called after divert
 c         Note ispOut =1 indicates Splatte was called after divrig     
 	      if(l1.eq.3 .and. ispOpr.eq.1) then              
             rec12b='Opr Rule    '
-            call outIchk(ichkX, ichk4n, l1, isp1, iw, ityopr(l2),
-     1                   ishort, fac, uDem, divact2, divx, divsum,
-     1                   3, divact2, rec12b)   
+            call outIchk(
+     1        ichkX, ichk4n, l1, isp1, iw, ityopr(l2), ishort, fac, 
+     1        uDem, divact2, divx, divsum, 3, divact2, rec12b)   
           endif                
 c_______________________________________________________________________
 c		  Detailed Reoperaton Output - Operating Rule 
 	      if(l1.eq.5) then    
             rec12b='Opr Rule    '
-            call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2),
-     1                   ishort, fac, uDem, divact2, divx, divsum,
-     1                   4, divact2, rec12b)
+            call outIchk(
+     1        ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac, 
+     1        uDem, divact2, divx, divsum, 4, divact2, rec12b)
 c_______________________________________________________________________
 c rrb 20100123; OMID Check for an Operating Rule
             if(ioutGVC.eq.1) then
@@ -2233,7 +2264,7 @@ c rrb 2006/11/17; Isolate to non operating rules
 cr    if(ireopx.le.0 .and. ireop.eq.1 .and.
       if(ireopx.le.0 .and. ireop.eq.1 .and. l1.ne.5 .and. 
      1      iwx.lt.iwxlimit) then
-	    iw = 0
+	      iw = 0
         iwx = iwx+1
         iwxmaxY=iwxmaxY+1      
 cx      write(nlog,*) ' Execut; Return Flow ', iwx	    
@@ -2244,9 +2275,9 @@ c rrb 2006/09/18
 c		Print detailed call data
         if(iout.eq.1 .or. ichk.eq.9 .or.ichk.eq.109) then
           rec12b='XXX Return  '
-          call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2), 
-     1                 ishort, fac, uDem, divact2, divx, divsum,
-     1                 5, divchkR, rec12b)        
+          call outIchk(
+     1      ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac, 
+     1      uDem, divact2, divx, divsum, 5, divchkR, rec12b)        
         endif
 c		Reset call indicator and Divsum	    
         do i=1,numsta
@@ -2301,9 +2332,9 @@ cx      iseep=iseep+1
 cx	    iout=1	    
   	    if(iout.eq.1 .or. ichk.eq.9 .or. ichk.eq.109) then	
           rec12b='Res Seepage '
-          call outIchk(ichkX, ichk4n, l1, l2, iw, ityopr(l2), 
-     1                 ishort, fac, uDem, divact2, divx, divsum,
-     1                 6, SeepT, rec12b)
+          call outIchk(
+     1      ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac, 
+     1      uDem, divact2, divx, divsum, 6, SeepT, rec12b)
         endif
         divsum=0.0
 cx      endif

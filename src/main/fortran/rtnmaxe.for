@@ -204,7 +204,10 @@ c
           GO TO 200      
   190     AVWRET(ISS)=1.0E10
 c
-  200   ISS=IDNCOD(ISS)
+c rrb 2021/03/20; Compiler Update
+cx  200   ISS=IDNCOD(ISS)
+          ISS=IDNCOD(ISS)
+  200   continue
         
         AVWRET(ISCD)=AVTEMP(ISCD)
 

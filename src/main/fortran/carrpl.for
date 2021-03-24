@@ -517,7 +517,11 @@ c                       INTERVENING STRUCTURES
         intvn=intern(l2OPR,i61)
 c
 c rrb 98/03/03; Daily capability
-  150   alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn))) 
+c
+c rrb 2021/03/20; Compiler Update
+cx150   alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn))) 
+        alocfs=amin1(alocfs,(divcap(intvn)-divmon(intvn))) 
+  150 continue
   160 continue
 c
 c rrb 06/28/96
@@ -534,7 +538,11 @@ c
         IF(AVAIL(IMCD).GT.AVAIL(ISS)) IMCD=ISS
         availX=avail(imcd)
         if (iss.eq.iExPoint(l2)) goto 180
-  170 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx170 ISS=IDNCOD(ISS)
+      ISS=IDNCOD(ISS)
+  170 continue
 
   180 pavail=amax1(avail(imcd),0.0)
       DIVACT=amin1(pavail,divalo,alocfs)
@@ -611,13 +619,21 @@ c------ INITIALIZE ACCUMMULATED RETURN FLOW WEIGHT FOR ALL STATION
   200 FORET=1.0-DIVEFF(mon,IUSE)/100.
       DO 210 IS=1,NUMSTA
         AVWRET(IS)=0.
-  210 dumx(is) = 0.0
+c
+c rrb 2021/03/20; Compiler Update
+cx210   dumx(is) = 0.0
+        dumx(is) = 0.0
+  210 continue
 
 C------  FILL THE TEMP0RARY AVAILABLE FLOW
       ISS=IDCD
       DO 220 IS=1,NDND
       AVTEMP(ISS)=AVAIL(ISS)
-  220 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx220 ISS=IDNCOD(ISS)
+      ISS=IDNCOD(ISS)
+  220 continue
 
 C------  STEP THROUGH RETURN FLOWS FOR CURRENT DIVERSION.
       DO 240 IRT=IRI,IRE
@@ -640,7 +656,11 @@ c               STORE RETURN FLOW PERCENTAGES IN TEMPORARY ARRAY
         ISS=IRCD
         DO 230 NS=1,NDNR
           AVWRET(ISS)=AVWRET(ISS)+RET
-  230   ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx230   ISS=IDNCOD(ISS)
+        ISS=IDNCOD(ISS)
+  230   continue
   240 CONTINUE
 
 c               COMPUTE THE ALLOWABLE AMOUNT FOR THE CURRENT DIVERSION
@@ -652,7 +672,11 @@ c     IF(ABS(AVWRET(ISS)*FORET-1.).LE.0.00001) Goto 250
       AVWRET(ISS)=AVTEMP(ISS)/(1.0-AVWRET(ISS)*FORET)
       Goto 260      
   250 AVWRET(ISS)=1.0E10
-  260 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx260 ISS=IDNCOD(ISS)
+      ISS=IDNCOD(ISS)
+  260 continue
       AVWRET(IdCD)=AVTEMP(IdCD)
 c
 c               FIND THE UPDATED DOWNSTREAM MIN FLOW NODE
@@ -661,7 +685,11 @@ c               in the exchange reach (iss.eq.iExPoint(l2)
       DO 272 NDx=1,NDNd
       IF(AVwret(IMCD).GT.avwret(ISS)) IMCD=ISS
       if (iss.eq.iExPoint(l2)) goto 282
-  272 ISS=IDNCOD(ISS)
+c
+c rrb 2021/03/20; Compiler Update
+cx272 ISS=IDNCOD(ISS)
+      ISS=IDNCOD(ISS)
+  272 continue
   282 PAVAIL=AVWRET(IMCD)
       DIVACT=amin1(pavail,divalo,alocfs)
       CALL TAKOUT(maxsta,AVAIL,RIVER,AVINP,QTRIBU,IDNCOD,

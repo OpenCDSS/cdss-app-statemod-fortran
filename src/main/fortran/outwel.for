@@ -171,7 +171,11 @@ c               Print title card every year
 
           call year(iy, iyrmo, imomo, cyr1)
           do 150 i=1,ndivw
-  150       dat1t(i) = 0.0
+c
+c rrb 2021/03/20; Compiler Update
+cx150       dat1t(i) = 0.0
+            dat1t(i) = 0.0
+  150     continue
 
           do 170 im=1,12
 c

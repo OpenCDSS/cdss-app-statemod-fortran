@@ -428,7 +428,11 @@ c           if(crtnid.eq.cgoto) write(nlog,1280) crtnid
      1            cgoto, crtnid
                 iwarnx=1
               endif
-  618       iss=idncod(iss)
+c
+c rrb 2021/03/20; Compiler Update
+cx  618       iss=idncod(iss)
+              iss=idncod(iss)
+  618       continue
 c _________________________________________________________
 c		End loop to read return flow data
   620     CONTINUE

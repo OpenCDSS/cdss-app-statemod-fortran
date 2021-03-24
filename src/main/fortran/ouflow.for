@@ -67,12 +67,16 @@ c       call outtop(10, 1, 25)
 c 
 c rrb 10/15/95
 c          Initialize annual average values
-        do 128 is=1,numsta
+c
+c rrb 2021/03/20; Compiler Update
+cx      do 128 is=1,numsta
+        do 129 is=1,numsta
           do 128 im=1,13
             dum2(im,is) = 0.0
             dum3(im,is) = 0.0
             dummy(is,im)= 0.0
   128     continue
+  129   continue
 c
 c ------------  Identify the number of values in the
 c               historic streamflow data 
@@ -140,10 +144,13 @@ C
 C
 C------  INITIALIZE ARRAYS RIVER AND AVINP
 C
-      DO 210 IS=1,NUMSTA
+c rrb 2021/03/20; Compiler Update
+cx    DO 210 IS=1,NUMSTA
+      DO 211 IS=1,NUMSTA    
         DO 210 I=1,13
           Dum(I,IS)=0.
-  210 CONTINUE
+  210   CONTINUE
+  211 continue
 C
 C------ COMPUTE BASE FLOWS AT EACH STATION
 c        Note mdainp adjusts total flow (if provided) to gains 
@@ -155,14 +162,26 @@ c rrb 10/27/94 Additional Output
         NDNN=NDNNOD(ISS)
         DO 230 ND=1,NDNN
           DO 220 I=1,12        
-  220     Dum(I,ISS)=Dum(I,ISS)+VIRINP(I,NP)
-  230   ISS=IDNCOD(ISS) 
+c
+c rrb 2021/03/20; Compiler Update
+cx220     Dum(I,ISS)=Dum(I,ISS)+VIRINP(I,NP)
+          Dum(I,ISS)=Dum(I,ISS)+VIRINP(I,NP)
+  220     continue
+c
+c rrb 2021/03/20; Compiler Update
+cx230   ISS=IDNCOD(ISS) 
+        ISS=IDNCOD(ISS)
+  230   continue
 c
 c               Total gains
         iss = irusta(np)
         do 232 i=1,12
 c 232     totv(iss) = totv(iss) + virinp(i,np)*mthday(i)*unitc
-  232     dummy(iss,3) = dummy(iss,3) + virinp(i,np)*mthday(i)*unitc
+c
+c rrb 2021/03/20; Compiler Update
+cx232     dummy(iss,3) = dummy(iss,3) + virinp(i,np)*mthday(i)*unitc
+          dummy(iss,3) = dummy(iss,3) + virinp(i,np)*mthday(i)*unitc
+  232   continue
   240 CONTINUE
 C
 C-------------------------------------------------------------------
@@ -201,10 +220,14 @@ C
 C
 C------  INITIALIZE ARRAYS RIVER AND AVINP
 C
-      DO 280 IS=1,NUMSTA+1
-      DO 280 I=1,12
-        Dum(I,IS)=0.
-  280 CONTINUE
+c
+c rrb 2021/03/20; Compiler Update
+cx    DO 280 IS=1,NUMSTA+1
+      do 281 IS=1,NUMSTA+1
+        DO 280 I=1,12
+          Dum(I,IS)=0.
+  280   CONTINUE
+  281 continue
 C
 C------ COMPUTE DIVERSION DEMAND AT EACH STATION
 C
@@ -253,7 +276,11 @@ c          Print annual total for all stations
       YTOT=0.
       DO 340 I=1,12
         Dum(I,NUMSTA+1)=Dum(I,NUMSTA+1)*MTHDAY(I)*unitc
-  340   YTOT=YTOT+Dum(I,NUMSTA+1)
+c
+c rrb 2021/03/20; Compiler Update
+cx340   YTOT=YTOT+Dum(I,NUMSTA+1)
+        YTOT=YTOT+Dum(I,NUMSTA+1)
+  340 continue
 C
       ytot=ytot*0.001
       WRITE(8,350) iyr, (Dum(I,NUMSTA+1),I=1,12),YTOT
@@ -271,10 +298,14 @@ c     write(10,200) (xmonam(i),i=1,12)
 c
 c------  initialize STATION array
 c
-      do 360 is=1,numsta+1
-      do 360 i=1,12
-        dum(i,is)=0.
-  360 continue
+c
+c rrb 2021/03/20; Compiler Update
+cx  do 360 is=1,numsta+1
+      do 361 is=1,numsta+1
+        do 360 i=1,12
+          dum(i,is)=0.
+ 360    continue
+ 361  continue
 c
 c------ compute instream demand at each node
 c
@@ -309,8 +340,12 @@ C
 c          Print annual total for all stations
         ytot=0.
         do 410 i=1,12
-        dum(i,numsta+1)=dum(i,numsta+1)*mthday(i)*factor
-  410   ytot=ytot+dum(i,numsta+1)
+          dum(i,numsta+1)=dum(i,numsta+1)*mthday(i)*factor
+c
+c rrb 2021/03/20; Compiler Update
+cx  410   ytot=ytot+dum(i,numsta+1)
+          ytot=ytot+dum(i,numsta+1)
+  410   continue
 c
         ytot=ytot*0.001
         write(13,350) iyr, (dum(i,numsta+1),i=1,12),ytot

@@ -103,7 +103,11 @@ c               to see if it can be served directly
               irepexp(n,nd) = 0
               goto 150
             endif
- 100      issr=idncod(issr)                        
+c
+c rrb 2021/03/20; Compiler Update
+cx 100      issr=idncod(issr) 
+            issr=idncod(issr)  
+  100     continue                     
 c
 c               Could not be served directly
 c               Must be served by an exchange
@@ -128,8 +132,16 @@ c              iExPoint(k)=issr
                iRepExp(n,nd) = issr
                go to 150
              endif
- 120       issd=idncod(issd)
- 130     issr=idncod(issr)
+c
+c rrb 2021/03/20; Compiler Update
+cx 120       issd=idncod(issd)
+             issd=idncod(issd)
+ 120       continue
+c
+c rrb 2021/03/20; Compiler Update
+cx 130     issr=idncod(issr)
+           issr=idncod(issr)
+ 130     continue
  
          if(iout.ne.0) then
            write(io99,119) nd, cdivid(nd), issd
