@@ -174,7 +174,7 @@ c rrb 2006/02/27; Establish a unit for standard outputs for baseflow
 c
 c _________________________________________________________
 c               Get date and time
-       call dattim(idatx, itim2, isgi)
+       call dattim(idatx, itim2)
 c
 c               Get proper dates on output
          im1 = 1

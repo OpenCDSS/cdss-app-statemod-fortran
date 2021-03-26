@@ -314,7 +314,7 @@ c _________________________________________________________
      1 efacto1,pfacto1,WFACTO1,    
      1 dfactoA ,dfactoI ,dfactoO, ffactoA, 
      1 CFACTOT, NRVREP ,NWRITE ,
-     1 ibrrep , ioprtn ,isgi,
+     1 ibrrep , ioprtn,
      1 icondem,maxbas, numbas, maxacc, ichk,   ichk99,
      1 iystr0, iyend0, maxdla, 
      1 maxdlm, maxrep, maxrea, numrea, maxio,  maxtrnw,

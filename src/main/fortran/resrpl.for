@@ -248,7 +248,7 @@ c      Step 4; Check available flow by putting release
 c		into a temp array, then checking
 c		downstream of the destination
 C
-C------  FILL THE TEMPARARY AVAILABLE FLOW
+C------  FILL THE TEMPORARY AVAILABLE FLOW
 C
       ISS=ircd
       DO 100 IS=1,NDNr

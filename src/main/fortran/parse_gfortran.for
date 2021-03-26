@@ -22,47 +22,49 @@ c
 c        
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
-c       Parse, it parses thru the command line to find request
-c		modified to support the gfortran method
-c		of accessing command line arguments
+c       Parses the command line to find request
+c       modified to support the gfortran method
+c       of accessing command line arguments.
+c       Parsing occurs by searching the entire command line for
+c       recognized substrings.
 c
 c _________________________________________________________
 c       Update History
 c
 c rrb 01/01/02; Added option 10 (baseflows with variable efficiency)
 c               and option 11 (baseflow with variable efficiency and
-c               wells with sprinklers get used first)
+c               wells with sprinklers get used first).
 c
-c rrb 02/05/07; Added gettyp and getpar for daily plotting capability
+c rrb 02/05/07; Added gettyp and getpar for daily plotting capability.
 c
-c rrb 03/06/02; Revise to recognize -NoLog as a seconary
+c rrb 03/06/02; Revise to recognize -NoLog as a secondary
 c               option and to print to a log file only if
-c               -NoLog is off
-c rrb 05/01/06  Add plan output type 21a
+c               -NoLog is off.
+c rrb 05/01/06  Add plan output type 21a.
 c jhb 05/06/14  Convert to the gfortran method of accessing command
 c               line arguments.  Convert the command line into a
-c		string starting at the 1st (not 0th) argument
-c		to reuse as much of hte old code as possible
+c               string starting at the 1st (not 0th) argument
+c               to reuse as much of the old code as possible
 c               use functions get_command, get_command_argument
 c
 c               ioptio  = primary option type
 c               ioptio2 = secondary option type
-c               filenc  = base file name
+c               filenc  = base file name without '.rsp' extension
 c
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
         dimension want(15), want2(25), wantx(15), titleh(25)
 c
 c rrb 00/08/04; Revise maximum command line length
-        character command*127, want*12, want2*12, rec12*12, filenc*256,
+        character command*512, want*12, want2*12, rec12*12, filenc*256,
      1            getid*12,  wantx*12, titleh*50,
      1            gettyp*12, getpar*12, rec1*1
-        ! vars for the new command line arg functions
-        character(len=127) :: cmdline
+        ! Variables for the new command line arg functions.
+        character(len=512) :: cmdline
         integer iarg
         character(len=100) :: dummy
         integer iarglen
@@ -124,9 +126,10 @@ c _________________________________________________________
 c
 c               Step 1; Initialize
 c
-c		iout = 	0 no details
-c			1 details
-c			2 summary
+c               iout = logging level
+c                      0 no details
+c                      1 details
+c                      2 summary
         iout = 1
         
         if(iout.eq.1) write(99,*) '  Parse'
@@ -135,8 +138,7 @@ c               Get command line data
         nin = 25
 c
 c rrb 00/08/04; Maximum command length
-        maxcl = 127
-c       maxcl = 256
+        maxcl = 512
 c
 c               Maximum want size (a12)
         maxwant=12
@@ -147,14 +149,18 @@ c
 c               Step 2; Get Command Line
 c
         !call getcl(command)
-        ! convert to gfortran method to create command arg string
-        ! first get the entire command line
+        ! Convert to gfortran method to create command arg string.
+        ! First get the entire command line.
         call get_command(cmdline)
-        ! next get the command line minus the program name
-        ! by finding the length of the program name - 0th arg
+        if(iout.eq.1)
+     +    write(99,*) ' Command line including program: ', cmdline
+        ! Next get the command line minus the program name
+        ! by finding the length of the program name - 0th arg.
         iarg = 0
         call get_command_argument(iarg,dummy,iarglen,istatus)
-        command = cmdline(iarglen+2:126)
+        command = cmdline(iarglen+2:511)
+        if(iout.eq.1)
+     +    write(99,*) ' Command line without program: ', command
 c
 c rrb 00/08/04; File length limit
 c rrb 03/06/02; Print at bottom if NoLog option is not on
@@ -177,29 +183,32 @@ c               Initialize
 c
 c _________________________________________________________
 c
-c               Step 3; Find control file name
+c               Step 3; Find response file name
 c                       (command is packed to left)
 c
 c rrb 2008/09/16; Allow operation without a control file name
 c rrb 2019/01/31; Detailed output
-        if(iout.eq.1) write(99,*) ' Parse; 0, command(1:1) ',
-     1                0, command(1:1)
+c       if(iout.eq.1) write(99,*) ' Parse; 0, command(1:1) ',
+c    1                0, command(1:1)
      
         if(command(1:1) .ne. '-') then
-c     
+          ! No dash so assume the response file name.
           filenc = ' '
           do i=1,maxcl
-c
-c rrb 2019/01/31; Detailed output
-             if(iout.eq.1) write(99,*) ' Parse; i, command(i:i) ',
-     1                    i, command(i:i)
-c
-c rrb 2004/08/23; Allow a full response name with .rsp
-c           if(command(i:i) .ne. ' ') then
+            if(iout.eq.1) then
+              ! Log the character being processed.
+              write(99,20) i, i, command(i:i)
+20            format('  Parse; command(',i2,':',i2,') = ',a1)
+            endif
+
+            ! Detect space or period.
+            ! Filename 'filenc' does NOT contain the extension.
+            ! Extension '.rsp' is ignored if specified (will be assumed later).
             if(command(i:i) .ne. ' ' .and. command(i:i).ne.'.') then
               filenc(i:i) = command(i:i)
               ii = i
             else
+              ! Done processing filename.
               goto 110
             endif
           end do
@@ -209,7 +218,8 @@ c _________________________________________________________
 c
 c               Step 4; Get the primary option type (if any)
 c
-  110   if(iout.eq.1) write(nlog,*) ' Parse; filenc = ', filenc
+  110   if(iout.eq.1) write(nlog,*)
+     1  ' Parse; filenc (filename without extension) = ', filenc
         rec12 = ' '
         do i=ii+1,maxcl
           if(command(i:i).eq. '-') then
@@ -414,7 +424,9 @@ c       Get file name if not in version, help or update mode
 c       and not provided
         if(ioptio.le.4 .or. ioptio.ge.8) then
           if(filenc.eq.' ') then
-            write(99,*) 'Enter base file name (statem, yampa, etc)'
+            ! The filename was not entered on the command line so prompt for it.
+            write(99,*)
+     1     'Enter base file name without .rsp (statem, yampa, etc)'
             write(99,*) ' '
             read(5,'(a256)') filenc
           endif
@@ -459,7 +471,7 @@ c _________________________________________________________
 c
 c               Formats
 c
-  100   format('  Parse; Command line argument: ',/, 2x, a127)
+  100   format('  Parse; Command line: ',/, 2x, a256)
   101   format(i1)
   
   192  format(2x, a12, ' or ', a12)
@@ -489,6 +501,3 @@ c               Error Processing
 c _________________________________________________________
 c
       END     
-
-
-
