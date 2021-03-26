@@ -150,7 +150,7 @@ c      IFR Rights               maxfrr        300   230
 c jhb 2014/11/01; Revise dimensions
 c   ISF rights          241-2241
 c                       because the IfrRigSP routine uses the op rule counter
-c                       as an index in the divi() array.  might have to go larger later.
+c                       as an index in the divi() array.  Might have to go larger later.
 c      IFR nodes within all reaches maxrea    N/A  2000
 C      POWER RIGHTS (inactive)  N/A            20    20
 c
@@ -182,38 +182,39 @@ c	Dimensions
 c
       include 'common.inc'
       character getid*12, fnlog*256, rec48*48, rec256b*256,
-     1 rec8*8    
+     1          rec8*8
 c jhb 2014/07/21 initialize this variable passed to xdebug and report
       integer :: nreach=0
-c
-c
+      ! Date and time for logging performance.
+      integer, dimension(3) :: dateparts
+      integer, dimension(4) :: timeparts
+      integer(kind=8) :: ms, dattim_ms
+      character formatted_string*32
+
 c _________________________________________________________
-c		Step 1; Initialize
+c       Step 1; Initialize
 c
-c		ver = xx.yy.zz; where
-c		     xx is the major version 
-c		     yy has new functionality
-c		     zz is a bug fix
-c		   For example:
-c			  12 has new *.ipy file
-c     
-c 			11 includes carrier loss, 
-c				10 includes plans
-c				 9 includes wells
-c				 8 includes daily capability
-c				 7 includes new binary output format			
-c		
-        ver = '16.00.47'
-        vdate = '2021/02/14'
-c
-c 6/20/95 Code isgi=0 for PC; isgi=1 for SGI
-        isgi = 0
+c       ver = xx.yy.zz; where
+c             xx is the major version
+c             yy has new functionality
+c             zz is a bug fix
+c             For example:
+c               12 has new *.ipy file
+c               11 includes carrier loss
+c               10 includes plans
+c                9 includes wells
+c                8 includes daily capability
+c                7 includes new binary output format
+
+        ver = '16.00.48'
+        vdate = '2021/03/24'
+
         igui = 0
         istop = 0
-        io99=99
-        nlog=99
-        nchk=98
-        ntmp=97
+        io99=99     ! unit number for error file
+        nlog=99     ! unit number for log file
+        nchk=98     ! unit number for check file
+        ntmp=97     ! unit number for temporary file
 c        
 c
 c _________________________________________________________
@@ -373,25 +374,22 @@ c               9 : BaseflowX; read baseflow (natural) at gaged locations
 c                   & estimate baseflows at ungaged locations
 c
 c-------------------------------------------------------------------
-c
-c
-c               Open Temp log file
-c rrb 03/06/02; Made an option and moved to parse 
+
+      ! Open startup log file.
       filenc='Statem'
       call namext(maxfn, filenc, 'log', filena)
       open(nlog,file=filena, status='unknown')
       
       write(nlog,200) ver, vdate
-c
-c _________________________________________________________
-c
+
+      ! Parse the command line.
       call parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)
 
-c     call parsgi(ioptio, ioptio2, filenc, getid)
-c
-crrb 99/05/20;
+      ! Get the path to the log file.
       call getpath(maxfn, filenc, fpath1)
-c
+
+      ! Close the startup log file.
+      write(*,*) 'Startup log file for messages to this point: ',filena
       close (nlog)
 c
 c
@@ -440,22 +438,29 @@ c         write(6,*) ' Statem; Past bad open statement'
 c
 c
 c _________________________________________________________
-c               Open log file
+c               Open dataset log file using name that matches response file.
 c rrb 03/06/02; Allow log file to be an option
       if(ioptio2.ne.20) then
+        ! Close the startup log file.
         close(nlog)
         call namext(maxfn, filenc, 'log', filena)
         open(nlog,file=filena, status='unknown')
-c
-c
-c _________________________________________________________
-c		Print heading        
+
+        ! Print log file heading.
         write(nlog,200) ver, vdate
         write(6,200) ver, vdate
 
+        ! Subsequent log file messages are written to log file with dataset name.
         fnlog = filena
         write(6,80) fnlog
- 80     format(/,'  Opening log file ', a256)
+ 80     format(/,'  Opening dataset log file: ', a256)
+        ! TODO smalers 2021-03-24 test dattim
+        ! - this is just a test of some new code that will be phased in
+        ! - need to implement ms calculation and formatted time string
+        call dattim(dateparts,timeparts)
+        call dattim_string(dateparts,timeparts,formatted_string)
+        ms = dattim_ms(dateparts,timeparts)
+        write(6,*) "Date/time=",formatted_string,' ms= ',ms
         call flush(6)
 
 c
@@ -551,12 +556,6 @@ cx        write(6,*) ' ** Try again **'
 cx        call flush(6)
 cx        ioptio = 0        
         goto 92
-
-        if(isgi.eq.0) then
-          goto 100
-        else
-          goto 170
-        endif
       endif
 c ______________________________________________________________________
 c rrb 00/10/30; Add random input file capability
@@ -632,6 +631,9 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
+c
+     1 '    - 2021-03-24 (16.00.48):',/
+     1 '     Updated code based on gfortran 10.2 warnings.',/
 c
      1 '    - 2021-02-14 (16.00.47):',/
      1 '     Revised common.inc & StateM.f to include maxcary',/
@@ -1993,7 +1995,7 @@ c
      1 '          rule types 27 and 28 (DivResP2 and DivRplP',/
      1 '    - 2008/03/13 (12.20)',/
      1 '        Revised convergence check in replace',/
-     1 '        Revised GetVer to set the default file type to unknown',/
+     1 '        Revised GetVer to set default file type to unknown',/
      1 '        Revised Oprinp to be backward compatible when reading',/
      1 '          a type 10, replacement reservoir, rule by setting',/
      1 '          the default for variable ioprlim(k)=0',/
@@ -2019,7 +2021,7 @@ c
      1 '        Revised SetQdiv and SetQdivC diversion & carrier',/
      1 '          location data for consistency',/
      1 '        Revised Execut, Rtnsec, Rtnsecw & Deplete to refine',/
-     1 ' 	    small, non-downstream return flows and depletions',/
+     1 '          small, non-downstream return flows and depletions',/
      1 '          for daily time step performance',/
      1 '    - 2008/01/10 (12.15)',/
      1 '        Revised DivResP2 (type 27) and Oprinp to simulate',/
@@ -2077,7 +2079,7 @@ c
      1 '            return ID in *.prf',/
      1 '         6. Revised GetSta to recognize a plan',/
      1 '    - 2007/12/06 (12.111)',/
-     1 '        Revised DirectBy (type 25) to initialize the CU factor',/
+     1 '        Revised DirectBy (type 25) to initialize CU factor',/
      1 '        Revised Oprinp to correct a problem reading reuse',/
      1 '          data for a type 24 (Water Right Exchange) rule'/
      1 '        Added ChkPrf to check plan return flow indicator',/
@@ -2293,8 +2295,8 @@ c
      1 '        Added DivcarL.f, type 45, Carrier with loss',/
      1 '        Revised Oprinp.f to read type 45 that allows',/
      1 '          losses for an intermediate carrier',/
-     1 '        Revised Oprfind.f to read carrier loss for intermediate',/
-     1 '          carriers',/
+     1 '        Revised Oprfind.f to read carrier loss for',/
+     1 '          intermediate carriers',/
      1 '        Revised OutBal2 to differentiate between carrier loss',/
      1 '          that may return to the system and system losses',/
      1 '          that do not return to the system',/
@@ -2510,8 +2512,8 @@ c
      1 '          to the screen to increase GUI performance',/
      1 '  **    Revised Seepage to be calculated at the end of a',/
      1 '          time step',/
-     1 '        Revised RtnSecRP.f to store total recharge in variable',/
-     1 '          pdrive',/
+     1 '        Revised RtnSecRP.f to store total recharge in',/
+     1 '          variable pdrive',/
      1 '        Revised OutPln.f and OutPlnMo.f to print recharge to',/
      1 '          a recharge plan (type 8) output',/
      1 ' Recent updates',/
@@ -2771,8 +2773,8 @@ c
      1 '          (e.g. ifix() instead of float())',/
      1 '        Revised Oprinp to correct reading of data for ',/
      1 '          a type 29 Plan Spill',/
-     1 '        Revised Sepsec to do seepage calculations even if',/
-     1 '          no reservoir seepage (return flows) data is provided',/
+     1 '        Revised Sepsec to do seepage calculations even if no',/
+     1 '          reservoir seepage (return flows) data is provided',/
      1 '          Note if no return flow data is provided seepage',/
      1 '          is determined to be a loss',/
      1 '        Revised Outbal2 to correct the water balance',/
@@ -2795,7 +2797,8 @@ c
      1 '        Finished enhancements to type 29 rule, Plan to Mis.',/
      1 '          that allow reservoir seepage (Recharge Pits) to',/
      1 '          be a water supply for a plan',/
-     1 '        Revised Virset to initialize CU for Baseflow reporting',/
+     1 '        Revised Virset to initialize CU for Baseflow',/
+     1 '          reporting',/
      1 '        Revised Outbal2 to include reservoir seepage in the ',/
      1 '          water balance calculations',/
      1 '        Revised Outbal2 to include reservoir seepage loss in ',/
@@ -2979,7 +2982,7 @@ c
      1 '        Revised Mdainp regarding a plan warning',/
      1 '    - 2005/08/30 (10.66)',/
      1 '        Minor clean up to call reporting',/
-     1 '     	Added detailed output to opr rule 11 (Divcar)',/
+     1 '        Added detailed output to opr rule 11 (Divcar)',/
      1 '          and 14 (Divcar1)',/
      1 '    - 2005/08/29 (10.65)',/
      1 '        Added better error checking to operating rules',/
@@ -3010,7 +3013,8 @@ c
      1 '          the source plan capacity',/
      1 '        Revised Oprinp to read a type 2 (divres) using the',/
      1 '          generic Operation right read routine OPrfind',/
-     1 '        Began developing RsrspuP (type 34) bookover with reuse',/
+     1 '        Began developing RsrspuP (type 34) bookover with',/
+     1 '          reuse.',/
      1 '    - 2005/06/29 (10.62)',/
      1 '        Corrected a reporting problem with type 28 (divrplP)',/
      1 '        Revised Execut to use a lower reoperation value for a',/
@@ -4291,4 +4295,3 @@ C
       call exit(1)
 
       END
-

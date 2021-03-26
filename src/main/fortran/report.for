@@ -89,7 +89,7 @@ c
 c               Step 1; Print title and get time
       write(nlog,100) ioptio, ioptio2
 c
-      call dattim(idatx, itim1, isgi)
+      call dattim(idatx, itim1)
       blank = '            '
       IIN=20
 c
@@ -105,14 +105,10 @@ c
   130 if(ioptio2.gt.0) then
         iopout = ioptio2
       else
-        if(isgi.eq.0) then
-          Write(6,190)
-          call flush(6)
-          Read (5,'(i5)') ioptio2          
-          write(nlog,*) '  Report from screen option = ', ioptio2
-        else
-          ioptio2=0
-        endif
+        write(6,190)
+        call flush(6)
+        read (5,'(i5)') ioptio2          
+        write(nlog,*) '  Report from screen option = ', ioptio2
 
         if(ioptio2.eq.0) then
           goto 210          
@@ -561,15 +557,11 @@ c rrb 06/14/97
            
         cplot = getid
         if(cplot.eq.blank) then
-          if(isgi.eq.0) then
-            write(6,*) ' '
-            write(6,*) ' Enter the reservoir ID to Plot or 0 to stop'   
-            write(6,*) ' '
-            call flush(6)
-            read(5,'(a12)') cplot   
-          else
-            write(6,*) ' Cannot read id from screen, use command option'
-          endif
+          write(6,*) ' '
+          write(6,*) ' Enter the reservoir ID to Plot or 0 to stop'   
+          write(6,*) ' '
+          call flush(6)
+          read(5,'(a12)') cplot   
         endif
                                  
         if(cplot.eq.blank .or. cplot.eq.'0          ') then
@@ -1356,7 +1348,7 @@ c
 c _________________________________________________________
 c rrb 7/29/94 Additional Output
 
-  210 call dattim(idatx, itim2, isgi)
+  210 call dattim(idatx, itim2)
 
       ctime1x = itim1(1)+itim1(2)/60.+itim1(3)/3600.+itim1(4)/100./3600.
       ctime2x = itim2(1)+itim2(2)/60.+itim2(3)/3600.+itim2(4)/100./3600.

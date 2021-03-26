@@ -18,100 +18,76 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-       subroutine dattim(idat, itim, isgi)
+      subroutine dattim(idat, itim)
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Description
 c
-c       	Dattim; It makes a system call to get 
-c		the date and time
-c		this version does it in the gfortran way
-c
-c _________________________________________________________
-c	Update History
-c		05/06/2014 - Jim Brannon
-c		converted this routine into a gfortran version
-c		use the values arg of the date_and_time function 
-c               to fill out the arrays
-c _________________________________________________________
-c
-c               Documentation
-c
-c              isgi= Switch for date and time call
-c                    0 = PC
-c                    1 = SGI workstation
-c              To switch operation 
-c                    1) Change isgi value
-c                    2) Change commented values 
+c       Makes a system call to get the date and time.
+c       This version uses the gfortran library function.
 c
 c _________________________________________________________
-c		Dimensions
+c       Update History
 c
-       character rec8*8, rec11*11
-       dimension idat(3), itim(4)        
-       !character(8)  :: date
-       !character(10) :: time
-       !character(5)  :: zone
-       integer,dimension(8) :: values
+c       2021-03-24 - Steve Malers
+c         Fix code - was not returning expected values.
+c       2014-05-06 - Jim Brannon
+c         Converted this routine into a gfortran version.
+c         Use the values arg of the date_and_time function 
+c         to fill out the arrays.
+c _________________________________________________________
+c
+c      Documentation
+c
+c              idat = integer array of date values
+c                     (1) = 4-digit year
+c                     (2) = 2-digit month 1-12
+c                     (3) = 2-digit day 1-31
+c
+c              itim = integer array of time values
+c                     (1) = 2-digit hour (0-23)
+c                     (2) = 2-digit minute (0-59)
+c                     (3) = 2-digit second (0-59)
+c                     (4) = 2-digit hundredths of second (0-99)
 c
 c _________________________________________________________
-c		Initialize
-       io99=99
+c     Dimensions
+c
+      !character rec8*8, rec11*11
+      dimension idat(3), itim(4)        
+      !character(8)  :: date
+      !character(10) :: time
+      !character(5)  :: zone
+      integer,dimension(8) :: values
+c
+c _________________________________________________________
+c     Initialize
 
-       ! using keyword arguments
-       !call date_and_time(date,time,zone,values)
-       !call date_and_time(DATE=date,ZONE=zone)
-       !call date_and_time(TIME=time)
-       call date_and_time(VALUES=values)
-       !print '(a,2x,a,2x,a)', date, time, zone
-       !print '(8i5)', values
+      ! These are earlier attempts to call built-in gfortran function.
+      ! Using keyword arguments.
+      !call date_and_time(date,time,zone,values)
+      !call date_and_time(DATE=date,ZONE=zone)
+      !call date_and_time(TIME=time)
 
-       if(isgi.eq.0) then
-c
-        !call date(rec8)
-        !read(rec8(1:2),'(i2)',end=928,err=928) idat(3)
-        !read(rec8(4:5),'(i2)',end=928,err=928) idat(2)
-        !read(rec8(7:8),'(i2)',end=928,err=928) idat(1)
-        idat(1) = values(1)
-        idat(2) = values(2)
-        idat(3) = values(3)
+      ! The following will return date and time using default time zone of UTC.
+      ! - time zone defaults to local time
+      call date_and_time(VALUES=values)
+      !print '(a,2x,a,2x,a)', date, time, zone
+      !print '(8i5)', values
 
-        !call time(rec11)
-        !read(rec11(1:2),'(i2)',end=928,err=928) itim(1)
-        !read(rec11(4:5),'(i2)',end=928,err=928) itim(2)
-        !read(rec11(7:8),'(i2)',end=928,err=928) itim(3)
-        !read(rec11(10:11),'(i2)',end=928,err=928) itim(4)
-        itim(1) = values(4)
-        itim(2) = values(5)
-        itim(3) = values(6)
-        itim(4) = values(7)
-      
-      else 
+      idat(1) = values(1)
+      idat(2) = values(2)
+      idat(3) = values(3)
 
-c       call idate(idat(3),idat(2),idat(1))
-c       call time(rec8)
-        !read(rec8(1:2),'(i2)',end=928,err=928) itim(1)
-        !read(rec8(4:5),'(i2)',end=928,err=928) itim(2)
-        !read(rec8(7:8),'(i2)',end=928,err=928) itim(3)
-        itim(1) = values(4)
-        itim(2) = values(5)
-        itim(3) = values(6)
-      endif
-  
+      ! values(4) is time differences from UTC in minutes, currently not used
+
+      itim(1) = values(5)
+      itim(2) = values(6)
+      itim(3) = values(7)
+      ! Convert number of milliseconds (0-999) to number of hundredths (0-99)
+      itim(4) = values(8)/10
+
       return
-c
-c _________________________________________________________
-c
-c rrb 97/11/02; Error Handling
-c
-c
-  928 write(io99,929)
-  929 format(' Dattim.f; Problem with an internal read of date or time')
-      goto 9999
- 9999 write(6,*) 'Stop 1'
-      call flush(6)
-      call exit(1)
 
-      stop
       end

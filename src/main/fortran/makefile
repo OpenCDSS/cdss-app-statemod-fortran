@@ -47,18 +47,26 @@ ifdef OS
 	ifeq ($(MSYSTEM),MINGW32)
 		EXE_BITS = 32
 		FFLAGS_ARCH =
+		# String to check for in 'file *.o'
+		OBJ_FILE_TYPE = 80386
+		OBJ_WRONG_FILE_TYPE = amd64
 	endif
 	ifeq ($(MSYSTEM),MINGW64)
 		EXE_BITS = 64
 		# The following is needed for 64-bit
 		# - see: https://github.com/actions/virtual-environments/issues/2721
 		FFLAGS_ARCH = -Wl,--default-image-base-low
+		# String to check for in 'file *.o'
+		OBJ_FILE_TYPE = amd64
+		OBJ_WRONG_FILE_TYPE = 80386
 	endif
 else
 	# Linux
 	# - always compile 64-bit version
 	EXE_BITS = 64
 endif
+
+BAD_OBJ_COUNT := $(shell file *.o | grep $(OBJ_WRONG_FILE_TYPE) | wc -l)
 
 # Below are the flags for debugging or for maximum performance, commented to explain use.
 
@@ -212,6 +220,7 @@ help:
 	@echo "StateMod makefile targets:"
 	@echo ""
 	@echo "all        Default target that prints this help message."
+	@echo "checkarch  Check that object files are consistent with shell 32 or 64 bits."
 	@echo "clean      Remove dynamically created files (but not final executable)."
 	@echo "help       Print this message."
 	@echo "printenv   Helper to print which operating system is used, controls configuration."
@@ -435,7 +444,11 @@ xdebug.o: common.inc
 #	putpath_windows.o 
 #
 # If necessary, temporarily copy files with errors into a comment below this line to let all compile.
-statemod: \
+statemod: checkarch statemod_compile
+	@echo "In statemod"
+
+# This target is used internally to allow 'checkarch' to be executed.
+statemod_compile: \
 	statem.o \
 		namext.o \
 		$(parse_o_file) \
@@ -472,6 +485,8 @@ statemod: \
 			count.o \
 			datinp.o \
 			$(dattim_o_file) \
+			dattim_ms.o \
+			dattim_string.o \
 			daydata.o \
 			daydist.o \
 			daydivo.o \
@@ -549,6 +564,7 @@ statemod: \
 			ifrrig2.o \
 			interp.o \
 			intersup.o \
+			isleapyear.o \
 			JMFlow.o \
 			JMStore.o \
 			mdainp.o \
@@ -659,7 +675,6 @@ statemod: \
 			stafind.o \
 			takout.o \
 			takou2.o \
-			test.o \
 			vircom.o \
 			virgain.o \
 			virin.o \
@@ -717,43 +732,82 @@ endif
 # Utility targets.
 .PHONY: clean veryclean
 
+# TODO smalers 2021-03-25 remove when verified
+#	@if [ $(BAD_OBJ_COUNT) -ne 0 ]; then \
+#		echo "Run 'make veryclean' and 'make statemod' to force recompile with correct compiler for current shell."; \
+#		echo "Exiting."; \
+#		exit 0; \
+#	fi;
+
+# TODO smalers 2021-03-25 this did not work because exit in shell does not cause exit in makefile.
+# - remove when working
+# Check the *.o files for architecture.
+# The following is output that can e used to indicate whether a .o file has been compiled with 32-bit or 64-bit compiler.
+# file divres.o:
+# 32-bit:
+#   divres.o: Intel 80386 COFF object file, no line number info, not stripped, 12 sections, symbol offset=0x1e886, 185 symbols
+# 64-bit:
+#   divres.o: Intel amd64 COFF object file, no line number info, not stripped, 14 sections, symbol offset=0x2023c, 189 symbols
+#checkarch:
+#	@echo "Count of files compiled with wrong compiler: $(BAD_OBJ_COUNT)"
+#	ifneq $(BAD_OBJ_COUNT),0
+#		$(error Detected $(BAD_OBJ_COUNT) object files of wrong bit count.  Run 'make veryclean' and 'make statemod' to force recompile with correct compiler for current shell.)
+#	endif
+
+ifneq ($(BAD_OBJ_COUNT),0)
+ifdef OS
+checkarch:
+	@echo "Count of files compiled with wrong compiler: $(BAD_OBJ_COUNT)"
+	$(error Detected $(BAD_OBJ_COUNT) object files of wrong bit count.  Run 'make veryclean' and 'make statemod' to force recompile with correct compiler for current shell.)
+else
+checkarch:
+	@echo "Assuming 64-bit on Linux."
+endif
+else
+ifdef OS
+checkarch:
+	@echo "Count of files compiled with wrong compiler: $(BAD_OBJ_COUNT)"
+else
+checkarch:
+	@echo "Assuming 64-bit on Linux."
+endif
+endif
+
 # Remove intermediate files used when compiling:
 # - Do not remove *.obj because that is used with Lahey and want gfortran compile to be separate.
+# - normal artifacs are *.o, ec.
+# - additional artifacts may be created due to compiler problem, for example as listed below.
+#     parse_gfortran.for.236r.expand
+#     parse_gfortran.for.237r.vregs
+#     parse_gfortran.for.238r.into_cfglayout
+#     parse_gfortran.for.239r.jump
+#     parse_gfortran.for.251r.reginfo
+#     parse_gfortran.for.274r.outof_cfglayout
+#     parse_gfortran.for.275r.split1
+#     parse_gfortran.for.277r.dfinit
+#     parse_gfortran.for.278r.mode_sw
+#     parse_gfortran.for.279r.asmcons
+#     parse_gfortran.for.284r.ira
+#     parse_gfortran.for.285r.reload
+#     parse_gfortran.for.292r.pro_and_epilogue
+#     parse_gfortran.for.295r.jump2
+#     parse_gfortran.for.306r.split4
+#     parse_gfortran.for.307r.stack
+#     parse_gfortran.for.308r.alignments
+#     parse_gfortran.for.310r.mach
+#     parse_gfortran.for.311r.barriers
+#     parse_gfortran.for.316r.shorten
+#     parse_gfortran.for.317r.nothrow
+#     parse_gfortran.for.318r.dwarf2
+#     parse_gfortran.for.319r.final
+#     parse_gfortran.for.320r.dfinish
 clean: printenv
 	@echo "-----------------------------------------------------------------------"
 	@echo "clean"
 	@echo ""
-	@echo "Removing compile byproducts but not final executable."
+	@echo "Removing compile artifacts but not final executable."
 	@echo "-----------------------------------------------------------------------"
-	# Normal bi-products.
 	rm -f *.o *.mod *.MOD
-	# Additional bi-products due to compiler problem, for example as listed below.
-	# -it is not clear what the significance of the numbers are and how many types of files
-	#  may result so use a pattern
-	# parse_gfortran.for.236r.expand
-	# parse_gfortran.for.237r.vregs
-	# parse_gfortran.for.238r.into_cfglayout
-	# parse_gfortran.for.239r.jump
-	# parse_gfortran.for.251r.reginfo
-	# parse_gfortran.for.274r.outof_cfglayout
-	# parse_gfortran.for.275r.split1
-	# parse_gfortran.for.277r.dfinit
-	# parse_gfortran.for.278r.mode_sw
-	# parse_gfortran.for.279r.asmcons
-	# parse_gfortran.for.284r.ira
-	# parse_gfortran.for.285r.reload
-	# parse_gfortran.for.292r.pro_and_epilogue
-	# parse_gfortran.for.295r.jump2
-	# parse_gfortran.for.306r.split4
-	# parse_gfortran.for.307r.stack
-	# parse_gfortran.for.308r.alignments
-	# parse_gfortran.for.310r.mach
-	# parse_gfortran.for.311r.barriers
-	# parse_gfortran.for.316r.shorten
-	# parse_gfortran.for.317r.nothrow
-	# parse_gfortran.for.318r.dwarf2
-	# parse_gfortran.for.319r.final
-	# parse_gfortran.for.320r.dfinish
 	rm -f *.for.*r.*
 
 # Print important environment information to help understand setup.
@@ -779,7 +833,7 @@ veryclean: printenv clean
 	@echo "-----------------------------------------------------------------------"
 	@echo "veryclean"
 	@echo ""
-	@echo "Removing compile byproducts (make clean) and final executable."
+	@echo "Removing compile artifacts (make clean) and final executable."
 	@echo "Only executable for current StateMod $(EXE_BITS)-bit version is removed."
 	@echo "-----------------------------------------------------------------------"
 ifdef OS
