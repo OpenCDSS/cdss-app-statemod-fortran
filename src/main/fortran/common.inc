@@ -47,33 +47,33 @@ c                 output for a WWSP reporting
 c rrb 2018/08/05; Upgrade max operating rule source and demand 
 c                 from 20 to 40 
 c jhb 2014/11/01; Revise dimensions
-c   ISF rights			241-2241
+c   ISF rights          241-2241
 c                       because the IfrRigSP routine uses the op rule counter
-c                       as an index in the divi() array.  might have to go larger later. 
+c                       as an index in the divi() array.  Might have to go larger later. 
 c rrb 2010/09/10; Revise dimensions
-c   Div Rights		    5500 = 6500
-c   Res Rights 		    201 = 351
-c   Well Rights		    11000 = 7500  13110
-c   Well Returns	    10000 = 13110
-c	  Total Structs	    14000 = 7000
-c   Operation Rights	601 = 800  3701
-c   Diversion Returns	5001 = 3920 3920
-c   Well Returns			13110 = 604 3080
-c   Well Depletions   3080 8500
-c   Number of rights	7000 = 7600 14991
-c   Max Dly						3100 = 302 525
-c   Max ISF Reach			2299 = 1002
+c   Div Rights              5500 = 6500
+c   Res Rights              201 = 351
+c   Well Rights             11000 = 7500  13110
+c   Well Returns            10000 = 13110
+c   Total Structs           14000 = 7000
+c   Operation Rights        601 = 800  3701
+c   Diversion Returns       5001 = 3920 3920
+c   Well Returns            13110 = 604 3080
+c   Well Depletions         3080 8500
+c   Number of rights        7000 = 7600 14991
+c   Max Dly                 3100 = 302 525
+c   Max ISF Reach           2299 = 1002
 c rrb 2008/09/22; Add water right on/off switch read 
-c		    (e.g. idvrsw1 not idvrsw) in order
-c		    to allow more than one operating rule
-c		    to refrence a water right
+c                (e.g. idvrsw1 not idvrsw) in order
+c                to allow more than one operating rule
+c                to reference a water right
 c
 c rrb 98/11/18; Wells
 c rrb 99/10/05; Return table total (dlytot)
 c rrb 00/02/07; increase dimension of return data from 49 to 200 
 c rrb 00/04/07; add primary sw/gw switch
 c rrb 00/04/24; changed max # of gw returns 3402 = 5002
-c rrb 00/04/24; chagned max # of delay tables 200 = 550
+c rrb 00/04/24; changed max # of delay tables 200 = 550
 c
 c rrb 00/05/02; change max # of gw returns from 9002 to 20000
 c rrb 00/06/16; add (idemtyp) to control source of well demands and 
@@ -84,8 +84,8 @@ c rrb 00/06/16; added total demand by a structure (divert)
 c rrb 00/07/03; added total IWR demand by structure (diverirT)
 c rrb 00/08/05; Revised file name length from 72 to 256 and added maxfn
 c rrb 00/10/03; Revised res rights 96 - 351
-c rrb 00/10/23; Added rgspill to accomodate Elephant Butte Spills
-c rrb 00/10/30; Began ability to read randum input file
+c rrb 00/10/23; Added rgspill to accommodate Elephant Butte Spills
+c rrb 00/10/30; Began ability to read random input file
 c rrb 00/11/18; Add time series of Area served by GW (areawa), 
 c               served by sprinklers (areasp) and
 c               time series of well capacity (divcapwa)
@@ -105,7 +105,7 @@ c               dcu  =CU from SW for a Div or D&W,
 c               dcuw =CU from GW for a Well Only, 
 c               dcut =CU from SW, GW & Soil for a Div or D&W
 c               dcutw=CU from GW and Soil for a Well Only
-c rrb 01/02/23; divsw added to accomodate demand type 4
+c rrb 01/02/23; divsw added to accommodate demand type 4
 c rrb 01/03/29; Added generic units (fm(13), fd(13), unitd, unitm)
 c rrb 01/03/29; Added tempTS, tempFS and tempCU for baseflow to soil,
 c               from soil and CU
@@ -134,7 +134,7 @@ c                    ownership ratio
 c rrb 06/15/04; Dimension for linked model
 c rrb 04/10/15; change maxuse from 2278 to 5000
 c rrb 04/11/22; Added plan (augmentation and Terms and Conditions) 
-c		see PlanCom
+c               see PlanCom
 c rrb 04/12/28; Added reuse plan data. See PlanCom
 c rrb 05/07/22; Added call information (imcdC)
 c rrb 06/08/29; Data for new CU approach
@@ -241,12 +241,12 @@ c rrb 97/10/22; Redimension for 25 replacement reservoirs
      1 irepexp(25,3060),ireptyp(3060),
 c
 c grb 4-23-97 added variable iopdesr & iopSouR to reflect diversion 
-c	      and source type
+c             and source type
      1 iopDesR(3701), iopSouR(3701),
 c
 c rrb 2007/10/26; Add Replacement Reservoir max release 
 c                 operating ID pointer (irepMax) and operating limit
-c		  code (iRepLim)  
+c                 code (iRepLim)  
      1 irepMax(25), iRepLim(25),
 c
 c rrb 2018/12/08; Add (ioppln) to allow a type 52 with multiple
@@ -434,7 +434,7 @@ C
 c
 c _________________________________________________________
 c
-c		Operating Rule Data #2
+c              Operating Rule Data #2
       COMMON/OPR1/
      1                   DCRPOW(   1001),  IPRGST( 2,1001),
      2 POWDMD(12,1001),  POWREQ(   1001),  POWREL(   1001),
@@ -447,7 +447,7 @@ C
 c
 c _________________________________________________________
 c
-c		Operating Rule Data #2
+c              Operating Rule Data #2
       COMMON/OPR2/
 c
 c rrb 2018/08/05; Upgrade max operating rule source and demand 
@@ -717,7 +717,7 @@ c
 c
 c _________________________________________________________
 c
-c		Plan Data (Augmentaton and Terms and Conditions)
+c              Plan Data (Augmentaton and Terms and Conditions)
        common/PlanCom/
      1 maxplan,           maxPlnO,          maxPlnU,       nplan, 
      1 NumPlan,           maxPlnT,          NumPlnT,
@@ -730,7 +730,7 @@ cx     1 Pname(6,1440),
      1 PoblD(7320,1440),   PdemM(1440),       PdemTm(1440),
      1 Pdrive(1440),       PdriveM(1440),
 c
-c		Reuse Plan Data     
+c              Reuse Plan Data     
      1 iPlnTyp(1440),      ipnode(5000),     ipSource(1440), 
      1 Psup(240,1440),     Psuply(1440),      PsuplyT(1440), 
      1 PsupD(7320,1440),   PsuplyM(1440),     PsuplyTm(1440),
@@ -738,17 +738,17 @@ c		Reuse Plan Data
      1 Peff(12,1440),      iPrf(1440),
      1 iPfail(1440),       Pfail(1440),       iPacct(1440),
 c
-c		Plan Augmentation
-c		Note 13110 is because well plans are tied to well rights
+c              Plan Augmentation
+c              Note 13110 is because well plans are tied to well rights
      1 iplanWon,           iplanw(13110),     PlntypC(1440),          
      1 PlanW(1440),        Psource(1440), 
      1 PwellC(1440),       PwellCM(1440),      rdvnkwp(1440),
 c
-c		Reservoir plan storage data
+c              Reservoir plan storage data
      1 Psto1(1440),        Psto2(1440),       Pevap(1440),           
      1 Psto1M(1440),       Psto2M(1440),      PevapM(1440),
 c
-c		Plan return flow and recharge plans
+c              Plan return flow and recharge plans
      1 maxrtnPP, numRtnPP,
      1 ipPln(1440),       rlossP(1440),       rlossPM(1440), 
 c
@@ -756,7 +756,7 @@ c
      1 pctlosPP(1444),    irtndlPP(1444),     irnordPP(5005),
      1 irnstaPP(1444),    irnPlan(1444),
 c
-c		Reservoir return flow and recharge plans
+c              Reservoir return flow and recharge plans
      1 maxrtnRP, numRtnRP,
      1 iplnR(1440),       iplnD(1440),
 cx   1 ipRes(1440),       rlossR(1440),       rlossRM(1440), 
@@ -775,7 +775,7 @@ c      and iwwPlan an indicator we have a WWSP plan
 c
 c _________________________________________________________
 c
-c		Import Data (
+c              Import Data (
        common/ImpCom/
      1 maxImprt,        nImport,
      1 PImportX(13,1440),Pimport(1440),PImportM(1440),PimportT(1440), 
@@ -788,7 +788,7 @@ c		Import Data (
 c
 c _________________________________________________________
 c
-c		Call Data 
+c              Call Data 
        common/CallCom/
      1 ioutc, ioutcS, ioutcR, 
      1 istrtype(5000),     imcdL(5000), ccallR(5000)

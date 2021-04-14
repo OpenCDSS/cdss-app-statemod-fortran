@@ -101,7 +101,7 @@ c	 	    e.g. column of Avail Flow)
 c		Set ndivT number of columns to print in title
 c		Set ndivF number of columns to weight by factor
 
-c		Set nrid column of rid, strucutre type 
+c		Set nrid column of rid, structure type
 c		Set nxstr column of xstr,number of structures
 c               Set nrimcdX column of rimcdX, call location
 c		Set nccallR column of call right
@@ -568,7 +568,7 @@ c     1  ' Priorty   Other    Loss  Bypass   SoilM  Supply   Short',
      1  '      NA      NA      NA      NA',
      1  3('     (+)'),'     (-)     (+)     (+)',
      1  2('     (-)'),'     (+)      NA NA                    NA',/
-     1  34x, 29('    (', i2,')'),' (',i2,')                (', i2,')'/       
+     1  34x, 29('    (', i2,')'),' (',i2,')                (', i2,')'/
      1  '___________ ____________ ____ ____', 29(' _______'),
      1  ' ____________ ___________')
 

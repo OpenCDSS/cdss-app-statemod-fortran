@@ -88,10 +88,10 @@ c	        and store in common.inc
 c
 c		Set ndivP number of columns to print before 
 c		    call information (control location and right)
-c	 	    e.g. column of Avail Flow)	      
+c	 	    e.g. column of Avail Flow)
 c		Set ndivT number of columns to print in title
 c		Set ndivF number of columns to weight by factor
-c		Set nrid column of rid, strucutre type 
+c		Set nrid column of rid, structure type
 c		Set nxstr column of xstr,number of structures
 c               Set nrimcdX column of rimcdX, call location
 c		Set nccallR column of call right

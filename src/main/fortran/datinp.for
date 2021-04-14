@@ -335,7 +335,7 @@ c
 c		Read ok if not found
 c		iok=0 Not OK if not found
 c		iok=1 OK if not found
-	      iok=1        
+         iok=1
         
         call getctlC(nlog, 1, iok,0, 'Instream_Flow_Type      ',
      1    ireach, r, cx, rec80)
@@ -688,7 +688,7 @@ c               *.ifm is opened
 
       if(icall.gt.0)  then
         write(nlog,*)'  ** Detailed call information             On **'
-        write(nlog,*)'  ** Detalied call ID            ',ccall,   ' **'
+        write(nlog,*)'  ** Detailed call ID            ',ccall,   ' **'
       else
         write(nlog,*)'  ** Detailed call information            Off **'
       endif
@@ -1208,7 +1208,7 @@ c		Initialize reuse plan array
 c		Note ipnode(i)>0 means the river node has a reuse plan
       do ns=1,maxsta
         ipnode(ns)=0
-      end do	
+      end do
 c
 c __________________________________________________________
 c               Step X; Read River Station (*.ris) 

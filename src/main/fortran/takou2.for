@@ -45,7 +45,7 @@ c  Step 1; Initialize
       fac=1.9835 
       
       ISS=ISCD
-      AVAIL(ISS)=AVAIL(ISS)-DIVACT	
+      AVAIL(ISS)=AVAIL(ISS)-DIVACT
       ISS=IDNCOD(ISS)
       
       if(iout.eq.2) then        

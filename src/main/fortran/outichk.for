@@ -165,9 +165,9 @@ c
 c ---------------------------------------------------------
 c          Reoperation details - Return flow for a call by replace
           if(ichk9.eq.2) then
-	          rec12 = crigid(l2)
-	          rec12b='Div Return  '
-	          nameX=named(l2)
+            rec12 = crigid(l2)
+            rec12b='Div Return  '
+            nameX=named(l2)
             write(nlog,524) ichk4n, IYRmo(mon), xmonam(mon),
      1        idy,  iwx, l2,
      1        rec12b, l1, rec12, nameX, 
@@ -179,9 +179,9 @@ c ---------------------------------------------------------
 c          Reoperation details - Diversion from a call to Splatte 
 c          Note l2=isp1
           if(ichk9.eq.3) then
-	          rec12 = corid(l2)
-	          rec12b='Opr Rule    '
-	          nameX=nameo(l2)
+            rec12 = corid(l2)
+            rec12b='Opr Rule    '
+            nameX=nameo(l2)
          
             write(nlog,524) ichk4n, IYRmo(mon), xmonam(mon), 
      1        idy, iwx, l2,         
@@ -193,9 +193,9 @@ c
 c ---------------------------------------------------------
 c          Reoperation details - Operating Rule 
           if(ichk9.eq.4) then
-	          rec12 = corid(l2)
-	          rec12b='Opr Rule    '
-	          nameX=nameo(l2)
+            rec12 = corid(l2)
+            rec12b='Opr Rule    '
+            nameX=nameo(l2)
          
             write(nlog,524) ichk4n, IYRmo(mon), xmonam(mon), 
      1        idy, iwx, l2,         
@@ -208,36 +208,36 @@ c
 c ---------------------------------------------------------
 c          Reoperation details - Non downstream Return Flows 
           if(ichk9.eq.5) then
-c		Detailed Output - Instream flow	    
-	          if(l1.eq.1) then
-	            rec12 = cisfwr(l2)
-	            rec12b='ISF Return  '
-	            nameX=namei(l2)	        
-	          endif  
+c		Detailed Output - Instream flow
+            if(l1.eq.1) then
+              rec12 = cisfwr(l2)
+              rec12b='ISF Return  '
+              nameX=namei(l2)
+            endif
 c
 c -------------------------------------------------------
-c		Detailed Output - Reservoir	      
-	          if(l1.eq.2) then
-	            rec12 = creswr(l2)
-	            rec12b='Res Return  '
-	            nameX=namer(l2)	        
-	          endif
+c		Detailed Output - Reservoir
+            if(l1.eq.2) then
+              rec12 = creswr(l2)
+              rec12b='Res Return  '
+              nameX=namer(l2)
+            endif
 c
 c -------------------------------------------------------
-c		Detailed Output - Diversion	      
-	          if(l1.eq.3) then
-	            rec12 = crigid(l2)
-	            rec12b='Div Return  '
-	            nameX=named(l2)
-	          endif
+c		Detailed Output - Diversion
+            if(l1.eq.3) then
+              rec12 = crigid(l2)
+              rec12b='Div Return  '
+              nameX=named(l2)
+            endif
 c
 c -------------------------------------------------------
-c		Detailed Output - Well	      
-	          if(l1.eq.6) then
-	            rec12 = crigidw(l2)
-	            rec12b='Well Return '
-	            nameX=namedw(l2)
-	          endif  
+c		Detailed Output - Well
+            if(l1.eq.6) then
+              rec12 = crigidw(l2)
+              rec12b='Well Return '
+              nameX=namedw(l2)
+            endif
           
             write(nlog,524) ichk4n, IYRmo(mon), xmonam(mon), 
      1        idy, iwx, l2,         
@@ -250,9 +250,9 @@ c ---------------------------------------------------------
 c          Reoperation details - Reservoir Seepage 
     
           if(ichk9.eq.6) then
-	          rec12  = 'NA          '
-	          rec12b = 'Res Seepage '
-	          nameX='NA                      '
+            rec12  = 'NA          '
+            rec12b = 'Res Seepage '
+            nameX='NA                      '
   
             write(nlog,524) ichk4n, IYRmo(mon), xmonam(mon),
      1        idy, iwx, -1,         

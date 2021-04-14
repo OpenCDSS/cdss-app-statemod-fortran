@@ -22,7 +22,7 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Rgrg; It simulates the  Rio Grande Compact for both the
 c             Rio Grande and Conejos River
@@ -173,7 +173,7 @@ c               iopsou(10,l2)   = Source (index flow station)
 c                                 Norton Drain South af/yr
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
       include 'common.inc'
 c
@@ -221,7 +221,7 @@ c                                                2 print Conejos Only
       if(ichk.eq.118) ichk1=1
 
       if(ichk1.eq.1) then
-cx	WRITE(nlog,*) '  Rgrg.for iyr, mon, idy ', iyr, mon, idy
+cx      WRITE(nlog,*) '  Rgrg.for iyr, mon, idy ', iyr, mon, idy
       endif
 
       nrg   = nrg+1
@@ -242,8 +242,8 @@ cx	WRITE(nlog,*) '  Rgrg.for iyr, mon, idy ', iyr, mon, idy
 c
 c rrb 00/11/02; Need to save between iterations like qneed1             
       if(nrg.eq.1) then
-	      qneed1(irg) = 0.0
-	      aloifr1(irg) = 0.0
+        qneed1(irg) = 0.0
+        aloifr1(irg) = 0.0
       endif
       ntbl=31
 c
@@ -257,8 +257,8 @@ c
 c rrb 01/11/14; Set for daily
       rimd=float(idy)
       if(icarry.eq.1) then 
-	imon=12
-	rimd=31.0
+        imon=12
+        rimd=31.0
       endif
 c
 c               c. Flowrq, the cumulative delivery variable
@@ -269,19 +269,19 @@ c                  compact by Opr rule up to this iteration.
 c
 c               d. Set units for daily model
       do i=1,12
-	 f(i)=factor* float(mthday(i))
+        f(i)=factor* float(mthday(i))
       end do  
       fac=factor*float(mthday(imon))
 c
 c rrb 01/11/14; Set generic stream variable for daily or monthly model
       if(iday.eq.0) then
-	 do is=1,numsta
-	   avtemp(is)=river(is)
+        do is=1,numsta
+          avtemp(is)=river(is)
         end do
       else
-	 do is=1,numsta
-	   avtemp(is)=riverm(is)/rimd
-	 end do
+        do is=1,numsta
+          avtemp(is)=riverm(is)/rimd
+        end do
       endif
 c
 c _________________________________________________________
@@ -330,7 +330,7 @@ c                  Also, set qnov and qdec for annual printout.
 c
 c rrb 01/11/14; Test average flow to date
 c       qindex(imon,irg)=river(is1)
-	qindex(imon,irg)=avtemp(is1)
+        qindex(imon,irg)=avtemp(is1)
 
 c
 c rrb 01/11/14; Test
@@ -341,23 +341,23 @@ c rrb 01/11/14; Test average flow to date
 c       if(imon.eq.11) qnov(irg)=river(is1)*fac
 c       if(imon.eq.12) qdec(irg)=river(is1)*fac
 
-	if(imon.eq.11) qnov(irg)=avtemp(is1)*fac
-	if(imon.eq.12) qdec(irg)=avtemp(is1)*fac
+        if(imon.eq.11) qnov(irg)=avtemp(is1)*fac
+        if(imon.eq.12) qdec(irg)=avtemp(is1)*fac
       endif
 
       if(irg.eq.2) then
-	if(imon.lt.4 .or. imon.gt.10) then
+        if(imon.lt.4 .or. imon.gt.10) then
 c
 c rrb 01/11/14; Test average flow to date
 c         qindex(imon,irg)= float(iopsou(2,l2)) * river(is1)
-	  qindex(imon,irg)= float(iopsou(2,l2)) * avtemp(is1)
-	else
+          qindex(imon,irg)= float(iopsou(2,l2)) * avtemp(is1)
+        else
 c
 c rrb 01/11/14; Test average flow to date
 c         qindex(imon,irg)= float(iopsou(2,l2)) * river(is1) +
 c    1                      float(iopsou(4,l2)) * river(is2) +
 c    1                      float(iopsou(6,l2)) * river(is3)
-	  qindex(imon,irg)= float(iopsou(2,l2)) * avtemp(is1) +
+          qindex(imon,irg)= float(iopsou(2,l2)) * avtemp(is1) +
      1                      float(iopsou(4,l2)) * avtemp(is2) +
      1                      float(iopsou(6,l2)) * avtemp(is3)
 
@@ -365,11 +365,11 @@ c
 c rrb 00/10/06; Error impacts annual at Conejos only moved below if
 c         if(imon.eq.11) qnov(irg)=qindex(imon,irg)*fac
 c         if(imon.eq.12) qdec(irg)=qindex(imon,irg)*fac
-	endif
+        endif
 c
 c rrb 00/10/06; Error impacts annual at Conejos only moved below if
-	if(imon.eq.11) qnov(irg)=qindex(imon,irg)*fac
-	if(imon.eq.12) qdec(irg)=qindex(imon,irg)*fac
+        if(imon.eq.11) qnov(irg)=qindex(imon,irg)*fac
+        if(imon.eq.12) qdec(irg)=qindex(imon,irg)*fac
       endif
 c
 c _________________________________________________________      
@@ -377,22 +377,22 @@ c
 c               Step 3; Set index flow for future months
 c
       do i=imon+1,12
-	 qindex(i,irg)=0.0
+        qindex(i,irg)=0.0
       end do
 c
 c               a. Months 10 - 12 to average values when no actual
 c                  value exists.
 c                  Note qindex(n,1)=rio grande & qindex(n,2)=conejos
       if(irg.eq.1) then
-	 if(imon.lt.10) qindex(10,irg) = 30000./f(10)
-	 if(imon.lt.11) qindex(11,irg) = 12500./f(11)
-	 if(imon.lt.12) qindex(12,irg) = 12500./f(12)
+        if(imon.lt.10) qindex(10,irg) = 30000./f(10)
+        if(imon.lt.11) qindex(11,irg) = 12500./f(11)
+        if(imon.lt.12) qindex(12,irg) = 12500./f(12)
       endif
 
       if(irg.eq.2) then
-	 if(imon.lt.10) qindex(10,irg) = 8000./f(10)
-	 if(imon.lt.11) qindex(11,irg) = 4000./f(11)
-	 if(imon.lt.12) qindex(12,irg) = 4000./f(12)
+        if(imon.lt.10) qindex(10,irg) = 8000./f(10)
+        if(imon.lt.11) qindex(11,irg) = 4000./f(11)
+        if(imon.lt.12) qindex(12,irg) = 4000./f(12)
       endif
 
 c
@@ -403,11 +403,11 @@ c               Step 4; Calculate index flow to date (to previous
 c                       month) for forecast period (Apr - Sept)
       qtodate = 0.0
       if(imon.ge.4) then
-	 i2=min0(imon-1, 9)
-	 do i=4,i2
-	   qtodate = qtodate + qindex(i,irg)*f(i)
-	 end do
-	 qtodate = qtodate/fac
+        i2=min0(imon-1, 9)
+        do i=4,i2
+          qtodate = qtodate + qindex(i,irg)*f(i)
+        end do
+        qtodate = qtodate/fac
       endif
 c
 c _________________________________________________________      
@@ -424,10 +424,10 @@ c
 c rrb 01/11/14; Test
 c       qdel(imon,irg) = float(iopsou(2,l2)) * river(ifcd) +
 c    1                   float(iopsou(4,l2)) * river(is2)
-	 qdel(imon,irg) = float(iopsou(2,l2)) * avtemp(ifcd) +
+        qdel(imon,irg) = float(iopsou(2,l2)) * avtemp(ifcd) +
      1                   float(iopsou(4,l2)) * avtemp(is2)
 
-	 qdel(imon,irg) = amax1(0.0, qdel(imon,irg))
+        qdel(imon,irg) = amax1(0.0, qdel(imon,irg))
 c       x=float(iopsou(2,l2))*river(ifcd)*fac
 c       y=float(iopsou(4,l2))*river(is2)*fac
 c       write(nlog,*) '  Rgrg; imon, nrg, x,y, qdel(imon,irg)', imon,  
@@ -442,15 +442,15 @@ c
 c
 c rrb 01/11/14; Test
 c       qdel(imon,irg) = float(iopsou(2,l2))* river(ifcd)
-	 qdel(imon,irg) = float(iopsou(2,l2))* avtemp(ifcd)
-	 qdel(imon,irg) = amax1(0.0, qdel(imon,irg))
+        qdel(imon,irg) = float(iopsou(2,l2))* avtemp(ifcd)
+        qdel(imon,irg) = amax1(0.0, qdel(imon,irg))
       endif
 c
 c ---------------------------------------------------------
 c               c. Delivery for future months
 c
       do i=imon+1,12
-	 qdel(i,irg)=0.0
+        qdel(i,irg)=0.0
       end do
 c
 c ---------------------------------------------------------
@@ -460,11 +460,11 @@ c                  forecast season (4-9)
       xtodate = 0.0
       if(imon.ge.4) then
 c
-	 do i=4,imon-1
-	   xtodate = xtodate + qdel(i,irg)*f(i)
+        do i=4,imon-1
+          xtodate = xtodate + qdel(i,irg)*f(i)
 c         write(nlog,*) '  Rg; i, qdel, xtodate ',i,qdel(i,irg),xtodate
-	 end do
-	 xtodate = xtodate/fac
+        end do
+        xtodate = xtodate/fac
       endif
 c
 c _________________________________________________________
@@ -485,15 +485,15 @@ c                    months except 11 & 12 where it is adjusted
 c                  qpaper, is the 5,000 credit per river basin
 
       if(irg.eq.1) then
-	qnative1= 27000./fac
-	qnative = 27000./fac
-	qpaper  = 5000./fac
+        qnative1= 27000./fac
+        qnative = 27000./fac
+        qpaper  = 5000./fac
       endif
 
       if(irg.eq.2) then
-	qnative1= 6000./fac
-	qnative = 6000./fac
-	qpaper  = 5000./fac
+        qnative1= 6000./fac
+        qnative = 6000./fac
+        qpaper  = 5000./fac
       endif  
 c
 c rrb 00/03/16; Keep native constant regardless of month              
@@ -523,9 +523,9 @@ c                    get reduced over time
 c
 c rrb 00/06/09; Forecast is known if October
       if(mon.le.9) then
-	fore1 = amax1(-1.0 * forecast(imon,nf), 0.0)
+        fore1 = amax1(-1.0 * forecast(imon,nf), 0.0)
       else
-	fore1 = qtodate
+        fore1 = qtodate
       endif
 c     write(nlog,*) '  Rgrg; nf, fore1, ', nf, fore1*fac
 c     write(nlog,*) '  rg; nf, fore1 = ', nf, fore1
@@ -552,7 +552,7 @@ c                 note the following calculation skips current month,
 c                 the one we are calculating a need for
       qsupply = adjfor*fac
       do i=1,12
-	if(i.ne.imon) qsupply=qsupply+qindex(i,irg)*f(i)
+        if(i.ne.imon) qsupply=qsupply+qindex(i,irg)*f(i)
       end do
       qsupply=qsupply/fac
 c
@@ -585,15 +585,15 @@ c                   drain south - paper credit - surplus (qcarry)
 c rrb 01/08/10; Revised treatment of surplus/shortage by year
 c        write(nlog,*) '  Rgrg; idebt, iyr', idebt, iyr
       if(iyr.ge.idebt) then
-	qneed=qobl - qcbp - qnative - qndsc-qpaper-qcarry(irg)/f(imon)
+        qneed=qobl - qcbp - qnative - qndsc-qpaper-qcarry(irg)/f(imon)
       else
-	qneed=qobl - qcbp - qnative - qndsc-qpaper 
+        qneed=qobl - qcbp - qnative - qndsc-qpaper
       endif
-      qneed=qneed*fac 
+      qneed=qneed*fac
 c
 c                b. Need is qneed - supply to date by RG - Conejos
       do i=1,imon-1
-	qneed=qneed-qdel(i,irg)*f(i)
+        qneed=qneed-qdel(i,irg)*f(i)
       end do
 c
 c rrb 00/11/02; Correction?
@@ -610,15 +610,15 @@ c rrb 01/08/10; Revise use of variable qdebt (idebt) to be year
 c               month when payback occurs
 c     qneed=amax1(0.0, (qneed-qdebt(irg))/f(imon)) 
       qneed=amax1(0.0, (qneed)/f(imon)) 
-	
+
       c1 = float(10-imon+1)
       c1 = amax1(c1, 1.0)
 c
 c               nrg = # of times called this time step
       IF(nrg.eq.1) then
-	flowrq1=0.0
+        flowrq1=0.0
       else
-	flowrq1=(flowr(imon,nf) - flowrq(nf)) * c1
+        flowrq1=(flowr(imon,nf) - flowrq(nf)) * c1
       endif
 
       qneed =qneed  - flowrq1
@@ -634,9 +634,9 @@ c rrb 00/10/23; Adjust obligation if Elephant Butte Spilled
       nrgspil = ifix(rgspill(nf))
 c     write(nlog,*) iyr, mon, idy, irg, rgspill(nf), nrgspil
       if(nrgspil.gt.0 .and. mon.ge.nrgspil) then
-	qobl = 0.0
-	qneed=0.0
-	qneed1(irg)=0.0
+        qobl = 0.0
+        qneed=0.0
+        qneed1(irg)=0.0
 c       write(nlog,*) iyr, mon, idy, irg, rgspill(nf), nrgspil
       endif
 
@@ -658,10 +658,10 @@ c rrb 00/11/02; Store maximum demand
 c
 c               b. Store maximum demand for *.xdd printout
       IF(nrg.eq.1) then
-	flowrq(nf)        = aloifr
+        flowrq(nf)        = aloifr
 c
 c rrb 01/08/28; Store daily demand
-	flowrd(idy,nf)    = aloifr
+        flowrd(idy,nf)    = aloifr
       else
       endif
 c
@@ -711,53 +711,53 @@ c
 c               Step 19 Prepare Output
 c               
 
-	qjanmar=0.0
-	m1=min0(3,imon-1)
-	do i=1,m1
-	 qjanmar=qjanmar+qdel(i,irg)*f(i)
-	end do
-	qjanmar=qjanmar/fac
+        qjanmar=0.0
+        m1=min0(3,imon-1)
+        do i=1,m1
+          qjanmar=qjanmar+qdel(i,irg)*f(i)
+        end do
+        qjanmar=qjanmar/fac
 c
 c rrb 01/08/10; Revised treatment of surplus/shortage by year
-	if(iyr.ge.idebt) then 
-	  tot = qjanmar + xtodate + qneed1(irg) + qcbp + qnative + 
+        if(iyr.ge.idebt) then 
+          tot = qjanmar + xtodate + qneed1(irg) + qcbp + qnative +
      1          qndsc   +  qpaper + qcarry(irg)/f(imon)
-	else
-	  tot = qjanmar + xtodate + qneed1(irg) + qcbp + qnative + 
-     1          qndsc   +  qpaper 
-	endif
+        else
+          tot = qjanmar + xtodate + qneed1(irg) + qcbp + qnative +
+     1          qndsc   +  qpaper
+        endif
 
-	curtail = 0.0
-	c=adjfor+qindex(10,irg)
+        curtail = 0.0
+        c=adjfor+qindex(10,irg)
 c
-c rrb 00/03/18; Include maximum debt in need calculatinos 
+c rrb 00/03/18; Include maximum debt in need calculations 
 c       IF(c.gt.small .and. idebt.eq.0) 
-	IF(c.gt.small) curtail = qneed1(irg) / c * 100.0
-	curtail=amin1(curtail, 100.0)
+        IF(c.gt.small) curtail = qneed1(irg) / c * 100.0
+        curtail=amin1(curtail, 100.0)
 c
 c _________________________________________________________
 c
 c               Step 20 Setup for Printing monthly Results to Binary
 c
 c rrb 00/03/06; Print after last iteration every month
-	if(icarry.eq.0 .and. irgout.eq.1) then
+        if(icarry.eq.0 .and. irgout.eq.1) then
 c
 c               Adjust surplus or shortage one time (not each 
 c               iteration) in the month that it occurs
           if(nrgspil.gt.0 .and. mon.eq.nrgspil) then     
 c
 c               If in debt it is wiped out.
-	    if (qcarry(irg).le.0.1) then
-	      qcarry(irg) = 0.0
-	    else
+            if (qcarry(irg).le.0.1) then
+              qcarry(irg) = 0.0
+            else
 c
 c               If in surplus adjust by % Colorado
-	      c = rgspill(nf)-float(nrgspil)
-	      qcarry(irg)=qcarry(irg) * c
-	    endif
+              c = rgspill(nf)-float(nrgspil)
+              qcarry(irg)=qcarry(irg) * c
+            endif
 c
 c rrb 01/01/12; Adjust total based on adjusted carryover 
-	    tot = qjanmar + xtodate + qneed1(irg) + qcbp + qnative + 
+            tot = qjanmar + xtodate + qneed1(irg) + qcbp + qnative +
      1        qndsc   +  qpaper + qcarry(irg)/f(imon)
 
           endif
@@ -766,9 +766,9 @@ c _________________________________________________________
 c
 c               Step 21; Print to Binary file
 c
-	  irec=(iyr-iystr)*13*numrg + (imon-1)*numrg +irg
+          irec=(iyr-iystr)*13*numrg + (imon-1)*numrg +irg
 c
-	  write(66,rec=irec) fore1*fac,
+          write(66,rec=irec) fore1*fac,
      1    qindex(1,irg)*f(1)+qindex(2,irg)*f(2)+qindex(3,irg)*f(3),
      1    qtodate*fac, adjfor*fac,  qindex(10,irg)*f(10),
      1    qindex(11,irg)*f(11)+qindex(12,irg)*f(12),qsupply*fac,
@@ -797,19 +797,19 @@ c               a. Title
 c
 c ---------------------------------------------------------
 c               b. Supply
-	  write(nlog,120) irg, nrg, iyr,imon,idy,fore1,
+          write(nlog,120) irg, nrg, iyr,imon,idy,fore1,
      1      qindex(1,irg)+qindex(2,irg)+qindex(3,irg),
      1      qtodate, adjfor,  qindex(10,irg),
      1      qindex(11,irg)+qindex(12,irg),qsupply
 c
 c ---------------------------------------------------------
 c               c. Delivery
-	  write(nlog,130) irg, nrg, iyr, imon, idy, qobl,
+          write(nlog,130) irg, nrg, iyr, imon, idy, qobl,
      1      qjanmar,
      1      xtodate, qneed, qcbp, qnative, qndsc, qpaper, qcarry(irg), 
      1      flowrq1, tot,   qdel(imon,irg), aloifr, actwrq,
      1      (flowr(imon,nf)-flowrq(nf)), curtail
-	  write(nlog,*) ' '
+          write(nlog,*) ' '
         endif
 
 
@@ -827,24 +827,24 @@ c     if(icarry.eq.1 .and. imon.eq.12) then
 c
 c ---------------------------------------------------------
 c               a. Calculate actual delivery (qdel1)
-	qdel1=0.0
-	qindex1=0.0
+        qdel1=0.0
+        qindex1=0.0
 
-	do i=1,12
-	  qindex1 = qindex1+qindex(i,irg)*f(i)
-	  qdel1   = qdel1+qdel(i,irg)*f(i)
-	end do
-	qindex1=qindex1/fac
-	qdel1=qdel1/fac
+        do i=1,12
+          qindex1 = qindex1+qindex(i,irg)*f(i)
+          qdel1   = qdel1+qdel(i,irg)*f(i)
+        end do
+        qindex1=qindex1/fac
+        qdel1=qdel1/fac
 c
 c ---------------------------------------------------------
 c               b. Calculate carryover
 c rrb 00/06/09; Annual surplus is limited to 150,000 for state
-	qcarry1 = qcarry(irg)
+        qcarry1 = qcarry(irg)
 c
 c rrb 00/06/09; Annual surplus is limited to 150,000 for state
 c       qcarry(irg) = qcarry(irg) + (qdel1 - (qobl - qpaper))*fac
-	qcarry(irg) = qcarry(irg) +
+        qcarry(irg) = qcarry(irg) +
      1                amin1(qsurplus(irg), (qdel1-(qobl-qpaper))*fac)
 c
 c
@@ -860,18 +860,18 @@ c       if(qdel1 .gt. qdebtx(irg)/fac)  qcarry(irg) = 0.0
 c
 c ---------------------------------------------------------
 c               d. Adjust carryover based on spill data
-	if(nrgspil.gt.0) then     
+        if(nrgspil.gt.0) then
 c
 c               If in debt it is wiped out.
-	  if (qcarry1.le.0.1) then
-	    qcarry(irg) = 0.0
-	  else
+          if (qcarry1.le.0.1) then
+            qcarry(irg) = 0.0
+          else
 c
 c               If in surplus from past year it
 c               is adusted on the month it occurred (above)
-	    qcarry(irg) = qcarry1
-	  endif
-	endif
+            qcarry(irg) = qcarry1
+          endif
+        endif
 c                                                
 c _________________________________________________________
 c
@@ -880,28 +880,28 @@ c
 c               Detailed I/O for Checking
 cx 380    continue
  
-	if(ichk1.eq.1 .and. (ichk2.eq.irg .or. ichk2.eq.0)) then
-	  if(imon.ge.10) then
-	  write(nlog,*) '  Rgrg before annual print ; Month = ', imon
-	  write(nlog,140) irg, nrg, iyr,imon,idy,
+        if(ichk1.eq.1 .and. (ichk2.eq.irg .or. ichk2.eq.0)) then
+          if(imon.ge.10) then
+          write(nlog,*) '  Rgrg before annual print ; Month = ', imon
+          write(nlog,140) irg, nrg, iyr,imon,idy,
      1      qcarry1, qindex1, qobl, qpaper, qobl-qpaper, qdel1,
      1      qcarry(irg)
-	  endif
-	endif
+          endif
+        endif
 c
 c               Note annual curtailment is done in outrg where
 c               annual totals are known
-	curtail=-1.
+        curtail=-1.
 c
 c               Use imon not imon-1 since end of year but imon = 12
 c       irec=(iyr-iystr)*13*numrg + (imon-1)*numrg + irg
-	irec=(iyr-iystr)*13*numrg + (imon  )*numrg + irg
+        irec=(iyr-iystr)*13*numrg + (imon  )*numrg + irg
 c
 c       write(nlog,*) '  Rgrg EOY (iyr-iystr), numrg, (imon-1), irg'
 c       write(nlog,*)  (iyr-iystr), numrg, (imon-1), irg 
 c       write(nlog,*) '  Rgrg EOY, irec = ', irec    
-	
-	write(66,rec=irec) -1.,
+
+        write(66,rec=irec) -1.,
      1    qindex(1,irg)*f(1)+qindex(2,irg)*f(2)+qindex(3,irg)*f(3),
      1    qtodate*fac,   0.,    qindex(10,irg)*f(10), 
      1    (qnov(irg)+qdec(irg)),          qindex1*fac,
@@ -912,7 +912,7 @@ c       write(nlog,*) '  Rgrg EOY, irec = ', irec
      1    qcarry(irg),
      1    tot*fac,       -1.,   -1.,        qdel1*fac, 
      1    curtail,       qdebt(irg),        rgspill(nf)
-	goto 500
+        goto 500
       endif
 c                                                
 c ________________________________________________________
@@ -922,26 +922,26 @@ c
  380  continue
 
       if(ichk1.eq.1 .and. (ichk2.eq.irg .or. ichk2.eq.0)) then
-	if(imon.ge.10) then
+        if(imon.ge.10) then
 c       if(iw.eq.1 .and. imon.eq.1) (99,110)
 
 c               a. Title
-	write(nlog,110)
+        write(nlog,110)
 c
 c               b. Supply
-	write(nlog,120) irg, nrg, iyr,imon,idy,fore1,
+        write(nlog,120) irg, nrg, iyr,imon,idy,fore1,
      1    qindex(1,irg)+qindex(2,irg)+qindex(3,irg),
      1    qtodate, adjfor,  qindex(10,irg),
      1    qindex(11,irg)+qindex(12,irg),qsupply
 c
 c               c. Deliver
-	write(nlog,130) irg, nrg, iyr, imon, idy, qobl,
+        write(nlog,130) irg, nrg, iyr, imon, idy, qobl,
      1    qjanmar,
      1    xtodate, qneed, qcbp, qnative, qndsc, qpaper, qcarry(irg), 
      1    flowrq1, tot,   qdel(imon,irg), aloifr, actwrq,
      1    (flowr(imon,nf)-flowrq(nf)), curtail
-	write(nlog,*) ' '
-	endif
+        write(nlog,*) ' '
+        endif
       endif
 c
 c ________________________________________________________

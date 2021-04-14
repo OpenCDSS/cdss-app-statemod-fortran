@@ -437,7 +437,7 @@ c rrb 2006/08/18; Print none if appropriate
               write(nlog,450) ifound,
      1          cstaid(is), stanam1(is), ineg(is), 
      1          0.0, 0.0, 0.0, is
-            endif          		     
+            endif
           endif
         end do
 

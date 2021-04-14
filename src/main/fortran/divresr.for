@@ -89,7 +89,7 @@ c
 c           ieff2 = 0 always use average efficiency
 c           ieff2 = 1 use max efficiency if ieffmax=1
 c           iopsou(1,l2) = source reservoir #1 
-c           iopsou(2,l2) = source reserovir #1 account
+c           iopsou(2,l2) = source reservoir #1 account
 c               Note the following source 2 data is only used when
 c               releases are tied to another type 6 operating rule  
 c           iopsou(3,l2) = if > 0 source reservoir #2    
@@ -240,7 +240,7 @@ c
 c _________________________________________________________
 c		Dimensions
       include 'common.inc'
-      character cwhy*24, cdestyp*12, ccarry*3, cstaid1*12, rec12*12,
+      character cwhy*45, cdestyp*12, ccarry*3, cstaid1*12, rec12*12,
      1 cpuse*3, cresid1*12, subtypX*8 
 c
 c _________________________________________________________
@@ -349,7 +349,7 @@ c               d. Diversion type
       if(ndtype.eq.2) cdestyp='Reservoir'
       if(ndtype.eq.3) cdestyp='Diversion'
       if(ndtype.eq.7) cdestyp='Plan     '  
-      if(iout.eq.1) write(nlog,*) '  DivResR; ndtype', ndtype, cdestyp     
+      if(iout.eq.1) write(nlog,*) '  DivResR; ndtype', ndtype, cdestyp
 c
 c ---------------------------------------------------------
 c		            e. Standard Carrier      
@@ -927,10 +927,10 @@ c _________________________________________________________
 c		            Step 16c; Plan Reuse from destination
       if(ipUse.gt.0) then
 c
-c rrb 2011/11/29; Update to ndtype         
+c rrb 2011/11/29; Update to ndtype
 cx      if(nd2.gt.0) then        
         if(ndtype.eq.3) then
-          if(iout.eq.1) write(nlog,*) ' DivResR  Call RtnSecR'            
+          if(iout.eq.1) write(nlog,*) ' DivResR  Call RtnSecR'
           CALL RtnsecR(icx,divactL,l2,iuse,idcd,nd2,
      1         ieff2,ipUse)
 c
@@ -1040,7 +1040,7 @@ cx        qdiv(26,idcd2X)=qdiv(26,idcd2X)+divact
         
           if(ioutQ.eq.1) 
      1      write(nlog,*) '  Divresr;', idcdd, idcd, idcd2X,
-     1      divact*fac, qdiv(20,idcd2X)*fac, qdiv(33,idcd2X)*fac,              
+     1      divact*fac, qdiv(20,idcd2X)*fac, qdiv(33,idcd2X)*fac,
      1      qdiv(26,idcd2X)*fac, qdiv(18,idcd2X)*fac
         endif
       endif                           
@@ -1268,7 +1268,7 @@ c
        
         if(iw.eq.ioutiw) then           
           if(ncallX.eq.0) then
-            write(nlog,270) corid(l2),cdestyp,ccarry,cpuse,cDivTyp(l2)            
+            write(nlog,270) corid(l2),cdestyp,ccarry,cpuse,cDivTyp(l2)
             ncallX=ncallX+1
           else
 c           write(nlog,*) ' '
@@ -1281,8 +1281,8 @@ cx          if(divact.gt.small) then
      1      float(iopsou(6,l2)), effmax1, float(ireltyp), 
      1      divreq1*fac,divalo1*fac, 
      1      divmax*fac, relalo, 
-     1      divmon1*fac,  alocfsR*fac, alocfsP*fac, pavail*fac,
-     1      abs(relact*fac), divact*fac,   iwhy, cwhy
+     1      divmon1*fac, alocfsR*fac, alocfsP*fac, pavail*fac,
+     1      abs(relact*fac), divact*fac, iwhy, cwhy
 
      
 cx         endif
@@ -1290,7 +1290,7 @@ cx         endif
        endif
        
   280 FORMAT(1x,a12, i5,1x,a4, i5, 1x, a12,
-     1   10i8,13F8.1,i8,1x, a24, 20f8.0)
+     1   10i8,13F8.1,i8,1x, a45, 20f8.0)
   390 format(
      1  '  divResR; Release for Depletion Data;',/
      1  '                  #  divact  pavail  relact      CU',/
@@ -1329,11 +1329,11 @@ c               Error warnings
 c _________________________________________________________
  900  write(nlog,910) corid(l2), diveff1*100.
  910  format(/,72('_'),/,
-     1  ' DivResR (Type 32); Problem with Operation Right ID = ', a12,/
-     1  '         The destination efficiency = ', f8.2,/
-     1  '         when operating the reservoir release as a Depletion.',/
+     1 ' DivResR (Type 32); Problem with Operation Right ID = ', a12,/
+     1 '         The destination efficiency = ', f8.2,/
+     1 '         when operating the reservoir release as a Depletion.',/
      1 '          Reconmend you revise efficiency or operate as a ',
-     1   'Diversion')
+     1 'Diversion')
       goto 9999
       
  9999 write(6,1050) 
@@ -1349,4 +1349,3 @@ c _________________________________________________________
 
       stop 
       END
-

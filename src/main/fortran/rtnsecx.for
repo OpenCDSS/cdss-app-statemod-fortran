@@ -238,7 +238,7 @@ c               or maximum efficiency (effmax) based on switchs
 c               (ieffmax and ieff2)
 c
 c rrb 2006/08/29; Add new CU (call return2)
-        nw1=idivco2(nd)		
+        nw1=idivco2(nd)
         itype=1     
         cx=0.0   
         ispr=-1  
@@ -509,7 +509,7 @@ c               Formats
  
 c330  format(/,60('_'),/
  330  format(/,
-     1  '  RtnSecX; FYI structure ID ', a12,' nd = ', i5, ' iuse = ',i5,/
+     1  '  RtnSecX; FYI structure ID ', a12,' nd = ', i5,' iuse = ',i5,/
      1  '          is a carrier because irturn(iuse) = ',i5,/
      1  '          Therefore average efficiency = ', f8.2, ' is used')
 

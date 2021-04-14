@@ -22,7 +22,7 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Seteff; It sets efficiency data
 c               Called from bomsec and virset
@@ -32,7 +32,7 @@ c               same code.
 c
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
       include 'common.inc'
       character rec32*32
@@ -56,7 +56,7 @@ c     WRITE(nlog,*) '  Seteff; istart = ', istart
 
       if(istart.eq.1) iprintd=0
 c
-c		Set efficiency warning output to 1%      
+c     Set efficiency warning output to 1%
       warneff=1.0
 c _________________________________________________________
 c
@@ -68,16 +68,16 @@ c
 c
 c               Note if data is provided in *.tsp it is set in mdainp
       else
-	do nd=1,numdiv
-	  effmax(nd) = diveff(mon,nd)
-	  effmaxd(nd)= diveff(mon,nd)
-	  effmaxt(nd)= 100.0
-	end do
+        do nd=1,numdiv
+          effmax(nd) = diveff(mon,nd)
+          effmaxd(nd)= diveff(mon,nd)
+          effmaxt(nd)= 100.0
+        end do
 
-	do nw=1,numdivw
-	  effmaxw(nw) = diveffw(mon,nw)
-	  effmaxs(nw) = diveffw(mon,nw)
-	end do
+        do nw=1,numdivw
+          effmaxw(nw) = diveffw(mon,nw)
+          effmaxs(nw) = diveffw(mon,nw)
+        end do
       endif
 c
 c
@@ -89,10 +89,10 @@ c                       provided in *.tsp
 c
 c               itspd = 0 no *.tsp data
 c                     = 1 yes *.tsp data
-	if(itspd(nd).eq.0) then
-	  effmax(nd) = diveff(mon,nd)  
-	  effmaxd(nd)= diveff(mon,nd)
-	  effmaxt(nd)= 100.0
+        if(itspd(nd).eq.0) then
+          effmax(nd) = diveff(mon,nd)
+          effmaxd(nd)= diveff(mon,nd)
+          effmaxt(nd)= 100.0
 c          
 c               Print 1x per year
          if(istart.eq.1 .and. ieffmax.eq.1) then
@@ -105,9 +105,9 @@ c         if(ieffmax.eq.1) then
 c             write(nlog,*) '  Bomsec; istart, ieffmax', istart, ieffmax
             endif
             iprintd=iprintd+1
-	    write(nchk,762) iprintd,cdivid(nd),divnam1(nd),
+            write(nchk,762) iprintd,cdivid(nd),divnam1(nd),
      1                      (diveff(n,nd), n=1,12)
-	  endif
+          endif
         endif
       end do 
 c
@@ -119,28 +119,28 @@ c                       in *.tsp
 c
 c rrb 01/09/25; Correction (worked on 1st time step but then 
 c               effmaxw(nw) is set so it sets all data to month 1 data
-	if(itspw(nw).eq.0) then
-	  effmaxw(nw) = diveffw(mon,nw)
-	  effmaxs(nw) = diveffw(mon,nw)
-	  areawa(nw)  = 0.0
-	  areasp(nw)  = 0.0
-	  divcapwa(nw)=divcapw(nw)
-	  igwmode(nw) = 0
+        if(itspw(nw).eq.0) then
+          effmaxw(nw) = diveffw(mon,nw)
+          effmaxs(nw) = diveffw(mon,nw)
+          areawa(nw)  = 0.0
+          areasp(nw)  = 0.0
+          divcapwa(nw)=divcapw(nw)
+          igwmode(nw) = 0
 c
 c
 c               Test print 1x/ simulation
-	  if(istart.eq.1 .and. ieffmax.eq.1) then 
+          if(istart.eq.1 .and. ieffmax.eq.1) then
 c         if(ieffmax.eq.1) then
-	    if(iprintd.eq.0) then
-	      rec32='Max Well Efficiency'
-	      write(nlog,1281) iyr, rec32
-	      write(nchk,760) (xmonam(n),n=1,12)
-	    endif  
-	    iprintd=iprintd+1
-	    write(nchk,762) iprintd,cdividw(nw),divnamw1(nw),
+            if(iprintd.eq.0) then
+              rec32='Max Well Efficiency'
+              write(nlog,1281) iyr, rec32
+              write(nchk,760) (xmonam(n),n=1,12)
+            endif
+            iprintd=iprintd+1
+            write(nchk,762) iprintd,cdividw(nw),divnamw1(nw),
      1                      (diveffw(n,nw), n=1,12)
-	  endif
-	endif
+          endif
+        endif
       end do 
 c
 c rrb 01/04/25; Check for ave efficiency < max efficiency in year 1
@@ -148,38 +148,38 @@ c
 c rrb 2006/06/07; Reduce warnings
 cr    if(iyr.eq.iystr) then
       if(istart.eq.1 .and. ieffmax.eq.1) then 
-cr	if(mon.eq.1) iprintd=0
-	do nd=1,numdiv
-	  c=diveff(mon,nd) - effmax(nd)
+cr      if(mon.eq.1) iprintd=0
+        do nd=1,numdiv
+          c=diveff(mon,nd) - effmax(nd)
 c
 c rrb 01/08/25; Limit output to 1 %
-	  if(c .gt. warneff) then
-	    if(iprintd.eq.0) then
-	      rec32='Max Vs Ave Div Efficiency'	    
+          if(c .gt. warneff) then
+            if(iprintd.eq.0) then
+              rec32='Max Vs Ave Div Efficiency'
               write(nlog,1281) iyr, rec32
-	      write(nchk,764)
-	    endif  
-	    iprintd=iprintd+1
-	    write(nchk,766) iprintd,cdivid(nd), '  Div', mon,
+              write(nchk,764)
+            endif
+            iprintd=iprintd+1
+            write(nchk,766) iprintd,cdivid(nd), '  Div', mon,
      1        diveff(mon,nd), effmax(nd),c, divnam1(nd)
-	  endif
-	end do
+          endif
+        end do
 
-	do nw=1,numdivw
-	  c=diveffw(mon,nw) - effmaxs(nw)
+        do nw=1,numdivw
+          c=diveffw(mon,nw) - effmaxs(nw)
 c
 c rrb 01/08/25; Limit output to 1 %
-	  if(c .gt. warneff) then
-	    if(iprintd.eq.0) then
-	      rec32='Max Vs Ave Well Efficiency'	    	    
+          if(c .gt. warneff) then
+            if(iprintd.eq.0) then
+              rec32='Max Vs Ave Well Efficiency'
               write(nlog,1281) iyr, rec32
-	      write(nchk,764)
-	    endif  
-	    iprintd=iprintd+1
-	    write(nchk,766) iprintd,cdividw(nw), ' Well', mon,
+              write(nchk,764)
+            endif  
+            iprintd=iprintd+1
+            write(nchk,766) iprintd,cdividw(nw), ' Well', mon,
      1        diveffw(mon,nw), effmaxs(nw),c, divnamw1(nw)
-	  endif
-	end do
+          endif
+        end do
       endif
 c
 c _________________________________________________________

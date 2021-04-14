@@ -371,7 +371,7 @@ c               b; Update operating rule output (DIVO)
       
 c _________________________________________________________
 c
-c               Step 15.  Detalied output
+c               Step 15.  Detailed output
 c
 
  260  if(iout.ge.2 .and. iw.eq.ioutiw) then

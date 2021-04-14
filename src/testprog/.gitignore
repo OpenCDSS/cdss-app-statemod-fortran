@@ -1,0 +1,3 @@
+# Ignore files that should not be in a repository.
+# Output text files.
+*.txt

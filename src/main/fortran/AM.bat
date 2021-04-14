@@ -27,7 +27,7 @@ copy AMTEMP2.BAT AMTEMP.BAT
 rem Do the same thing for AUTOMAKE.RSP as was done for AMTEMP.BAT.
 echo Removing Linux and gfortran files from AUTOMAKE.RSP into AUTOMAKE2.RSP
 type AUTOMAKE.RSP | findstr /v GETPATH_LINUX.OBJ | findstr /v PUTPATH_LINUX.OBJ | findstr /v DATTIM_GFORTRAN.OBJ | findstr /v PARSE_GFORTRAN.OBJ > AUTOMAKE2.RSP
-echo Copying AUTOMAKE2.RSP to AUTOMAKE2.RSP
+echo Copying AUTOMAKE2.RSP to AUTOMAKE.RSP
 copy AUTOMAKE2.RSP AUTOMAKE.RSP
 
 rem Run AMTEMP.BAT to compile existing .OBJ and newly compiled .OBJ

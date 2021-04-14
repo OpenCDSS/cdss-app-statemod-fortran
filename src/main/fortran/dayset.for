@@ -19,19 +19,19 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-c	Update History
+c       Update History
 c
 
 c
 c _________________________________________________________
-c	Documentation
+c       Documentation
 c
 c     Last change:  RB   13 Feb 98    2:49 pm
 c
       subroutine dayset
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c      Dayset; it sets variables used in monthly model to daily 
 c               values to minimize the changes in most subroutines
@@ -46,12 +46,12 @@ c rrb 2019/07/28; Add diversion to a WWSP-Supply plan by a
 c                 direct diversion (psupDD() and psuppDDM())
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
       include 'common.inc'
 c                           
 c
 c _________________________________________________________
-c	Initialize
+c       Initialize
       fac=factor
       ioutR=0
 
@@ -218,7 +218,7 @@ c rrb 2019/07/28; Direct flow diversion to a WWSP plan
         end do
 c
 c _________________________________________________________
-c		Operational right maximum limit 1x/mo      
+c              Operational right maximum limit 1x/mo      
       
         do k=1,numopr
           oprmaxM(k)=oprmax(k,mon)
@@ -432,7 +432,7 @@ c       if(ichk1.eq.1 .and. irn.eq.1) write(99, 110) mon, idy, idyt
 c
 c _________________________________________________________
 c               Step 20; Set GW storage and to / from river 1x/day
-c		         Also set Avail = River
+c                        Also set Avail = River
 
       call gwsub
 c
@@ -504,8 +504,8 @@ c               Do not show OOP rights as part of the total
 c
 c _________________________________________________________
 c rrb 2009/06/01; 
-c		  Step 25; Initialize reservoir data when the admin date
-c			is not used (rdate(nr) = -1)
+c                 Step 25; Initialize reservoir data when the admin date
+c                          is not used (rdate(nr) = -1)
 c
 
       if(numres.gt.0) then
@@ -514,123 +514,123 @@ c
             write(nlog,152) nr, cresid(nr), rdate(nr)
  152        format(' DaySet; nr, cresid', i5, 1x, a12, f5.1) 
           endif
-			        
+
 c
 c              Branch if this reservoir is not operated (iressw = 0)
-  	  IF(IRESSW(NR).EQ.0) GO TO 150
-c		
-         if(ifix(rdate(nr)).lt.0) then 
+          IF(IRESSW(NR).EQ.0) GO TO 150
+c
+          if(ifix(rdate(nr)).lt.0) then
 c
 c _________________________________________________________
 c               Step 4; Initialize account storage 1x/run or Admin Date
 c
 
-	    NOI=NOWNER(NR)
-	    NOE=NOWNER(NR+1)-1
-  	    cursto1=0.0
-	    cursto2=0.0
-	    
-	    DO NO=NOI,NOE
-	      IF(N2OWN(NO).LE.1) THEN
-	        cursto1     = cursto1 + curown(no)
-	      ELSE
-	        cursto2     = cursto2 + curown(no)
-	      ENDIF    
-	      if(ioutr.eq.1) then
-	        write(nlog,*) ' DaySet; no,noi,noe,curown(no),cursto1'                         
-	        write(nlog,*) ' DaySet;', no,noi,noe,curown(no), cursto1
-	      endif  
-	    end do
-c                           
-	    do iw=1,maxrsr
+            NOI=NOWNER(NR)
+            NOE=NOWNER(NR+1)-1
+            cursto1=0.0
+            cursto2=0.0
+
+            DO NO=NOI,NOE
+              IF(N2OWN(NO).LE.1) THEN
+                cursto1     = cursto1 + curown(no)
+              ELSE
+                cursto2     = cursto2 + curown(no)
+              ENDIF
+              if(ioutr.eq.1) then
+                write(nlog,*) ' DaySet; no,noi,noe,curown(no),cursto1'
+                write(nlog,*) ' DaySet;', no,noi,noe,curown(no), cursto1
+              endif
+            end do
+
+            do iw=1,maxrsr
               tot1x(iw) = 0.0
               tot2x(iw) = 0.0
-	    end do
+            end do
 c
 c ---------------------------------------------------------
 c rrb 2006/10/13; 
 c               b. Initialize 1x/run or on admin date
 c                  Initialize operating rule data tied to a
-c	            reservoir operating date
+c                  reservoir operating date
 
             do k=1,numopr
               divopr(k)=0.0
             end do  
-	    
+
 c
 c ---------------------------------------------------------
 c               b. Initialize reservoir water right data 1x/run or
-c		on Admin date
-c               Loop for all water rights in priority loop
-c               to set one fill constraint
-c		Note ntorig is the total of all rights
+c                  on Admin date
+c                  Loop for all water rights in priority loop
+c                  to set one fill constraint
+c                  Note ntorig is the total of all rights
 c          if(ichk.eq.4) write(nlog,*)'  DaySet; 5 Reservoir rights '
 
-  	    do 140 iw=1,ntorig
-	      l1 = nwrord(1,iw)
-	      l2 = nwrord(2,iw)
-c                                      
+            do 140 iw=1,ntorig
+              l1 = nwrord(1,iw)
+              l2 = nwrord(2,iw)
+c
 c               For all reservoir rights
 c rrb 04/10/96; Skip for out of priority rights (ityrsr=-1)
-	      if(l1.eq.2) then
-	      
+              if(l1.eq.2) then
+
 c
 c
-c rrb 2006/05/19; Do not calculate if the right is off	            
+c rrb 2006/05/19; Do not calculate if the right is off
                 if(ioutr.eq.1) then
-	          write(nlog,*) ' DaySet; nr,l2,irsrsw(l2),dcrres(l2)'
-	          write(nlog,*) ' DaySet;',nr,l2,irsrsw(l2),dcrres(l2)
-	        endif  
+                  write(nlog,*) ' DaySet; nr,l2,irsrsw(l2),dcrres(l2)'
+                  write(nlog,*) ' DaySet;',nr,l2,irsrsw(l2),dcrres(l2)
+                endif
 c
 c               Check against iresopr not irsrsw.
-c		  Note iResOpr is defined to equal irsrsw in riginp.
-c		  It stays on even if the reservoir right
-c		  is part of an operating rule which turns off the
-c		  original right
-	        
-	        if(iResOpr(l2).eq.0) goto 140
-	        if(iResOpr(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 140
-	        if(iResOpr(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 140	      
+c               Note iResOpr is defined to equal irsrsw in riginp.
+c               It stays on even if the reservoir right
+c               is part of an operating rule which turns off the
+c               original right
 
-	        nr1=iresco(1,l2)
+                if(iResOpr(l2).eq.0) goto 140
+                if(iResOpr(l2).gt.0 .and. iyr-irsrsw(l2).lt.0) goto 140
+                if(iResOpr(l2).lt.0 .and. iyr+irsrsw(l2).gt.0) goto 140
+
+                nr1=iresco(1,l2)
 c
 c               We are within a reservoir loop; therefor
 c               branch to avoid duplicating calculations
-	        if(nr1.ne.nr) goto 140
+                if(nr1.ne.nr) goto 140
 c
 c rrb 1996/04/10; Do not charge active storage to out of 
 c               priority rights (ityrsr=-1)
-	        if(ityrsr(l2).eq.-1) then
- 		   ritrem(l2) = dcrres(l2)
-		   goto 140
-	        endif     
+                if(ityrsr(l2).eq.-1) then
+                   ritrem(l2) = dcrres(l2)
+                   goto 140
+                endif
 
-	        IF(N2FILL(L2).LE.1) THEN
-		   c = dcrres(l2) - cursto1     
+                IF(N2FILL(L2).LE.1) THEN
+                   c = dcrres(l2) - cursto1     
                    tot1x(l2) = tot1x(l2) + dcrres(l2)
                  
-		   if(c.ge.-0.1) then
-		     ritrem(l2) = c
+                   if(c.ge.-0.1) then
+                     ritrem(l2) = c
                    cursto1      = amax1(cursto1 - tot1x(l2), 0.0)
-		   else
-		     ritrem(l2) = 0.0
-		     cursto1      = cursto1 - dcrres(l2)
-		   endif
-	        ELSE
-		   c = dcrres(l2) - cursto2  
+                   else
+                     ritrem(l2) = 0.0
+                     cursto1      = cursto1 - dcrres(l2)
+                   endif
+                ELSE
+                   c = dcrres(l2) - cursto2
                    TOT2x(L2) = TOT2x(L2) + DCRRES(L2)
                 
-		   IF(C.GE.-0.1) THEN
-		     RITREM(L2) = C
+                   IF(C.GE.-0.1) THEN
+                     RITREM(L2) = C
                      cursto2      = amax1(cursto2 - tot2x(l2), 0.0)
-		   ELSE
-		     RITREM(L2) = 0.0
-		     cursto2      = cursto2 - dcrres(l2)
-		   ENDIF
-	        ENDIF
+                   ELSE
+                     RITREM(L2) = 0.0
+                     cursto2      = cursto2 - dcrres(l2)
+                   ENDIF
+                ENDIF
 c
 c rrb 2006/06/05; Paper Fill
-               RitPaper(l2)=RitRem(l2)	        
+               RitPaper(l2)=RitRem(l2)
 c
                if(ioutR.eq.2) then
 c
@@ -643,18 +643,18 @@ cr               if(nr.eq.1) write(nlog,130)
      1             cursto1,cursto2, ritrem(l2), RitPaper(l2),
      1             ritremx(nr)
                endif
-	      endif
+              endif
 c  
 c ---------------------------------------------------------
-c		End water right loop	      
+c           End water right loop
   140       continue
 c  
 c ---------------------------------------------------------
-c		Endif for admin date off (rdate(nr) = -1)
+c         Endif for admin date off (rdate(nr) = -1)
           endif
 c  
 c ---------------------------------------------------------
-c		End reservoir loop
+c       End reservoir loop
   150   continue
       endif
 
@@ -681,7 +681,7 @@ c rrb 2006/03/31; Well Augmentation Pumping in Priority
           pdrive(np)=0.0
 c
 c rrb 2005/08/05; Revise to carry over storage from a res plan
-c		  Note Psuply is running total; psuplyT is total inflow	          
+c                 Note Psuply is running total; psuplyT is total inflow
           c = psupD(ido,np)
           caf=c*fac
           iPtype1=iPlnTyp(np)    
@@ -703,12 +703,12 @@ cx          psto2(np)=psto2(np) + psupD(ido,np)*fac
             psuplyT(np)= psupD(ido,np)
           endif
 c
-c		Initialize amount in a reuse plan here since at least
+c               Initialize amount in a reuse plan here since at least
 c               part of it is calculated from a diversion in a prior
 c               time step
 c
 c rrb 2006/04/18; Do not adjust for a Reservoir reuse plan since
-c		  returns are in the return array
+c                 returns are in the return array
 c rrb 2008/01/15; Correction
 cx        if(iPtype1.ne.8 .and. iPtype1.ne.12) then        
 cx          is=ipsta(np)
@@ -716,7 +716,7 @@ cx          qdiv(28,is)=psuplyT(np)
 cx        endif  
           
 c
-c rrb		Temporarily set daily to average monthly
+c rrb           Temporarily set daily to average monthly
 cr        PImport(np)=PImportD(np,nd)
           PImport(np)=PImportX(mon,np)
           PImportT(np)=0.0
@@ -724,20 +724,20 @@ cr        PImport(np)=PImportD(np,nd)
 c
 c _________________________________________________________
 c               Step 28; Initialize Call indicators 1x/day
-c			Note ..L = call location
-c                            ... = print indicator
+c                        Note ..L = call location
+c                             ... = print indicator
             do i=1,numsta
               imcdL(i)=-1
             end do
 c
 c _________________________________________________________
-c       	  Step 29; Initialize compact demand 1x/day if a Type 13
-c		   operating rule is on.
+c               Step 29; Initialize compact demand 1x/day if a Type 13
+c                        operating rule is on.
 c
       if(isetOpr(13).gt.0) then
         do k=1,numopr
           if(ityopr(k).eq.13 .and. ioprsw(k).ne.0) then
-            nf  =iopdes(1,k)	
+            nf  =iopdes(1,k)
             ifcd=ifrsta(nf)          
             mon2 = imonsw(k,mon)
           

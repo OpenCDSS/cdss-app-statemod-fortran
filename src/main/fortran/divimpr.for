@@ -82,7 +82,7 @@ c
 c           ieff2 = 0 always use average efficiency
 c           ieff2 = 1 use max efficiency if ieffmax=1
 c           iopsou(1,l2) = source reservoir #1 
-c           iopsou(2,l2) = source reserovir #1 account
+c           iopsou(2,l2) = source reservoir #1 account
 c               Note the following source 2 data is only used when
 c               releases are tied to another type 6 operating rule  
 c           iopsou(3,l2) = if > 0 source reservoir #2    
@@ -142,7 +142,7 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      character cwhy*24, cdestyp*12, ccarry*3, cresid1*12, subtypX*8
+      character cwhy*45, cdestyp*12, ccarry*3, cresid1*12, subtypX*8
 c
 c rrb 2018/08/05; Update
       character cpuse*3, cSouTyp*12, cplntyp*12
@@ -224,8 +224,8 @@ c rrb 2020/07/28; Include source type in detailed reporting
       if(iopSouR1.eq.3)  cSouTyp='Diversion'
       if(iopSouR1.eq.13) cSouTyp='Diversion_WR'
       if(iopSouR1.eq.12) cSouTyp='Diversion_WR'
-      if(iopSouR1.eq.11) cSouTyp='Admin  Plan  '
-      if(iopSouR1.eq.7)  cSouTyp='Import Plan  '
+      if(iopSouR1.eq.11) cSouTyp='Admin  Plan '
+      if(iopSouR1.eq.7)  cSouTyp='Import Plan '
 c
 c rrb 2020/11/15; Include destination type
       iopDesR1 = iopDesR(l2)
@@ -902,7 +902,7 @@ cx     1    ' Carrier (Y/N) = ',a3, ' Reuse Plan (Y/N) = ', a3/
      1  ' __________________________')
 c
   280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,
-     1   8i8,10F8.1,i8,1x, a24)
+     1   8i8,10F8.1,i8,1x, a45)
      
 c
 c               Error warnings
@@ -920,4 +920,3 @@ c _________________________________________________________
 
       stop 
       END
-

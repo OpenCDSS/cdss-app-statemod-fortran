@@ -43,7 +43,7 @@ c      5. Calculate exchange to the destination limited by
 c         % ownership of right, availability of water, capacity
 c         and demand STEP 8-10
 c      6. Determine if more water can be diverted at source
-c         (can occurr if the exchange was limited for any reason)
+c         (can occur if the exchange was limited for any reason)
 C         STEP 16
 c		 
 
@@ -66,11 +66,11 @@ c
 c               Documentation
 c
 c     IW : OVERALL WATER RIGHT ORDER
-c     L2 : LOC. OF operation right  in opr RIGHT TABLE
+c     L2 : LOC. OF operation right in opr RIGHT TABLE
 c
 c     lr             source water right
 c     iopsou(1,l2)   source water right
-c     iopsou(2,l2)   Not used (note % ownership gets transfered
+c     iopsou(2,l2)   Not used (note % ownership gets transferred
 c			               to oprpct in Oprinp.f)
 c     iopsou(3,l2)   T&C Plan id (for return flow obligation)
 c     iopsou(4,l2)   NA
@@ -1217,8 +1217,8 @@ c
         write(nlog,*) 'DirectEx step 14'
       endif
       
-      if(ioutX.eq.1) write(nlog,*) '  DrectEX; iptc = ', iptc	
-c     write(nlog,*) '  DrectEX; iptc = ', iptc	
+      if(ioutX.eq.1) write(nlog,*) '  DrectEX; iptc = ', iptc
+c     write(nlog,*) '  DrectEX; iptc = ', iptc
 c
 c_____________________________________________________________
 c                 Step 18; Calculate return flow obligation
@@ -1530,7 +1530,7 @@ c               Step 23a; Set efficiency
 c     
 c
 c _________________________________________________________
-c               Step 23b; Set Qdiv at the souce for the
+c               Step 23b; Set Qdiv at the source for the
 c                        exchanged amount as carried water
 c rrb 2015/10/04; Set exchanged water as carried at the source
 c rrb 2019/07/30; Revise to not  report the exchange as carried

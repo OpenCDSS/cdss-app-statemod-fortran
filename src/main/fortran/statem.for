@@ -207,7 +207,7 @@ c                8 includes daily capability
 c                7 includes new binary output format
 
         ver = '16.00.48'
-        vdate = '2021/03/24'
+        vdate = '2021/04/14'
 
         igui = 0
         istop = 0
@@ -333,10 +333,10 @@ c     nwelO=18
 c
 c rrb 2006/12/22; Maximum reach (maxrch) & maximum years (maxyrs)
       maxrch=150
-      maxyrs=200  	
+      maxyrs=200
 c
-c rrb 2021/02/14; Maxinum number of carriers
-      maxcary=40	
+c rrb 2021/02/14; Maximum number of carriers
+      maxcary=40
 c
 c rrb 2011/04/04;  Initialize some daily array counters      
       numbas=0
@@ -460,7 +460,8 @@ c rrb 03/06/02; Allow log file to be an option
         call dattim(dateparts,timeparts)
         call dattim_string(dateparts,timeparts,formatted_string)
         ms = dattim_ms(dateparts,timeparts)
-        write(6,*) "Date/time=",formatted_string,' ms= ',ms
+        ! Comment out for now until more performance testing is done.
+        !write(6,*) "Date/time=",formatted_string,' ms= ',ms
         call flush(6)
 
 c
@@ -887,7 +888,7 @@ c
      1 '          from RStoUse',/ 
      1 '        Revised DivrplP.f (28) DivresP.f (27) & Divcar.f(45)',/
      1 '          increment carried (qdiv(38,xx) for a reservoir',/
-     1 '          source in *.xdd',/
+     1 '          source in *.xdd)',/
      1 '        Revised DivrplP to increment',/
      1 '          From Storage to river for exchange qdiv(21, not',/
      1 '          From Storage to River for other qdiv(12',/
@@ -906,7 +907,8 @@ c
      1 '        Revised Divresp2.f to recognize a reservoir',/    
      1 '          to a carrier by default gets released from the',/
      1 '          reservoir to the river then a carrier.  Therefore',/
-     1 '          update qres(12 in order to report correctly in *.xre',/
+     1 '          update qres(12 in order to report correctly',/
+     1 '          in *.xre',/
      1 '    - 2020/01/24 (16.00.23)',/
      1 '        Revise Oprinp.f & Divcarl.f (type 45) to allow a',/
      1 '          spill order by setting oprimit = 7.  Specifically',/
@@ -1082,7 +1084,7 @@ c
      1 '      Increased dimension for ArkDss in Statem.f and',/
      1 '        common.inc.  Specifically:',/
      1 '        Daily delay values (maxdld) from 3660 to 7320',/
-     1 '        # of reservoir accounts (maxown) from 251 to 1001')    
+     1 '        # of reservoir accounts (maxown) from 251 to 1001')
      
  217     format(           
      1 '    - 2019/01/15 (15.00.35)',/
@@ -1356,7 +1358,7 @@ c
      1 '      Revised Outmon to initialize rlossc & rlossr when',/
      1 '        when printing reservoir account data',/
      1 '      Revised Divresp2(type 27) to add loss to diversion',/
-     1 '        by other (accr(4 and loss (accr(27',/
+     1 '        by other (accr(4 and loss (accr(27))))',/
 
      1 '      Miscellaneous Revisions 1-10',/
      1 '    - 2015/10/18 (15.00.01)',/
@@ -1510,16 +1512,17 @@ c
      1 '      Revised *.xdd reporting for water taken to an admin',/
      1 '        as Carried-Exchange-Bypass only in DirectWR (type 26)',/
      1 '        and when released from an admin plan direct by',/
-     1 '        Divresp2 (type 27) to by exchange by DivRplP (type 28)',/  
+     1 '        Divresp2 (type 27) to by exchange by DivRplP',/
+     1 '        (type 28)',/
      1 '    Recent updates',/
      1 '    - 2015/01/16 (14.02.04)',/
      1 '      Revised DirectWR, PowseaP & DivMulti to clean up ',/
-     1 '        reporting for a diversion to Admin Plan (type 11)',/ 
+     1 '        reporting for a diversion to Admin Plan (type 11)',/
      1 '    - 2015/01/10 (14.02.03)',/
      1 '      Revised PowseaP (a type 29 Spill from a from an admin',/
      1 '        plan) to be reported in *.xdd as if hte diversion',/
      1 '        never occurred (e.g. From River by Other and River ',/
-     1 '        Divert = 0.0',/
+     1 '        Divert = 0.0)',/
      1 '    - 2014/12/14 (14.02.02)',/
      1 '      Revised Oprinp.f logic used to read the Type 26',/
      1 '        destination',/    
@@ -1544,7 +1547,7 @@ c
      1 '      Revised DivResP2.f (type 27), DivRplP.f (type 28) and'/,
      1 '        PowSeap.f (type 29) to report water spilled',/
      1 '        from a type 11 plan as qdiv(37,xx) and a negative',/
-     1 '        diversion in outmon.f, not return flow (qdiv(36,xx)',/
+     1 '        diversion in outmon.f, not return flow (qdiv(36,xx))',/
      1 '      Revised Oprinp.f to llow oprlimit = 5 in order ',/
      1 '        allow the capacity to be reduced when water is',/
      1 '        released from a plan',/
@@ -1576,8 +1579,9 @@ c
      1 '        operating rule 35 changed to deliver from import plan',/
      1 '        (plan type 7) to accounting plan (plan type 11)',/
      1 '        WITHOUT REUSE. Modeler can split and add reuse after',/
-     1 '        water is in acct plan. This will become default (only)',/
-     1 '        type 35 operating mode and will be documented as such.',/
+     1 '        water is in acct plan. This will become default',/
+     1 '        (only) type 35 operating mode and will be documented',/
+     1 '        as such.',/
      1 '        This branch also has the return flow calculation fix,',/
      1 '        See details in code comments in statem.for.',/
      1 '      merged type 45 branch into master:',/
@@ -1673,7 +1677,7 @@ c
      1 '        the destination',/  
      1 '      Revised Oprinp and Oprfind to pass the operating',/
      1 '        rule on/off switch (ioprsw(k)) and turn off the',/
-     1 '        rule if the souce is turned off',/
+     1 '        rule if the source is turned off',/
      1 '    - 2011/07/20 (12.3019)',/
      1 '      Revised Divcar (type 11) to correct a problem',/
      1 '        when the source is a reservoir water right',/
@@ -2475,7 +2479,7 @@ c
      1 '           file (*.ctl) format base on words ',/
      1 '           (e.g. Time Step = Daily Vs iday = 0)',/
      1 '        Revised Datinp to count number of climate stations to',/
-     1 '           accomodate new, simpler control file',/
+     1 '           accommodate new, simpler control file',/
      1 '    - 2006/11/01 (11.41)',/ 
      1 '        Revised PutPath.f to allow file names to contain up ',/
      1 '          to 12 characters',/
@@ -3270,7 +3274,7 @@ c
      1 '        baseflow calculations.',
      1        ' Revised Virset to initialize CU, FromSoil, & ToSoil',/
      1 '        to correct *.xbi output for a daily baseflow run.',/
-     1 ' **     Note impacts a report only, not a calcuated value',/
+     1 ' **     Note impacts a report only, not a calculated value',/
      1 '        Revised Virout to include positive res evap in CU.',/
      1 '    - 2001/12/27 (10.04)',/       
      1 '        Revised to operate under f95 by',
@@ -3734,7 +3738,7 @@ c
      1 '        Revised average.f to print total and average',/
      1 '        simulated results when the gaged data is missing',/
      1 '    - 1999/07/06 (9.12)',/
-     1 '        Enhanced Opr rule 15; interruptable supply',/
+     1 '        Enhanced Opr rule 15; interruptible supply',/
      1 '        common.inc changed dumsta to a real & added demopr',/
      1 '        and idum',/
      1 '        datinp.f & outdivc.f replaced dumsta with idum',/
@@ -3742,11 +3746,11 @@ c
      1 '        oprinp.f revised the on/off switch',/
      1 '        intersup.f revised miscellaneous',/
      1 '    - 1999/06/29 (9.11)'/
-     1 '        Finished Opr rule 15; interruptable supply',/
+     1 '        Finished Opr rule 15; interruptible supply',/
      1 '    - 1999/06/28 (9.10)'/
      1 '        Revised ouropr.f for Report POR .ne. Simulatino POR',/
      1 '    - 1999/06/25 (9.09)'/
-     1 '        Began interruptable supply by editing outmon.f',/
+     1 '        Began interruptible supply by editing outmon.f',/
      1 '        execut.f, oprinp.f, and adding intersup.f',/
      1 '    - 1999/06/23 (9.08)',/
      1 '        Revised outdivc for Reports when the',/

@@ -59,7 +59,7 @@ c            on Type 2 water right
 c 98/03/03   by R. Bennett to allow daily calculations
 c 98/12/03   by R. Bennett for well impact to rtnsec
 c 99/11/02   by R. Bennett to include steps in doc
-c 00/12/26   by R. Bennett to accomodate variable
+c 00/12/26   by R. Bennett to accommodate variable
 c            efficiency (see call rtnsec)
 c 01/08/23   by R. Bennett to have option to only 
 c            take reservoir water if their is a CIR (IWR)
@@ -100,7 +100,7 @@ c
 c           ieff2 = 0 always use average efficiency
 c           ieff2 = 1 use max efficiency if ieffmax=1
 c           iopsou(1,lr) = source reservoir #1 
-c           iopsou(2,lr) = source reserovir #1 account
+c           iopsou(2,lr) = source reservoir #1 account
 c               Note the following source 2 data is only used when
 c               releases are tied to another type 6 operating rule  
 c           iopsou(3,lr) = if > 0 source reservoir #2    
@@ -1272,7 +1272,7 @@ cx    if(iout.eq.99 .and. cDest.eq.cDest1) then
      1      iwhy, cwhy
   280   format(2i6,2x,a4,i6,1x,a12,1x, a12,1x,5i6, i8,
      1 18f12.0, i5, 1x, a48)
-       endif     
+       endif
          
 
       RETURN

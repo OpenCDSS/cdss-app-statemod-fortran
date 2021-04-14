@@ -27,7 +27,7 @@ c
 c
 c _____________________________________________________________
 c	Program Description
-c	    It calcualtes the Modified Direct Solution Algorythm  
+c	    It calculates the Modified Direct Solution Algorythm  
 c	    Specifically it esitmates the diversion (divact) and
 c	    minimum available flow (pavail) given the demand (divalo)	
 c
@@ -277,7 +277,7 @@ c rrb 2009/01/23; Calculate carrier loss for return calculations
 c
 c rrb 01/02/01; Call rtnsec who calls return to calculate CU,
 c               reduce IWR and loss (as appropriate)
-c rrb 2009/01/23; Calcualte returns for diversion less loss
+c rrb 2009/01/23; Calculate returns for diversion less loss
 cx      CALL RTNSEC(icxM,DIVACT,L2,IUSE,ISCD,nd,ieff2)
         CALL RTNSEC(icxM,DIVACTL,L2,IUSE,ISCD,nd,ieff2)
         
@@ -308,7 +308,7 @@ c rrb 2009/01/23; Calculate carrier loss for return calculations
         CALL TAKOUT(maxsta, avail ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              DIVACT, NDNS,  ISCD     )
 c
-c rrb 2009/01/23; Calcualte returns for diversion less loss
+c rrb 2009/01/23; Calculate returns for diversion less loss
 cx      CALL RTNSEC(icxM,DIVACT,L2,IUSE,ISCD,nd,ieff2)
        CALL RTNSEC(icxM,DIVACTL,L2,IUSE,ISCD,nd,ieff2)
         GOTO 220
@@ -351,7 +351,7 @@ c rrb 2009/01/23; Calculate carrier loss for return calculations
         CALL TAKOUT(maxsta, avail ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              DIVACT, NDNS,  ISCD     )                     
 c
-c rrb 2009/01/23; Calcualte returns for diversion less loss
+c rrb 2009/01/23; Calculate returns for diversion less loss
 cx      CALL RTNSEC(icxM,DIVACT,L2,IUSE,ISCD,nd,ieff2)
         CALL RTNSEC(icxM,DIVACTL,L2,IUSE,ISCD,nd,ieff2)
         
@@ -391,7 +391,7 @@ c rrb 2006/10/31; Check avail for detailed output
         CALL TAKOUT(maxsta, avail ,RIVER ,AVINP ,QTRIBU,IDNCOD,
      1              DIVACT, NDNS,  ISCD  )
 c
-c rrb 2009/01/23; Calcualte returns for diversion less loss
+c rrb 2009/01/23; Calculate returns for diversion less loss
 cx      CALL RTNSEC(icxM,DIVACT,L2,IUSE,ISCD,nd,ieff2)
         CALL RTNSEC(icxM,DIVACTL,L2,IUSE,ISCD,nd,ieff2)
 c
@@ -455,7 +455,7 @@ c rrb 2008/06/16; Update
 c              Step 3f; Check if more can be diverted since
 c		            constrained demand (Short) >small
 c			          and avail(imcd) > small		          
-c		            Should only occurr if rtnmax is more 
+c		            Should only occur if rtnmax is more 
 c			          than anticipated
       iterD=0
       iterMax=25
@@ -484,7 +484,7 @@ c		  areaSF is a fraction
 c
 c ---------------------------------------------------------
 c		Find amount available for diversion with no CU
-c rrb 2009/11/01l Revise to allow some CU to occurr by 
+c rrb 2009/11/01l Revise to allow some CU to occur by 
 c                 setting iter=2
 cx    call rtnmax(2, iuse, iri, ire, iscd, ndns, 
       call rtnmax(1, iuse, iri, ire, iscd, ndns, 
@@ -534,7 +534,7 @@ cx        endif
         availB=avail(220)
         
 c
-c rrb 2009/01/23; Calcualte returns for diversion less loss
+c rrb 2009/01/23; Calculate returns for diversion less loss
 cx      CALL RTNSEC(icxM,divmore,L2,IUSE,ISCD,nd,ieff2)
         CALL RTNSEC(icxM,divmoreL,L2,IUSE,ISCD,nd,ieff2)
           

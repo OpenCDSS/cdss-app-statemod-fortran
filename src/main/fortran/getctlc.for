@@ -75,18 +75,18 @@ c	Dimensions
       dimension ctype(35)
       
       data ctype/
-     1 'Title_1                 ',     
-     2 'Starting_Year           ', 
+     1 'Title_1                 ',
+     2 'Starting_Year           ',
      3 'Ending_Year             ',
      4 'Output_Units            ',
-c     
+c
      5 'Climate_Type            ',
      6 'Streamflow_Type         ',
-c     
+c
      7 'Precipation_Stations    ',
      8 'Evaporation_Stations    ',
      9 'URF_Values              ',
-c     
+c
      1 'CFS_Factor              ',
      1 'Stream_Factor           ',
      2 'Diversion_Factor        ',
@@ -95,27 +95,27 @@ c
      5 'Evaporation_Factor      ',
      6 'Precipitation_Factor    ',
 c
-     7 'Year_Type               ', 
+     7 'Year_Type               ',
      8 'Demand_Type             ',
      9 'Detailed_Output         ',
      2 'Reoperation_Control     ',
      1 'Instream_Flow_Type      ',
 c
      2 'Call_Switch             ',
-     3 'Call_ID                 ', 
+     3 'Call_ID                 ',
 c
-     4 'Time_Step               ',  
+     4 'Time_Step               ',
      5 'Well_Control            ',
      6 'Maximum_Stream_Loss     ',
      7 'San_Juan_RIP            ',
 c
-     8 'Annual_Time_Series      ', 
+     8 'Annual_Time_Series      ',
      9 'Variable_Efficiency     ',
-     3 'Sprinkler_Approach      ',	
-     1 'Soil_Moisture_Depth     ',   
+     3 'Sprinkler_Approach      ',
+     1 'Soil_Moisture_Depth     ',
      2 'Significant_Figures     ',
      3 'CU_Approach             ',
-     4 'Title_2                 ',     
+     4 'Title_2                 ',
      5 'Stop                    '/
 c
 c _________________________________________________________

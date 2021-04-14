@@ -23,7 +23,7 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Daydata;               
 c             It reads daily data ID (cid) and flow (q)
@@ -31,8 +31,8 @@ c             Called by dayest
 c             Called by dayest
 c
 c _________________________________________________________
-c	Update History
-c		NA
+c       Update History
+c             NA
 c __________________________________________________________
 c
 c      Documenation
@@ -52,7 +52,7 @@ c
 c               iwarn
 c
 c _________________________________________________________
-c	Dimensions
+c     Dimensions
 c
       dimension q(32,nmax)
       character cid*12, dtype*45 
@@ -70,8 +70,8 @@ c
      1     'Daily historic diversion file (*.ddy) file 82',
      1     'Daily well pumping file (*.wey)       file 84',
      
-     1     'Daily consumptive IWR (*.ddy)         file 88',     
-     1     'Daily historic reservoir EOD (*.eoy)  file 85'/                                             '/
+     1     'Daily consumptive IWR (*.ddy)         file 88',
+     1     'Daily historic reservoir EOD (*.eoy)  file 85'/
 
 c
 c __________________________________________________________
@@ -97,61 +97,60 @@ c __________________________________________________________
 c
 c               Step 2; Read daily data
 
-	 read(nf,110,end=400,err=400) iy, im, cid(j), (q(i,j), i=1,31)
+         read(nf,110,end=400,err=400) iy, im, cid(j), (q(i,j), i=1,31)
          if(ichk1.eq.1) write(nlog,110) iy, im, cid(j), (q(i,j), i=1,31)
          cid(j)=adjustl(cid(j))
 c
 c rrb 99/08/19; Check for a blank read
 c rrb 00/06/22; Allow less daily values than stations
 c        if(iy.eq.0) goto 400
-	 if(iy.eq.0 .and. igot1.ge.1) goto 500
+         if(iy.eq.0 .and. igot1.ge.1) goto 500
 c
 c               Check if less data than stations
 c               if yes, backspace and reset last read 
-	 if(iy.ne.iy1 .or. im.ne.im1) then
-	   backspace(nf)
+         if(iy.ne.iy1 .or. im.ne.im1) then
+           backspace(nf)
 c
 c rrb 00/08/05; Reset last read since it is really next month
-	   do i=1,31
-	     q(i,j) = 0.0
-	   end do
+           do i=1,31
+             q(i,j) = 0.0
+           end do
 c          nin=i-1
-	   goto 500
-	 endif
+           goto 500
+         endif
 
-	 igot1=igot1+1
+         igot1=igot1+1
 
-	 tot=0.0
-	 do i=1,imd
-	   tot=tot+q(i,j)
-	 end do
+         tot=0.0
+         do i=1,imd
+           tot=tot+q(i,j)
+         end do
 c
 c               Keep total as an average even for reservoir data
          q(32,j)=tot/imd
 c
 c               Check daily data
-	 if(ichk1.eq.1) then
-	   write(nlog,160) cid(j), j, iy, im, (q(i,j), i=1,32),
-     1     q(32,j)*fx*float(imd)	   	   
- 	   
-	 endif
+         if(ichk1.eq.1) then
+           write(nlog,160) cid(j), j, iy, im, (q(i,j), i=1,32),
+     1     q(32,j)*fx*float(imd)
+         endif
 
        end do
        goto 500
 c
 c
  400   if(igot1.ge.1) then
-	 goto 500
+         goto 500
        else
-	 if(iwarn.eq.0) then
-	   write(nlog,410) dtype(nfx)
+         if(iwarn.eq.0) then
+           write(nlog,410) dtype(nfx)
 c          write(6,410) dtype(nfx)
-	 endif
-	 iwarn=1
+         endif
+         iwarn=1
 c
 c rrb 01/02/10; Allow no daily data               
 c        goto 9999
-	 goto 500
+         goto 500
        endif
 c
 c __________________________________________________________

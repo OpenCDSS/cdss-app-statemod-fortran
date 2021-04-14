@@ -55,7 +55,7 @@ c rrb 2018-07/15; Revise to allow up to 55 operating rules
      2     'Reoperation                   ',
      3     'Instream by Index Flow        ',
      4     'Carrier with Diversion Limit  ',
-     5     'Interruptable Supply          ',
+     5     'Interruptible Supply          ',
      6     'Direct Flow Storage           ',
      7     'Rio Grande Compact Rio Grande ',
      8     'Rio Grande Compact Conejos    ',
@@ -1152,7 +1152,10 @@ c rrb 2008/05/19; New format for report
             endif
             
             if(iopdesr(k).eq.2) then                       
-              nr=iopdes(1,k)
+              ! TODO smalers 2021-03-30 need to resolve throughout code
+              ! - Sometimes negative is used for a limited number of operating rules.
+              ! - Ray Bennett says that he has been cleaning up but a couple remain?
+              nr=abs(iopdes(1,k))
 c
 c rrb 2008/05/19; New format for report            
               if(irpt.eq.0) then              

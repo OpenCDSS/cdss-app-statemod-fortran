@@ -233,7 +233,7 @@ c		e. Operating rule
 c
 c _________________________________________________________
 c
-c               Step 15.  Detalied output
+c               Step 15.  Detailed output
       if(iout.eq.1 .and. iw.eq.ioutiw) then
         ncallX=ncallX+1
         if(ncallX.eq.1)then

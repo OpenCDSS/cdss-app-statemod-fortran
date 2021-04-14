@@ -22,7 +22,7 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Outxss; It prints a Structure Summary Output (*.xss)
 c               Note:
@@ -30,9 +30,9 @@ c               Reads binary output (file *.b67) from outmon.f
 c               Prints to file 40
 c
 c _________________________________________________________
-c	Update History
+c       Update History
 c
-c rrb 2007/09/06; Revised format with acreage data		
+c rrb 2007/09/06; Revised format with acreage data
 c
 c _________________________________________________________
 c       Documentation
@@ -49,7 +49,7 @@ c               idallx = 0, print all
 c                      = 1, print ID's provided in *.out
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
       include 'common.inc'
       character  cdx*12,   ida0*12, ftype*24, ptype*24, cname1*24
@@ -286,19 +286,19 @@ c             dat1t(i) = dat1t(i) + dat1(i)
 c
 c rrb 2007/10/05; Add Basin Total
               dum(im,i)=dum(im,i) + dat1(i)
-              dum(13,i)=dum(13,i) + dat1(i)	              
+              dum(13,i)=dum(13,i) + dat1(i)
             end do
 c
-c               Do not total acres (1-5), efficiency data (8, 9, 11),  
-c               capacity (19) and soil storage (25).  
-c               Note actual efficiency is calculated as an annual 
-c               value below
+c               Do not total acres (1-5), efficiency data (8, 9, 11),
+c               capacity (19) and soil storage (25).
+c               Note actual efficiency is calculated as an annual
+c               value below.
             do i=1,5
               dat1t(i)=dat1(i)
 c
 c rrb 2007/10/05; Add Basin Total
               dum(im,i)=dat1(i)
-              dum(13,i)=dat1(i)	                            
+              dum(13,i)=dat1(i)
             end do
             
             dat1t(8) =dat1(8)
@@ -390,11 +390,11 @@ c _________________________________________________________
 c               Step 22; End Structure  Loop
   190 continue
 c
-c		Print Monthly Basin Total  
+c               Print Monthly Basin Total
       do im=1,12
       end do
-          if(dum(13,10).gt.small) then   
-            dum(13,17)=(dum(13,13) + dum(13,14) - dum(13,27))  
+          if(dum(13,10).gt.small) then
+            dum(13,17)=(dum(13,13) + dum(13,14) - dum(13,27))
      1                /dum(13,10)*100.0
           else
             dum(13,17) = 0.0

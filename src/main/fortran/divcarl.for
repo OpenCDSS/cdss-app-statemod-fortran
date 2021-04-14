@@ -369,10 +369,10 @@ c      iwwP1            WWSP Supply Plan (type 14)
 c      iwwP2            WWSP User Plan (type 15)
 c _________________________________________________________
 c
-c	Dimensions
+c     Dimensions
       include 'common.inc'
 c      
-      character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, 
+      character cwhy*51, cdestyp*12, ccarry*3, cpuse*3, 
      1          cSouTyp*12, cstaidX*12, cresid1*12, cplntyp*12,
      1          ctype1*12, cshare*3, cCallBy*12, criver*12, corid1*12,
      1          cDest*12, cImcdR*12, cIflow*3, cWwsp*3     
@@ -390,7 +390,7 @@ c                         2 summary
 c		                      3 Rtnmax details
 c		                      4 super summary
 c                  ioutA = 1 details on adjustments to Avail
-c		               ioutC = 1 details on carrier loss adjusment
+c		               ioutC = 1 details on carrier loss adjustment
 c                  ioutZ = 2 details on subroutine logic
 c                  ioutF = 1 details on type 51 flow control (iflow)
 c                  ioutP = 1 details on WWSP plan accounting
@@ -1917,7 +1917,7 @@ c
        if(nRiver.gt.0) then  
 c !!!      Note:
 c          navail=1 allows avail to be adjusted
-c          navail=2 Adjust AVAIL to be adjused for each diversion 
+c          navail=2 Adjust AVAIL to be adjusted for each diversion 
 c                   and release except the source diversion 
 c
 c rrb 2010/10/15; Update to allow operation with a depletion release
@@ -2608,7 +2608,7 @@ c               20c. Detailed output for plans
 c      
 c __________________________________________________________
 c      
-c                Step 21.  Detalied Standard output  
+c                Step 21.  Detailed Standard output  
 cx       write(nlog,*) ' DivCarl; cdest, iwx, iout, iw, ioutiw'
 cx       write(nlog,*) ' DivCarl; ', cdest, iwx, iout, iw, ioutiw
          if(iout.eq.2 .and. iw.eq.ioutiw) then

@@ -155,7 +155,14 @@ BAD_OBJ_COUNT := $(shell file *.o | grep $(OBJ_WRONG_FILE_TYPE) | wc -l)
 # Extra checks that can be added for deep check of code logic
 # - Steve Malers added to track down remaining issues
 FFLAGS_EXTRA_CHECKS = -fcheck=do,mem,pointer
-FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
+# Use -O1 -Wall to check for common warnings.
+# This generally works but has some issues at runtime that cause different results and are still being resolved
+#FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
+# Try removing -fno-automatic, results in runtime errors
+#FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
+# Try removing -fno-automatic and -finit-local-zero and print warnings for code review
+# - use this periodically to improve code
+FFLAGS = -g -O1 -Wall -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
 #FFLAGS = -O2
 # The flags for all cases (e.g. look for system .mod files, required in gfortran)
 FFLAGS += -I/usr/include
@@ -216,7 +223,7 @@ all: help
 #
 # Print the targets that are available.
 help:
-	@echo "--------------------------------------------------------------------------------"
+	@echo "-------------------------------------------------------------------------------------------"
 	@echo "StateMod makefile targets:"
 	@echo ""
 	@echo "all        Default target that prints this help message."
@@ -229,21 +236,22 @@ help:
 	@echo ""
 	@echo "file.o     Compile the source file.for file into object file file.o,"
 	@echo "           useful to check syntax for a single file."
-	@echo "--------------------------------------------------------------------------------"
+	@echo "-------------------------------------------------------------------------------------------"
 	@echo "Important makefile variables that are used:"
 	@echo ""
 	@echo "FC (compiler) = $(FC)"
 	@echo "STATEMOD_VERSION (from statem.for) = $(STATEMOD_VERSION)"
 	@echo "EXE_BITS (from environment) = $(EXE_BITS)"
-	@echo "--------------------------------------------------------------------------------"
+	@echo "-------------------------------------------------------------------------------------------"
 	@echo "Important environment variables that are used:"
 	@echo ""
 	@echo "OS (to determine if Windows) = $(OS)"
 	@echo "MSYSTEM (to determine EXE_BITS on Windows) = $(MSYSTEM)"
-	@echo "--------------------------------------------------------------------------------"
+	@echo "-------------------------------------------------------------------------------------------"
 	@echo "To force compile of files even if errors:  make -k statemod"
-	@echo "To force compile and save output to file:  make -k statemod 2>&1 | tee somefile"
-	@echo "--------------------------------------------------------------------------------"
+	@echo "To force compile and save output to file:  make -k statemod 2>&1 | tee statemod-compile.log"
+	@echo "To count warning types from above:         ./count-warnings.bash"
+	@echo "-------------------------------------------------------------------------------------------"
 
 # Dependencies for object files:
 # - because statemod is the main output (not library, etc.) only concern is the include file
@@ -444,8 +452,9 @@ xdebug.o: common.inc
 #	putpath_windows.o 
 #
 # If necessary, temporarily copy files with errors into a comment below this line to let all compile.
-statemod: checkarch statemod_compile
-	@echo "In statemod"
+statemod: \
+	checkarch \
+	statemod_compile
 
 # This target is used internally to allow 'checkarch' to be executed.
 statemod_compile: \
@@ -689,13 +698,23 @@ statemod_compile: \
 			year.o \
 			year2.o
 ifdef OS
-	# Windows...
+	@# Windows...
 	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
 	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe"
 	@echo "-----------------------------------------------------------------------"
+	@# -----------------------
+	@# Uncomment the following if want to copy executable to different location.
+	@# - this is not standard for everyone because some developers may work on drive other than /C
+	@# - put in at Ray Bennett's request
+	@#echo "Copying executable to /C/cdss/bin."
+	@# Create the folder if it does not exist.
+	@#mkdir -p /C/cdss/bin
+	@# Copy the executable to a different location.
+	@#cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe /C/cdss/bin
+	@# -----------------------
 else
-	# Linux...
+	@# Linux...
 	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
 	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit"
@@ -754,6 +773,7 @@ endif
 #		$(error Detected $(BAD_OBJ_COUNT) object files of wrong bit count.  Run 'make veryclean' and 'make statemod' to force recompile with correct compiler for current shell.)
 #	endif
 
+# Check the architecture to make sure are not trying to mix 32-bit and 64-bit object files.
 ifneq ($(BAD_OBJ_COUNT),0)
 ifdef OS
 checkarch:
@@ -775,7 +795,7 @@ endif
 
 # Remove intermediate files used when compiling:
 # - Do not remove *.obj because that is used with Lahey and want gfortran compile to be separate.
-# - normal artifacs are *.o, ec.
+# - normal artifacts are *.o, etc.
 # - additional artifacts may be created due to compiler problem, for example as listed below.
 #     parse_gfortran.for.236r.expand
 #     parse_gfortran.for.237r.vregs

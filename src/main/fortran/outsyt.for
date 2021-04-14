@@ -47,7 +47,7 @@ c
      4   ' Well Depletion         ',' To / From GW Storage   ',
      6   ' River Inflow           ',' River Divert           ',
      8   ' River by Well          ',' River Outflow          ',
-     3   ' Available Flow         ','                        ',                          ',
+     3   ' Available Flow         ','                        ',
      2   '                        ','                        ',
      4   '                        ','                        ',
      5   '                        '/
@@ -73,7 +73,7 @@ c
 C
 c
 c _________________________________________________________
-c	Initize
+c	Initialize
 C
       write(6,*) ' '
       write(6,*) ' Subroutine Outsyt'
@@ -91,7 +91,7 @@ c	 	    e.g. column of Avail Flow)
 c		Set ndivT number of columns to print in title
 c		Set ndivF number of columns to weight by factor
 
-c		Set nrid column of rid, strucutre type 
+c		Set nrid column of rid, structure type 
 c		Set nxstr column of xstr,number of structures
 c               Set nrimcdX column of rimcdX, call location
 c		Set nccallR column of call right
@@ -158,7 +158,7 @@ C
 c rrb 10/27/94 Additional Output
   250     continue
 c
-c rrb 01/12/26; Accomodate futile call
+c rrb 01/12/26; Accommodate futile call
           if(idcd.gt.0) then
             write(16,260) stanam1(is),cstaid(is),cstaid(idcd),
      1                (XMONAM(I),I=1,12)
@@ -337,4 +337,3 @@ c
 c _________________________________________________________
       stop 
       END
-

@@ -20,10 +20,10 @@ c_________________________________________________________________NoticeEnd___
 
       Subroutine outGVC(nlogx, nout, divact1, divsum, gvCot,
      1            noutGVC, fac, l2, cRule,  
-     1            l1, rec12, nameX)    	
+     1            l1, rec12, nameX)
 c    
 c _________________________________________________________
-c	Dimensions       
+c      Dimensions
       include 'common.inc'
       character cRule*12, nameX*24
       character rec12*12, fileOpen*40, ctype*16, rec12b*12,
@@ -54,11 +54,11 @@ c
         shortGVC = amax1(divert(mon,325)-qdiv(5,697),0.0)   
         GVC=0  
         if(shortGVC.gt.small.and.qdiv(5,696).gt.small) GVC=1.
-        if(shortGVC.gt.small.and.qdiv(5,695).gt.small) GVC=-1. 
-        if(shortGVC.lt.small.and.qdiv(5,696).gt.small) GVC=-2.                                 
+        if(shortGVC.gt.small.and.qdiv(5,695).gt.small) GVC=-1.
+        if(shortGVC.lt.small.and.qdiv(5,696).gt.small) GVC=-2.
  
         GVCo= qdiv(5,697) + qdiv(5,696)+ qdiv(5,695)
-        if(GVCo.gt.GVCot) then	
+        if(GVCo.gt.GVCot) then
           GVCot=GVCo    
           
           noutGVC=noutGVC+1
@@ -71,9 +71,9 @@ c
      1    qdiv(5,685)*fac, qdiv(5,697)*fac, 
      1    qdiv(5,696)*fac, qdiv(5,695)*fac,
      1    shortGVC*fac,GVC
-        endif	      
+        endif
         goto 500
-      endif	       
+      endif
 c
 c ____________________________________________
 c rrb 20100123; OMID Check for Return Flows caused by Replace   
@@ -86,7 +86,7 @@ c
         if(shortGVC.lt.small.and.qdiv(5,696).gt.small) GVC=-2.
      
         GVCo= qdiv(5,697) + qdiv(5,696)+ qdiv(5,695)
-        if(GVCo.gt.GVCot) then	
+        if(GVCo.gt.GVCot) then
           GVCot=GVCo  
             
           noutGVC=noutGVC+1
@@ -115,7 +115,7 @@ c
         if(shortGVC.lt.small.and.qdiv(5,696).gt.small) GVC=-2.                                 
                   
         GVCo= qdiv(5,697) + qdiv(5,696)+ qdiv(5,695)
-        if(GVCo.gt.GVCot) then	
+        if(GVCo.gt.GVCot) then
           GVCot=GVCo    
           noutGVC=noutGVC+1
           
@@ -144,7 +144,7 @@ c
         if(shortGVC.lt.small.and.qdiv(5,696).gt.small) GVC=-2.
 
         GVCo= qdiv(5,697) + qdiv(5,696)+ qdiv(5,695)
-        if(GVCo.gt.GVCot) then	
+        if(GVCo.gt.GVCot) then
           GVCot=GVCo   
            
           noutGVC=noutGVC+1
@@ -157,10 +157,10 @@ c
      1      qdiv(5,685)*fac, qdiv(5,697)*fac, 
      1      qdiv(5,696)*fac, qdiv(5,695)*fac, 
      1      shortGVC*fac, GVC
-        endif	
+        endif
 
         goto 500
-      endif	
+      endif
 c
 c ____________________________________________
 c rrb 20100123; OMID Check  
@@ -173,7 +173,7 @@ c rrb 20100123; OMID Check
                   
         GVCo= qdiv(5,697) + qdiv(5,696)+ qdiv(5,695)
         
-        if(GVCo.gt.GVCot) then	
+        if(GVCo.gt.GVCot) then
           GVCot=GVCo    
           
           noutGVC=noutGVC+1
@@ -188,7 +188,7 @@ c rrb 20100123; OMID Check
      1      qdiv(5,696)*fac, qdiv(5,695)*fac,
      1      shortGVC*fac,GVC
         endif
-        goto 500	        
+        goto 500
       endif
 c
 c ____________________________________________      

@@ -570,11 +570,11 @@ c smalers 2017-11-07 Check to avoid invalid array index
 c smalers 2017-11-07 Check to avoid invalid array index
                   if (is.gt.0) then
                     write(21,2402) pid(np), cstaid(is),
-     1                iyrmo(im), xmonam(im), (dat2(i)*fac, i=1,maxTC), 
-     1                cfail1, cfail2, pfail(np) 
+     1                iyrmo(im), xmonam(im), (dat2(i)*fac, i=1,maxTC),
+     1                cfail1, cfail2, pfail(np)
                   endif
-		endif
-              endif  
+                endif
+              endif
 c
 c ---------------------------------------------------------
 c		b. Well Augmentation plan Output

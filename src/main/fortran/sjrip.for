@@ -238,7 +238,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 3e; Calcualte available water + spill
+c               Step 3e; Calculate available water + spill
 c
       sjavsp  = sjavail +  sjspill
       if(iout.eq.1) then

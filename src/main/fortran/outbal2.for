@@ -179,7 +179,7 @@ c		    call information (control location and right)
 c	 	    e.g. column of Avail Flow)	      
 c		Set ndivT number of columns to print in title
 c		Set ndivF number of columns to weight by factor
-c		Set nrid column of rid, strucutre type 
+c		Set nrid column of rid, structure type 
 c		Set nxstr column of xstr,number of structures
 c		Set nccallR column of call right
 c		Set nrimcdX column of call location
@@ -1383,12 +1383,12 @@ cx
      1         ' modeled include natural stream loss, precipitation ',
      1         ' recharge, boundary inflow, etc.',/
      1         '        (3) Other Outflows from ground water not',
-     1         ' modeled include natural stream gain, boundary outflow,',
-     1         ' CU by native species, etc.',/
+     1         ' modeled include natural stream gain, boundary,',
+     1         ' outflow, CU by native species, etc.',/
      1         '        (4) Delta is Total Inflow - Total Outflow but', 
      1         ' remember Other Inflows and Other Outflows are not', 
      1         ' included. Also it takes some time before return',/
-     1         '            flows & depletions impact the system',/        
+     1         '            flows & depletions impact the system',/
      1         '        (5) Salvage is not part of the Ground Water ',
      1         'Balance because it is a net change from non benefical',
      1         ' (e.g. Native ET, etc.) to Consumptive Use')

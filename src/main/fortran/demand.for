@@ -238,9 +238,9 @@ c               Not used for monthly
 c
 c rrb 2006/09/11; New CU Approach,
 c		Note AreaSF(nd) is a fraction
-        dIwrSF(nd)=diwrreq(nd)*AreaSF(nd)	
-        dIwrSS(nd)=diwrreq(nd)*AreaSS(nd)	
-        dIwrGF(nd)=diwrreq(nd)*AreaGF(nd)	
+        dIwrSF(nd)=diwrreq(nd)*AreaSF(nd)
+        dIwrSS(nd)=diwrreq(nd)*AreaSS(nd)
+        dIwrGF(nd)=diwrreq(nd)*AreaGF(nd)
         dIwrGS(nd)=diwrreq(nd)*AreaGS(nd)        
       end do
 

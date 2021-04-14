@@ -29,7 +29,7 @@ c       Divar1;   It handles a type 14 Operating rule which is
 c                 Similar to a standard carrier (type 11) but  
 c                 it recognizes an annual limit to a diversion
 c                 when iopsou(4,l2) is .gt. 1.
-c		    Note Oprinp checks that iopsou(4,l2) >=1)
+c                 Note Oprinp checks that iopsou(4,l2) >=1)
 c                 Also it includes lots of notes added to the old 
 c                 type 11
 c
@@ -61,7 +61,7 @@ c                  b. Take out of stream (call takout)
 c                  c. Calculate returns (call rtnsec)
 c                  d. Check if more can be diverted by operating
 c                     at less than maximum efficiency
-c                  e. If no more is availble exit.
+c                  e. If no more is available exit.
 c
 c                  f. If more is available then
 c                     f1. Finding max available with returns
@@ -139,7 +139,7 @@ c		Dimensions
       include 'common.inc'
 c      
       character 
-     1  cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cresid1*12,
+     1  cwhy*51, cdestyp*12, ccarry*3, cpuse*3, cresid1*12,
      1  cCallBy*12, corid1*12
 c _________________________________________________________
 c
@@ -483,7 +483,7 @@ c rrb 99/08/09; I do not think the following is used based on
 c               input in oprinp.f
 c                    (SOURCE TWO ON RULE 14 CARD IS A RESERVOIR)
 c                    LIMIT DEMAND BY AMOUNT IN A  STORAGE ACCOUNT
-c rrb 2006/11/21; The following is not documented and should not occurr
+c rrb 2006/11/21; The following is not documented and should not occur
 c		  Alos iopsou(4,l2) is used in Oprinp.f to turn
 c		  ON or OFF the source right
 cx      if(iopsou(3,l2).ne.0) then 
@@ -668,7 +668,7 @@ c
 c ---------------------------------------------------------
 c
           if(avail(imcd).gt.small) then
-c rrb 2009/11/01l Revise to allow some CU to occurr by 
+c rrb 2009/11/01l Revise to allow some CU to occur by 
 c                 setting iter=2
 cx          call rtnmax(2, iuse, iri, ire, iscd, ndns, 
             call rtnmax(1, iuse, iri, ire, iscd, ndns, 
@@ -844,7 +844,7 @@ c               o. Update actual diversion for testing
 c
 c _________________________________________________________
 c
-c               Step 15.  Detalied output
+c               Step 15.  Detailed output
 c
 
       if(iout.eq.1 .and. iw.eq.ioutiw) then      
@@ -904,7 +904,7 @@ c
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' _______',
      1  ' _______ __________________________')
-  280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,8i8,7F8.1,i8,1x, a48) 
+  280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,8i8,7F8.1,i8,1x, a51)
 
   390 FORMAT(/, ' divcar1; Print 5 ',6I10,F10.2,3I10,F10.2)
   400 format(' divcar1: avail  ',10f10.2)
@@ -927,6 +927,3 @@ c
 
       stop 
       END
-
-
-

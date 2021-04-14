@@ -18,17 +18,17 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-c	Update History
+c       Update History
 c
 
 c
 c _________________________________________________________
-c	Documentation
+c       Documentation
 c
 
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 cC     Last change:  C    20 May 97    0:06 am
 c
 c *********************************************************
@@ -37,7 +37,7 @@ c
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Outpltr; It generates a matrix tables of reservoirs by account
 c
@@ -47,13 +47,13 @@ c
 c              iplot = n reservoir ID to plot
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
       include 'common.inc'
       character cplot*12
 c
 c _________________________________________________________
-c		Step 1; Intitlize
+c              Step 1; Initialize
 c
 
       write(6,*) ' Subroutine Outplr'
@@ -61,9 +61,9 @@ c
 c                                 
 c     nres = 26
 c
-c		Set number of output values 1x in StateM.for
-c	        and store in common.inc      
-      ndiv = ndivO        
+c               Set number of output values 1x in StateM.for
+c               and store in common.inc      
+      ndiv = ndivO
       nres = nresO
       ndivw= nwelO
 
@@ -80,8 +80,8 @@ c
 c              Get ID for a plot
       ir1 = 0
       do 100 ir=1,numres             
-	if(cresid(ir).eq.cplot) goto 120
-	if(iressw(ir).ne.0) ir1 = ir1 + nowner(ir+1) - nowner(ir) + 1
+        if(cresid(ir).eq.cplot) goto 120
+        if(iressw(ir).ne.0) ir1 = ir1 + nowner(ir+1) - nowner(ir) + 1
   100 continue
 
       write(9,110) cplot
@@ -90,49 +90,49 @@ c              Get ID for a plot
 c
 c               Check if a reservoir is turned off
   120 if(iressw(ir).eq.0) then
-	write(99,*) '  Outplr; Reservoir ID ', cplot, ' is turned off'
-	goto 200      
+        write(99,*) '  Outplr; Reservoir ID ', cplot, ' is turned off'
+        goto 200
       endif
-		
+
   130 ir1=ir1+1
 c
 c              Print title
       write(9,180) iystr, iyend, cunitm2, cyr1
 c
       do 170 iy=iystr,iyend
-	call year(iy, iyrmo, imomo, cyr1)
+        call year(iy, iyrmo, imomo, cyr1)
 c
 c rrb 01/15/95 Initialize annual total
 c               Note 15 = target, 16 = one fill limit
-	do 140 i=1,nres
-	  dat2t(i) = 0.0
+        do 140 i=1,nres
+          dat2t(i) = 0.0
   140   continue
-	dat2t(15) = -1.0
-	dat2t(16) = -1.0
+        dat2t(15) = -1.0
+        dat2t(16) = -1.0
 
-	do 160 im=1,12
+        do 160 im=1,12
 c         cx = cu         
 c         if(iresop.ne.1) cx=cu*mthday(im)
 c
-	  irecr=((iy-iystr0)*12+(im-1))*nrsactx+ir1+numtop
-	  read(44,rec=irecr) (dat2(i),i=1,nres)
-		     
-	  ida  = dat2(nres-1) 
-	  nacc = dat2(nres)
+          irecr=((iy-iystr0)*12+(im-1))*nrsactx+ir1+numtop
+          read(44,rec=irecr) (dat2(i),i=1,nres)
+
+          ida  = dat2(nres-1)
+          nacc = dat2(nres)
 c
 c               Annual total, except for initial and ending stroage
-	  do 150 i=1,nres-2
-c           dat2(i)=dat2(i)*cx           
-	    dat2(i)=dat2(i)*fmo(im)           
-	    
-	    if(i.eq.1 .or. i.eq.14 .or. i.eq.15 .or. i.eq.16) goto 150
-	    dat2t(i) = dat2t(i) + dat2(i)
+          do 150 i=1,nres-2
+c           dat2(i)=dat2(i)*cx
+            dat2(i)=dat2(i)*fmo(im)
+
+            if(i.eq.1 .or. i.eq.14 .or. i.eq.15 .or. i.eq.16) goto 150
+            dat2t(i) = dat2t(i) + dat2(i)
   150     continue          
-	  if(im.eq.1) dat2t(1) = dat2(1)
-	  if(im.eq.12) dat2t(14) = dat2(14)
+          if(im.eq.1) dat2t(1) = dat2(1)
+          if(im.eq.12) dat2t(14) = dat2(14)
 c 
 c               Print total station output
-	  write(9,190)   cresid(ir), ida, iyrmo(im), xmonam(im), 
+          write(9,190)   cresid(ir), ida, iyrmo(im), xmonam(im),
      1                   (dat2(j), j=1,nres-3)
 c
 c               End Month Loop      
@@ -142,7 +142,7 @@ c               End Year Loop
   170 continue
 c
 c        Account Loop
-	if(nacc-ida.gt.1) goto 130       
+        if(nacc-ida.gt.1) goto 130
 c
 c
 c _________________________________________________________
@@ -190,14 +190,14 @@ c               Error Warning
      1       '    See the *.log file')
   220 format('    Stopped in Outplr')
       if(igui.eq.0) then
-	write(6,*) 'Stop 1' 
-	call flush(6)
+        write(6,*) 'Stop 1'
+        call flush(6)
         call exit(1)
 
-	stop 
+        stop
       else
-	istop=2
-	return
+        istop=2
+        return
       endif
 c
 c _________________________________________________________

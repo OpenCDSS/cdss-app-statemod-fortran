@@ -126,7 +126,7 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      character cwhy*24, cdestyp*12, ccarry*3, cresid1*12, subtypX*8
+      character cwhy*45, cdestyp*12, ccarry*3, cresid1*12, subtypX*8
 c
 c _________________________________________________________
 c               Step 1; Initialize
@@ -656,7 +656,7 @@ c
      1      divmonX*fac, divact*fac, iwhy, cwhy
        endif
   280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,
-     1   8i8,10F8.1,i8,1x, a24)
+     1   8i8,10F8.1,i8,1x, a45)
 c
 c _________________________________________________________
 c
@@ -696,4 +696,3 @@ c _________________________________________________________
 
       stop 
       END
-

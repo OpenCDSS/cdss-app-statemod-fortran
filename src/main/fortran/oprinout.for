@@ -18,29 +18,29 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
-	Subroutine OprinOut(nlog, maxopr, k, 
-     1    ityopr1, cidvri, 
-     1    ciopde,  iopdes1, iopdes2, 
+      Subroutine OprinOut(nlog, maxopr, k,
+     1    ityopr1, cidvri,
+     1    ciopde,  iopdes1, iopdes2,
      1    ciopso1, iopSou1, iopsou2,
      1    ciopso2, iopsou3,iopsou4, creuse, ireuse1,
      1    oprloss1, oprlimit, iopSou5, iopSou6, iopsou7,
      1    cdivtyp1, intern, cntern, cAssoc, cAssoc2, cAssoc3)
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
-c	OprinOut; It prints results of reading data in Oprinp.f
+c       OprinOut; It prints results of reading data in Oprinp.f
 c
 c _________________________________________________________        
-c	Dimensions
-c	
+c       Dimensions
+c
       dimension intern(maxopr,10), cntern(10)
       character*12 cidvri,  ciopde,  ciopso1, ciopso2, ciopso3,
      1             ciopso4, ciopso5, cntern,  creuse, cdivtyp1,
      1             cAssoc,  cAssoc2, cAssoc3
 c
 c _________________________________________________________
-c		Step 1; Print operational rule data
+c       Step 1; Print operational rule data
 c
         write(nlog,2020) ityopr1, cidvri, ityopr1,    
      1    ciopde, iopdes1,  iopdes2, 
@@ -84,4 +84,3 @@ c
 c _________________________________________________________        
       stop
       end
-	

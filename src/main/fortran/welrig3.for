@@ -649,7 +649,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 24.  Detalied output
+c               Step 24.  Detailed output
 c
 
  260  continue

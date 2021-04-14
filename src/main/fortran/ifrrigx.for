@@ -150,7 +150,7 @@ c _________________________________________________________
 c       Step 3; Check available decree 
 c
 c rrb 2005/09/20; Do not used demand from *.ifa or *.ifm
-c                 since it is calcualed on teh fly in 
+c                 since it is calculated on teh fly in
 c                 subroutine Bomsec.
 cr    aloifr=amin1(dcrifr(isr)-divo(l2),flowrq(nf))
       if(iout.eq.1) then
@@ -168,7 +168,7 @@ c
 c _________________________________________________________
 c       Step 4; Limit based on demand, decree and available 
 c	            	Note flow at the index station is flowrq(nf)
-c	            	It is calcualted once in Bomsec to be the flow * cp
+c	            	It is calculated once in Bomsec to be the flow * cp
 c               at the beginning of the time step so it does 
 c               not change as the flow at the index station
 c               may change with other diversions
