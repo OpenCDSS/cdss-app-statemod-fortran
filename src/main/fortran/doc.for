@@ -71,7 +71,7 @@ c, , , , , ,
 c,idayd(nd),    Div,    Daily,  datinp.f read,    i4,   Daily data type (   )
 c,idivco(1,nr), Div,    Right,  riginp.f,         i4,   ties right to right structure
 c,idivsw(nd),   Div,    ,       datinp.f read,    i4,   On/Off for diversion structure
-c,idvcom(nd),   Div,    Demand, datinp.f read,    i4,   Diversion demant type
+c,idvcom(nd),   Div,    Demand, datinp.f read,    i4,   Diversion demand type
 c,idrgst,       Div,    Opr,    oprinp.f read,    i4,   ????
 c, , , , , ,
 c,idvrsw(nr),   Div,    Right,  riginp.f read,    i4,   On/Off for diversion right
@@ -97,7 +97,7 @@ c,irigus,       Div,    Right,  riginp.f,         i4,   ties a right to a user
 c,irtn(nd),     Div,    Return, datinp.f read,    i4,   Diversion # of return stations
 c,irtndl(n)     Div,    Return  datinp.f read,    i4,   Return Table           
 c,irnsta(n),    Div,    Return, datinp.f,         i4,   Return location on stream
-c,irnord(n),    Div,    Return, datinp.f read,    i4,   ?? Nummber of nodes downstream of return location????
+c,irnord(n),    Div,    Return, datinp.f read,    i4,   ?? Number of nodes downstream of return location????
 c,istrtn(n),    Div,    Return, datinp.f          i4,   ?? Return flow ???
 c,, , , , , ,
 c,named(nr),    Div,    Right,  riginp.f read,    a12,  Diversion right name
@@ -130,7 +130,7 @@ c,Pon(ip),      Plan,    all,    getpln.f,         f8,   Plan on/off switch
 c,Pid(ip),      Plan,    all,    getpln.f,         f8,   Plan ID
 c,Pname(ip),    Plan,    all,    getpln.f,         f8,   Plan name
 c,Psource(ip),  Plan,    all,    getpln.f,         a12,  Plan source (only used if plan type = 8)
-c,iPsource(ip)  Plan,    all,    getpln.f,         i8,   Pointer that ties a plan (np) to a reserovir (only used if the plan type is res recharge (8)
+c,iPsource(ip)  Plan,    all,    getpln.f,         i8,   Pointer that ties a plan (np) to a reservoir (only used if the plan type is res recharge (8)
 c,Pacct(ip),    Plan,    all,    getpln.f,         a12,  Plan source account (only used if the plan type is reservoir recharge (8)
 c,iPlntyp(ip)   Plan,    all,    getpln.f,         i8,   Plan type (1-10 see documentation)
 c, , , , , ,
@@ -157,10 +157,10 @@ c, , , , , ,
 c,Psuply(ip),   Plan,  Reuse,    bomsec.f,         f8,   Sum of daily running plan demands for a month (dem(ip))
 c,PsuplyTm(ip), Plan,  Reuse,    bomsec.f,         f8,   Sum of daily total plan demands for a given month (demT(ip))
 c, , , , , ,
-c,Peff(ip),     Plan,  N/A,      datinp.f,         f8,   Plan efficiency % (-1 means use sourc structure)
-c,iPrg(ip),     Plan,  N/A,      datinp.f,         i8,   Plan return flow pattern (-1 means use sourc structure)
+c,Peff(ip),     Plan,  N/A,      datinp.f,         f8,   Plan efficiency % (-1 means use source structure)
+c,iPrg(ip),     Plan,  N/A,      datinp.f,         i8,   Plan return flow pattern (-1 means use source structure)
 c,iPfail(ip),   Plan,  N/A,      datinp.f,         i8,   Plan failure switch 0 do not stop for a failure, 1 do stop
-c,Pmax(im,ip),  Plan,  N/A,      datinp.f,         f8,   Plan maximum diversion for month im  (cfs)
+c,Pmax(im,ip),  Plan,  N/A,      datinp.f,         f8,   Plan maximum diversion for month im (cfs)
 c, , , , , ,
 c,PwellP(ip),   Plan,  N/A,      WelRigP.f,        f8,   Well Pumping in Priority
 c,PwellPM(ip),  Plan,  N/A,      WelRigP.f,        f8,   Sum of daily Well Pumping in Priority 
@@ -174,8 +174,8 @@ c,Psto1,        Plan,  N/A,      Bomsec.f,         f8,   Plan Initial Storage
 c,Psto2,        Plan,  N/A,      Bomsec.f,         f8,   Plan Ending Storage
 c,Pevap,        Plan,  N/A,      Bomsec.f,         f8,   Plan Evaporation
 c,Psto1M,       Plan,  N/A,      Dayset.f,         f8,   Plan Initial Storage for daily model
-c,Psto2M,       Plan,  N/A,      Dayset.f,         f8,   Plan endoing for daily model
-c,PevapM,       Plan,  N/A,      Dayset.f,         f8,   Plan evaporatoin for a daily model
+c,Psto2M,       Plan,  N/A,      Dayset.f,         f8,   Plan ending for daily model
+c,PevapM,       Plan,  N/A,      Dayset.f,         f8,   Plan evaporation for a daily model
 c, , , , , ,
 c ___________________________
 c,Plan Reporting (Plan to Opr Rule Tie),,,,,
@@ -251,14 +251,14 @@ c,Variable,     Cat,    Cat2,   Source,           Type, Description
 c,____________ ,______ ,______ ,________________ ,____ ,______________
 c,maxrtnW2,     Well,  Depletion, Statem.f,         i8,   Maximum number of Well depletions
 c,numRtnW2,     Well,  Depletion, Statem.f,         i8,   Actual number of Well depletions
-c,iPRes(nw),    Well,  Depletion, GetWel.f,         i8,   Well depletoin nw is tied to Well ipRes(nd)
+c,iPRes(nw),    Well,  Depletion, GetWel.f,         i8,   Well depletion nw is tied to Well ipRes(nd)
 c,rlossW2(nw),  Well,  Depletion, GetWel.f,         i8,   Salvage from Well depletion flow (nw)
 c,rlossWM2(nw), Well,  Depletion, GetWel.f,         i8,   Monthly total salvage from Well depletion flow (nw)
 c,nrtnW2(nw),   Well,  Depletion, GetWel.f,         i8,   Number of depletions for Well nw
 c,pcttotW2(nx), Well,  Depletion, GetRrnW.f,        f8,   Percent depletions from Well depletion nx
 c,pctlosW2(nx), Well,  Depletion, GetWel.f,         i8,   Monthly total salvage from Well depletion nx
 c,irtndlW2(nx), Well,  Depletion, GetWel.f,        a12,   Stream ID receiving depletion from Well depletion nx
-c,irnstaW2(nx), Well,  Depletion, GetWel.f,         i8,   River Station receiving depletion from Well depletin nx
+c,irnstaW2(nx), Well,  Depletion, GetWel.f,         i8,   River Station receiving depletion from Well depletion nx
 c, , , , , ,
 c, , , , , ,
 c ___________________________

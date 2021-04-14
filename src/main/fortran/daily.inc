@@ -18,12 +18,8 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-C     Last change:  C    26 Apr 97   11:25 pm
-C
-c
-c
-c		Daily.inc
-c		Daily values only to save space
+c     daily.inc
+c     Daily values only to save space.
 c
 c _________________________________________________________
 c rrb 04/29/97; Daily model
@@ -50,9 +46,6 @@ c
      1 divertd(32,2288), diveritd(32,2288)
 c    1 evapd(32,555),    
 
-
-c
-c
 c _________________________________________________________
 c               Daily data read
       COMMON/dayD2/    

@@ -326,7 +326,7 @@ c
 c
 c rrb 98/12/22; Adjust "Well Depletion" to not include current month
 c               which is shown under "river by Well" (qdiv(25,is)
-c rrb 99/06/12; qdiv(23 is now exchange by interruptable supply
+c rrb 99/06/12; qdiv(23 is now exchange by interruptible supply
 c       dep(is)=dep(is)-qdiv(23,is)
         dep(is)=dep(is)-qdiv(25,is)
 
@@ -989,8 +989,8 @@ c           shrtcu=diverirt(mon,nd) - dcut(nd) - qdivso(nd)
      1        divx,           qdivso(nd),   
      1        totx,           shrtx,                shrtcu,
      1        dcut(nd),       qdivs(nd)+qdivsw(nw), 
-     1        rety,           rloss(nd)+rlossw(nw), carryW(nw),          totox,
-     1        divx+rdepw(nw), gwx,          
+     1        rety,           rloss(nd)+rlossw(nw), carryW(nw),
+     1        totox,          divx+rdepw(nw),       gwx,
      1        rlossw2(nw),    qdivso(nd),           tots
 
           endif

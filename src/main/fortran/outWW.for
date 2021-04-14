@@ -165,7 +165,7 @@ c _________________________________________________________
 c
 c               Step 4; Year Loop
 c
-c rrb 2018/010/07; Calcualte storage
+c rrb 2018/010/07; Calculate storage
           psto1Y=0.0
           psto2Y=0.0
           

@@ -945,7 +945,7 @@ c
       AVAIL(IPCD)=AVAILR
 c
 c ---------------------------------------------------------  
-c               Calcuate returns, CU, etc
+c               Calculate returns, CU, etc
       CALL RTNSEC(icx,DIVACT,lr,IUSE,Idcd,nd,ieff2)
 c
 c

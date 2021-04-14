@@ -496,18 +496,18 @@ c _________________________________________________________
 c
 c		Step 11a; Tie to structure
 c			  Set to year type ALWAYS READ AS CALENDAR YEAR
-          call stafind(nlog,0,6,numdivw,ix,cistat,cdividw,cCallBy)            
+          call stafind(nlog,0,6,numdivw,ix,cistat,cdividw,cCallBy)
           if(ix.eq.0) goto 1400
           
           iwarn(ix)=1
-	  do im=1,12
-c	  
+          do im=1,12
+c
 c		Adjust based on year type ALWAYS READ AS CALENDAR YEAR
-	    j=imomo(im)
-	    diveffw(im,ix)=x(j)
+            j=imomo(im)
+            diveffw(im,ix)=x(j)
 c           if(iout.gt.0) write(nlog,*) 'GetWel2; ',im, j,diveffw(im,ix)
           end do  
-	end do  
+        end do
       endif
 c
 c          
@@ -529,8 +529,8 @@ c		Step 11c; Detailed Check
           write(nlog,*) '  GetWel2; Efficiency by model year type; ',
      1      'nw, (diveffw(i,nw) ', 
      1       nw, (diveffw(i,nw), i=1,12)
-	endif          
-      end do  
+        endif
+      end do
 c
          
 c _________________________________________________________
@@ -764,8 +764,8 @@ c
      1  '          pumping data')
      
  1239  format(/,
-     1  '  DetWel2; Warning, in baseflow therefore ID ', a12, 'has had',/
-     1  '          its demand type (idvcomw) reset to 1.  Recall',/
+     1  '  DetWel2; Warning, in baseflow therefore ID ', a12, 'has',/
+     1  '          had its demand type (idvcomw) reset to 1.  Recall',/
      1  '          the baseflow mode reads *.weh in lie of *.wem')
      
  1240  format(/,

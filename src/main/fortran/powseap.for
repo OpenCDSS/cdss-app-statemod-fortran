@@ -513,11 +513,11 @@ c		            Step 6; ADD RES. or Plan RELEASE DOWNSTREAM
 c		                    Note ndns and iscd are set above
 c                       depending on the supply source
 c
-c rrb 2014-05-05; allow spill to occurr downstream of plan when nspill>0
+c rrb 2014-05-05; allow spill to occur downstream of plan when nspill>0
 c rrb 2014/11/24 Check Avail         
       if(ioutA.eq.1) then    
         write(nlog,*) ' '   
-        write(nlog,*) ' PowseaP;', nspill, iscd,ndSP,cstaSP,divact*fac        
+        write(nlog,*) ' PowseaP;', nspill, iscd,ndSP,cstaSP,divact*fac
         ifirst=0
         nchkA=1
         call ChkAvail2(nlog, ifirst, icx, nchkA, maxsta, numsta, 

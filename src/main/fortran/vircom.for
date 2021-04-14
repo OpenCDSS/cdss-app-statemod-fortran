@@ -18,11 +18,11 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-			SUBROUTINE VIRCOM(iin, i12, numstaX)
+       SUBROUTINE VIRCOM(iin, i12, numstaX)
 C
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 C       Vircom; it COMPUTES VIRGIN FLOWS FROM HISTORICAL DATA
 c
@@ -31,8 +31,8 @@ c
 c_______________________________
 c       Update History
 c rrb 2008/10/31; Included to recharge. Note it is part of
-c	           total diversion, therefore must be removed
-c		    to irrigate
+c                 total diversion, therefore must be removed
+c                 to irrigate
 c rrb 2003/03/03  Revised roundoff issues related to -999
 c rrb 2001/07/30; Refined soil moisture capability
 c rrb 2001/03/12; Added daily capability
@@ -68,24 +68,24 @@ c               virinp = total base flow at gages (storing qhisto)
 c               qhisto = gain at all inflow points except gages
 c               flowx  = total base flow at all stream nodes
 c
-c		tempq 	 Gaged flow
-c		tempi	 Import
-c		tempd	 Diversion
-c		tempr	 Return Flow
-c		tempw	 Well Depletion
-c		temps	 Reservoir Storage Change
-c		tempe	 Reservoir Evaporation
-c		tempRre Reservoir to Recharge 
-c		tempDre Diversion to Recharge 
-c		tempUse Diversion to Use (non recharge)
-c		tempts	 To Soil Moisture
-c		tempfs	 From Soil Moisture
-c		tempcu	 CU
-c		templ   Loss
-c		tempp   Pumping
-c		
+c                tempq   Gaged flow
+c                tempi   Import
+c                tempd   Diversion
+c                tempr   Return Flow
+c                tempw   Well Depletion
+c                temps   Reservoir Storage Change
+c                tempe   Reservoir Evaporation
+c                tempRre Reservoir to Recharge 
+c                tempDre Diversion to Recharge 
+c                tempUse Diversion to Use (non recharge)
+c                tempts  To Soil Moisture
+c                tempfs  From Soil Moisture
+c                tempcu  CU
+c                templ   Loss
+c                tempp   Pumping
+c                
 c _________________________________________________________
-c	Dimensions
+c     Dimensions
 c
       include 'common.inc'
       dimension dumA(13), demspr(maxDivw)
@@ -94,20 +94,19 @@ c
 c     
 c
 c _________________________________________________________
-c		Step 1 - Initialize
+c         Step 1 - Initialize
 c
 c      
-c		iout = 1 details
-c		ioutCU=1 details on CU
-c		ioutCU=2 details plus summary on CU
-c		ioutSP=1 details on Sprinkler Demand
-c		ioutRe=1 details on diversion to recharge
-c		ioutRe2=1 details on reservoir recharge
-c		ioutD =1 details on a particular ditch
-c		ioutRtn=1 details on return flows by stream ID & month
-c		        2 details on return flows by month 
-c             Warning this output includes off-channel returns
-c			        in the total
+c                   iout = 1 details
+c                 ioutCU = 1 details on CU
+c                 ioutCU = 2 details plus summary on CU
+c                 ioutSP = 1 details on Sprinkler Demand
+c                 ioutRe = 1 details on diversion to recharge
+c                ioutRe2 = 1 details on reservoir recharge
+c                  ioutD = 1 details on a particular ditch
+c                ioutRtn = 1 details on return flows by stream ID & month
+c                          2 details on return flows by month
+c             Warning this output includes off-channel returns in the total
 c                     
       iout=0
       ioutCU=0
@@ -141,16 +140,16 @@ c rrb 01/01/17; Call number
       
       totA=0.0
       do im=1,13
-      	dumx(im)=0.0
+        dumx(im)=0.0
       
-      	do nd=1,numdiv
-         dum(im,nd)=0.0
-      	  dum2(im,nd)=0.0
-      	end do
+        do nd=1,numdiv
+          dum(im,nd)=0.0
+          dum2(im,nd)=0.0
+        end do
       end do
 c
 c ---------------------------------------------------------
-c		Initialize in year 1 only      
+c              Initialize in year 1 only
       if(iyr.eq.iystr) then
         irec=0
         do is=1,numsta
@@ -162,10 +161,9 @@ c		Initialize in year 1 only
         end do  
       endif   
       
-      		
 c
 c ---------------------------------------------------------
-c		Get calendar year data
+c              Get calendar year data
       call year(iyr, iyrmo, imomo, cyr1)
       
       write(70,120) iyrmo(1), xmonam(1), iyrmo(12), xmonam(12)
@@ -224,7 +222,7 @@ c       write(6,*) '  Vircom; month & day', mon, idy
         if(ido.gt.ndlymx) ido=1
 c
 c ---------------------------------------------------------
-c		Set daily data	  
+c              Set daily data
 c               iday   = 0 monthly model
 c                        1 daily model
 
@@ -284,7 +282,7 @@ cx        IF(diverx(NU).GT.0.00001) then
           IF(diverx(NU).GT.smalln) then 
             divacux(ISS)=divacux(ISS)+diverx(NU)
 c
-c rrb 2008/10/29; Include Diversion to Recharge & Use		
+c rrb 2008/10/29; Include Diversion to Recharge & Use
             dumR(iss)=dumR(iss)+Drech(nu)
             dumU(iss)=dumU(iss)+Duse(nu)
             
@@ -294,7 +292,7 @@ c rrb 2008/10/29; Include Diversion to Recharge & Use
      1        Duse(nu)*fac, tempUse(iss)*fac            
           else
 c
-c		Negatives are imports          
+c              Negatives are imports
             dumz(iss)=dumz(iss)-diverx(nu)
 cr           write(nlog,*) ' Vircom; Imports',
 cr   1         iyrmo(mon), xmonam(mon), 
@@ -323,8 +321,8 @@ c
 c ___________________________________________________________________
 c
 c               Step 5 - Special Case Wells  with Sprinklers used first
-c			    Calculate CU, returns & depletions for wells 
-c			    with sprinklers if igwmode=1
+c                        Calculate CU, returns & depletions for wells
+c                        with sprinklers if igwmode=1
 c
 c                        Note 1) must call before diversions since
 c                          returns are a function of IWR which is 
@@ -350,13 +348,13 @@ c                       Note D&W (nd) is important since we need IWR
                 izero=0
                 call coeffa(areasp(nw),areawa(nw), small, cs,
      1                                  izero, iout, nlog,cdividw(nw))
-    		      	demspr(nw)= diwrreqw(nw) * cs / 
+                demspr(nw)= diwrreqw(nw) * cs /
      1                                 (effmaxs(nw)/100.0)
               else
                 izero=0
                 call coeffa(areasp(nw),area(nd), small, cs,
      1                                  izero, iout, nlog,cdivid(nd))
-                demspr(nw)= diwrreq(nd) * cs / 
+                demspr(nw)= diwrreq(nd) * cs /
      1                             (effmaxs(nw)/100.0) 
               endif
 c
@@ -365,16 +363,16 @@ c
               if(ioutSP.eq.1) then
                 noutSP=noutSP+1
                 if(noutSP.eq.1) write(nlog,130)
-              	
+ 
                 cd=-1.0
-                if(nd.gt.0) cd=diwrreq(nd)				      	
+                if(nd.gt.0) cd=diwrreq(nd)
                 write(nlog,132) noutSP, iyr, mon, 1, cdividw(nw), 
      1            nw, nd, cs, effmaxs(nw),
      1            demspr(nw)*fac, diwrreqw(nw)*fac, cd*fac
               endif
 c
 c ---------------------------------------------------------
-c			Sprinklers First Calculate pumping by sprinklers
+c             Sprinklers First Calculate pumping by sprinklers
 c
               divact=amin1(demspr(nw), diverwx(nw))
               demspr(nw)=divact
@@ -382,9 +380,9 @@ c
               if(divact.gt.small) then
                 nd=idivcow2(nw)
 c
-c ---------------------------------------------------------	      
-c			Note ieff2=1 lets variable efficiency be 
-c                          controlled by ieffmax		  		      
+c ---------------------------------------------------------
+c             Note ieff2=1 lets variable efficiency be
+c             controlled by ieffmax
                 ieff2=1
                 ispr =1
                 call rtnsecw(divact,retx,rlossX,cuact,
@@ -403,7 +401,7 @@ c               Diversion returns
       if(ichk.eq.4) write(nlog,*) ' Vircom; Step 6 Div Returns'
 
       DO 210 ND=1,NUMDIV
-      	IF(IDIVSW(ND).EQ.0) GO TO 210
+        IF(IDIVSW(ND).EQ.0) GO TO 210
 c
         NUI =NDUSER(ND)
         NUE =NDUSER(ND+1)-1
@@ -412,7 +410,7 @@ C
         DO NU=NUI,NUE
           IF(diverx(NU).gt.small) then
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c rrb 2008/11/03
 c                Adjust total diversion by the amount to recharge.
 cx          Done in Virset
@@ -420,9 +418,9 @@ cx          DIVACT=diverx(NU)
 cx          DIVACT=amax1(0.0, diverx(NU) - Drech(nu))   
             DIVACT=Duse(nu)
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c           Note ieff2=1 lets variable efficiency be 
-c                          controlled by ieffmax		  
+c                          controlled by ieffmax
             ieff2=1  
 c                
 c                       Note for isprink=1 and ieffmax = 1
@@ -456,7 +454,7 @@ c               Step 7 - Well Return Flows
 c                       Note all impacts associated with or without 
 c                       variable efficiency are handled in subroutine
 c                       return.
-c			Note idivsww is a well on/off switch
+c                       Note idivsww is a well on/off switch
 c
       if(ichk.eq.4) write(nlog,*) ' Vircom; Step 7 Well Returns'
 
@@ -470,10 +468,10 @@ c     1      idivsww(nw),diverwx(nw)*fac
 cx        endif
         
         if(idivsww(nw).eq.0 .or. diverwx(nw).lt.small) goto 220
-c	      
-c ---------------------------------------------------------	      
-c 			Note ieff2=1 lets variable efficiency be 
-c                          controlled by ieffmax		  	       
+c      
+c ---------------------------------------------------------
+c                          Note ieff2=1 lets variable efficiency be
+c                          controlled by ieffmax
         ieff2=1
         nd=idivcow2(nw)
 c
@@ -493,10 +491,10 @@ c
 c _________________________________________________________
 c
 c               Step 7b Maximum Supply Mode
-c			   Calculate CU, returns & depletions for 
-c			   GW without sprinklers
+c                       Calculate CU, returns & depletions for
+c                       GW without sprinklers
 c
-c			   Naturalized flow with variable efficiency and
+c                       Naturalized flow with variable efficiency and
 c                       Sprinkler lands served before SW diversions)
         if(isprink.eq.1 .and. igwmode(nw).eq.1) then
           nd = idivcow2(nw) 
@@ -517,12 +515,12 @@ c
           
             write(nlog,132) noutSP, iyr, mon, 0, cdividw(nw), 
      1                 nw, nd, cs, effmaxs(nw),
-     1                 demspr(nw)*fac, diwrreqw(nw)*fac, cd*fac		
+     1                 demspr(nw)*fac, diwrreqw(nw)*fac, cd*fac
           endif
     
 c
 c ---------------------------------------------------------
-c			Max Supply Approach Pumping by non sprinklers
+c         Max Supply Approach Pumping by non sprinklers
           if(divact.gt.small) then
             ispr=0
             call rtnsecw(divact,retx,rlossX,cuact,
@@ -563,7 +561,7 @@ c rrb           demspr(nw)=amin1(demspr(nw), diverwx(nw))
 c rrb c
 c rrb c ---------------------------------------------------------
 c rrb c        Calculate Pumping by Sprinklers
-c rrb c rrb 2006/09/13	New CU Approach
+c rrb c rrb 2006/09/13 New CU Approach
 c rrb           if(nd.gt.0) then
 c rrb            demspr(nw)=amin1(demspr(nw),dIwrGS(nd)/effS(nd))
 c rrb           else  
@@ -579,18 +577,18 @@ c rrbX; 2009/06/17; Correction
           endif
 c
 c ---------------------------------------------------------
-c		Detailed output
+c            Detailed output
           if(ioutSP.eq.1) then
             noutSP=noutSP+1
             if(noutSP.eq.1) write(nlog,130)
             write(nlog,132) noutSP, iyr, mon, 1, cdividw(nw), 
      1        nw, nd, cs, effmaxs(nw),
-     1        demspr(nw)*fac, diwrreqw(nw)*fac, cd*fac		
+     1        demspr(nw)*fac, diwrreqw(nw)*fac, cd*fac
           endif
 c
 c ---------------------------------------------------------
 c
-c			Mutual Approach Calculate Pumping by Sprinklers
+c         Mutual Approach Calculate Pumping by Sprinklers
           if(demspr(nw).gt.small) then
            ispr=1
            divact=demspr(nw)
@@ -601,7 +599,7 @@ c
 c ---------------------------------------------------------
 c
 c
-c			Mutual Approach calculate pumping by non sprinkler
+c         Mutual Approach calculate pumping by non sprinkler
           divact=amax1(diverwx(nw)-demspr(nw), 0.0)
           if(divact.gt.small) then
             ispr=0
@@ -634,7 +632,7 @@ c rrb 2008/11/03;
           
 c
 c _________________________________________________________
-c 		Call RetnSecRP to to calculate seepage
+c       Call RetnSecRP to to calculate seepage
         if(seepcfs.gt.small) then
           CALL RtnSecRP(iplan, nr, seepcfs, 
      1      pctlosRP(nr), rlossR(nr))
@@ -698,7 +696,7 @@ c
         irecx=(ido-1)*nstrtn
         irecx=irecx
        
-       	DO IRN=1,NSTRTN
+        DO IRN=1,NSTRTN
             ISCD=ISTRTN(IRN)
             NDNS=NDNNOD(ISCD)
 C         
@@ -800,7 +798,7 @@ c
 c ___________________________________________________________________
 c
 c               Step 11 - Reservoir Storage Change
-c		Note delst() is set to cfs from acft
+c                         Note delst() is set to cfs from acft
 c
 c           IF(NUMRES.EQ.0.OR.NRSACT.EQ.0) GO TO 280
       if(ichk.eq.4) write(nlog,*) ' Vircom;  Step 11 Res Storage'
@@ -843,15 +841,15 @@ c
             NDNS=NDNNOD(ISCD)
             ISS=ISCD
 c         
-c	  	      	Route delta storage, evap, & seepage downstream
+c         Route delta storage, evap, & seepage downstream
           DO NST=1,NDNS
 c       
-c rrb   2008/10/29; Include to Recharge		
+c rrb   2008/10/29; Include to Recharge
             qhistox(iss)=qhistox(iss)+evap(nr)/fx+delst(nr)
             tempe(iss) = tempe(iss) + evap(nr)/fx
             temps(iss) = temps(iss) + delst(nr)
 c       
-c rrb   2008/10/29; Include Reservoir to Recharge		
+c rrb   2008/10/29; Include Reservoir to Recharge
              tempRre(iss)=tempRre(iss)+Rrech(nr)
         
 c                   if(nr.eq.2) then
@@ -930,10 +928,10 @@ c
         iss=idvsta(nd)
         qcux(iss) = qcux(iss) + dcut(nd)
 c
-c rrb 2006/07/31; Add Loss		
-        qloss(iss)=qloss(iss) + rloss(nd)	    
+c rrb 2006/07/31; Add Loss
+        qloss(iss)=qloss(iss) + rloss(nd)
 c
-c		Total for detailed output            
+c       Total for detailed output
         tot=tot+dcut(nd)*fac
         totA=totA+dcut(nd)*fac
         dum(mon,nd)=dcut(nd)*fac
@@ -955,42 +953,42 @@ c
 c ---------------------------------------------------------
 c            
 c               Total CU for all Well Only by stream 
-c								Total Pumping for all wells
+c               Total Pumping for all wells
       ioutPuC=0
       do nw=1, numdivw
 c
-c rrb 2007/02/05; Correction	  
+c rrb 2007/02/05; Correction
         iss=idvstaw(nw)
-        
+ 
         nd=idivcow2(nw)
 c
-c rrb 2006/09/13; Correction	    
-cx	    if(nd.ne.0) then
+c rrb 2006/09/13; Correction
+cx      if(nd.ne.0) then
         if(nd.eq.0) then
           iss=idvstaw(nw)
           qcux(iss) = qcux(iss) + dcutw(nw)
 c
-c rrb 2006/07/31; Add Loss and pumping		
-          qloss(iss)=qloss(iss) + rlossW(nw)	      
+c rrb 2006/07/31; Add Loss and pumping
+          qloss(iss)=qloss(iss) + rlossW(nw)
 c
-c		Total for detailed output              
+c         Total for detailed output
           tot=tot+dcutw(nw)*fac
           totA=totA+dcutw(nw)*fac
           dum2(mon,nw)=dcutw(nw)*fac
           dum2(13,nw)=dum2(13,nw) + dcutw(nw)*fac
-          	
+ 
           dumx(mon)=dumx(mon) + dcutw(nw)*fac
           dumx(13)=dumx(13) + dcutw(nw)*fac
           
           dumA(mon)=dumA(mon) + dcutw(nw)*fac
           dumA(13)=dumA(13) + dcutw(nw)*fac
-          		
+
 c
 c rrb 2006/08/03; Detailed output              
           if(ioutCU.eq.1) then                
             write(nlog,308) ' Well', nw, cdividw(nw), 
      1        iyr, mon, dcutw(nd)*fac, tot, totA            
-          endif							
+          endif
         endif
      
 c
@@ -1030,7 +1028,7 @@ c               Route downstream
         do n=1,ndns
           tempcu(iss)=tempcu(iss)+qcux(is)
 c
-c rrb 2006/07/31; Add Loss and pumping		
+c rrb 2006/07/31; Add Loss and pumping
           templ(iss)=templ(iss)+qloss(is)
           tempp(iss)=tempp(iss)+qpump(is)
           iss=idncod(iss)
@@ -1099,8 +1097,8 @@ c    1                     ineg(iss),qhistox(iss)*fx
 c
 c rrb 95/01/02; No negatives allowed when in a total flow mode 
           if(iopflo.eq.1) then
-          	qhistox(iss) = 0.0
-          	tempno(iss) = 0.0
+            qhistox(iss) = 0.0
+            tempno(iss) = 0.0
           endif
         endif
 c
@@ -1217,7 +1215,7 @@ c               End month loop
         write(nlog,304) (ix,ix=1,12)
         
         do nd=1,numdiv
-        	write(nlog,305) nd, iyr, cdivid(nd),   'Diversion    ',
+          write(nlog,305) nd, iyr, cdivid(nd),   'Diversion    ',
      1      (dum(im,nd), im=1,13)
         end do  
         
@@ -1226,7 +1224,7 @@ c               End month loop
      1      (dum2(im,nw), im=1,13)
         end do  
 c
-c		Annual Total        
+c              Annual Total
         write(nlog,303)
         write(nlog,305) -1, iyr, 'Basin Total ', 'Basin Total ',
      1      (dumx(im), im=1,13)
@@ -1247,7 +1245,7 @@ c                         Print negative flow summary
 c
       if(iyr.eq.iyend) then
 c
-c		Annual Total        
+c       Annual Total
         if(ioutCU.ge.1) then
           write(nlog,303)
           

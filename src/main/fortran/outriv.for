@@ -42,7 +42,7 @@ c	Dimensions
      1            nodata*12, recin*256, sname1*24
 c
 c _________________________________________________________
-c		Step 1; Initize
+c		Step 1; Initialize
 c
         nodata = '0           '
 

@@ -39,7 +39,7 @@ c _________________________________________________________
 c	Update History
 c
 c rrb 2010/11/15; More corrections and refinements
-c rrb 2008/09/19; Miscellaneous corrections, primarly related
+c rrb 2008/09/19; Miscellaneous corrections, primarily related
 c		              to alternate points = wells
 c rrb 2006/06/23; Copy DivRigS (standard right with seasonal
 c                 limitations.
@@ -117,14 +117,14 @@ c
 c	     imcd1          minimum flow location
 c
 c      ilimit         iopsou(2,l2) 0 do not limit based on flow at 
-c                       the decreed locatoin, 1 do limit
+c                       the decreed location, 1 do limit
 c
 c _____________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
       character ctype1*12, corid1*12, subtypX*8
-      character cwhy*45, cdestyp*12, ccarry*3, cpuse*3, cidvri*12
+      character cwhy*50, cdestyp*12, ccarry*3, cpuse*3, cidvri*12
 c
 c_____________________________________________________________
 c               Step 1; Common Initialization
@@ -702,7 +702,7 @@ c
      1  ' _________ _________ ____',  45('_'))
      
   280   FORMAT(a14,1x, a12, 1x, i5,1x,a4,12i5,i8,
-     1    8F10.0,i5,1x,a45)                    
+     1    8F10.0,i5,1x,a50)
      
   290   FORMAT(/, '  DivAlt; QDIV ',a12,/,16F7.1)
   300   FORMAT(/, '  DivAlt; QRES ',a12,/,16F7.1)

@@ -191,10 +191,10 @@ c	        and store in common.inc
 c
 c		Set ndivP number of columns to print before 
 c		    call information (control location and right)
-c	 	    e.g. column of Avail Flow)	      
+c	 	    e.g. column of Avail Flow)
 c		Set ndivT number of columns to print in title
 c		Set ndivF number of columns to weight by factor
-c		Set nrid column of rid, strucutre type 
+c		Set nrid column of rid, structure type
 c		Set nxstr column of xstr,number of structures
 c		Set nccallR column of call right
 c		Set nrimcdX column of call location
@@ -227,7 +227,7 @@ c
       nadj=33
       ndelta=17
 c
-c rrb 2006/01/21; Columns of data impacted by a new Reservoir file size		
+c rrb 2006/01/21; Columns of data impacted by a new Reservoir file size
 c               nbom = column of BOM data (1)
 c		nemo = column of EOM data (16)
 c		ntar = column of Tartet data (17)
@@ -366,7 +366,7 @@ c
 c ---------------------------------------------------------
 c		Summary output to *.log
       
-        if(ioutRe.eq.1) write(nlog,*) ' OutRchR; Processing Reach = ', iz
+        if(ioutRe.eq.1) write(nlog,*) ' OutRchR; Processing Reach = ',iz
         
         if(ioutS.eq.1 .and. iz.eq.ioutIz) then
           write(nlog,250) cunitm,0,RchidR(nreach+1),RchNameR(nreach+1),
@@ -490,7 +490,7 @@ c rrb 99/05/06; Ground Water Balance
             tcux = 0.0
             tpump= 0.0
 c
-c rrb 2006/10/27; Diversion Adjustments		          
+c rrb 2006/10/27; Diversion Adjustments
             AdjDc=0.0
             AdjRc=0.0
             AdjP=0.0
@@ -588,7 +588,7 @@ c ---------------------------------------------------------
 c rrb 2008/01/15; Store From Plan in dat1(34)
 c			Note for detailed output there is no adjustment
 c			therefore do not add dat1(34) to AdjTot
-c rrb 2008/12/30; From Plan is included in to diversion			
+c rrb 2008/12/30; From Plan is included in to diversion
 cx            tplan=tplan+dat1(34)              
 cx            AdjTp=dat1(34)                 
 cx            AdjTpT=AdjTpT+dat1(34)
@@ -1039,8 +1039,8 @@ c
           
         
         if(isigfig.eq.0) then
-          write(now,232)  ' TOT', (dum(13,n)*ftot/ry, n=1,nb), riz                   
-          write(now,280) AdjTot*ftot/ry, (dum(13,7)+AdjTot)*ftot/ry        
+          write(now,232)  ' TOT', (dum(13,n)*ftot/ry, n=1,nb), riz
+          write(now,280) AdjTot*ftot/ry, (dum(13,7)+AdjTot)*ftot/ry
           write(now,282) 
      1      AdjTsT*ftot/ry, AdjDcT*ftot/ry, AdjRcT*ftot/ry,
      1      AdjPT*ftot/ry, AdjTot*ftot/ry, 
@@ -1048,7 +1048,7 @@ c
         endif
         
         if(isigfig.eq.1) then
-          write(now,2321)  ' TOT', (dum(13,n)*ftot/ry, n=1,nb), riz                        
+          write(now,2321)  ' TOT', (dum(13,n)*ftot/ry, n=1,nb), riz
           write(now,2801) AdjTot*ftot/ry,(dum(13,7)+AdjTot)*ftot/ry
           
           write(now,282) 
@@ -1058,7 +1058,7 @@ c
         endif
         
         if(isigfig.eq.2) then
-          write(now,2322)  ' TOT', (dum(13,n)*ftot/ry, n=1,nb), riz                      
+          write(now,2322)  ' TOT', (dum(13,n)*ftot/ry, n=1,nb), riz
           write(now,2802) AdjTot*ftot/ry,(dum(13,7)+AdjTot)*ftot/ry
           
           write(now,282) 
@@ -1082,7 +1082,7 @@ c		Elements 1-11
               write(113,234) xmonam(im), (dum(im,n)/ry, n=1,nbR), riz
           end do
           
-          write(113,234)  ' TOT', (dum(13,n)*ftot/ry, n=1,nbR), riz                   
+          write(113,234)  ' TOT', (dum(13,n)*ftot/ry, n=1,nbR), riz
 c       
 c	 	Elements 12-21      
           nbR=12
@@ -1202,16 +1202,16 @@ c
   255 FORMAT(/,30x, ' Ground Water Budget ', a5,// 
      1 '          ',
      1 '              From River        Well       Other       Total',
-     1 '       Total                               To/Fr       Other',       
+     1 '       Total                               To/Fr       Other',
      1 '       Total',
      1 '                        ',/
      1 ' Year   Mo',
      1 ' Recharge(1)     by Well   Depletion  Inflows(2)      Inflow',
-     1 '     Pumping      Return        Loss   GwStorage Outflows(3)',     
+     1 '     Pumping      Return        Loss   GwStorage Outflows(3)',
      1 '     Outflow    Delta(4)  Salvage(5)',/
      1 '          ',
      1 '         (+)         (+)         (+)         (+)          NA',
-     1 '         (-)         (-)         (-)         (-)         (-)',         
+     1 '         (-)         (-)         (-)         (-)         (-)',
      1 '          NA          NA         NA',/,
      1  10x, 13('        (', i2,')'))
 
@@ -1284,17 +1284,17 @@ c 262 format(70x, f12.0,' (6)',/ 70x, ' ___________',/,70x, f12.0,//,
      1         ' modeled include natural stream loss, precipitation ',
      1         ' recharge, boundary inflow, etc.',/
      1         '        (3) Other Outflows from ground water not',
-     1         ' modeled include natural stream gain, boundary outflow,',
-     1         ' CU by native species, etc.',/
+     1         ' modeled include natural stream gain, boundary,',
+     1         ' outflow, CU by native species, etc.',/
      1         '        (4) Delta is Total Inflow - Total Outflow but', 
      1         ' remember Other Inflows and Other Outflows are not', 
      1         ' included. Also it takes some time before return',/
-     1         '            flows & depletions impact the system',/        
+     1         '            flows & depletions impact the system',/
      1         '        (5) Salvage is not part of the Ground Water ',
      1         'Balance because it is a net change from non benefical',
      1         ' (e.g. Native ET, etc.) to Consumptive Use')
  256  format(/72('_'),/
-     1 '  OutRchR; Average Inflow - Outflow = ', f8.0,' Reach = ', f8.0)          
+     1 '  OutRchR; Average Inflow - Outflow = ', f8.0,' Reach = ', f8.0)
  266  format(' outRchR Diversion adjustment;',
      1          ' #, dat1(30), dat1(31), dat1(32) = ',2i5, 20f8.1)  
  268  format(/,' outRchR; Balance adjustment;',/
@@ -1335,9 +1335,3 @@ c
 c ____________________________________________________
 c
       end
-
-
-
-
-
-

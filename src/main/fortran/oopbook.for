@@ -56,7 +56,7 @@ c	3. If water in the OOP account is greater than the senior
 c		decree, this routine (OopBook) books it into an active
 c               account and decreases the junior's decree
 c	4. If more water is in teh OOP account than is available to 
-c		the junior decree spill. Note this should only occurr
+c		the junior decree spill. Note this should only occur
 c		when hte one fill rule limitations through things out
 c		of balance
 c

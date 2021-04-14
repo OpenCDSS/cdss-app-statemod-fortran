@@ -239,7 +239,7 @@ c               or maximum efficiency (effmax) based on switches
 c               (ieffmax and ieff2)
 c
 c rrb 2006/08/29; Add new CU (call return2)
-        nw1=idivco2(nd)		
+        nw1=idivco2(nd)
         itype=1     
         cx=0.0   
         ispr=-1  

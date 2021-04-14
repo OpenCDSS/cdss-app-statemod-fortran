@@ -118,7 +118,7 @@ c                 (iopsou(5,l2).
 c
 c rrb 2007/08/22; Revised to allow the return flow calculation for 
 c                 the T&C requirement to vary as follows:
-c                 if(iopsou(4,l2) = 1 call RtnsecP for a STANDARD		  
+c                 if(iopsou(4,l2) = 1 call RtnsecP for a STANDARD
 c                 if(iopsou(4,l2) = 2 call RtnsecC for a FIXED
 c		  
 c rrb 2007/07/09; Revised to allow the T&C obligation to be
@@ -746,8 +746,8 @@ c                    provided source of water to a type 11 plan
 c
       if(iout26.eq.1) then
         write(nlog,*) ' '
-        write(nlog,*) ' DivRplP_1; l2, ioprlim(l2), iopsou(7,l2)'   
-        write(nlog,*) ' DivRplP_1;', l2, ioprlim(l2), iopsou(7,l2)         
+        write(nlog,*) ' DivRplP_1; l2, ioprlim(l2), iopsou(7,l2)'
+        write(nlog,*) ' DivRplP_1;', l2, ioprlim(l2), iopsou(7,l2)
       endif
 c  
 c
@@ -782,7 +782,8 @@ c
      1    ' DivRplP_2;   lopr26    lr26    nd26  iscd26',
      1                '   ndns26    nsp1   iscd1  ndns26'   
         write(nlog,'(a12,8i8)')
-     1    ' DivRplP_2;', lopr26, lr26, nd26, iscd26, ndns26, iscd1, ndns26
+     1    ' DivRplP_2;', lopr26, lr26, nd26, iscd26, ndns26, iscd1,
+     1    ndns26
 c      
         if(iok.eq.1) then
           write(nlog,*) ' Problemm with source water right reporting'
@@ -1011,7 +1012,7 @@ c                 to this operating rule
          
           if(alocfs.lt.small) then
             iwhy=6
-            cwhy='Operating Rule Limit (OprMaxM1 or alocfs3) = 0'          
+            cwhy='Operating Rule Limit (OprMaxM1 or alocfs3) = 0'
             goto 300
           endif
         endif
@@ -1382,7 +1383,7 @@ c
       IMCD=Idcd
       ISS=Idcd
       if(ioutE.eq.1)
-     1  write(nlog,*) ' DivRplP; Exchange Point iss, imcd, iExPoint = ', 
+     1  write(nlog,*) ' DivRplP; Exchange Point iss, imcd, iExPoint = ',
      1  iss, imcd, iExPoint(l2)
 c
 c rrb 2008/08/15; Revise to scan downstream of the Destination 
@@ -1899,9 +1900,9 @@ c
             write(nlog,*)          
      1        ' DivRplP_5;   lopr26   iscd   iscd1   iscd26',
      1                   '     nd26    ncar  relact qdiv(38'
-             write(nlog,'(a13, 6i8, 20f8.0)')                                      
+             write(nlog,'(a13, 6i8, 20f8.0)')
      1        ' DivRplP_5; ', lopr26, iscd, iscd1, iscd26, 
-     1          nd26, ncar, relact*fac,  qdiv(38,iscd26)*fac                                       
+     1          nd26, ncar, relact*fac,  qdiv(38,iscd26)*fac
           endif  
         endif             
       endif      
@@ -2016,7 +2017,7 @@ c rrb 2007/12/04
 c               Step 26; Update Qdiv(18, ), Qdiv(32 ,) and Qdiv(20, ) 
 c		                     for the carrier(s)
 c		                     Also calculate return flows for carrier losses
-c		                     using the structure properties of the carrier	
+c		                     using the structure properties of the carrier
 c                        write(nlog,*) ' DirectEx; nd, iuse', nd, iuse  
       if(ncarry.gt.0) then         
         call setQdivC(
@@ -2040,7 +2041,7 @@ c                    amount released
 c		   
       if(iout.eq.1) then
         write(nlog,*) ' DivRplP; l2, ioprlim, iopsou(5,l2)'   
-        write(nlog,*) ' DivRplP;', l2, ioprlim(l2), iopsou(5,l2)         
+        write(nlog,*) ' DivRplP;', l2, ioprlim(l2), iopsou(5,l2)
       endif
 c      
 c *************************************
@@ -2115,10 +2116,10 @@ c			            Note return patterns may be the default
 c			            structure (iuse1) or from plan data
 c			            see RtnsecP
 c
-c	
+c
       if(iout.eq.1) write(nlog,*) '  DivRplP; iptc = ', iptc,
-     1  Culimit, divactT*fac, rettot*fac  	
-c     write(nlog,*) '  DivRplP; iptc = ', iptc	
+     1  Culimit, divactT*fac, rettot*fac
+c     write(nlog,*) '  DivRplP; iptc = ', iptc
 c
 c ---------------------------------------------------------
 c rrb 2007/11/27; Update T&C calculations

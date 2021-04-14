@@ -25,12 +25,12 @@ c
      1                   qm,qdx, qd,cidy,cidx,cid1)
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Daydist; It distributes monthly data to daily in various ways
 c                    (iday=0) set equal to monthly average value
 c
-c	Called by DayEst.for
+c       Called by DayEst.for
 c
 c                    (iday=-1) divide monthly by 31
 c
@@ -126,7 +126,7 @@ c       cidy(is)    = ID to use to estimate daily data for station is
 c                     Read in datinp.for
 c       cidx(iss)   = ID for station with daily data.
 c                     Read in daydata
-c	cid1(is)    = ID of data being estimated
+c       cid1(is)    = ID of data being estimated
 c
 c               Parameters related to type 4 (connect midpoints)
 c       mon         = month counter (Oct = 1 for WYR)
@@ -201,7 +201,7 @@ c     write(nlog,*) '  Inside daydist.for, ityp, n = ', ityp,
 c
 c               Note ichk1 can be controlled by setting ichk=6 in *.ctl
 c               via dayest
-c		ichkX=0, no details; 1=print details
+c               ichkX=0, no details; 1=print details
       ichkx=0
       ichk4=0
       ichk4x=0
@@ -219,7 +219,7 @@ c		ichkX=0, no details; 1=print details
       endif
       
       if(ichk1.eq.1 .or. ichkx.eq.1)  then
-	WRITE(nlog,140) dtype(ityp)
+        WRITE(nlog,140) dtype(ityp)
 c       write(nlog,*) '  Daydist; mthday', (mthday(i), i=1,12) 
       endif
       
@@ -228,52 +228,52 @@ c
 c =========================================================
 c               Begin station loop
       do is=1,n
-	ifound=0
+        ifound=0
 c
 c               Initialize, particularly non days in a month to zero
-	do i=1, 32
-	  qd(i,is) = 0.0
-	end do
-	
-	cid11=cid1(is)
-	
-c	if(ityp.eq.11) then
-c	  write(nlog,*) ' Daydist;', is, cid1(is), iday(is),
-c    1	   qm(mon,is), qm(mon,is)*fx
-c	endif  
+        do i=1, 32
+          qd(i,is) = 0.0
+        end do
+
+        cid11=cid1(is)
+
+c       if(ityp.eq.11) then
+c         write(nlog,*) ' Daydist;', is, cid1(is), iday(is),
+c    1    qm(mon,is), qm(mon,is)*fx
+c       endif  
 c
 c _________________________________________________________
 c               Step 2a; Type 0 Set daily to monthly average
 c
-	if(iday(is).eq.0) then
-	  do id=1,imd
-	    qd(id,is) = qm(mon,is)
-	  end do
-	  ifound=1
+        if(iday(is).eq.0) then
+          do id=1,imd
+            qd(id,is) = qm(mon,is)
+          end do
+          ifound=1
 
-	  if(ichk1.eq.1) then
+          if(ichk1.eq.1) then
 c
-c rrb 2006/05/02; Additional output	  
-	    write(nlog,180) iday(is), is, cid11
-	  endif
+c rrb 2006/05/02; Additional output
+            write(nlog,180) iday(is), is, cid11
+          endif
 
-	  goto 100
-	endif
+          goto 100
+        endif
 c
 c _________________________________________________________
 c               Step 2b; Type 1 or Type 2 Distribute based on another
 c                        or same gage
 c                        Note qm and qdx(32,is2) are average daily 
 c                        (cfs)
-	if(iday(is).eq.1 .or. iday(is).eq.2) then
-	  cidy1=cidy(is)
-	  c=1.0
+        if(iday(is).eq.1 .or. iday(is).eq.2) then
+          cidy1=cidy(is)
+          c=1.0
 
-	  do is2=1,n
-	    if(cidy1.eq.cidx(is2)) then
-c	    
+          do is2=1,n
+            if(cidy1.eq.cidx(is2)) then
+c
 c ---------------------------------------------------------
-c		Set monthly factor. 
+c          Set monthly factor. 
            if(abs(qdx(32,is2)).lt.small) then
              c=0.0
            else
@@ -281,85 +281,84 @@ c		Set monthly factor.
            endif  
 c           
 c ---------------------------------------------------------
-c		Set negatives to zero unless baseflow
-c		diversion (ityp=12)
+c              Set negatives to zero unless baseflow
+c              diversion (ityp=12)
            if(qdx(32,is2).lt.small .and. ityp.ne.12) c=0.0
 c           
 c ---------------------------------------------------------
-c		Detailed Output
-	      if(ichk1.eq.1) then
+c              Detailed Output
+            if(ichk1.eq.1) then
 c
-c rrb 2006/05/09; Better output	      
-cr		write(nlog,182) iday(is), is, cidy1, is2, cidx(is2)
-		write(nlog,182) iday(is), is, cid11, is2, cidx(is2)
-		write(nlog,200) qm(mon,is), qdx(32,is2), c,
+c rrb 2006/05/09; Better output
+cr            write(nlog,182) iday(is), is, cidy1, is2, cidx(is2)
+              write(nlog,182) iday(is), is, cid11, is2, cidx(is2)
+              write(nlog,200) qm(mon,is), qdx(32,is2), c,
      1                          qm(mon,is)*fx, qdx(32,is2)*fx, c
-	      endif
+            endif
 c           
 c ---------------------------------------------------------
-c		Calculate daily value
+c              Calculate daily value
 
-	      do id=1,imd
-		qd(id,is)=qdx(id,is2)* c
-	      end do
+              do id=1,imd
+                qd(id,is)=qdx(id,is2)* c
+              end do
 
-	      ifound=1
-	      goto 100              
-	    end if
-	  end do
-	endif
+              ifound=1
+              goto 100
+            end if
+          end do
+        endif
 c
 c _________________________________________________________
 c               Step 2c; Type 3 Distribute based on same gage
 c                        Note Daily data prevails
-	if(iday(is).eq.3) then
-	  cidy1=cidy(is)
-	  c=1.0
+        if(iday(is).eq.3) then
+          cidy1=cidy(is)
+          c=1.0
 
-	  do is2=1,n
-	    if(cidy1.eq.cidx(is2)) then
-		
-	      c=1.0  
-	      if(ichk1.eq.1) then
+          do is2=1,n
+            if(cidy1.eq.cidx(is2)) then
+
+              c=1.0
+              if(ichk1.eq.1) then
 c
-c rrb 2006/05/09; Better output	      	      
-cr		write(nlog,183) iday(is), is, cidy1, is2, cidx(is2)
-		write(nlog,183) iday(is), is, cid11, is2, cidx(is2)
-		write(nlog,200) qm(mon,is), qdx(32,is2), c,
+c rrb 2006/05/09; Better output
+cr              write(nlog,183) iday(is), is, cidy1, is2, cidx(is2)
+                write(nlog,183) iday(is), is, cid11, is2, cidx(is2)
+                write(nlog,200) qm(mon,is), qdx(32,is2), c,
      1                          qm(mon,is)*fx, qdx(32,is2)*fx, c
-	      endif
+              endif
 
-	      do id=1,imd
-		qd(id,is)=qdx(id,is2)* c
-	      end do
+              do id=1,imd
+                qd(id,is)=qdx(id,is2)* c
+              end do
 
-	      ifound=1
-	      goto 100              
-	    end if
-	  end do
-	endif
+              ifound=1
+              goto 100
+            end if
+          end do
+        endif
 c
 c _________________________________________________________
 c               Step 2d; Type -1 Distribute based on days per month
 c       write(nlog,*) '  Daydist iday(is) = ', iday(is)
-	if(iday(is).eq.-1) then
-	  c=float(imd)
-	  do id=1,imd
-	    qd(id,is) = qm(mon,is) / c
-	  end do
+        if(iday(is).eq.-1) then
+          c=float(imd)
+          do id=1,imd
+            qd(id,is) = qm(mon,is) / c
+          end do
 
 
-	  if(ichk1.eq.1) then
+          if(ichk1.eq.1) then
 c
-c rrb 2006/05/09; Better output	      	  
-cr	   write(nlog,184) iday(is), is, cidy1
-	   write(nlog,184) iday(is), is, cid11
-	  endif
+c rrb 2006/05/09; Better output
+cr         write(nlog,184) iday(is), is, cidy1
+           write(nlog,184) iday(is), is, cid11
+          endif
 
-
-	  ifound=1
-	  goto 100
-	endif
+          ifound=1
+          goto 100
+        endif
 
 c
 c _________________________________________________________
@@ -368,107 +367,106 @@ c                        of month
 
 c                        Note qm and qdx(32,is2) are average daily 
 c                        (cfs)
-	if(iday(is).eq.4) then
-	  cidy1=cidy(is)
-	  c=1.0
+        if(iday(is).eq.4) then
+          cidy1=cidy(is)
+          c=1.0
 c
 c               Set miscellaneous month ID constants
           im=mon-1
-	  ip=mon+1
-	  mt=mthday(mon)
-	  m2=mthday(mon)/2
-	  rm2=float(mthday(mon))/2.0
+          ip=mon+1
+          mt=mthday(mon)
+          m2=mthday(mon)/2
+          rm2=float(mthday(mon))/2.0
 c 
 c               Get beginning and ending days for this month
-	  jb1=0
-	  do i=1,im
-	    jb1=jb1+mthday(i)
-	  end do
+          jb1=0
+          do i=1,im
+            jb1=jb1+mthday(i)
+          end do
 c 
 c               Reset month-1 & month+1 for begining and ending months
-	  im=amax0(1, mon-1)
-	  ip=amin0(mon+1, 12)
-	    
+          im=amax0(1, mon-1)
+          ip=amin0(mon+1, 12)
+
 c                                                    
 c               Set day loop counters
  
-	  jb1=jb1+1
-	  je1=jb1+m2 - 1             
+          jb1=jb1+1
+          je1=jb1+m2 - 1
 c 
 c               Begin calculations for first half of month
-	  x1=float(jb1)-float(mthday(im))/2.0 -1.0
-	  x2=float(jb1)+rm2 - 1.0
+          x1=float(jb1)-float(mthday(im))/2.0 -1.0
+          x2=float(jb1)+rm2 - 1.0
  
-	  y1=qm(im,is)
-	  y2=qm(i,is)
+          y1=qm(im,is)
+          y2=qm(i,is)
  
-	  if(ichk4.eq.1) then
-	    write(nlog,*) ' im,  mthday', im, mthday(im)
-	    write(nlog,*) ' mon, mthday', mon, mthday(mon)
+          if(ichk4.eq.1) then
+            write(nlog,*) ' im,  mthday', im, mthday(im)
+            write(nlog,*) ' mon, mthday', mon, mthday(mon)
  
-	    write(nlog,*) ' jb1, je1', jb1, je1
-	    write(nlog,*) '  x1,  x2', x1, x2
-	    write(nlog,*) '  y1,  y2', y1, y2 
-	    write(nlog,*) '  y1,  y2', 
+            write(nlog,*) ' jb1, je1', jb1, je1
+            write(nlog,*) '  x1,  x2', x1, x2
+            write(nlog,*) '  y1,  y2', y1, y2 
+            write(nlog,*) '  y1,  y2', 
      1        y1*1.9835*float(mthday(im)), y2*fx
-	  endif
+          endif
 c 
 c               Equation for days in first half month (e.g. 1-15)
-	  a=(y1-y2)/(x1-x2)
-	  b=y2-a*x2
+          a=(y1-y2)/(x1-x2)
+          b=y2-a*x2
 c 
 c               Calculate daily pattern for first half of month
-	  j1=0
-	  qp(32)=0.0
+          j1=0
+          qp(32)=0.0
  
- 
-	  if(ichk4.eq.1) write(nlog,110)
-	  do j=jb1,je1
-	    j1=j1+1
-	    qp(j1)=a*float(j)+b
-	    qp(32)=qp(32)+qp(j1)
-	    if(ichk4.eq.1) then
-	      write(nlog,120) mon, mt, m2, j, j1, a, b,qp(j1),qp(32)
-	    endif
-	  end do
+          if(ichk4.eq.1) write(nlog,110)
+          do j=jb1,je1
+            j1=j1+1
+            qp(j1)=a*float(j)+b
+            qp(32)=qp(32)+qp(j1)
+            if(ichk4.eq.1) then
+              write(nlog,120) mon, mt, m2, j, j1, a, b,qp(j1),qp(32)
+            endif
+          end do
 c
 c ---------------------------------------------------------------
 c               Begin calculations for days in last half of month
 c 
-	  jb2=je1+1
-	  je2=jb1+mt-1
+          jb2=je1+1
+          je2=jb1+mt-1
 
-	  x1=x2
-	  x2=float(je2)+float(mthday(ip))/2.0  
+          x1=x2
+          x2=float(je2)+float(mthday(ip))/2.0  
 
-	  y1=qm(i,is)
-	  y2=qm(ip,is)
+          y1=qm(i,is)
+          y2=qm(ip,is)
 
-	  if(ichk4.eq.1) then
-	    write(nlog,*) '  im,  is', im, is
-	    write(nlog,*) ' jb2, je2', jb2, je2
-	    write(nlog,*) '  x1,  x2', x1, x2
-	    write(nlog,*) '  y1,  y2', y1, y2
-	    write(nlog,*) '  y1,  y2', 
+          if(ichk4.eq.1) then
+            write(nlog,*) '  im,  is', im, is
+            write(nlog,*) ' jb2, je2', jb2, je2
+            write(nlog,*) '  x1,  x2', x1, x2
+            write(nlog,*) '  y1,  y2', y1, y2
+            write(nlog,*) '  y1,  y2', 
      1        y1*fx, y2*1.9835*float(mthday(ip))
-	  endif
+          endif
 c
 c               Equation for days in last half of month
-	  a=(y1-y2)/(x1-x2)
-	  b=y2-a*x2
+          a=(y1-y2)/(x1-x2)
+          b=y2-a*x2
 c
 c               Calculate daily pattern for days last half of month
-	  j1=m2
+          j1=m2
 
-	  if(ichk4.eq.1) write(nlog,110)
-	  do j=jb2,je2
-	    j1=j1+1
-	    qp(j1)=a*float(j)+b
-	    qp(32)=qp(32)+qp(j1)
-	    if(ichk4.eq.1) then
-	      write(nlog,120) mon, mt, m2, j, j1, a, b,qp(j1),qp(32)
-	    endif
-	  end do
+          if(ichk4.eq.1) write(nlog,110)
+          do j=jb2,je2
+            j1=j1+1
+            qp(j1)=a*float(j)+b
+            qp(32)=qp(32)+qp(j1)
+            if(ichk4.eq.1) then
+              write(nlog,120) mon, mt, m2, j, j1, a, b,qp(j1),qp(32)
+            endif
+          end do
 
 c
 c               Change total daily to average
@@ -477,64 +475,63 @@ c
 c               Distribute pattern to monthly total
 c               Note approach preserves total but some discontinuity
 c               at end points
-c	    
-c	    
+c    
 c ---------------------------------------------------------
-c	 	Set monthly factor. 
+c               Set monthly factor.
           if(abs(qp(32)).lt.small) then
             c=0.0
           else
-            c=qm(mon,is)/qp(32)      
+            c=qm(mon,is)/qp(32)
           endif  
 c           
 c ---------------------------------------------------------
-c		Set negatives to zero unless baseflow
-c		diversion (ityp=12)
+c              Set negatives to zero unless baseflow
+c              diversion (ityp=12)
           if(qp(32).lt.small .and. ityp.ne.12) c=0.0
 c           
 c ---------------------------------------------------------
-c		Detailed output for ichk1
+c              Detailed output for ichk1
           if(ichk1.eq.1 .or. ichkx.eq.1) then
 c
-	    write(nlog,182) iday(is), is, cid11, is2, cidx(is2)
-	    write(nlog,200) qm(mon,is), qp(32), c,
-     1                       qm(mon,is)*fx, qp(32)*fx, c  
-	  endif
+            write(nlog,182) iday(is), is, cid11, is2, cidx(is2)
+            write(nlog,200) qm(mon,is), qp(32), c,
+     1                       qm(mon,is)*fx, qp(32)*fx, c
+          endif
 c           
 c ---------------------------------------------------------
-c		Detailed output for ichk4
+c              Detailed output for ichk4
 c
-	  if(ichk4.eq.1) write(nlog,230) '4-MidPoint  '
-	  if(ichk4x.eq.1 .and. (ityp.eq.2 .or. ityp.eq.12)) 
-     1	    write(nlog,230) '4-MidPoint  '
+          if(ichk4.eq.1) write(nlog,230) '4-MidPoint  '
+          if(ichk4x.eq.1 .and. (ityp.eq.2 .or. ityp.eq.12)) 
+     1      write(nlog,230) '4-MidPoint  '
 c           
 c ---------------------------------------------------------
 c               Prorate daily to monthly total
           j1=jb1-1
-	  qd(32,is)=0.0
-	  do id=1,imd
-	    qd(id,is)=qp(id)* c
-	    qd(32,is)=qd(32,is)+qd(id,is)
+          qd(32,is)=0.0
+          do id=1,imd
+            qd(id,is)=qp(id)* c
+            qd(32,is)=qd(32,is)+qd(id,is)
 c       
-c		Summary Output for daily approach (4), simulate 
-c		 diversions (2) or baseflow diversions (12)
-	    if(ichk4x.eq.1 .and. (ityp.eq.2 .or. ityp.eq.12)) then
-	      j1=j1+1
-	      write(nlog,240) cid1(is), iyr, monx, id, j1,
+c              Summary Output for daily approach (4), simulate 
+c              diversions (2) or baseflow diversions (12)
+            if(ichk4x.eq.1 .and. (ityp.eq.2 .or. ityp.eq.12)) then
+              j1=j1+1
+              write(nlog,240) cid1(is), iyr, monx, id, j1,
      1          qm(mon,is),qp(id),qd(id,is)
-	    endif
-	  end do
+            endif
+          end do
         
-	  qd(32,is)=qd(32,is)/float(imd)
+          qd(32,is)=qd(32,is)/float(imd)
 c
-c		Print annual total        
-	  if(ichk4.eq.1 .and. (ityp.eq.2 .or. ityp.eq.12)) then
-	      write(nlog,250) cid1(is), iyr, 13, -1, -1,
+c              Print annual total        
+          if(ichk4.eq.1 .and. (ityp.eq.2 .or. ityp.eq.12)) then
+              write(nlog,250) cid1(is), iyr, 13, -1, -1,
      1          qm(mon,is)*fx,qp(32)*fx,qd(32,is)*fx
-	  endif
+          endif
         
-	  ifound=1
-	  goto 100              
+          ifound=1
+          goto 100
         end if
 c
 c _________________________________________________________
@@ -543,71 +540,71 @@ c                        Useful for targets
 
 c                        Note qm and qdx(32,is2) are average daily 
 c                        (cfs)
-	if(iday(is).eq.5) then
-	  cidy1=cidy(is)
-	  c=1.0
+        if(iday(is).eq.5) then
+          cidy1=cidy(is)
+          c=1.0
 c
 c               Set miscellaneous month ID constants
-	    im=mon-1
-	    mt=mthday(mon)
+            im=mon-1
+            mt=mthday(mon)
 c
 c               Get beginning and ending days for this month
-	    jb1=0
-	    do i=1,im
-	      jb1=jb1+mthday(i)
-	    end do
+            jb1=0
+            do i=1,im
+              jb1=jb1+mthday(i)
+            end do
 c                                                    
 c               Set day loop counters
-	    jb1=jb1+1
-	    je1=jb1+mt - 1             
+            jb1=jb1+1
+            je1=jb1+mt - 1
 c
 c               Begin calculations
-	    x1=float(jb1) - 1.0
-	    x2=float(jb1) + mt - 1.0
+            x1=float(jb1) - 1.0
+            x2=float(jb1) + mt - 1.0
 c
 c rrb 2006/10/23; Handle month previous better
 c               Reset month-1 & month+1 for begining and ending months
-	    if(im.le.0) then
+            if(im.le.0) then
               im=amax0(1, mon-1)
               call getEomX(is, ceom, cid1(is))
               y1=ceom
-	      y2=qm(i,is)
-	    else
+              y2=qm(i,is)
+            else
               y1=qm(im,is)
-	      y2=qm(i,is)
-	    endif
+              y2=qm(i,is)
+            endif
 
-	    if(ichk5x.eq.1 .and. cid1(is).eq.cchk) then
-	      write(nlog,186) cid1(is), im, mthday(im), 
+            if(ichk5x.eq.1 .and. cid1(is).eq.cchk) then
+              write(nlog,186) cid1(is), im, mthday(im),
      1          mon, mthday(mon), jb1, je1, x1, x2, y1, y2
      
-	    endif
+            endif
 c
 c               Equation for entire month (e.g. 1-30)
-	    a=(y1-y2)/(x1-x2)
-	    b=y2-a*x2
+            a=(y1-y2)/(x1-x2)
+            b=y2-a*x2
 c
 c               Calculate daily pattern for entire month
-	    j1=0
-	    qp(32)=0.0
+            j1=0
+            qp(32)=0.0
 
 
-	    if(ichk5.eq.1) write(nlog,110)
-	    do j=jb1,je1
-	      j1=j1+1
-	      qp(j1)=a*float(j)+b
+            if(ichk5.eq.1) write(nlog,110)
+            do j=jb1,je1
+              j1=j1+1
+              qp(j1)=a*float(j)+b
 c
-c		Total if not a reservoir	      
+c              Total if not a reservoir
               if(ityp.eq.4 .or. ityp.eq.14) then
-	        qp(32)=qp(j1)
-              else	      
-	        qp(32)=qp(32)+qp(j1)
-	      endif
-	      
-	      if(ichk5.eq.1) then
-		write(nlog,120) mon, mt, m2, j, j1, a, b,qp(j1),qp(32)
-	      endif
-	    end do
+                qp(32)=qp(j1)
+              else      
+                qp(32)=qp(32)+qp(j1)
+              endif
+              
+              if(ichk5.eq.1) then
+                write(nlog,120) mon, mt, m2, j, j1, a, b,qp(j1),qp(32)
+              endif
+            end do
 c
 c
 c               Note since Targets; no need to 
@@ -619,64 +616,64 @@ c               Prorate daily to monthly total
           if(ichk5x.eq.1 .and. cid1(is).eq.cchk) 
      1     write(nlog,230) '5-EndPoint  '
 
-	  j1=jb1-1
-	  qd(32,is)=0.0
-	  do id=1,imd
-	    qd(id,is)=qp(id)* c
-	    qd(32,is)=qd(32,is)+qd(id,is)
+          j1=jb1-1
+          qd(32,is)=0.0
+          do id=1,imd
+            qd(id,is)=qp(id)* c
+            qd(32,is)=qd(32,is)+qd(id,is)
 
-	    if(ichk5x.eq.1 .and. (ityp.eq.4 .or. ityp.eq.14)) then
-	      if(cid1(is).eq.cchk) then
-	        j1=j1+1
-	        write(nlog,240) cid1(is), iyr, monx, id, j1,
-     1	          qm(mon,is),qp(id),qd(id,is)
+            if(ichk5x.eq.1 .and. (ityp.eq.4 .or. ityp.eq.14)) then
+              if(cid1(is).eq.cchk) then
+                j1=j1+1
+                write(nlog,240) cid1(is), iyr, monx, id, j1,
+     1            qm(mon,is),qp(id),qd(id,is)
               endif
-	    endif
-	  end do
+            endif
+          end do
 
-	  qd(32,is)=qd(32,is)/float(imd)
+          qd(32,is)=qd(32,is)/float(imd)
 c
-c		Print annual total (acft)
-c		Note type 4 and 14 are resevoirs, so in ac-ft
-	  if(ichk5.eq.1 .and. (ityp.eq.4 .or. ityp.eq.14)) then
-	      write(nlog,250) cid1(is), iyr, 13, -1, -1,
+c              Print annual total (acft)
+c              Note type 4 and 14 are resevoirs, so in ac-ft
+          if(ichk5.eq.1 .and. (ityp.eq.4 .or. ityp.eq.14)) then
+              write(nlog,250) cid1(is), iyr, 13, -1, -1,
      1          qm(mon,is),qp(32),qd(32,is)
-	  endif
+          endif
 
-	  ifound=1
-	  goto 100              
-	end if
+          ifound=1
+          goto 100
+        end if
 c
 c _________________________________________________________
 c               Step 3; Set monthly average into daily array 
 c                       position 32
  100    qmx=0.0
 
-	do id=1,imd
-	  qmx=qmx+qd(id,is)
-	end do
-	qd(32,is)=qmx/float(imd)
+        do id=1,imd
+          qmx=qmx+qd(id,is)
+        end do
+        qd(32,is)=qmx/float(imd)
 c
 c rrb 98/02/16; Revise monthly total;
 c               Daily sum should be the same as mo total unless type 5
-	if(iday(is).ne.5) then
-	  qm(mon,is)=qd(32,is)              
-	endif
+        if(iday(is).ne.5) then
+          qm(mon,is)=qd(32,is)
+        endif
 c
 c _________________________________________________________
 c               Step 4; Process problems 
-	if(ifound.eq.0) then
-	  write(nlog,170) iyr, monx, dtype(ityp), 
+        if(ifound.eq.0) then
+          write(nlog,170) iyr, monx, dtype(ityp),
      1                    is, cidy(is), cidy(is)
-	  do i=1,n
-	    cidz=cidx(i)
-	    if(cidz(1:1).eq.' ') then
-	    else
-	      write(nlog,'(11x, i5, 1x, a12)') i, cidz
-	    endif
-	  end do
-	  goto 9999
-	endif
+          do i=1,n
+            cidz=cidx(i)
+            if(cidz(1:1).eq.' ') then
+            else
+              write(nlog,'(11x, i5, 1x, a12)') i, cidz
+            endif
+          end do
+          goto 9999
+        endif
 c
 c =========================================================
 c               End station loop
@@ -689,11 +686,11 @@ c     IF(ityp.eq.11) then
 c     IF(ichk1.eq.1 .or. ityp.eq.4) then
       IF(ichk1.eq.1 .or. ichkx.eq.1) then   
         write(nlog,*) ' DayDist; Detailed data for: ', ityp, dtype(ityp)
-	WRITE(nlog,150) dtype(ityp), (i, i=1,31)
-	do is=1,n
-	  WRITE(nlog,160) is, cid1(is), iday(is), iyr, monx, 
+        WRITE(nlog,150) dtype(ityp), (i, i=1,31)
+        do is=1,n
+          WRITE(nlog,160) is, cid1(is), iday(is), iyr, monx,
      1        (qd(i,is), i=1,31), qd(32,is), qd(32,is)*fx
-	end do
+        end do
       endif
 
 c
@@ -770,5 +767,3 @@ c    1 10x, 3f15.2,/10x,3f15.2)
       stop 
 c
       end
-
-

@@ -73,7 +73,7 @@ c	Dimensions
 c
       include 'common.inc'
       character cresid1*12, cwrid*12
-      character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12
+      character cwhy*50, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12
       
 c
 c _________________________________________________________
@@ -476,7 +476,7 @@ c		Detailed header
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' __________________________')
      
-  280 FORMAT(a12, i5,1x,a4, i5, 1x, a12,8i8,6F8.0,i8, 1x, a48)
+  280 FORMAT(a12, i5,1x,a4, i5, 1x, a12,8i8,6F8.0,i8, 1x, a50)
       
 
 c

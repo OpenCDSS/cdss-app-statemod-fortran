@@ -18,7 +18,7 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c      
- 	Subroutine RivRtn(
+       Subroutine RivRtn(
      1    icx, nriver, l2, ndtype, iscd, nd, iuse, idcd, idcdX, 
      1    fac, smallN, oprEffT, relact, adj, divact, divactL, 
      1    ncnum, nAvail, alocfsR, DepfacM, imcdR, corid1)
@@ -311,7 +311,7 @@ c		            Step 5; Adjust AVTEMP for return flows from final
 c                       destination if it is a diversion 
 c                       (ndtype=3)
 c
-      if(ndtype.eq.3) then		        
+      if(ndtype.eq.3) then
 c
 c		Initialize Dumx to Avatemp before return adjustments      
 c		so they can be removed if the diversion gets adjusted
@@ -597,11 +597,11 @@ c    1        adj6*fac, adj*fac
           endif
 c
 c rrb 2008/11/24; Exit if adjustment is zero and shortage is zero
-          if(adj.lt.small .and. short.lt.small) goto 400		        
+          if(adj.lt.small .and. short.lt.small) goto 400
         
 c       
 c	  	Return to 100 to recalculate diversion
-c	  	if the maximum # of iterations is not exceeded		
+c	  	if the maximum # of iterations is not exceeded
           if(iterX.le.iterMax) then
             goto 100
           else

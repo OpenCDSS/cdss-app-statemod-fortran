@@ -141,14 +141,14 @@ c
         icase=0            
 c
 c__________________________________________________________
-c   Step 2: Initize Source Data based on type of opr rule
+c   Step 2: Initialize Source Data based on type of opr rule
 c 
 c rrb 2008/06/29; Set Source based on type of opr rule 
 c		              Moved qdiv(5 ) from calling program
 c                 
 c		              qdiv(26 From River by Exc_Pln (Exc_Pln)
 c		              qdiv(30 From River direct by a Res or Reuse Plan 
-c                          to a T&C Plan. Note non consumptivec
+c                          to a T&C Plan. Note non consumptive
 c		              qdiv(31 From River by Sto/Exc/Plan by type 27 or 28
 c                 
 c		              Note For type 24 or 25  Nsou=26
@@ -165,7 +165,7 @@ c ---------------------------------------------------------
 c
 c rrb 2014-11-24; Set control for type 26 Changed WR 
 c rrb 2014-01-16; Note type 26 (DirectWR) no longer calls
-c                 this subrouting
+c                 this subroutine
         if(icx.eq.26) nSou=20
 c
         if(icx.eq.27) nSou=31
@@ -294,7 +294,7 @@ c               qdiv(19 From Carrier by Priority (e.g. divcar)
 c               qdiv(20 From Carrier by Storage or Exchange
 c               qdiv(31 From River by Sto/Exc/Plan by type 27 or 28
 c
-	      ndest=20
+        ndest=20
         if(nCarry.le.2) then
           icase=3    
 c
@@ -309,7 +309,7 @@ cx        qdiv(ndest,idcdX) = qdiv(20,idcdX)+divactT
         if(nCarry.eq.3) then
           icase=4
           qdiv(31,idcdX) = qdiv(31,idcdX)+divactT
-          if(iout.eq.1) write(nlog,*) ' Outdiv_2 ', qdiv(31,idcdX)*fac          
+          if(iout.eq.1) write(nlog,*) ' Outdiv_2 ', qdiv(31,idcdX)*fac
           goto 100
         endif
 c

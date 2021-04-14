@@ -22,22 +22,22 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       outxssMo; It prints a structure Summary to a binary file
 c
 c _________________________________________________________
 c       Update History
 c
-c	2007/09/18; Broken out from OutMon
+c       2007/09/18; Broken out from OutMon
 c _________________________________________________________
 c       Documentation
 c
-c	numstax         Number of diversions and wells
-c	totothw 	Surface Water Supply
+c       numstax         Number of diversions and wells
+c       totothw         Surface Water Supply
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
       include 'common.inc'
       
       character ftype*24, parType*24, cfail1*3, cfail2*3
@@ -45,7 +45,7 @@ c	Dimensions
      1  totothw(numstax)
 c
 c _________________________________________________________
-c		Step 1; Initialize
+c              Step 1; Initialize
 c
      
       iout=0
@@ -56,22 +56,22 @@ c
       endif      
 c
 c _________________________________________________________
-c		Simulate Option, Set Total supply (totothw)     
+c              Simulate Option, Set Total supply (totothw)
       if(ioptio.eq.2 .or. ioptio.eq.8) then
         DO ND=1,NUMDIV
-          IS =IDVSTA(ND)   
+          IS =IDVSTA(ND)
           totothw(nd)=TotSup(is)
-        end do     
+        end do
       endif
 c
 c _________________________________________________________
-c		Baseflow Option, Set Total supply (totothw)
-c		and GW supply (divmonw)     
+c              Baseflow Option, Set Total supply (totothw)
+c              and GW supply (divmonw)
       if(ioptio.eq.1 .or. ioptio.eq.9) then
         DO ND=1,NUMDIV
           totothw(nd)=0.0
           NUI=NDUSER(ND)
-	        NUE=NDUSER(ND+1)-1
+          NUE=NDUSER(ND+1)-1
           DO NU=NUI,NUE
             totothw(nd)=diverx(NU)
           end do  
@@ -89,7 +89,7 @@ c		and GW supply (divmonw)
       endif
 c
 c _________________________________________________________
-c		Initialize constants
+c               Initialize constants
 c               fx (fmo) = units for output (cfs, af, kaf, or cms)
 c               fy (faf) = unit conversion af to cfs for a day
 c               fz (faf) = unit conversion cfs to af/mo 
@@ -106,7 +106,7 @@ c               Monthly model fx=fy.  Daily model fx .ne. fy
      
 c
 c _________________________________________________________
-c		Print Binary (*.xss)
+c              Print Binary (*.xss)
       
       IREC=(IYR-IYSTR)*12*numdxw+(MON-1)*numdxw+ numtop 
       
@@ -119,7 +119,7 @@ c		Print Binary (*.xss)
           is=idvsta(nd)
           nw=idivco2(nd)
 c
-c		Calculate area from fraction data
+c              Calculate area from fraction data
           Area1=Area(nd)
           AreaSF1=AreaSF(nd)*Area1
           AreaSS1=AreaSS(nd)*Area1
@@ -292,7 +292,7 @@ c rrb 2007/09/06; New Format
             irecs=irec+numdiv+nw1
             irecmax=amax0(irecmax,irecs)   
 c
-c		Calculate area from fraction data
+c              Calculate area from fraction data
             Area1=Areaw(nw)
             AreaSF1=0.0
             AreaSS1=0.0
@@ -338,7 +338,7 @@ c rrb 2007/09/06; Revised format
       endif
 c
 c _________________________________________________________
-c		Return      
+c              Return
       return
       
 c

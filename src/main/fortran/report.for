@@ -65,7 +65,7 @@ c
       include 'common.inc'
       character cplot*12, blank*12, getid*12, ftype*5, cRch*4
       dimension idatx(3), itim1(4), itim2(4)
-      character filenO*256, filenO2*256, filenOX*256, rec32*32,
+      character filenO*256, filenO2*256, filenOX*256, rec39*39,
      1 filena1*256
 c
 c _________________________________________________________
@@ -325,7 +325,7 @@ c
 c rrb 02/04/07; Get year information
 c               Step X; Get year information.
 c rrb 99/08/20; Daily needs to know the year type
-	    call year(iystr, iyrmo, imomo, cyr1) 
+      call year(iystr, iyrmo, imomo, cyr1)
 c                         
 c _________________________________________________________
 c
@@ -342,9 +342,9 @@ C
         CALL OUTSYS(IYStr,IYEnd)
 c
         write(nlog,280)
-        rec32= 'Binary Output:  *.xbn and *.xbr'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Binary Output:  *.xbn and *.xbr'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(25)
         close(26)
@@ -362,9 +362,9 @@ C
         CALL OUTSYT(IYStr,IYEnd)
 c
         write(nlog,280)
-        rec32= 'Node Accounting: *.xnm'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Node Accounting: *.xnm'
+        write(nlog,282) rec39
+        write(6,282) rec39
         close(16)
 C
 C------  Detailed node accounting average
@@ -374,9 +374,9 @@ c
         call outsyta(iystr, iyend)
 c
         write(nlog,280)
-        rec32= 'Ave Node Accounting: *.xna'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Ave Node Accounting: *.xna'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(16)
         goto 210
@@ -401,14 +401,14 @@ c       CALL OUTBAL(IYStr,IYEnd)
 
 c
         write(nlog,280)
-        rec32= 'Surface Water Balance:  *.xwb'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Surface Water Balance:  *.xwb'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
         if(iwell.gt.0) then
-          rec32= 'Ground Water Balance:   *.xgw'
-          write(nlog,282) rec32
-          write(6,282) rec32          
+          rec39= 'Ground Water Balance:   *.xgw'
+          write(nlog,282) rec39
+          write(6,282) rec39
         endif
 
         close(27)
@@ -440,9 +440,9 @@ cx        call riginp(iin, maxwrx)
         call outdeb(0, nreach)
 c
         write(nlog,280)
-        rec32= 'Water Right:  *.xwr'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Water Right:  *.xwr'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(11)
         goto 210
@@ -478,13 +478,13 @@ c rrb 99/05/20
         CALL OUTsp
 c
         write(nlog,280)
-        rec32= 'Special Parameter Rep. (Matrix): *.xsp'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Special Parameter Rep. (Matrix): *.xsp'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Special Parameter Rep. (Column): *.xs2'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Special Parameter Rep. (Column): *.xs2'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(21)
         close(24)
@@ -527,13 +527,13 @@ c       write(nlog,'(a256)') filena
         CALL OUTspd
 c
         write(nlog,280)
-        rec32= 'Daily Special Parameter (Matrix): *.xds'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Daily Special Parameter (Matrix): *.xds'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
-        rec32= 'Daily Special Parameter (Column): *.xd2'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Daily Special Parameter (Column): *.xd2'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(21)
         close(24)
@@ -574,9 +574,9 @@ c
         goto 210
 c
         write(nlog,280)
-        rec32= 'Reservoir Plot: *.xrg'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Reservoir Plot: *.xrg'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
       endif
 c _________________________________________________________
@@ -604,9 +604,9 @@ c               Step X; 7-DIVERSION PLOT
           close(9)
 c
           write(nlog,280)
-          rec32= 'Diversion Plot:  *.xdg'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Diversion Plot:  *.xdg'
+          write(nlog,282) rec39
+          write(6,282) rec39
           goto 210
         else         
           call outpltd(igui, istop, cplot)
@@ -641,9 +641,9 @@ c
         if(cplot.eq.blank .or. cplot.eq.'0          ') then
 c 
           write(nlog,280)
-          rec32= 'Well Plot:  *.xwg'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Well Plot:  *.xwg'
+          write(nlog,282) rec39
+          write(6,282) rec39
 
           close(9)
           goto 210
@@ -696,9 +696,9 @@ c       cplot=blank
         CALL OUTresc(cplot)
 c
         write(nlog,280)
-        rec32= 'Reservoir Comparison:  *.xrc'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Reservoir Comparison:  *.xrc'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(9)
         close(1)
@@ -775,13 +775,13 @@ c       cplot=blank
         CALL OUTdivc(cplot,nreach)
 c
         write(nlog,280)
-        rec32= 'Diversion Comparison:  *.xdc'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Diversion Comparison:  *.xdc'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c        
-        rec32= 'Streamflow comparison: *.xsc'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Streamflow comparison: *.xsc'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
         close(9)
         close(10)
@@ -833,9 +833,9 @@ c
         CALL OUTwelc(cplot, nreach)
 c
         write(nlog,280)
-        rec32= 'Well Comparison:  *.xwc'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Well Comparison:  *.xwc'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
         close(9)
         close(1)
@@ -882,25 +882,25 @@ cx      CALL OUTcu(maxwx,maxgrpx,nreachD,nreachW)
         call outrev
 c
         write(nlog,280)
-        rec32= 'Total Consumptive Use: *.xcu'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Total Consumptive Use: *.xcu'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Total Reservoir Evap:  *.xev'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Total Reservoir Evap:  *.xev'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Total Shortage:        *.xsh'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Total Shortage:        *.xsh'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Total Supply:          *.xsu'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Total Supply:          *.xsu'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Total by WD:           *.xwd'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Total by WD:           *.xwd'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
 c
 c ---------------------------------------------------------
@@ -946,9 +946,9 @@ c               Open output files
         call outriv
 c
         write(nlog,280)
-        rec32= 'River Summary: *.xrx'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'River Summary: *.xrx'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(33)
         goto 210
@@ -1082,68 +1082,68 @@ c		Optional well, isf reach, riogrande and plan output
         if(irg1+irg2.ge.1) call outrg
 c
 c		If plans are on, get operational data        
-	if(nplan.gt.0) then
+        if(nplan.gt.0) then
           maxwrx=maxwr
-          call SetPlanO      
-          call outpln	
+          call SetPlanO
+          call outpln
         endif
 c        
         write(nlog,280)
-        rec32= 'Diversion Summary:         *.xdd'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Diversion Summary:         *.xdd'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Reservoir Summary:         *.xre'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Reservoir Summary:         *.xre'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Operating Rule Summary:    *.xop'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Operating Rule Summary:    *.xop'
+        write(nlog,282) rec39
+        write(6,282) rec39
 c
-        rec32= 'Instream Reach Summary:    *.xir'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Instream Reach Summary:    *.xir'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         if(iwell.ge.1) then
-          rec32= 'Well Summary:              *.xwe'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Well Summary:              *.xwe'
+          write(nlog,282) rec39
+          write(6,282) rec39
         endif
 
 c       if(ieffmax.eq.1) then
-          rec32= 'Structure Summary:         *.xss'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Structure Summary:         *.xss'
+          write(nlog,282) rec39
+          write(6,282) rec39
 c       endif
 
         if(irg1+irg2.ge.1) then
-          rec32= 'Rio Grande Compact Info:   *.xrg'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Rio Grande Compact Info:   *.xrg'
+          write(nlog,282) rec39
+          write(6,282) rec39
         endif
         
         if(nplan.ge.1) then
-          rec32= 'Plan Summary:              *.xpl'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Plan Summary:              *.xpl'
+          write(nlog,282) rec39
+          write(6,282) rec39
         endif
         
 
         if(iday.eq.1) then
-          rec32= 'Daily Diversion output in: *.xdy'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Daily Diversion output in: *.xdy'
+          write(nlog,282) rec39
+          write(6,282) rec39
 c          
-          rec32= 'Daily Reservoir output in: *.xry'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Daily Reservoir output in: *.xry'
+          write(nlog,282) rec39
+          write(6,282) rec39
         endif
 
         if(iday.eq.1 .and. iwell.ge.1) then
-          rec32= 'Daily Well output in:      *.xwy'
-          write(nlog,282) rec32
-          write(6,282) rec32
+          rec39= 'Daily Well output in:      *.xwy'
+          write(nlog,282) rec39
+          write(6,282) rec39
         endif
         
         close(33)
@@ -1175,9 +1175,9 @@ C
         end do  
 c        
         write(nlog,280)
-        rec32= 'Diversion List:      *.xdl'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Diversion List:      *.xdl'
+        write(nlog,282) rec39
+        write(6,282) rec39
 
         close(33)
         goto 210
@@ -1205,9 +1205,9 @@ c		Print report
         call outpln
 c        
         write(nlog,280)
-        rec32= 'Plan Summary:      *.xpl'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Plan Summary:      *.xpl'
+        write(nlog,282) rec39
+        write(6,282) rec39
         goto 210
       endif
 c
@@ -1255,9 +1255,9 @@ c
         call OutWelP
 c        
         write(nlog,280)
-        rec32= 'Well to Plan Summary:      *.xwp'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Well to Plan Summary:      *.xwp'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
         goto 210
       endif
@@ -1314,9 +1314,9 @@ c
         call OutPlnW
 c        
         write(nlog,280)
-        rec32= 'Aug Plan to Well:      *.xpw'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Aug Plan to Well:      *.xpw'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
         goto 210
       endif
@@ -1337,9 +1337,9 @@ c		Print report
         call OutRchR(nreach,cplot)
 c        
         write(nlog,280)
-        rec32= 'Reach Water Balance:      *.xrw'
-        write(nlog,282) rec32
-        write(6,282) rec32
+        rec39= 'Reach Water Balance:      *.xrw'
+        write(nlog,282) rec39
+        write(6,282) rec39
         
         goto 210
       endif
@@ -1449,7 +1449,7 @@ c               Formats
      1 '  Report; Requested Report unavailable')
       
   280   FORMAT(/,72('_'))
-  282   Format('  Report; ', a32)
+  282   Format('  Report; ', a39)
 c
 c _________________________________________________________
 c               Error messages

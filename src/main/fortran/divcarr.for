@@ -48,7 +48,7 @@ c _________________________________________________________
 c
 c               Documentation
 c
-c 	icx 		subtoutine call # (2)
+c 	icx 		subroutine call # (2)
 c       IW         	OVERALL WATER RIGHT ORDER
 c       L2         	LOC. OF operation right  in opr RIGHT TABLE
 c
@@ -59,7 +59,7 @@ c             		1 use max efficiency if ieffmax = 1
 c       iresw 		0 diversion destination
 c              		1 reservoir destination
 c       ndr             source water right
-c       nd1   		source strucutre 
+c       nd1   		source structure 
 c       nd2   		destination pointer for both a diversion 
 c                         and reservoir
 c       iresw   		destination pointer
@@ -494,7 +494,7 @@ c ---------------------------------------------------------
 c
         if(avail(imcd).gt.small) then
 c        
-c rrb 2009/11/01l Revise to allow some CU to occurr by 
+c rrb 2009/11/01l Revise to allow some CU to occur by 
 c                 setting iter=2
 cx        call rtnmax(2, iuse, iri, ire, iscd, ndns,        
           call rtnmax(1, iuse, iri, ire, iscd, ndns, 
@@ -682,7 +682,7 @@ c               14n. Update actual diversion for testing
 c
 c _________________________________________________________
 c
-c               Step 15.  Detalied output
+c               Step 15.  Detailed output
 c
 
       if(iout.eq.1 .and. iw.eq.ioutiw) then

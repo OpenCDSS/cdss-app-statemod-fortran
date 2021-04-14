@@ -97,7 +97,7 @@ c        L2 : LOC. OF operation right  in opr RIGHT TABLE
 c
 c        lr             source water right
 c        iopsou(1,l2)   source water right
-c        iopsou(2,l2)   Not used (note % ownership gets transfered
+c        iopsou(2,l2)   Not used (note % ownership gets transferred
 c			                  to oprpct in Oprinp.f)
 c        iopsou(3,l2)   Plan id (for return flow obligation accounting)
 c        iopsou(4,l2)   CU switch 
@@ -107,7 +107,7 @@ c                       bypass point on the Stream
 c			                  Calculated in Oprinp via call getExPt
 c        iopsou(7,l2)   bypass point (e.g. its a pointer the
 c
-c	       oprpct(l2)     Percent of the source water right to be bypassd
+c	       oprpct(l2)     Percent of the source water right to be bypassed
 c	
 c
 c        iopdes(1,l2)   destination diversion, plan or reservoir ID
@@ -1195,7 +1195,7 @@ c		Note goto 250 since source may still divert
           
 
 c_____________________________________________________________
-c               Step 15; Calculate amount to be bypassd
+c               Step 15; Calculate amount to be bypassed
       divCU=divactS*pctE*culimit
       divactB=amin1(divactS*pctE*culimit, divByP, divaloB, dcrdiv2)
       divactB=amax1(0.0, divactB)      
@@ -1667,7 +1667,7 @@ c               Step 23a; Set Efficiency
 c     
 c
 c _________________________________________________________
-c               Step 23b; Set Qdiv at the souce for the
+c               Step 23b; Set Qdiv at the source for the
 c                        exchanged amount as carried water
 c rrb 2015/10/04; Set exchanged water as carried at the source
 c rrb 2019/07/30; Revise to not  report the exchange as carried
@@ -1746,8 +1746,8 @@ c rrb 2007/07/03; Update for detailed reporting
 c
 c _________________________________________________________
 c               Step 29; Update diversion by this Operating Rule
-c		         Note only show bypassd amount, not
-c                        bypassd and source
+c		         Note only show bypassed amount, not
+c                        bypassed and source
       divactL=divactB*OprEffT       
       DIVO(L2)=DIVO(L2)+divactB
 c
@@ -1906,8 +1906,3 @@ cx   1  AVAIL(imcdX)*fac,divaloS*fac,
 
       stop 
       END
-
-
-
-      
- 

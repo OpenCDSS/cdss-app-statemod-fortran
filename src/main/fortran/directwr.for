@@ -45,7 +45,7 @@ c         is not limited by the structure capacity; capacity
 c         adjustments occur when water is released by a type
 c         27 or 28 rule.
 c      6. Determine if more water can be diverted at source
-c         (can occurr if the changed WR was limited for any reason)
+c         (can occur if the changed WR was limited for any reason)
 C         STEP 16
 c
 c         Note
@@ -54,7 +54,7 @@ c           icallOP
 c         Destination must be a type 13, Changed Water Right plan
 c         Source must be a water right
 c         The water right % remaining at the source and diverted 
-c           has the souce capacity reduced.  The water right % 
+c           has the source capacity reduced.  The water right % 
 c           that is changed and diverted to a plan does not 
 c           reduce the source capacity.  Capacity limits are 
 c           imposed when water is released from the plan by 
@@ -91,7 +91,7 @@ c     L2 : LOC. OF operation right  in opr RIGHT TABLE
 c
 c     lr             source water right
 c     iopsou(1,l2)   source water right
-c     iopsou(2,l2)   Not used (note % ownership gets transfered
+c     iopsou(2,l2)   Not used (note % ownership gets transferred
 c			               to oprpct in Oprinp.f)
 c     iopsou(3,l2)   NA
 c     iopsou(4,l2)   NA

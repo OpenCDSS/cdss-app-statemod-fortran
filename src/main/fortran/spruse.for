@@ -129,10 +129,10 @@ c
 c rrb 2006/04/12; Add ability to simulate T&C for an aug Plans
 cr         call welrig(iw,k,ispruse,retx,divact)
             if(iplanwOn.eq.0) then
-	      call welrig3(iw,k,ispruse,retx,divact,ncallX)
-	    else
-	      call Welrig3P(iw,k,ispruse,retx,divact,ncallX)
-	    endif  
+              call welrig3(iw,k,ispruse,retx,divact,ncallX)
+            else
+              call Welrig3P(iw,k,ispruse,retx,divact,ncallX)
+            endif
           
 c
 c _________________________________________________________

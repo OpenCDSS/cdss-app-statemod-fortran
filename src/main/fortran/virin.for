@@ -820,7 +820,7 @@ c
 c
 c ---------------------------------------------------------
 c		Find station for this data
-	        call stafind(nlog,1,3,numres,ix,cistat,cresid,cCallBy)
+            call stafind(nlog,1,3,numres,ix,cistat,cresid,cCallBy)
           if(ix.eq.0) then
             write(nlog,1310) cistat,'Reservoir EOM (*.eom)',
      1        '(*.res)',iryr,iyr
@@ -832,7 +832,7 @@ c		Store last years value for daily mid point calcs
           if(iyr.eq.iystr) then
             resvol1(ix)=cursto(ix)
           else
-            resvol1(ix)=resvol(12,ix)	           
+            resvol1(ix)=resvol(12,ix)
           endif
 C
 c ---------------------------------------------------------
@@ -880,9 +880,9 @@ c         write(nlog,*) ' Virin; Res Rech, ', nRre, ix, idvRre(nRre)
         end do
         if(ioutRe2.eq.1) then
           do nr=1,numres
-            write(nlog,*) ' Virin; Res to Rech',nr,RrechM(1,nr)*fac        
+            write(nlog,*) ' Virin; Res to Rech',nr,RrechM(1,nr)*fac
           end do
-        endif          
+        endif
 c
 c _________________________________________________________
 c
@@ -938,7 +938,7 @@ c		Check
           do nd=1,numdiv
             write(nlog,*) ' Virin; Div to Rech for FEB', iryr, imx,nd,
      1        cdivid(nd), 
-     1        Diver(imx,nd)*fac,  DrechM(imx,nd)*fac, DuseM(imx,nd)*fac        
+     1        Diver(imx,nd)*fac,  DrechM(imx,nd)*fac, DuseM(imx,nd)*fac
           end do
         endif  
 

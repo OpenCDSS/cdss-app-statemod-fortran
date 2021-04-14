@@ -218,7 +218,7 @@ c                               (nd2) or reservoir or plan
 c _________________________________________________________
 c	Dimensions
       include 'common.inc'
-      character cwhy*24, cdestyp*12, cstaid1*12,
+      character cwhy*45, cdestyp*12, cstaid1*12,
      1          rec12*12, ccarry*3, cpuse*3, cresid1*12, subtypX*8 
 c
 c _____________________________________________________________
@@ -1115,7 +1115,7 @@ c                21c. Print detailed data
      1       divaloX*fac,  pavail*fac,
      1       divcarry*fac, abs(relact*fac), divact*fac,  iwhy, cwhy,
      1       imcd,  idcd, idcdC,
-     1       FrCarOth*fac,      FrRivOth*fac
+     1       FrCarOth*fac, FrRivOth*fac
      
 cx             qdiv(20,idcd)*fac,
 cx     1       qdiv(21,idcd)*fac, qdiv(23,idcd)*fac, qdiv(26,idcd)*fac,
@@ -1165,8 +1165,8 @@ cx     1  ' qdiv(20 qdiv(21 qdiv(23 qdiv(26 qdiv(29 qdiv(30 qdiv(31',/
      1  ' _______ _______ _______',
      1  ' _______ ________________________ ____ ____ ____')
 cx     1  9(' _______'))
- 280   format(1x,a12, i5, 1x,a4, 7i5, 10f8.1, i8, 1x,a24, 3i5, 20f8.1)
- 282   format(1x,a12, i5, 1x,a4, 7i5, 10f8.3, i8, 1x,a24, 3i5, 20f8.3)
+ 280   format(1x,a12, i5, 1x,a4, 7i5, 10f8.1, i8, 1x,a45, 3i5, 20f8.1)
+ 282   format(1x,a12, i5, 1x,a4, 7i5, 10f8.3, i8, 1x,a45, 3i5, 20f8.3)
 
  301   format(/,60('_'),/,
      1   '  divRplR;  iyr  mon iteration ', 3i5,/

@@ -221,7 +221,7 @@ c
 
             icase=3
 c
-c rrb 2008/11/20; Moved from above to only occurr for case 3            
+c rrb 2008/11/20; Moved from above to only occur for case 3            
             divmon(ncar)=divmon(ncar)+divactC                 
             if(nlast.eq.0) then
               qdiv(18,inode)=qdiv(18,inode)+ divactC - oprlosT

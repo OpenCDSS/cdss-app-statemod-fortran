@@ -106,7 +106,7 @@ c                  b. Take out of stream (call takout)
 c                  c. Calculate returns (call rtnsec)
 c                  d. Check if more can be diverted by operating
 c                     at less than maximum efficiency
-c                  e. If no more is availble exit.
+c                  e. If no more is available exit.
 c
 c                  f. If more is available then
 c                     f1. Finding max available with returns
@@ -128,7 +128,7 @@ c _________________________________________________________
 c
 c               Documentation
 c
-c               icx        subtoutine call # (2)
+c               icx        subroutine call # (2)
 c               IW         : OVERALL WATER RIGHT ORDER
 c               L2         : LOC. OF operation right  in opr RIGHT TABLE
 c               ioprtn     : Switch for handling return flows when
@@ -1231,7 +1231,7 @@ c
 c ---------------------------------------------------------
 c
           if(avail(imcd).gt.small) then
-c rrb 2009/11/01l Revise to allow some CU to occurr by 
+c rrb 2009/11/01l Revise to allow some CU to occur by 
 c                 setting iter=2
 cx          call rtnmax(2, iuse, iri, ire, iscd, ndns,     
             call rtnmax(1, iuse, iri, ire, iscd, ndns, 
@@ -1291,7 +1291,7 @@ c
 c
 c _________________________________________________________
 c
-c		Step X; Calcualte return flows associated with 
+c		Step X; Calculate return flows associated with 
 c		   carrier loss to a Reservoir (iresw=1)
       if(iresw.eq.1) then
         OprLosT=divact*OprLoss1
@@ -1495,7 +1495,7 @@ c		   Note qdiv is by stream location
 c			qres is by reservoir in ac-ft   
 c _________________________________________________________
 c
-c               Step 13.  Detalied output
+c               Step 13.  Detailed output
       if(iout.ge.2 .and. iw.eq.ioutiw) then
         ncallX=ncallX+1
         if(ncallX.eq.1)then

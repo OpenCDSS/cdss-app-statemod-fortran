@@ -313,7 +313,7 @@ cr      endif
 c      
 c _________________________________________________________
 c
-c               Step 12.  Detalied output
+c               Step 12.  Detailed output
 c
 
       if(iout.eq.1 .and. iw.eq.ioutiw) then

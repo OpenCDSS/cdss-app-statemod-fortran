@@ -75,7 +75,7 @@ cx     1	     Agw, Asp, Qmax, gwmode1, Atot
 cx
           nx=1   
           read(inX,954,end=400,err=500) idyr,cistat, (x(i), i=1,3),
-     1	      AreaSF1, AreaSS1, AreaGF1, AreaGS1, Qmax, gwmode1, Atot
+     1      AreaSF1, AreaSS1, AreaGF1, AreaGS1, Qmax, gwmode1, Atot
           
          backspace(inX)
 
@@ -164,8 +164,8 @@ c		Formats
      1   '            version has been provided.')
  310  format(    
      1   '          Based on the data in the file it appears',/
-     1   '            you have provided version 1 that has',/
-     1   '            2 land use types (Total GW and Total Sprinkler).',/
+     1   '            you have provided version 1 that has 2 land use',/
+     1   '            types (Total GW and Total Sprinkler).',/
      1   '          To eliminate this warning it is recommend you',/
      1   '            migrate to the current standard format or,',/
      1   '            at a minimum, include the following at the top',/

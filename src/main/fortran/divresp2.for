@@ -126,7 +126,7 @@ c                     reporting capability
 c
 c rrb 2007/08/22; Revised to allow the return flow calculation for 
 c                   the T&C requirement to vary as follows:
-c                   if(iopsou(4,l2) = 1 call RtnsecP for a STANDARD		  
+c                   if(iopsou(4,l2) = 1 call RtnsecP for a STANDARD
 c                   if(iopsou(4,l2) = 2 call RtnsecC for a CONSTANT
 c
 c rrb 2007/08/17; Revised to allow the destination to be a plan
@@ -190,9 +190,9 @@ c        iopsou(3,l2) = T&C Plan (type 1 for a return flow obligation
 c                     = WWSP Plan (type 15) for a WWSP User limit
 c			   associated with a release
 c        iopsou(4,l2) = 1, 2 or 3 call RtnsecP for the STANDARD
-c			   component of a T&C obligation calculation		  
+c			   component of a T&C obligation calculation
 c        iopsou(4,l2) = 2 or 3call RtnsecC for the CONSTANT
-c			   component of a T&C obligation calculation		  
+c			   component of a T&C obligation calculation
 c
 c        iopsou(5,l2) = A Plan ID containing monthly Diversion limits
 c                       Read in Oprinp when Oprlimit = 2, 4 or 7
@@ -284,7 +284,7 @@ c          	ioprloss    	int(OprLoss) carrier loss switch
 c                   			+ transit loss, maybe carrier loss
 c                   			- 0 transit loss, maybe carrier loss
 c          	TranLoss    	Transit loss (fraction)
-					 
+
 c          	OprLossC(l2,i)Conveyance loss from a carrier (%)
 c          		  	        Conveyance loss gets routed to system
 c          	OprLost= 	    conveyance loss (cfs)
@@ -347,7 +347,7 @@ c Dimensions
 c
 c rrb 2018/09/30; Add cWWSP and cWWID
       include 'common.inc'
-      character cwhy*48, cdestyp*12, csrctyp*12, cplntyp*12, 
+      character cwhy*51, cdestyp*12, csrctyp*12, cplntyp*12,
      1  rec12*12, ccarry*3, cpuse*3, cresid1*12, cRiver*12,
      1  cTandC*3, cWWSP*3, cReplace*3, cDest*12, cSour*12,
      1  corid1*12, cCallBy*12, cImcdR*12, subtypX*8, cWWID*12
@@ -807,8 +807,9 @@ c
         write(nlog,*)
      1    ' DivResP2_2;   lopr26     lr26     nd26   iscd26',
      1                '   ndns26   iscd1   ndns26'   
-        write(nlog,'(a12,8i8)')
-     1    '  DivResP2_2;', lopr26, lr26, nd26, iscd26, ndns26, iscd1, ndns26
+        write(nlog,'(a12,7i8)')
+     1    '  DivResP2_2;', lopr26, lr26, nd26, iscd26, ndns26, iscd1,
+     1    ndns26
 c      
         if(iok.eq.1) then
           write(nlog,*) ' Problem with source water right reporting'
@@ -941,7 +942,7 @@ c ---------------------------------------------------------
 c               Exit of zero
         if(alocfs.lt.small) then
           iwhy=4
-          cwhy='Maximum Available Streamflow (alocfs2) = zero'                   
+          cwhy='Maximum Available Streamflow (alocfs2) = zero'
           goto 300
         endif
         
@@ -1014,7 +1015,7 @@ c
           
           if(alocfs.lt.small) then
             iwhy=5
-            cwhy='Mon or Ann Limit (OprMaxM1 or alocfs4) = zero'          
+            cwhy='Mon or Ann Limit (OprMaxM1 or alocfs4) = zero'
             goto 300
           endif   
         endif
@@ -1058,7 +1059,7 @@ c
           
           if(alocfs.lt.small) then
             iwhy=6
-            cwhy='Operating Rule Limit (OprMaxM1 or alocfs4) = zero'          
+            cwhy='Operating Rule Limit (OprMaxM1 or alocfs4) = zero'
             goto 300
           endif 
         endif
@@ -1727,9 +1728,9 @@ c
 c rrb 2018/01/29 TEST
         if(ioutQ.eq.1) then
           write(nlog,*) ' '         
-          write(nlog,*) ' DivResp2 @ 1644, lopr26, iscd26, iscd relact'    
+          write(nlog,*) ' DivResp2 @ 1644, lopr26, iscd26, iscd relact'
           write(nlog,*) ' DivResp2 @ 1644', lopr26, iscd26, iscd, 
-     1                    relact*fac                   
+     1                    relact*fac
         endif
 c      
       if(lopr26.eq.0) then
@@ -1764,12 +1765,12 @@ c rrb 2011/08/04; Update to allow an Instream flow reach
 c
 c rrb 2018/01/29 TEST
         if(ioutQ.eq.1) then
-          write(nlog,*) ' '  
-          write(nlog,*) ' DivResp2 @ 1683; nriver, ncarry'  
-          write(nlog,*) ' DivResp2 @ 1683;', nriver, ncarry                              
-          write(nlog,*) ' DivResp2 @ 1683, idcdx, idcdC, divact'    
-          write(nlog,*) ' DivResp2 @ 1683', ldcdx, idcdC,  
-     1                    divact*fac                   
+          write(nlog,*) ' '
+          write(nlog,*) ' DivResp2 @ 1683; nriver, ncarry'
+          write(nlog,*) ' DivResp2 @ 1683;', nriver, ncarry
+          write(nlog,*) ' DivResp2 @ 1683, idcdx, idcdC, divact'
+          write(nlog,*) ' DivResp2 @ 1683', ldcdx, idcdC,
+     1                    divact*fac
         endif
  
         if(nriver.eq.0) then  
@@ -2744,7 +2745,7 @@ c               Error warnings
       write(nlog,280) '  DivResP2_X',
      1  iyrmo(mon),xmonam(mon),idy, cSour, cDest, cImcdR,
      1  iwx, iw, l2, nd, ndd, ndr, nsP,iuseX,iDep, nRiver,
-     1  alocfs1*fac, alocfs2*fac,  alocfs3*fac, alocfs*fac, alocfsR*fac, 
+     1  alocfs1*fac, alocfs2*fac,  alocfs3*fac, alocfs*fac, alocfsR*fac,
      1  cursa, divreq1*fac, oprEffT*100., DIVREQ0*fac, 
      1  Pavail*fac,  divaloX*fac, divcarry*fac,PstoX*fac,
      1  OprmaxM1,    OprmaxM2, 
@@ -2766,4 +2767,3 @@ c _________________________________________________________
 c               Stop and End
       stop 
       END
-

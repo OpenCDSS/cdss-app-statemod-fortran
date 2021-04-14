@@ -45,7 +45,7 @@ c 2020/07/28; Revised a typo to the Section III
 c               reporting by setting 68.8% to 68.6%          
 
 c 2020/07/23; Revised to calculate total & annual average
-c               availble flow
+c               available flow
 c
 c 2019/10/28; Revise to include Available Flow in output
 c

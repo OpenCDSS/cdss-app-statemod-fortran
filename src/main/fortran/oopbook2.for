@@ -133,7 +133,7 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
+      character cwhy*51, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
      1          rec12*12,cSouTyp*12, cresid1*12      
 c
 c
@@ -392,7 +392,7 @@ c        endif
      1    resavl,  resalo,  caprem,  relaf, divactx*fac, divaf,
      1    iwhy, cwhy  
   280 format(
-     1 4x,a4,i5,2x,a3, 1x,i4, a12,1x, 11i5, 14f10.0, i5, 1x,a48)
+     1 4x,a4,i5,2x,a3, 1x,i4, a12,1x, 11i5, 14f10.0, i5, 1x,a51)
         
       endif
 c
@@ -669,7 +669,7 @@ c
      1 '                                      ',
      1         '                                        ',
      1 '       OOP    Senior    Senior       Opr    Junior  OOP Plan',
-     1 '  Transfer    Target Available Available Available',/                              ',/
+     1 '  Transfer    Target Available Available Available',
      1 '                                      ',
      1         '                                        ',
      1 '   Storage Available     Right     Limit     Limit    Demand',
@@ -706,7 +706,7 @@ c
       call exit(1)
 c
 c _________________________________________________________
-c		Stop
+c     Stop
 
       stop 
       END

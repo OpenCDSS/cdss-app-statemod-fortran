@@ -95,7 +95,7 @@ c                        diversion
 c                        Its not used to report anything in the *.xdd 
 c                        report.  Note to show From Storage by Other
 c                        in *.xdd use Qdiv(20
-c               qdiv(23  From River by Exchange via an interruptable 
+c               qdiv(23  From River by Exchange via an interruptible 
 c                        supply
 c               qdiv(24  Pumping (Well) at river ID 
 c               qdiv(25  Depletion at river ID
@@ -221,7 +221,7 @@ c                                  0  -     0 = well only
 c                               < -10000 = baseflow only
 c                               -1* above = baseflow plus a structure 
 c
-c rrb 1999/06/12; Adjusted for qdiv(23 exchange by interruptable supply
+c rrb 1999/06/12; Adjusted for qdiv(23 exchange by interruptible supply
 c
 c rrb 1996/05/29; change to generalize dimensions
 c
@@ -564,7 +564,7 @@ c rrb 01/05/95; I/O Addition Constrained shortage
 c
 c rrb 98/12/22; Adjust "Well Depletion" to not include current month
 c               which is shown under "River by Well" (qdiv(25,is)
-c rrb 99/06/12; qdiv(23 is now exchange by interruptable supply
+c rrb 99/06/12; qdiv(23 is now exchange by interruptible supply
         dep(is)=dep(is)-qdiv(25,is)
 c
 c
@@ -683,10 +683,10 @@ c rrb 01/12/07; Use Abs to get correct output from carrpl
         RivSto  = amax1(0.0, 
      1          qdiv(10,is) + qdiv(15,is) + qdiv(7,is) - qdiv(21,is))
 c
-c rrb 99/06/25; Interruptable supply addition
+c rrb 99/06/25; Interruptible supply addition
 c               Note qdiv(21) is exchange via a reservoir
-c                    qdiv(23) is exchange via interruptable supply 
-c                    qdiv(26) from river by exchange by direct flow Exchnage
+c                    qdiv(23) is exchange via interruptible supply 
+c                    qdiv(26) from river by exchange by direct flow Exchange
 c rrb 05/02/08;      qdiv(29  is exchange from a plan
 c                    qdiv(30  is direct from a plan or Res to a T&C
 c                    qdiv(31  From the river via a reuse or Admin Plan
@@ -701,7 +701,7 @@ c
         well = qdiv(24,is)
 c
 c rrb 98/12/22; current impact on river is part of dep(is) (depl())
-c rrb 99/06/12; qdiv(23 is now exchange by interruptable supply
+c rrb 99/06/12; qdiv(23 is now exchange by interruptible supply
 c       RivWel= qdiv(23,is)
         RivWel= qdiv(25,is)
 

@@ -356,8 +356,8 @@ c		Detailed Output
 c
 c _________________________________________________________
 c		Step 9; Check if the linear estimate for max return
-c		        (pavail, which was calcuated above)
-c		         is less than what will really occurr
+c		        (pavail, which was calculated above)
+c		         is less than what will really occur
 c			       when limited by 4 land use types and
 c			       4 IWR demands.
 c		         Note call rtnsecX & dnmfso in order to

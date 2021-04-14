@@ -412,14 +412,14 @@ c			  Set to year type ALWAYS READ AS CALENDAR YEAR
           if(ix.eq.0) goto 1400
           
           iwarn(ix)=1
-	  do im=1,12
-c	  
+          do im=1,12
+c
 c		Adjust based on year type ALWAYS READ AS CALENDAR YEAR
-	    j=imomo(im)
-	    diveff(im,ix)=x(j)
+            j=imomo(im)
+            diveff(im,ix)=x(j)
             if(ioutE.gt.0) write(nlog,*) 'GetDiv2; ',im, j,diveff(im,ix)
           end do  
-	end do  
+        end do
 c          
 c _________________________________________________________
 c
@@ -440,7 +440,7 @@ c		Step 11c; Detailed Check
      1         n, (diveff(i,n), i=1,12)
           endif          
         end do  
-	
+
       endif
 c _________________________________________________________
 c

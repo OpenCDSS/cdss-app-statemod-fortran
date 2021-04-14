@@ -573,7 +573,7 @@ c
  320  format('  From ', i5, ' To ', i5, 10f8.2,(/,10f8.2))             
 
  330  format(
-     1  '  RtnXcuP; FYI structure ID ', a12,' nd = ', i5, ' iuse = ',i5,/
+     1  '  RtnXcuP; FYI structure ID ', a12,' nd = ', i5,' iuse = ',i5,/
      1  '          is a carrier because irturn(iuse) = ',i5,/
      1  '          Therefore average efficiency = ', f8.2, ' is used')
 c

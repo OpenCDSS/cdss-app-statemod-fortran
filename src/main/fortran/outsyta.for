@@ -66,7 +66,7 @@ c
      6   ' Target                 ',' One Fill Constraint    ',
      8   ' Decree Limit           ',' River Inflow           ',
      2   ' River Release          ',' River Divert           ',
-     2   ' River by Well          ',' River Outflow          ',                          ',
+     2   ' River by Well          ',' River Outflow          ',
      4   '                        ','                        ',
      6   '                        ','                        ',
      8   '                        ','                        ',
@@ -86,7 +86,7 @@ c
 c rrb 99/08/16; Revise reservoir to include well and stream data
 c     nres = 21
 c
-c rrb 2005/11/29; River and CArrier Loss
+c rrb 2005/11/29; River and Carrier Loss
 c     nres = 24
 c     nres = 26
 c
@@ -315,4 +315,3 @@ C
 
       stop 
       END
-

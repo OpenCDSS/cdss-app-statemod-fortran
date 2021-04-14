@@ -23,7 +23,7 @@ c_________________________________________________________________NoticeEnd___
 c       
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Resrg1P; Same as Resrg1 but it limits storage by the 
 c                amount released to an T&C plan iva an operating rule
@@ -33,7 +33,7 @@ c       Update History
 c
 c rrb 04/10/96; added special logic for out of priority storage 
 c               right (ityrsr(l2) = -1)
-c     		  Revised to distribute one water right to many owners
+c               Revised to distribute one water right to many owners
 c rrb 05/012/01; Revised to allow re storage of previously released
 c                reusable water 
 c
@@ -55,18 +55,18 @@ c                       on available space in each
 c
 c
 c _________________________________________________________
-c	Dimensions
+c     Dimensions
 c
       include 'common.inc'
-      character cwhy*24
+      character cwhy*45
 c
 c _________________________________________________________
 c
 c               Step 1; Initialize
 c
 c
-c		iout = 0 no details
-c		       1 details
+c               iout = 0 no details
+c                      1 details
 c                      2 summary      
       iout=0
       if(ichk.eq.130) iout=2
@@ -253,9 +253,9 @@ c               b. Check reservoir roundoff
       call chekres(nlog, maxres, 1, 18, iyr, mon, nr, nowner,
      1             curown,cursto,cresid)
 c
-c		c. More checks      
+c               c. More checks
       if(iout.eq.1) then
-        write(nlog,*) '  Resrg1P; mon, actaf', mon, actaf, 
+        write(nlog,*) '  Resrg1P; mon, actaf', mon, actaf,
      1    curown(1), curown(2)
       endif
 c _________________________________________________________
@@ -276,7 +276,7 @@ c               Formats
      1  '    iwhy Comment'/,
      1  ' Resrg1P;', 3(' ____'), 1x, '____________', 8(' _______'),
      1  12(' _______'), ' ________________________')
-  150   format(9x, 3I5,1x, a12,8i8, 11F8.0, i8, 1x, a24)
+  150   format(9x, 3I5,1x, a12,8i8, 11F8.0, i8, 1x, a45)
   160   FORMAT(/, 80('-'),/,' Resrg1P; Avail in')
   170   FORMAT(/,' Resrg1P; Avail out')
   180   format(10f8.0)

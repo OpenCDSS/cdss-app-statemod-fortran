@@ -22,7 +22,7 @@ c
      1                    nowner,curown,cursto,cresid)
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c
 c       Chekres; it checks reservoir storage total vs account totals
@@ -36,10 +36,10 @@ c rrb 02/01/15; Dimension clean up
 c
 c _____________________________________________________________
 c
-c	Documentation
-c	      small1 = small value used for roundoff issues (1.0 af)
-c       small2 = small value used for roundoff issues (0.1 af)
-c       icx	= calling routine (100 + opr rule or 200 + std rule)
+c       Documentation
+c             small1 = small value used for roundoff issues (1.0 af)
+c             small2 = small value used for roundoff issues (0.1 af)
+c                icx = calling routine (100 + opr rule or 200 + std rule)
 c_______________________________________________
 c
 c       Dimensions
@@ -66,9 +66,9 @@ cx      dimension subtyp(50)
      1    ' ',      ' ',       ' ',        ' ',        ' '/
 
 c _________________________________________________________
-c		Step 1; Initialize
+c              Step 1; Initialize
 c
-        iout=0
+        iout=1
 c
 c rrb 2018/07/29; Check for operating rule limit
         if(maxoprin.gt.60) goto 900
@@ -89,7 +89,7 @@ cx      small2=0.1
           iri=nowner(nr)
           ire=nowner(nr+1)-1
 c
-c rrb 2020/07/28; Additoinal detailed output        
+c rrb 2020/07/28; Additional detailed output        
         if(iout.eq.1) then
           write(nlog,*) ' '
           write(nlog,*) ' ChekRes; iyr, mon, nr, cresid(nr),iri,ire'
@@ -126,6 +126,13 @@ c               sum of accounts
 c
 c               Problem
           if(x.gt.small2) then     
+            ! TODO smalers 2021-04-07 print out specific message during troubleshooting
+            ! - use 5-digit label starting with 99 for troubleshooting
+            if(iout.eq.1) then
+              write(nlog,99001) x, small2
+99001           format(/,' Checkres; Problem x (',f12.2,
+     +          ') > small2(',f12.2,')')
+            endif
             write(nlog,100) 'Problem ', cin, subtyp(isub), 
      1        x, iyr, mon, nr, cresid(nr), sum, cursto(nr), x
 
@@ -149,7 +156,7 @@ c
 
 
  100    format(/,
-     1 '  Chekres; ',a8, 1x, a6, ' subrountine ', a12,/
+     1 '  Chekres; ',a8, 1x, a6, ' subroutine ', a12,/
      1 '           Delta = ', f10.3,//
      1 '  Chekres; Input data:',/
      1 '  Iyr  Mon   Nr Cresid               Sum      Cursto',

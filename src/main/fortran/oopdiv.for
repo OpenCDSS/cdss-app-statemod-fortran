@@ -58,7 +58,7 @@ c        iopsou(2,l2)   Not used
 c        iopsou(3,l2)   source 2 Junior diversion or reservoir
 c                       water right
 c
-c	 oprpct(l2)     Percent of the source water right to be bypassd
+c	 oprpct(l2)     Percent of the source water right to be bypassed
 c	
 c
 c        iopdes(1,l2)   if > 0 diversion ID 

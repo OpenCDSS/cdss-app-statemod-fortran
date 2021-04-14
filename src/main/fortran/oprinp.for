@@ -178,7 +178,7 @@ c rrb 00/02/21; Type 19 Split Channel started
 c rrb 99/11/23; Type 18 Rio Grande Compact for Conejos 
 c rrb 99/09/14; Type 17 Rio Grande Compact for Rio Grande
 c rrb 99/08/30; Type 16 Direct Flow Storage added
-c rrb 99/05/24; Type 15 Interruptable supply added
+c rrb 99/05/24; Type 15 Interruptible supply added
 c rrb 99/08/10; Type 14 Carrier with an annual limit on diversion
 c                       when iopsou(2,k) .gt. 1)
 c rrb 99/08/30; Began to simplify input with type 15 and 16 approach
@@ -206,7 +206,7 @@ c               Type 12 Reoperation right
 c               Type 13 From River to Instream Flow constrained by
 c                       an Indexed flow
 c               Type 14 Same as 11 but demands may be constrained
-c               Type 15 Interruptable supply & alternate point
+c               Type 15 Interruptible supply & alternate point
 c               Type 16 Direct flow storage
 c               Type 17 Rio Grande Compact for Rio Grande
 c               Type 18 Rio Grande Compact for Conejos
@@ -258,7 +258,7 @@ cx      data ntype/50*0/
      1  'Release to Target',           'General Replacement Res',
      1  'Carrier to Ditch or Res',
      1  'Reoperate',                   'La Plata Compact',
-     1  'Carrier with Const Demand',   'Interruptable Supply',
+     1  'Carrier with Const Demand',   'Interruptible Supply',
      1  'Direct Flow Storage',         'Rio Grande Compact - RG',
      1  'Rio Grande Compact - CR',     'Split Channel',
      1  'San Juan RIP',            
@@ -450,7 +450,7 @@ c		Note 13 (itype) is the file # in GetFn
       k=0
       iwarn1=0
 c ______________________________________________________________________
-c		Detalied headers
+c		Detailed headers
       if(iout.eq.1) write(nlog,1260)
       if(iecho.eq.1) write(nchk,1260)     
 c ______________________________________________________________________
@@ -907,7 +907,7 @@ c               For type 13, index River Flow
         if (ityopr(k).eq.13) goto 1013
 c               For type 14, Carrier with a Constrained Demand
         if (ityopr(k).eq.14) goto 1014
-c               For type 15, interruptable supply, process in 1 place
+c               For type 15, interruptible supply, process in 1 place
         if(ityopr(k).eq.15) goto 1015
 c               For type 16, direct flow storage, process in 1 place
         if(ityopr(k).eq.16) goto 1016
@@ -2365,12 +2365,12 @@ c		Set Source 1 and type (iopdesr = 1 = diversion water right
             iopsou(1,k) = -iops1
           endif  
 c
-c		Set operating right admin number to water right value 		
+c		Set operating right admin number to water right value 
           if(iops1.gt.0) then            
             if(abs(rdvnk(iops1)-ropnk(k)).gt. small) then          
               ropnk1=ropnk(k)
               ropsrc=rdvnk(iops1)
-              ropnk(k)=rdvnk(iops1)                                                     
+              ropnk(k)=rdvnk(iops1)
               iwarnr=1
               iwarno=1
             endif  
@@ -2406,7 +2406,7 @@ c		Set Source 1 and type (iopSour = reservoir water right)
             iopsou(1,k) = -iops1
           endif  
 c
-c		Set operating right admin number to water right value 		
+c		Set operating right admin number to water right value
           if(iops1.gt.0) then
             if(abs(rrsnk(iops1)-ropnk(k)).gt. small) then
               ropnk1=ropnk(k)        
@@ -2661,7 +2661,7 @@ c               e. Check that the source stream gage is upstream
 c                  of the destination ISF
 c	                 trying to find destination (idcdD)
 c                  downstream of  source (iscdS) 
-c rrb 2007/11/19; Correction iops1 is the river node	
+c rrb 2007/11/19; Correction iops1 is the river node
 c       iss=irusta(iops1)
 cx      iss=iops1
         ndns=ndnnod(iscdS)
@@ -2686,7 +2686,7 @@ c		f. Detailed output
      1      cdivtyp(k), iopdesR(k)
         endif
         
-c		
+c
         goto 1190
 c        
 c _________________________________________________________
@@ -2804,12 +2804,12 @@ c               is set properly
           goto 9999
         endif        
 c
-c		Set operating right admin number to water right value 		
+c		Set operating right admin number to water right value
         if(iops1.gt.0) then
           if(abs(rdvnk(iops1)-ropnk(k)).gt. small) then          
             ropnk1=ropnk(k)
             ropsrc=rdvnk(iops1)
-            ropnk(k)=rdvnk(iops1)                                                     
+            ropnk(k)=rdvnk(iops1)
             iwarnr=1
             iwarno=1
           endif  
@@ -2904,11 +2904,11 @@ c _________________________________________________________
 c
  1015   continue
 c 
-c      Type 15; Interruptable supply source
+c      Type 15; Interruptible supply source
 c                destination = instream flow
 c                source read = used
 c                source 1 = 1 source stream used as an on/off switch
-c                source 3 = 2 water right with an interruptable supply
+c                source 3 = 2 water right with an interruptible supply
 c                source 2 = 2 stream discharge (part of on/off switch)
 c                source 4 = 4 code 0 transfer diversion 1 transfer CU
 
@@ -2935,7 +2935,7 @@ c			itype = 1 Instream Flow
 c
 c ---------------------------------------------------------
 c               b. Find source 1 (iopsou(1,k)) to be a Stream ID
-c                  for the interruptable supply switch
+c                  for the interruptible supply switch
 c			itype = 0 Stream ID
         istop=0
         itype=0
@@ -3700,8 +3700,8 @@ c                 iifrsw .eq. 0 do not calculate demand
 c                 iifrsw = -1 do not operate but do calculate demand      
             iifrsw(nri)=-1
             goto 1190                                                   
-          endif                                                          
-        end do  
+          endif
+        end do
 c
 c		Remove error warning. OK if there is no isf right 
 c               for the downstream call.        
@@ -4079,7 +4079,7 @@ c		j. Check the return type matches the data provided
          ipTC=iopsou(3,k)
 c        write(nlog,*) ' Oprinp; iptc, iprf(iptc)', iptc, iprf(iptc)
          call chkPrf(nlog, ipTC, iprf(ipTC), ityopr(k), iopsou(4,k), 
-     1     maxPlan, maxRtnPP, nrtnPP, pcttotPP, iprob,ioprsw(k), cidvri)           
+     1     maxPlan, maxRtnPP, nrtnPP, pcttotPP, iprob,ioprsw(k), cidvri)
          if(iprob.eq.1) then
            write(nlog,1262)  ityopr(k),cidvri, iopsou(4,k)
            goto 9999
@@ -4494,7 +4494,7 @@ c		k. Check the return type matches the data provided
        if(NAs2.eq.0 .and. iopsou(4,k).gt.0) then
          ipTC=iopsou(3,k)
          call chkPrf(nlog, ipTC, iprf(ipTC),ityopr(k), iopsou(4,k), 
-     1     maxPlan, maxRtnPP, nrtnPP, pcttotPP, iprob,ioprsw(k), cidvri)           
+     1     maxPlan, maxRtnPP, nrtnPP, pcttotPP, iprob,ioprsw(k), cidvri)
          if(iprob.eq.1) then
            write(nlog,1262)  ityopr(k),cidvri, iopsou(4,k)
            goto 9999
@@ -4917,7 +4917,7 @@ c
 c rrb 2015/03/07; Allow new plan type
             if(iplntyp(ndP).eq.1 .or. iplntyp(ndP).eq.2 .or.
 cx   1         iplntyp(ndP).eq.11) iok=0
-     1         iplntyp(ndP).eq.11 .or. iplntyp(ndP).eq.13) iok=0          
+     1         iplntyp(ndP).eq.11 .or. iplntyp(ndP).eq.13) iok=0
             if(iok.eq.1) then
               write(nlog,12661) ityopr(k),cidvri, ciopde, iplntyp(ndP) 
               goto 9999
@@ -8566,7 +8566,7 @@ cx        iopDesr(k) = 1
 c
 c rrb 2007/03/21; Set diversion and stream location for testing
           ndS=idivco(1,iops1)
-          isS=idvsta(ndS)		                        
+          isS=idvsta(ndS)
         endif  
       endif  
 c
@@ -8597,7 +8597,7 @@ c               (iopdesr = -1 = reservoir water right
 c
 c rrb 2007/03/21; Set reservoir and stream location for testing
           ndS=iresco(1,iops1)
-          isS=irssta(ndS)		                                  
+          isS=irssta(ndS)
         endif  
       endif  
 c
@@ -9338,7 +9338,7 @@ c               c1. Find Source a plan (type 7)
 c		   Note itype =7 for a plan
 c                     istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
-c		        iacc=1  Allow souce 2 to represent the
+c		        iacc=1  Allow source 2 to represent the
 c			         month when limits are reset
         itype=7
         istop=0
@@ -12171,7 +12171,7 @@ c rrb 2015/03/30
  
  1218 format(/, 72('_'),/,
      1 '  Oprinp; Problem with Operational right           = ',a12,/
-     1 '          Operation type                           =',  i3,/     
+     1 '          Operation type                           =',  i3,/
      1 '          Variable Oprlimit                        = ',f5.0,/
      1 10x,'Which indicates water right sharing is occurring',/
      1 10x,'This capability is not currently active',/
@@ -12179,7 +12179,7 @@ c rrb 2015/03/30
      
  1220 FORMAT(/, 72('_'), /,
      1 '  Oprinp; Warning for Operating ID                 = ', a12,/
-     1 '          Operation type                           = ', i5,/     
+     1 '          Operation type                           = ', i5,/
      1 10x,'It is Turned off because Variable efficiency ',/
      1 10x,'(iefmfax) is off',/
      1 10x,'Called at Location ', i5)
@@ -12248,7 +12248,7 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 10x,'The destination ID = ', a12,' and the',/
      1 10x,'The Plan ID        = ', a12,' and the',/
      1 10x,'Plan Type          = ',i4,11x,' are inconsistent.',/
-     1 10x,'Note: A T&C or Well Aug Plan should be type:     1 or 2',/     
+     1 10x,'Note: A T&C or Well Aug Plan should be type:     1 or 2',/
      1 10x,'      A Reservoir Reuse Plan should be type:     3 or 5',/
      1 10x,'      A Non Reservoir Reuse Plan should be type: 4 or 6',/
      1 10x,'      A Transmountain Reuse Plan should be type: 7',/
@@ -12330,7 +12330,8 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 'Problem with Operating right type = ',i2,' ID = ',a12,/
      1 10x,'Destination = ',a12,' a ', a9,/
      1 10x,'Source 2 = ',a12,/     
-     1 10x,'A destination = Reservoir should have Source 2 = Diversion',/
+     1 10x,'A destination = Reservoir should have ',/
+     1 'Source 2 = Diversion',/
      1 10x,'Revise the operating rule data')
      
  1260 format(/, 72('_'),/
@@ -12419,7 +12420,7 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 10x,'When the variable Oprlimit = 2, 4, 7 or 9',/
      1 10x,'The operating rule specified in row 4 should be',/
      1 10x,'a type 47 operating rule',/
-     1 10x,'Recommend you revise the operating rule provided in row 4.') 
+     1 10x,'Recommend you revise the operating rule provided in row 4.')
               
  1267 format(/, 72('_'),/, '  Oprinp; ',
      1'Problem with Operating right type = ',i2,' ID = ', a12,/
@@ -12626,7 +12627,7 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 '          specified.',/
      1 '          Recommend you revise the operating rule file.')
      
- 1300 format(/,72('_'),/                                                          
+ 1300 format(/,72('_'),/
      1 '  Oprinp; Problem with Operating Right ', a12, ' Type = ',i2,/
      1 '          The destination ID = ',a12, ' cannot be found',/
      1 '          Recommend you confirm it exists and is a structure',/

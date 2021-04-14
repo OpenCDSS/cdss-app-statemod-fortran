@@ -159,7 +159,7 @@ c
 c     write(6,*)    '  RtnSecWP;'
 c     write(io99,*) '  RtnSecWP;'
 c
-c		Detalied Output      
+c		Detailed Output      
       iout=0
       ioutiw=0
 cx    if(ichk.eq.206) iout=2

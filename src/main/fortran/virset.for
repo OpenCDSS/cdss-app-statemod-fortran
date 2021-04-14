@@ -312,9 +312,9 @@ c               Diversion to Recharge
 
 c
 c rrb 2006/09/11; New CU Approach
-          dIwrSF(nd)=diwrx(nd)*AreaSF(nd)	
-          dIwrSS(nd)=diwrx(nd)*AreaSS(nd)	
-          dIwrGF(nd)=diwrx(nd)*AreaGF(nd)	
+          dIwrSF(nd)=diwrx(nd)*AreaSF(nd)
+          dIwrSS(nd)=diwrx(nd)*AreaSS(nd)
+          dIwrGF(nd)=diwrx(nd)*AreaGF(nd)
           dIwrGS(nd)=diwrx(nd)*AreaGS(nd)
           
         end do
@@ -375,9 +375,9 @@ c rrb 2006/08/01; Add Loss
                 rloss(nu)=0.0                
 c
 c rrb 2006/09/11; New CU Approach
-                dIwrSF(nu)=diwrreq(nu)*AreaSF(nu)	
-                dIwrSS(nu)=diwrreq(nu)*AreaSS(nu)	
-                dIwrGF(nu)=diwrreq(nu)*AreaGF(nu)	
+                dIwrSF(nu)=diwrreq(nu)*AreaSF(nu)
+                dIwrSS(nu)=diwrreq(nu)*AreaSS(nu)
+                dIwrGF(nu)=diwrreq(nu)*AreaGF(nu)
                 dIwrGS(nu)=diwrreq(nu)*AreaGS(nu)
 c               write(nlog,*) ' Virset;', mon, nu, diwrreq(nu), 
 c    1            AreaSF(nu), diwrSF(nu)

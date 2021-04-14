@@ -26,7 +26,7 @@ c       Mdainp; It reads in time series data (streamflow, etc.)
 c		Called by Execut and Virgen:
 c		  - Once to open files and read 1x/year data
 c		    (I12=0)
-c		  - Once every year thereafter		  
+c		  - Once every year thereafter
 c		    (I12=12)
 c		
 c
@@ -129,7 +129,7 @@ c
 c rrb 2006/03/21; Read Rio Grande forecast monthly (*.rgf)
 c
 c _________________________________________________________
-c		Dimensions
+c              Dimensions
       include 'common.inc'
       dimension x(12), y(12), iwarnw(maxdivw)
       character rec3*3, rec40*40, rec12*12, rec12b*12, rec132*132
@@ -139,7 +139,7 @@ c
 c jhb 2014/06/26
       character(len=256) rec256x
 c _________________________________________________________
-c		Step 1; Initialize
+c              Step 1; Initialize
 c
       nscrn=6
 c
@@ -153,26 +153,26 @@ cx    write(nscrn,*) ' Mdainp.for'
       idyyr=0
       iproblem=0
 c
-c		          iouts = 1 print stream data read
+c              iouts = 1 print stream data read
 c             ioutGx = 1 print stream gain data
-c		          ioutd = 1 print demand and iwr data      
-c		                  2 print demand data summary
-c		                  3 print *.ddh structures found in *.dds
-c		          ioutw = 1 print well data
-c		          	2 print summary of well only data reads
-c		          ioutx = 1 print import data
-c		          iouti = 1 print instream flow data
-c		          ioutr = 1 print reservoir data
-c		          ioutEv= 1 print evaporation data
-c		          ioutPpt=1 print evaporation data
-c		          ioutRgS=1 print Rio Grande Spill data
-c		          ioutRgF=1 print Rio Grande Spill Forecast data
-c		          ioutSM =1 print soil moisture
-c		          	2 soil moisture summary from station file
-c		          	3 soil moisture summary from *.ipy file
-c		          ioutPrf=1 print Plan return flow data
-c		          ioutURM=1 print *.urm details
-c		        1 print *.urm summary
+c              ioutd = 1 print demand and iwr data      
+c                      2 print demand data summary
+c                      3 print *.ddh structures found in *.dds
+c              ioutw = 1 print well data
+c                      2 print summary of well only data reads
+c              ioutx = 1 print import data
+c              iouti = 1 print instream flow data
+c              ioutr = 1 print reservoir data
+c             ioutEv = 1 print evaporation data
+c            ioutPpt = 1 print evaporation data
+c            ioutRgS = 1 print Rio Grande Spill data
+c            ioutRgF = 1 print Rio Grande Spill Forecast data
+c             ioutSM = 1 print soil moisture
+c                      2 soil moisture summary from station file
+c                      3 soil moisture summary from *.ipy file
+c            ioutPrf = 1 print Plan return flow data
+c            ioutURM = 1 print *.urm details
+c                      1 print *.urm summary
       ioutS=0
       ioutGx=0
       ioutX=0
@@ -210,12 +210,12 @@ cx      if(istart.eq.1) then
       iprintS=0
        
 c
-c     		iwarnU=0 warn user about unit issues but go on 
-c		iwarnU=1 warn user about unit issues and stop
-c		iwarnDT  counter for diversion warnings
-c		iwarnWT  counter for well warnings
-c		iwarnISt counter for *.ipy file structure warning
-c		iwarnISp counter for *.ipy file sprinkler warning
+c     iwarnU = 0 warn user about unit issues but go on 
+c     iwarnU = 1 warn user about unit issues and stop
+c     iwarnDT  counter for diversion warnings
+c     iwarnWT  counter for well warnings
+c     iwarnISt counter for *.ipy file structure warning
+c     iwarnISp counter for *.ipy file sprinkler warning
       iwarnU=0
       iwarnDT=0
       iwarnWT=0
@@ -236,7 +236,7 @@ c
 c rrb 01/01/03; Recognize other baseflow types
       ibasef=0
       if(ioptio.eq.1 .or. ioptio.eq.9) then 
-	      ibasef=1
+        ibasef=1
       endif
       
       if(ioutSM.eq.2 .or. ioutSM.eq.3) write(nlog,1323)
@@ -257,7 +257,7 @@ c		Branch if reading every month
         
 c
 c               1x/run Set warning on negative diversions (imports)
-	  do nu=1,maxuse
+      do nu=1,maxuse
         iwarn(nu) = 0
       end do
 c
@@ -269,13 +269,13 @@ c
 c _________________________________________________________
 C        1x/Run Initialize imports 1x/run
 c
-	  DO ip=1,maxplan
-	    do im=1,13
-	      PImportX(im,ip)=0.0
-	    end do  
-	  end do
-	  
-	  iwarnp=0
+          DO ip=1,maxplan
+            do im=1,13
+              PImportX(im,ip)=0.0
+            end do
+          end do
+
+          iwarnp=0
  
 C
 c _________________________________________________________
@@ -385,24 +385,24 @@ c		  to simplify control file reads
 c
 c
       if(numeva.eq.0 .and. numres.gt.0) then
-      	write(nlog,*) ' '
-      	write(nlog,*)
+        write(nlog,*) ' '
+        write(nlog,*)
      1    '  Mdainp; Problem reservoir data but no evap data'
         write(nlog,*) 
      1    '  Mdainp; or the POR does not match the the control file'
-	      goto 9999
+        goto 9999
       endif
 c
 c _________________________________________________________
 C        Step X; 1x/Run Open RUNOFF FILE
 C
       if(ibasef.eq.0) then
-	      write(nlog,103)
-c	      write(nscrn,103)
+        write(nlog,103)
+c       write(nscrn,103)
  103    format(/,72('_'),/
      1 '  Mdainp; Base Streamflow File (*.rim or *.xbm) ')
       else
-	      write(nlog,113)
+        write(nlog,113)
 c       write(nscrn,103)
  113    format(/,72('_'),/
      1 '  Mdainp; Historic Streamflow File (*.rih) ')
@@ -585,12 +585,12 @@ c ---------------------------------------------------------
 c rrb 2006/03/02; Treat all factors consistently
         if(pfacto .gt. small) then           
           do i=1,12
-	          preprt(i,ipr) = x(i)*pfacto
-	        end do
+            preprt(i,ipr) = x(i)*pfacto
+          end do
         else
           do i=1,12
-	          preprt(i,ipr) = x(i)
-	        end do
+            preprt(i,ipr) = x(i)
+          end do
         endif
       end do
 C
@@ -608,7 +608,7 @@ c                      = 1 constant data
 c     write(nlog,*) ' Mdainp; Getting annlua evap data'
 c ---------------------------------------------------------
       DO IEV=1,NUMEVA
-      	read (2,532,end=570,err=928) cevaid(iev),(x(i),i=1,12)
+        read (2,532,end=570,err=928) cevaid(iev),(x(i),i=1,12)
         if(ioutEv.eq.1) write(nlog,'(i5,5x,a12,12f8.3)')
      1    iev, cevaid(iev),(x(i),i=1,12)
 c
@@ -619,16 +619,16 @@ c ---------------------------------------------------------
         
         if(efacto.gt.0) then
           do i=1,12
-	          evaprt(i,iev) = x(i)*efacto
-	        end do
-    	  else
-	        do i=1,12
+            evaprt(i,iev) = x(i)*efacto
+          end do
+        else
+          do i=1,12
 c
-c rrb 2005/6/05/02; Correction	  
-cr	        evaprt(i,iev) = x(i)*efacto
-	          evaprt(i,iev) = x(i)
-	        end do
-	      endif 
+c rrb 2005/6/05/02; Correction
+cr          evaprt(i,iev) = x(i)*efacto
+            evaprt(i,iev) = x(i)
+          end do
+        endif
       end do
 
       close (2)
@@ -672,47 +672,47 @@ c
 c ---------------------------------------------------------
 
          DO 670 ND=1,NUMDIV
-	    NUI=NDUSER(ND)
-	    NUE=NDUSER(ND+1)-1
-	    IF(NUI.GT.NUE) GO TO 670
-	    DO 660 NU=NUI,NUE
+           NUI=NDUSER(ND)
+           NUE=NDUSER(ND+1)-1
+           IF(NUI.GT.NUE) GO TO 670
+           DO 660 NU=NUI,NUE
 c
 c               Read annual data (12 values for all years)
 c
 c rrb 00/06/16; Allow type 3 and 4 to be IWR data
 c          IF(IDVCOM(NU).NE.2) GO TO 660
 c
-	    if(idvcom(nu).eq.2 .or. idvcom(nu).eq.4) then
+           if(idvcom(nu).eq.2 .or. idvcom(nu).eq.4) then
              read (55,532,end=680,err=928) cistat,(diverm(i),i=1,12)
 c
 c rrb 2006/03/20; Adjust character string to left     
-             cistat=adjustl(cistat)	    
+             cistat=adjustl(cistat)
              IF(IDIVSW(ND).EQ.0) GO TO 660
-	      if(cistat.ne.cdivid(nd)) go to 700
+             if(cistat.ne.cdivid(nd)) go to 700
 c
 c ---------------------------------------------------------
 C
-	      IF(DFACTOA.gt.small) then  
-	        DO I=1,12
-                DIVERM(I)=DIVERM(I)/dfactoA/MTHDAY(I)
-	        end do
-	      endif
+             IF(DFACTOA.gt.small) then  
+               DO I=1,12
+                 DIVERM(I)=DIVERM(I)/dfactoA/MTHDAY(I)
+               end do
+             endif
 c
 c ---------------------------------------------------------
 C
 c               Data provided as annual total demand (idvcom(nu) = 2)
-	      if(idvcom(nu).eq.2) then
-	        DO I=1,12
-		  DIVER(I,NU)=DIVERM(I)
-		  diverir(i,nu)=diverm(i)*(diveff(i,nu)/100.)
-	        end do
-	      endif
+             if(idvcom(nu).eq.2) then
+               DO I=1,12
+                 DIVER(I,NU)=DIVERM(I)
+                 diverir(i,nu)=diverm(i)*(diveff(i,nu)/100.)
+               end do
+             endif
 c
 c
 c ---------------------------------------------------------
 c rrb 00/06/16; Data provided as annual IWR (idvcom(nu) = 4)
-	      if(idvcom(nu).eq.4) then
-	        DO Im=1,12
+             if(idvcom(nu).eq.4) then
+               DO Im=1,12
 c
 c               b. Daily capability
                  if(iday.eq.0) then
@@ -720,28 +720,27 @@ c               b. Daily capability
                  else
                    fac=factor
                  endif      
-	      
 
-		   if(diveff(im,nd).gt.small) then
-		     diverir(im,nu) = diverm(im)  
-		     DIVER(Im,NU)=DIVERM(Im)/(diveff(im,nu)/100.)
-		   else 
+                   if(diveff(im,nd).gt.small) then
+                     diverir(im,nu) = diverm(im)  
+                     DIVER(Im,NU)=DIVERM(Im)/(diveff(im,nu)/100.)
+                   else
 c
 c rrb 00/08/02; Data check
-		     if(diverm(im).gt. small) then
-                     c = dfactoI*mthday(im) 		    
-		       write(nlog,757) cdivid(nd),divnam1(nd), 
+                     if(diverm(im).gt. small) then
+                     c = dfactoI*mthday(im)
+                       write(nlog,757) cdivid(nd),divnam1(nd),
      1                 iyr, im, diverm(im)*c, diveff(im,nd)
-		       goto 9999
-		     else
-		      diverir(im,nu) = 0.0    
-		      diver(im,nu)=0.0
-		    endif
-		  endif
-	        end do
-	      endif
+                       goto 9999
+                     else
+                      diverir(im,nu) = 0.0
+                      diver(im,nu)=0.0
+                    endif
+                  endif
+                end do
+              endif
 
-	    endif
+            endif
   660     CONTINUE
   670   CONTINUE
 C
@@ -767,7 +766,7 @@ C
   720   continue
 c
 c ---------------------------------------------------------
-c		Endif for *.dda file  
+c     Endif for *.dda file
       endif
 c
 c rrb 99/09/15; Allow instream flow to provide monthly data
@@ -782,7 +781,7 @@ c
 c rrb 00/04/13; Allow ireach to control opening of file *.ifm 
 c     if(monisf.ge.2) then
       if(monisf.ge.2 .or. ireach.ge.2) then 
-	write(nlog,801)
+        write(nlog,801)
 c       write(nscrn,,801)
  801    format(/,72('_'),/
      1  '  Mdainp; Instream Flow Demand - Monthly (*.ifm) ')
@@ -799,7 +798,7 @@ c
 c rrb 2005/12/16; Allow TS file units to override control file units
 c       call chekpor(iin, 25, 99, 0, ioptio, numifr, iystr,
 c    1               imstr, 0, 17, c, cyr1,maxfn, infile,fpath1,rec256)
-	call chekpor(
+        call chekpor(
      1    iin, 25, 99, 0, ioptio, numifr, iystr,
      1    imstr, 0, 17, ffactoM, cyr1,maxfn, 
      1    infile,idummy, nIfmX, fpath1, rec256)
@@ -878,10 +877,10 @@ c         in which case we should stop the program
 c       or a data line,
 c         in which case comment() has backspaced the file
 c         and the line is read again below
-	    do 730 nf=1,maxifr
+            do 730 nf=1,maxifr
 c
 c		Checck for comments in dat
-c		Exit if EOF (2) or Error (3)	
+c		Exit if EOF (2) or Error (3)
         call comment(55, nlog, iocode, nchk, 0)
 c jhb this is a mistake should jump OUT of the loop
 c        if(iocode.eq.2) goto 730
@@ -889,26 +888,26 @@ c     jump to newly added 740 continue statement...
         if(iocode.eq.2) goto 740
         if(iocode.eq.3) goto 928
 c
-	      read (55,532,end=760,err=928) cistat,(diverm(i),i=1,12)
-          cistat=adjustl(cistat)	      
+        read (55,532,end=760,err=928) cistat,(diverm(i),i=1,12)
+          cistat=adjustl(cistat)
 c
 c----------------------------------------------------------
 c
 c               Find station associated with this data
-	      ix=0
-	      cCallBy='Mdainp *.ifa'
-	      call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
-	        
+              ix=0
+              cCallBy='Mdainp *.ifa'
+              call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
+
         if(ix.eq.0 .or. iifcom(ix).ne.2) then
           write(nlog,1311) cistat, 'Annual ', 0, iifcom(ix)
           goto 9999            
         endif  
 c
 c----------------------------------------------------------
-c		Echo input after sifting through appropriate data	  
-	      if(iouti.eq.1) then
-	        write (nlog, 534) nf,cistat,(diverm(i),i=1,12)
-	      endif
+c		Echo input after sifting through appropriate data
+              if(iouti.eq.1) then
+                write (nlog, 534) nf,cistat,(diverm(i),i=1,12)
+              endif
 c
 c----------------------------------------------------------
 c
@@ -916,43 +915,43 @@ c               Set flowr to correct station
 c               Note, a negative is a forecast
 c
 c rrb 00/03/16; Carry forecast to end of year
-	      ifor=0
-	      forc1=0.0
+              ifor=0
+              forc1=0.0
 c
 c----------------------------------------------------------
 c
-	      do i=1,12
-	        IF(diverm(i).GE.-1*small) then
-	        	flowr(i,ix)=diverm(i)
+              do i=1,12
+                IF(diverm(i).GE.-1*small) then
+                  flowr(i,ix)=diverm(i)
 c
 c rrb 2005/09/20; Save for Type 13 (La Plata Compact) and
 c                 Rio Grande compact
-		        flowrX(i,ix)=diverm(i)		
-		        forecast(i,ix)=0.0
+                  flowrX(i,ix)=diverm(i)
+                  forecast(i,ix)=0.0
 c
 c rrb 00/03/15; Carry forecast to end of year
-		        if(ifor.eq.1) then
-		          flowr(i,ix) = 0.0
-		          forecast(i,ix)=forc1 
-		        endif
-	        else
-		        flowr(i,ix)=0.0
-		        forecast(i,ix)=diverm(i)
-		        ifor=1
-		        forc1=diverm(i)
-c               write(nlog,*) '  Mdainp; ix, forecast ',ix,forecast(i,ix)
-	        endif
-	      end do
+                  if(ifor.eq.1) then
+                    flowr(i,ix) = 0.0
+                    forecast(i,ix)=forc1
+                  endif
+                else
+                  flowr(i,ix)=0.0
+                  forecast(i,ix)=diverm(i)
+                  ifor=1
+                  forc1=diverm(i)
+c                 write(nlog,*) '  Mdainp; ix, forecast ',ix,forecast(i,ix)
+                endif
+              end do
 c
 c----------------------------------------------------------
 c
-	          if(ffactoA.gt.small) then
-	            do i=1,12
-		            flowr(i,ix)=flowr(I,ix)/ffactoA/mthday(I)
-		            forecast(i,ix)=forecast(i,ix)/ffactoA/mthday(i)
-	            end do
-	          endif
-c	        endif
+              if(ffactoA.gt.small) then
+                do i=1,12
+                  flowr(i,ix)=flowr(I,ix)/ffactoA/mthday(I)
+                  forecast(i,ix)=forecast(i,ix)/ffactoA/mthday(i)
+                end do
+              endif
+c             endif
  730    continue
 c jhb corrected the iocode=2 case...
  740    continue
@@ -970,8 +969,8 @@ C        Setp X; 1x/Run Open WELL STRUCTURE DEMAND DATA
 C
 C
       if(iwell.gt.0) then
-	      write(nlog,802)
-c	      write(nscrn,,802)
+        write(nlog,802)
+c       write(nscrn,,802)
  802    format(/,72('_'),/
      1  '  Mdainp; Well Structure Demand - Monthly (*.wem) ')
 
@@ -985,7 +984,7 @@ c
 c rrb 2005/12/16; Allow TS file units to override control file units
 c       call chekpor(iin, 9, 99, 0, ioptio, numdivw, iystr,
 c     1               imstr, 0, 10, c, cyr1, maxfn, infile,fpath1,rec256)
-	      call chekpor(iin, 9, 99, 0, ioptio, numdivw, iystr,
+        call chekpor(iin, 9, 99, 0, ioptio, numdivw, iystr,
      1               imstr, 0, 10, wfacto, cyr1, maxfn, infile,idummy,
      1               nWemX, fpath1, rec256)
 c
@@ -1059,7 +1058,7 @@ c
         cfac=float(iabs(interv))
         cfac=amax1(cfac, 100.0)
       else
-	      cfac=1.0
+        cfac=1.0
       endif
 c
 c     write(nlog,*) '  Mdainp; cfac = ', cfac      
@@ -1074,9 +1073,9 @@ c
 c
 c rrb 03/18/96; make number of return intervals a variable
 c rrb 05/28/98; allow return id to not be the array counter
-	     if(interv.gt.0) then
+       if(interv.gt.0) then
 c        read (55,*,end=880,err=928) idly,(dlyrat(i,idl),i=1,interv)
-	       read (55,*,end=880,err=880)
+         read (55,*,end=880,err=880)
      1     irtnid(idl),(dlyrat(i,idl),i=1,interv)
      
          if(ioutURM .eq.1) then
@@ -1089,15 +1088,15 @@ c        read (55,*,end=880,err=928) idly,(dlyrat(i,idl),i=1,interv)
          endif
 c
 c rrb 99/10/16; Check for blanks
-        	if(irtnid(idl).eq.0) goto 880
-        	ndly(idl) = interv
+         if(irtnid(idl).eq.0) goto 880
+         ndly(idl) = interv
        else
 c
 c
 c ---------------------------------------------------------
 c rrb 99/08/26; character ID
-	      if(interv.ne.-999) then
-	        read (55,*,end=880,err=880)
+         if(interv.ne.-999) then
+           read (55,*,end=880,err=880)
      1      irtnid(idl),ndly(idl), (dlyrat(i,idl),i=1,ndly(idl))
      
             if(ioutURM .eq.1) then
@@ -1111,9 +1110,9 @@ c rrb 99/08/26; character ID
             
 c
 c rrb 99/10/16; Check for blanks
-	         if(irtnid(idl).eq.0) goto 880
-	       else
-	         read (55,829,end=880,err=880)
+            if(irtnid(idl).eq.0) goto 880
+          else
+            read (55,829,end=880,err=880)
      1       cirtnid(idl),ndly(idl), (dlyrat(i,idl),i=1,ndly(idl))
      
            if(ioutURM .eq.1) then
@@ -1127,25 +1126,25 @@ c rrb 99/10/16; Check for blanks
            endif
 c
 c rrb 2006/03/20; Adjust character string to left     
-            cirtnid(idl)=adjustl(cirtnid(idl))     
+           cirtnid(idl)=adjustl(cirtnid(idl))
 c
 c rrb 99/10/16; allow to work for character ID's
-	          irtnid(idl) = idl
+           irtnid(idl) = idl
 c
 c rrb 99/10/16; Check for blanks
-	          if(cirtnid(idl).eq.'            ') goto 880
-	        endif
-	       endif
-c	
+           if(cirtnid(idl).eq.'            ') goto 880
+         endif
+       endif
+c
 c ---------------------------------------------------------
-c	
+c
 
-	      ndlymx=amax0(ndlymx,ndly(idl))
+       ndlymx=amax0(ndlymx,ndly(idl))
 c
 c rrb 05/28/98; allow return id to not be the array counter
 c       IF(IDLY.LE.0.OR.IDLY.GT.MAXDLY) GO TO 860
-	      IF(ndly(idl).gt.maxdlm) GO TO 860
-	      ndlymx=amax0(ndlymx,ndly(idl))
+       IF(ndly(idl).gt.maxdlm) GO TO 860
+       ndlymx=amax0(ndlymx,ndly(idl))
 C
 c rrb 05/28/98; allow return id to not be the array counter
 c       IDLORD(IDLY)=IDL
@@ -1155,14 +1154,14 @@ c rrb 96/03/18 Make number of return intervals a variable
 c
 c ---------------------------------------------------------
 c               Sum total pattern
-	      dlytot(idl) = 0.0
-	      do i=1,ndly(idl)
+       dlytot(idl) = 0.0
+       do i=1,ndly(idl)
 c
 c rrb 99/11/05; Temporary Fix to get %
 c rrb 01/02/01 Allow data to be entered by a fraction 
-	        dlyrat(i,idl)=dlyrat(i,idl) * cfac
-	        dlytot(idl) = dlytot(idl) + dlyrat(i,idl)
-	      end do
+         dlyrat(i,idl)=dlyrat(i,idl) * cfac
+         dlytot(idl) = dlytot(idl) + dlyrat(i,idl)
+       end do
 c
 c
 c ---------------------------------------------------------
@@ -1184,20 +1183,20 @@ c ---------------------------------------------------------
 c               Write a summary of delay data to *.log
       if(ichk.eq.7) then
 
-	      nsum=0
-	      write(nlog,881)
-	      do idl=1,numdly
-	        nsum=nsum+ndly(idl)
+        nsum=0
+        write(nlog,881)
+        do idl=1,numdly
+          nsum=nsum+ndly(idl)
 c
 c rrb; 99/08/27; Character ID
-	       if(interv.ne.-999) then
-	         write(nlog,'(i8,5x,i8,i14,1x,f10.6)')  idl, irtnid(idl),
+         if(interv.ne.-999) then
+           write(nlog,'(i8,5x,i8,i14,1x,f10.6)')  idl, irtnid(idl),
      1                  ndly(idl), dlytot(idl)
-	       else
-	         write(nlog,'(i8,1x,a12,i14,1x,f10.6)') idl, cirtnid(idl),
+         else
+           write(nlog,'(i8,1x,a12,i14,1x,f10.6)') idl, cirtnid(idl),
      1                ndly(idl), dlytot(idl)
-	       endif
-	     end do
+         endif
+       end do
 
         write(nlog,882) nsum
  882    format(8x, 1x, 'Total       ', i14) 
@@ -1211,38 +1210,38 @@ c               each one assigned to a diversion (irtndl)
 c rrb 04/10/15; Identify all missing delay ID's before exiting
       iproblem=0
       do n=1,numrtn
-	      ifound=0
+        ifound=0
 c
 c rrb 99/08/26; character ID
-	      if(interv.ne.-999) then
-	        do idl=1,numdly
-	          if(irtndl(n).eq.irtnid(idl)) ifound=idl
-	        end do
-	      else
-	        do idl=1,numdly
-	          if(cirtndl(n).eq.cirtnid(idl)) ifound=idl
-	        end do
-	      endif 
+        if(interv.ne.-999) then
+          do idl=1,numdly
+            if(irtndl(n).eq.irtnid(idl)) ifound=idl
+          end do
+        else
+          do idl=1,numdly
+            if(cirtndl(n).eq.cirtnid(idl)) ifound=idl
+          end do
+        endif 
 cb
 c ---------------------------------------------------------
 c               !!!! From here on, the return flow pointer
 c               associated with a structure (irtndl(n)) points
 c               to the # of the table read (a pointer) not it's id
-      	if(ifound.ne.0) then
-      	  irtndl(n)=ifound
-      	else
+        if(ifound.ne.0) then
+          irtndl(n)=ifound
+        else
 
 c
 c rrb 99/08/26; character ID
-	       if(interv.ne.-999) then
-	         write(nlog,885) 'Diversion Return', irtndl(n)
+         if(interv.ne.-999) then
+           write(nlog,885) 'Diversion Return', irtndl(n)
 c rrb 04/10/15; Identify all missing delay ID's before exiting
-c	         goto 9999
-	         iproblem=1	    
-	       else
-	         write(nlog,885) 'Diversion Return', cirtndl(n)
+c           goto 9999
+           iproblem=1
+         else
+           write(nlog,885) 'Diversion Return', cirtndl(n)
 c rrb 04/10/15; Identify all missing delay ID's before exiting
-c	         goto 9999
+c           goto 9999
            iproblem=1
         endif
       endif
@@ -1272,16 +1271,16 @@ c ---------------------------------------------------------
 c rrb 98/12/30; Wells; Check and reassign well delay tables "irtndlw2"
 c               to the table counter (idl)
       do n=1,numrtnw2
-      	ifound=0
-      	do idl=1,numdly
-      	  if(irtndlw2(n).eq.irtnid(idl)) ifound=idl
-      	end do
+        ifound=0
+        do idl=1,numdly
+          if(irtndlw2(n).eq.irtnid(idl)) ifound=idl
+        end do
        
-      	if(ifound.ne.0) then
-      	  irtndlw2(n)=ifound
-      	else
-      	  write(nlog,885) 'Well Depletion  ',irtndlw2(n)
-c rrb 04/10/15;	  
+        if(ifound.ne.0) then
+          irtndlw2(n)=ifound
+        else
+          write(nlog,885) 'Well Depletion  ',irtndlw2(n)
+c rrb 04/10/15;
 c         goto 9999
         iproblem=1
       endif
@@ -1295,19 +1294,19 @@ c rrb 2006/10/17; Reservoirs Check and reassign reservoir delay tables
 c                 "irtndlRP" to the table counter (idl)
 
       do n=1,numrtnRP
-	      ifound=0
-	      do idl=1,numdly
-	        if(irtndlRP(n).eq.irtnid(idl)) ifound=idl
-	      end do
+        ifound=0
+        do idl=1,numdly
+          if(irtndlRP(n).eq.irtnid(idl)) ifound=idl
+        end do
         
-	      if(ifound.ne.0) then
-	        irtndlRP(n)=ifound
-	      else
-	        write(nlog,885) 'Reservoir Return', irtndlRP(n)
-c rrb 04/10/15;	  
+        if(ifound.ne.0) then
+          irtndlRP(n)=ifound
+        else
+          write(nlog,885) 'Reservoir Return', irtndlRP(n)
+c rrb 04/10/15;
 c         goto 9999
-      	  iproblem=1
-      	endif
+          iproblem=1
+        endif
       end do
 c
 c ---------------------------------------------------------
@@ -1325,11 +1324,11 @@ cx      if(iprf(n).eq.-1) then
             if(irtndlPP(n).eq.irtnid(idl)) ifound=idl
           end do  
           
-	      if(ifound.ne.0) then
-	        irtndlPP(n)=ifound
-	      else
-	        write(nlog,885) 'Plan Return     ', irtndlPP(n)
-	        iproblem=1
+           if(ifound.ne.0) then
+             irtndlPP(n)=ifound
+           else
+             write(nlog,885) 'Plan Return     ', irtndlPP(n)
+             iproblem=1
         endif  
       end do  
       
@@ -1370,7 +1369,7 @@ c ---------------------------------------------------------
 c rrb 99/10/05; If a monthly model
 c               Calculate div. loss, well loss & depletion salvage 
       if(iday.eq.0) then
-	      call Closs(0)
+        call Closs(0)
       endif
 C
 c _________________________________________________________
@@ -1423,25 +1422,25 @@ c               or just max
 c
 c rrb 98/11/07; Branch if in one of several baseflow modes
       if(ibasef.ne.1) then
-	    if(nc.eq.0) then
+        if(nc.eq.0) then
 c         itarx = 0
-	       read (24,952,end=1570,err=928) ityr, cistat
+          read (24,952,end=1570,err=928) ityr, cistat
 c
 c rrb 2006/03/20; Adjust character string to left     
-          cistat=adjustl(cistat)	  
+          cistat=adjustl(cistat)
 c         write(nlog,*) '  Mdainp; '
 c         write(nlog,952) ityr, cistat
 
-	        read (24,952,end=1570,err=928) ityr, cista2
+          read (24,952,end=1570,err=928) ityr, cista2
 c
 c rrb 2006/03/20; Adjust character string to left     
           cista2=adjustl(cista2)
-          	  
+
 c         write(nlog,952) ityr, cistat
-	        backspace (24)
-	        backspace (24)
-	        if (cistat.ne.cista2) itarx = 1
-	      endif
+          backspace (24)
+          backspace (24)
+          if (cistat.ne.cista2) itarx = 1
+        endif
       endif
 C
 c _________________________________________________________
@@ -1449,10 +1448,10 @@ C        Step X; 1x/Run Open SJRIP Sediment file (*.sjr)
 c
 c rrb 00/11/11; SJRIP Sediment file (*.sjr) provided
       if(isjrip.ne.0) then
-	     iin2=22
-	     filena='*.sjr'
+        iin2=22
+        filena='*.sjr'
        
-	     write(nlog,805)
+        write(nlog,805)
 c      write(nscrn,,805)
  805   format(/,'  Mdainp; Annual SJRIP Sediment File (*.sjr) ')
 c
@@ -1468,16 +1467,16 @@ c ---------------------------------------------------------
 c
 c rrb 2005/12/16; Allow TS file units to override control file units
 c		Note No update file contains only on/off information
-	      call chekpor(iin, 15, 99, 0,     0, 1, iystr,
+        call chekpor(iin, 15, 99, 0,     0, 1, iystr,
      1                 imstr, 0, 20, c, cyr1, maxfn,infile,idummy,
      1                 nSjrX, fpath1,rec256)
 c
 c               Open output file
-	      if(isjrip.eq.1) then
-	        call namext(maxfn, filenc, 'xsj', filena)
-	        open(22, file=filena, status='unknown')
-	        call outtop(22, 1, 39)
-	      endif
+        if(isjrip.eq.1) then
+          call namext(maxfn, filenc, 'xsj', filena)
+          open(22, file=filena, status='unknown')
+          call outtop(22, 1, 39)
+        endif
 
       endif
 
@@ -1486,8 +1485,8 @@ c _________________________________________________________
 C        1x/Run Open TIME SERIES FILE (*.tsp) or (*.ipy) 
 c rrb 00/11/11; Annual time series file (*.tsp)or (*.ipy) provided
       if(itsfile.ne.0) then
-	      write(nlog,803)
-c	      write(nscrn,,803)
+        write(nlog,803)
+c       write(nscrn,,803)
  803    format(/,72('_'),/
      1  '  Mdainp; Annual Time Series File (*.ipy or *.tsp) ')
 c
@@ -1533,8 +1532,8 @@ C
 C
 c rrb 00/12/04; Expect *.ddc for variable efficiency
       if(ieffmax.ne.0) then
-      	write(nlog,804)
-c	      write(nscrn,,804)
+        write(nlog,804)
+c       write(nscrn,,804)
  804    format(/,72('_'),/,'  Mdainp; IWR File (*.ddc) ')
 c
 c rrb 00/12/28; Set ioptio = 0 to open for all run types (baseflow, 
@@ -1549,7 +1548,7 @@ c rrb 2005/12/16; Allow TS file units to override control file units
 c       call chekpor(iin, 14, 99, 0,      0, 1, iystr,
 c    1                imstr,  0, 19, c, cyr1, maxfn,
 c    1                infile, fpath1, rec256)
-	      call chekpor(iin, 14, 99, 0,      0, 1, iystr,
+        call chekpor(iin, 14, 99, 0,      0, 1, iystr,
      1                imstr, 0, 19, dfactoI,cyr1,maxfn,infile,idummy,
      1                nDdcX, fpath1, rec256)
      
@@ -1574,10 +1573,10 @@ c					1 GW does not have a soil moisture
       
       isoilfn=0
       if(isoil.ne.0) then
-	    iin2=55
-	    filena='*.str'
+        iin2=55
+        filena='*.str'
       
-	    iin2=iin
+        iin2=iin
 
         if(infile.eq.1) then
           ifn=33
@@ -1607,25 +1606,25 @@ c	          write(nscrn,,807)
         endif
       endif
 c
-    	do nd=1,maxdiv
-    	  awcr(nd)=0.0
-    	  awcr1(nd)=0.0
-    	  soils(nd)=0.0
-    	end do
+      do nd=1,maxdiv
+        awcr(nd)=0.0
+        awcr1(nd)=0.0
+        soils(nd)=0.0
+      end do
 c
-	   do nw=1,maxdivw
-	     awcrw(nw)=0.0
-	     awcrw1(nw)=0.0
-	     soilsw(nw)=0.0
-	   end do
+      do nw=1,maxdivw
+        awcrw(nw)=0.0
+        awcrw1(nw)=0.0
+        soilsw(nw)=0.0
+      end do
 cr   endif
 
       if(isoil.eq.1) then
-	    close(55)
+        close(55)
 
-	    iin2=55
-	    call putpath(maxfn, filena, fpath1)
-	    open(55, file=filena, status='old',err=928)
+        iin2=55
+        call putpath(maxfn, filena, fpath1)
+        open(55, file=filena, status='old',err=928)
 c
 c               Print to log file and skip header
         write(nlog,'(5x, a256)') filena
@@ -1649,12 +1648,12 @@ c      do i=1,numdiv+numdivw
 c
 c rrb 2004/08/23; Allow a StateCu structure file to provdide AWC data			
 c		Note isoilfn=1 for *.par and isoilfn=2 for *.str
-	    if(isoilfn.eq.1) then
-	      read(55,'(a12, 1x, f6.1)',end=940,err=940) cistat, awcrx
-	    else
+        if(isoilfn.eq.1) then
+          read(55,'(a12, 1x, f6.1)',end=940,err=940) cistat, awcrx
+        else
 c
 c		Read a *.str file	  
-	      read(55,'(a12, 71x,i4,f8.0)',end=940,err=940)
+          read(55,'(a12, 71x,i4,f8.0)',end=940,err=940)
      1    cistat,ncli,awcrx
           if(ioutSM.eq.1) then
             write(nlog,*) ' Mdainp; *.str file'
@@ -1663,61 +1662,61 @@ c		Read a *.str file
           endif
 c
 c rrb 2006/05/09; Move from below
-	      if(cistat.eq.'            ') goto 940
+          if(cistat.eq.'            ') goto 940
      
 cr          write(nlog,*) '  Mdainp; cistat,ncli, awcrx ', 
 cr   1        cistat, ncli, awcrx
 
-	      do ic=1,ncli
+          do ic=1,ncli
 c jhb 2016/06/26 fix this - some station ids are not integers...
-c	        read(55,*,end=940,err=940) ix
+c           read(55,*,end=940,err=940) ix
             read(55,*,end=940,err=940) rec256x
-	      end do
-	    endif
+          end do
+        endif
 c
 c rrb 2006/03/20; Adjust character string to left     
         cistat=adjustl(cistat)
-          	  
+
 cr        write(nlog,*)  '  Mdainp; cistat, awcrx ', cistat, awcrx
-	    if(cistat.eq.'            ') goto 940
+        if(cistat.eq.'            ') goto 940
 c
 c rrb 00/12/04; Find diversion station associated with this data
-	    ifound=0
-	        
-	    cCallBy='Mdainp D.str'
-	    call stafind(nlog,1,3,numdiv,ix,cistat,cdivid,cCallBy)
-	    if(ix.ne.0) then
-	      ifound=1
-	      awcr(ix)=awcrx * area(ix) * soild
-	      awcr1(ix)=awcrx
-	      if(ichk.eq.92) then
+        ifound=0
+
+        cCallBy='Mdainp D.str'
+        call stafind(nlog,1,3,numdiv,ix,cistat,cdivid,cCallBy)
+        if(ix.ne.0) then
+          ifound=1
+          awcr(ix)=awcrx * area(ix) * soild
+          awcr1(ix)=awcrx
+          if(ichk.eq.92) then
             write(nlog,*) '  Mdainp; ix, cdivid, area, awcr'
             write(nlog,*) '     ',ix, cdivid(ix), area(ix), awcr(ix)
           endif
-	    endif
+        endif
 c
 c               IF necessary, Find well station 
-	    if(ifound.eq.0) then
-	      cCallBy='Mdainp W.str'
-	      call stafind(nlog,1,6,numdivw,ix,cistat,cdividw,cCallBy)
-	      if(ix.ne.0) then
-	        ifound=1
-	        awcrw(ix)=awcrx * areaw(ix) * soild
-	        awcrw1(ix)=awcrx
+        if(ifound.eq.0) then
+          cCallBy='Mdainp W.str'
+          call stafind(nlog,1,6,numdivw,ix,cistat,cdividw,cCallBy)
+          if(ix.ne.0) then
+            ifound=1
+            awcrw(ix)=awcrx * areaw(ix) * soild
+            awcrw1(ix)=awcrx
 c
 c rrb 2009/04/29; 	Do not include soil moisture on well only lands
 c			to coincide with StateCU
             if(iStateCU.eq.1) then
-	          awcrw(ix)=0.0
-	          awcrw1(ix)=0.0
+              awcrw(ix)=0.0
+              awcrw1(ix)=0.0
             endif
             if(ichk.eq.92) then
               write(nlog,*) '  Mdainp; Well     , ix, cdividw, awcr ',
      1        ix, cdividw(ix), areaw(ix), awcrw(ix)
             endif
-	      endif
-  	    endif  
-  	  end do
+          endif
+        endif
+      end do
 c
 c _________________________________________________________
 c               1x/run Set Initial Soil Storage (soils) af at 50% and
@@ -1726,69 +1725,69 @@ c               Warn if soil data is not found for diversions
  940    continue
         if(ichk.eq.94) write(nlog,*)'  Mdainp; Set Diversion soilM'
         
-	    do nd=1,numdiv
+        do nd=1,numdiv
           if(ioutSM.eq.1) then
             write(nlog,*) ' Mdainp; nd, id, acwr(nd)'          
             write(nlog,'(i5,1x,a12,20f10.2)') nd, cdivid(nd),awcr(nd) 
           endif
-	
-	      if(awcr(nd).le.small) then
-cr	        awcr(nd) = 0.0
+
+          if(awcr(nd).le.small) then
+cr          awcr(nd) = 0.0
 
 c rrb 2007/11/16; Warn only if acres > 0
             if(area(nd).gt.small) then
               if(ipIpy.eq.0) then
-                rec40='Annual Time Series File (*.ipy or *.tsp)'		                  
+                rec40='Annual Time Series File (*.ipy or *.tsp)'
                 write(nlog,1281) iyr, rec40
                 ipIpy=1
               endif  
-	          iprints=iprints+1
+              iprints=iprints+1
               if(iprints.eq.1) write(nchk,1636)
               write(nchk,1639) iprints, -1, cdivid(nd), 'Div ',
      1        divnam1(nd), awcr(nd), area(nd)
             endif
-	      endif
+          endif
 c
 c rrb 2006/09/18; Test initial soil moisture = 0
           soils(nd)=awcr(nd) * 0.5
-cx	      soils(nd)=awcr(nd) * 0.2
-cx	      write(nlog,*) ' Mdainp; Warning initial Soil M = 0.2'
-cx	      write(nscrn,*) ' Mdainp; Warning initial Soil M = 0.2'
+cx        soils(nd)=awcr(nd) * 0.2
+cx        write(nlog,*) ' Mdainp; Warning initial Soil M = 0.2'
+cx        write(nscrn,*) ' Mdainp; Warning initial Soil M = 0.2'
 c
-	      if(ioutSM.eq.2) write(nlog,1324)
+          if(ioutSM.eq.2) write(nlog,1324)
      1    'Diversion', idyr, nd, cdivid(nd),
      1    area(nd), awcr(nd), soils(nd)
-	    end do
+        end do
 c
 c _________________________________________________________
 c               1x/Run Set Initial Soil Storage (soilsw) af at 50% and
 c               Warn if soil data is not found for well only
 
         if(ichk.eq.94) write(nlog,*)'  Mdainp; Set Well soilM'
-	    do nw=1,numdivw
-	       nd=idivcow2(nw)
-cr     	  write(nlog,*) '  Mdainp; nw, nd,', nw, nd
-	       if(nd.eq.0) then
-	          if(awcrw(nw).le.small) then
-	          awcrw(nw) = 0.0
+        do nw=1,numdivw
+          nd=idivcow2(nw)
+cr        write(nlog,*) '  Mdainp; nw, nd,', nw, nd
+          if(nd.eq.0) then
+            if(awcrw(nw).le.small) then
+            awcrw(nw) = 0.0
 c
 c rrb 2007/11/16; Warn only if acres > 0
-              if(areaw(nw).gt.small) then
-	          iprints=iprints+1
-	          if(iprints.eq.1) write(nchk,1636)
-            write(nchk,1639) iprints,-1, cdividw(nw), 'Well',
+            if(areaw(nw).gt.small) then
+              iprints=iprints+1
+              if(iprints.eq.1) write(nchk,1636)
+              write(nchk,1639) iprints,-1, cdividw(nw), 'Well',
      1            divnamw1(nw), awcrw(nw), areaw(nw)
             endif
-	        endif
+          endif
 
-	        soilsw(nw)=awcrw(nw) * 0.5
-	        
-	        if(ioutSM.eq.2) write(nlog,1324) 
+          soilsw(nw)=awcrw(nw) * 0.5
+
+          if(ioutSM.eq.2) write(nlog,1324)
      1        ' Well Only', idyr, nw,cdividw(nw),
      1         areaw(nw), awcrw(nw), soilsw(nw)
-	        endif
-	      end do
-	      close(55)
+          endif
+        end do
+        close(55)
 
       endif
 C
@@ -1800,7 +1799,7 @@ C
 C-------------------------------------------------------------------
 C
       if(iday.eq.0) then
-cx	    write(nlog,809)
+cx      write(nlog,809)
 cx 809    format(/,72('_'),/
 cx     1  '  Mdainp; Downstream Call File (*.cal) Monthly')
 
@@ -1857,7 +1856,7 @@ c	        write(nscrn,820)
      1    '  Mdainp; Rio Grande Spill file (*.rgs) Monthly')
         
 c
-	        call chekpor(iin, 61, 99, 0,      0, 1, iystr,
+          call chekpor(iin, 61, 99, 0,      0, 1, iystr,
      1                imstr,  0, ifn, c, cyr1, maxfn,infile,idummy,
      1                nRgsX, fpath1, rec256)
         endif
@@ -1887,15 +1886,15 @@ c              (nann=0 monthly, idayx=0 for monthly data)
         imstr=imomo(1)
         
         if(rec256(1:2).ne.'-1') then        
-	        write(nlog,810)
+          write(nlog,810)
  810      format(/,72('_'),/
      1    '  Mdainp; Rio Grande Forecast file (*.rgf) Monthly')
         
 c
 c rrb 2005/12/16; Allow TS file units to override control file units
-c		Note no update; file has no units			
+c		Note no update; file has no units
 c		Note chekts knows file 52 is RioGrande_Spill_Monthly
-	        call chekpor(iin, 64, 99, 0,      0, 1, iystr, imstr,
+          call chekpor(iin, 64, 99, 0,      0, 1, iystr, imstr,
      1                 0, ifn, rgfacto, cyr1, maxfn,infile,idummy,
      1                 nRgsX, fpath1, rec256)
         endif
@@ -1924,7 +1923,7 @@ c              (nann=0 monthly, idayx=0 for monthly data)
         
         if(rec256(1:2).ne.'-1') then   
           ijm=1     
-	        write(nlog,812)
+          write(nlog,812)
  812      format(/,72('_'),/
      1    '  Mdainp; JMartin_Monthly (*.jmm)')   
 c      
@@ -1961,7 +1960,7 @@ c rrb 2006/03/20; Adjust character string to left
       if(ipyr.ne.iyr) then
         write(nlog,1308) 'Precipitation data (*.prm)',
      1        'N/A',numpre, ipr, ipyr,iyr
-	      goto 9999
+        goto 9999
       endif
 
       if(ipr.gt.maxpre) go to 980
@@ -2027,7 +2026,7 @@ c rrb 2006/03/20; Adjust character string to left
       if(ieyr.ne.iyr) then
         write(nlog,1308) 'Evaporation data monthly (*.evm)',
      1        'N/A',numeva, iev, ieyr,iyr
-	      goto 9999
+        goto 9999
       endif
 
 
@@ -2099,13 +2098,13 @@ c _________________________________________________________
 c
 c rrb 2005/10/07; Allow stream data to be provided in any order
 cr	if(cistat.ne.crunid(npx)) go to 1610
-	  
-	      cCallBy='Mdainp *.ris'
+
+        cCallBy='Mdainp *.ris'
         call stafind(nlog,1,0,numrun,ix,cistat,crunid,cCallBy)
         
 cr      if(ix.eq.0) goto 1610
         if(ix.eq.0) then
-	      if(ibasef.eq.0) then        
+          if(ibasef.eq.0) then        
             write(nlog,1308) 'Base Streamflow (*.rim or *.xbm)',
      1        '(*.ris)',numrun, NPx, iryr,iyr
           else
@@ -2126,24 +2125,24 @@ c rrb 98/11/09; The following is OK for BaseflowX option
 c rrb 01/01/03; Recognize other baseflow options
 c       if(iopflo.eq.1 .and. ioptio.ne.1) then
         iprintn=0
-	      if(iopflo.eq.1 .and. ibasef.ne.1) then
-	        do 1092 im=1,12
+        if(iopflo.eq.1 .and. ibasef.ne.1) then
+          do 1092 im=1,12
 c
 c               b. Daily capability
-             if(iday.eq.0) then
-               fac=mthday(im)*factor
-             else
-               fac=factor
-             endif      
-             if(abs(runoff(im)+999.0).le.0.01) then
-               iprintn=1
-               runoff(im)=0.0
-	        endif
- 1092   continue
-        if(iprintn.eq.1)then
-          write(nlog,1622) iryr, cistat, (runoff(i), i=1,12)
-cx        goto 9999
-        endif
+            if(iday.eq.0) then
+              fac=mthday(im)*factor
+            else
+              fac=factor
+            endif      
+            if(abs(runoff(im)+999.0).le.0.01) then
+              iprintn=1
+              runoff(im)=0.0
+            endif
+ 1092     continue
+          if(iprintn.eq.1)then
+            write(nlog,1622) iryr, cistat, (runoff(i), i=1,12)
+cx          goto 9999
+          endif
           
 c         write(nlog,1169) iyrmo(12), cistat,
 c    1         (runoff(i), i=1,12)          
@@ -2159,7 +2158,7 @@ C
  1100     CONTINUE
         endif
 C
-      	DO 1120 IM=1,12
+        DO 1120 IM=1,12
           VIRINP(IM,ix)=RUNOFF(IM)
 c
 c rrb 00/08/17; Store total flow for use by daily model
@@ -2302,8 +2301,8 @@ c
 c _________________________________________________________
 c
 c rrb 2005/10/07; Allow diversion data (0) to be provided in any order
-	   
-	      cCallBy='Mdainp *.ddm'
+
+        cCallBy='Mdainp *.ddm'
         call stafind(nlog,1,3,numdiv,ix,cistat,cdivid,cCallBy)
         
 c       write(nlog,*) '  Mdainp; Diversion ndx, ix ', ndx, ix
@@ -2372,7 +2371,7 @@ C
 c ---------------------------------------------------------  
 c                 Step Imp 4 Check for imports (negative values)
 c                            by month
-	        DO 1250 IM=1,12  
+          DO 1250 IM=1,12
 c
 c rrb 11/07/95; Allow negative diversions to be imports for
 c		            base flow and import calculations
@@ -2385,14 +2384,14 @@ cx          if(diverm(im).lt.-0.01) then
             if(diverm(im).lt.-0.0009) then
               if(iwarn(nu).eq.0) then
                 if(iwarnDT.eq.0) then
-                  write(nchk,1241)		    
+                  write(nchk,1241)
                 endif  
                       
                 if(ipDdm.eq.0) then
-                  rec40='Negative Diversions (*.ddm)'		    
+                  rec40='Negative Diversions (*.ddm)'
                   write(nlog,1281) iyr, rec40
                   ipDdm=1                    
-                endif                  		  
+                endif
                 
                 iwarnDT=iwarnDT+1
                 iwarn(nu) = 1                      
@@ -2434,7 +2433,7 @@ c rrb 2006/04/24; Set imports to zero if NOT in baseflow (ibasef.ne.1)
 c	                diverm(im) = 0.0
                 endif
                
-                diverm(im) = 0.0		  
+                diverm(im) = 0.0
 c
 c               Endif for not in a baseflow mode (ibasef=0)
              endif  
@@ -2541,7 +2540,7 @@ c               when in a base flow mode
 c rrb 98/11/09; BaseflowX option
 c     if(ioptio.eq.1) then
       if(ibasef.eq.1) then
-      	write(nlog,*)
+        write(nlog,*)
      1    '  Mdainp; Problem.',
      2    ' Diversion override not alowed for Base Flow Mode'
         goto 9999
@@ -2632,7 +2631,7 @@ c     if(ioptio.eq.1) goto 1560
 
 1491  iin2=24
 
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
       filena='*.tam'
       do 1550 nm=1,numres
 c
@@ -2643,186 +2642,186 @@ c		value provided in the reservoir station file (*.res)
         if(iyr.eq.iystr) then
           resvol1(nm)=cursto(nm)
         else  
-          resvol1(nm)=targetx(12,nm)	           
+          resvol1(nm)=targetx(12,nm)
         endif 
          
 c        write(Nlog,*) 
 c     1   ' Mdainp; nr, cursto(nm), targetx(12,nm), resvol1(nm)',
 c     1   ' Mdainp; ', nr, cursto(nm), targetx(12,nm), resvol1(nm)
-	      
-	      if (iyr.eq.iystr) then
+
+        if (iyr.eq.iystr) then
 c
 c grb 3-19-97  allow two iterations through this section for first year
 c                                                                 
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c rrb 10/23/95; Allow target to be min and max or just max
 c               itarx = 0 min & max, = 1 = max only
-	       if(itarx.eq.0) then
-	         if (iter.eq.1) then
-	           read (24,952,end=1570,err=928)
+          if(itarx.eq.0) then
+            if (iter.eq.1) then
+              read (24,952,end=1570,err=928)
      1          ityr, cistat, (conmin(i,nm),i=1,12)
-	         endif
-	        if (iter.eq.2) then
-	          read (24,952,end=1570,err=928)
+            endif
+            if (iter.eq.2) then
+              read (24,952,end=1570,err=928)
      1              ityr, cistat, (conminn(i,nm),i=1,12)
-	        endif
+            endif
 c
 c rrb 2006/03/20; Adjust character string to left     
-          cistat=adjustl(cistat)
-          	    
-	      else
-	        do i=1,12
-	          conmin(i,nm) = 0.0
-	          conminn(i,nm)=0.0
-	        end do
-	      endif
-c	  
-c ---------------------------------------------------------	      
+            cistat=adjustl(cistat)
+
+          else
+            do i=1,12
+              conmin(i,nm) = 0.0
+              conminn(i,nm)=0.0
+            end do
+          endif
 c
-	      if (iter.eq.1) then
-	        read (24,952,end=1570,err=928)
+c ---------------------------------------------------------
+c
+          if (iter.eq.1) then
+            read (24,952,end=1570,err=928)
      1        ityr, cista2, (targetx(i,nm),i=1,12)
 c
 c rrb 2006/03/20; Adjust character string to left     
             cista2=adjustl(cista2)     
-	      endif
+          endif
 
-	      if (iter.eq.2) then
-	        read (24,952,end=1570,err=928)
+          if (iter.eq.2) then
+            read (24,952,end=1570,err=928)
      1        ityr, cista2, (targetn(i,nm),i=1,12)
 c
 c rrb 2006/03/20; Adjust character string to left     
-           cista2=adjustl(cista2)     
-	       endif
+            cista2=adjustl(cista2)
+          endif
 
-	      if(iter.eq.2.and.ityr.ne.(iyr+1)) then
+          if(iter.eq.2.and.ityr.ne.(iyr+1)) then
                 write(nlog,*) '  Mdainp; Problem. ',
      1        'Reservoir target data is out of sequence'
-	      goto 9999
-	    endif
+            goto 9999
+          endif
 
-	    if (iter.eq.2) then 
+          if (iter.eq.2) then
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c
-c rrb 2006/03/01; Make all unit conversions consistent (skip if none)	  
-    	    if(cfacto.ge.small) then	  
-    	      do i=1,12                        
-    	        targetx(i,nm) = cfacto*targetx(i,nm)
-      	        targetn(i,nm) = cfacto*targetn(i,nm)
-    	        conminn(i,nm) = cfacto*conminn(i,nm)
-    	        conmin(i,nm)  = cfacto*conmin(i,nm)
-                    sjtarget(i,nm)=targetx(i,nm)
-    	      end do
-    	    endif  
-    	  endif
-    	else
+c rrb 2006/03/01; Make all unit conversions consistent (skip if none)
+          if(cfacto.ge.small) then
+            do i=1,12
+              targetx(i,nm) = cfacto*targetx(i,nm)
+              targetn(i,nm) = cfacto*targetn(i,nm)
+              conminn(i,nm) = cfacto*conminn(i,nm)
+              conmin(i,nm)  = cfacto*conmin(i,nm)
+              sjtarget(i,nm)=targetx(i,nm)
+            end do
+          endif
+        endif
+      else
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c
-c		Get data for a year not simulated	
-        if(cfacto.ge.small) then	  
-  	      do i=1,12
+c		Get data for a year not simulated
+        if(cfacto.ge.small) then
+          do i=1,12
             targetx(i,nm)=targetn(i,nm)*cfacto
-	          conmin(i,nm)=conminn(i,nm)*cfacto
-	          sjtarget(i,nm)=targetx(i,nm)
-	        end do
-	      else
-	        do i=1,12
-	          targetx(i,nm)=targetn(i,nm)
-	          conmin(i,nm)=conminn(i,nm)
-	          sjtarget(i,nm)=targetx(i,nm)
-	        end do	    
-	      endif
-c	  
-c ---------------------------------------------------------	      
+            conmin(i,nm)=conminn(i,nm)*cfacto
+            sjtarget(i,nm)=targetx(i,nm)
+          end do
+        else
+          do i=1,12
+            targetx(i,nm)=targetn(i,nm)
+            conmin(i,nm)=conminn(i,nm)
+            sjtarget(i,nm)=targetx(i,nm)
+          end do
+        endif
 c
-	    if (iyr.eq.iyend) goto 1530
+c ---------------------------------------------------------
+c
+        if (iyr.eq.iyend) goto 1530
 c     
 c                 Read min target (itarx=0) or set to 0 (itarx.ne.1)
-	    if(itarx.eq.0) then
-	      read (24,952,end=1570,err=928)
+        if(itarx.eq.0) then
+          read (24,952,end=1570,err=928)
      1        ityr, cistat, (conminn(i,nm),i=1,12)
 c
 c rrb 2006/03/20; Adjust character string to left     
-            cistat=adjustl(cistat)     
-	    else
-	      do i=1,12
-	        conminn(i,nm)=0.0
-	      end do
-	    endif
-c	  
-c ---------------------------------------------------------	      
+          cistat=adjustl(cistat)
+        else
+          do i=1,12
+            conminn(i,nm)=0.0
+          end do
+        endif
 c
-	    read (24,952,end=1570,err=928)
+c ---------------------------------------------------------
+c
+        read (24,952,end=1570,err=928)
      1      ityr, cista2, (targetn(i,nm),i=1,12)
 c
 c rrb 2006/03/20; Adjust character string to left     
-      cista2=adjustl(cista2)   
+        cista2=adjustl(cista2)
              
-	        if(ityr.ne.(iyr+1)) then
-	          write(nlog,*) ' '
-            write(nlog,*) '  Mdainp; Problem. ',
+        if(ityr.ne.(iyr+1)) then
+          write(nlog,*) ' '
+          write(nlog,*) '  Mdainp; Problem. ',
      1        'Reservoir target data is out of sequence',ityr,iyr
-	          goto 9999
-	        endif
-	        if(cfacto.ge.small) then	  
-            do i=1,12                        
-	            targetn(i,nm)=cfacto*targetn(i,nm)
-	            conminn(i,nm)=cfacto*conminn(i,nm)
-	          end do
-	        endif  
-	      endif
-c ---------------------------------------------------------	      
+          goto 9999
+        endif
+        if(cfacto.ge.small) then
+          do i=1,12
+            targetn(i,nm)=cfacto*targetn(i,nm)
+            conminn(i,nm)=cfacto*conminn(i,nm)
+          end do
+        endif
+      endif
+c ---------------------------------------------------------
       
-      	if(itarx.eq.0) then
-      	  if(cistat.ne.cista2) write(nlog,1500) cistat
-      	  if(cistat.ne.cista2) write(nscrn,1500)  cistat
-      	else
-      	  cistat = cista2
-      	endif            
+      if(itarx.eq.0) then
+        if(cistat.ne.cista2) write(nlog,1500) cistat
+        if(cistat.ne.cista2) write(nscrn,1500) cistat
+      else
+        cistat = cista2
+      endif
 
 c
-	      if(cistat.eq.blank) goto 1560
+      if(cistat.eq.blank) goto 1560
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               Set pointer target to reservoir (naxtnr(nm) = nr)
-	      do 1510 nr=1,numres
-	        if(cistat.eq.cresid(nr)) then
-	          nextnr(nm)=nr
-	          go to 1530
-	        endif
+      do 1510 nr=1,numres
+        if(cistat.eq.cresid(nr)) then
+          nextnr(nm)=nr
+          go to 1530
+        endif
  1510   continue
 c
-	      write(nlog,1520) cistat
-	      goto 9999
+      write(nlog,1520) cistat
+      goto 9999
 c
- 1530   irsmin(nm)=nextnr(nm)
-	      itarget(nm)=nextnr(nm)              
+ 1530 irsmin(nm)=nextnr(nm)
+      itarget(nm)=nextnr(nm)
 c
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
  1550 continue
 c
-	    nummin=numres
-	    if(iter.eq.1) then
+      nummin=numres
+      if(iter.eq.1) then
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c rrb 99/05/19; Add code to allow 1 year of data to work
-	     if(iystr.eq.iyend) then
-	       do nm=1,numres
-	         do i=1,12
-		         targetn(i,nm)=targetx(i,nm)
-		         conminn(i,nm)=conmin(i,nm)
-	         end do
-	       end do
-	       goto 1560
-	     endif
-	     iter=2
-	     goto 1491
-	   endif
+        if(iystr.eq.iyend) then
+          do nm=1,numres
+            do i=1,12
+              targetn(i,nm)=targetx(i,nm)
+              conminn(i,nm)=conmin(i,nm)
+            end do
+          end do
+          goto 1560
+        endif
+        iter=2
+        goto 1491
+      endif
 
- 1560   continue
+ 1560 continue
 c
 c _________________________________________________________
 c
@@ -2841,96 +2840,96 @@ c		Read only if demand type is 1 (monthly)
      1  monisf, nisfinM   
      
       if(monisf.ge.2) then
-	      if(nisfinM.eq.0) goto 1562
+        if(nisfinM.eq.0) goto 1562
 c     
-	      iin2=25
-	      filena='*.ifm'
-	      if(iouti.eq.1) 
+        iin2=25
+        filena='*.ifm'
+        if(iouti.eq.1)
      1    write(nlog,*)'  Mdainp; Monthly (*.ifm) IFS Data'
 c
 c rrb 2006/06/02; Correction
 cr	    do nd=1,nisfin
 cr	    IF(iifcom(nd).eq.1) then
-	      do nd=1,nisfinM
-	        read (25,951,end=762,err=928) idyr,cistat,
+      do nd=1,nisfinM
+        read (25,951,end=762,err=928) idyr,cistat,
      1        (diverm(im),im=1,12),rgspilx
           cistat=adjustl(cistat) 
 c
 c ---------------------------------------------------------
-	        if(iouti.eq.1) then
-	          write (nlog, 536) nd,idyr,cistat,(diverm(i),i=1,12)
-	        endif            
+        if(iouti.eq.1) then
+          write (nlog, 536) nd,idyr,cistat,(diverm(i),i=1,12)
+        endif
 c
 c ---------------------------------------------------------
 c
-	        if(idyr.ne.iyr) then
-                  write(nlog,1308) 'Instream Demand (*.ifm)',
+        if(idyr.ne.iyr) then
+          write(nlog,1308) 'Instream Demand (*.ifm)',
      1        '(*.ifs)',nisfinM, nd, idyr,iyr
-	          goto 9999
-	        endif
-c	    
+          goto 9999
+        endif
+c
 c ---------------------------------------------------------
 C
 c               Adjust units
-	        if(ffactoM.ge.small) then
-	          do im=1,12
-		      DIVERM(IM)=DIVERM(IM)/ffactoM/MTHDAY(IM)
-	          end do
-	        endif
-c	    
-c ---------------------------------------------------------	    
+        if(ffactoM.ge.small) then
+          do im=1,12
+            DIVERM(IM)=DIVERM(IM)/ffactoM/MTHDAY(IM)
+          end do
+        endif
+c
+c ---------------------------------------------------------
 c
 c rrb 2005/10/07; Allow ISF data (0) to be provided in any order
 
-	        cCallBy='Mdainp *.ifm'
-	        call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
-	  
-          if(ix.eq.0 .or. iifcom(ix).ne.1) then
-            write(nlog,1311) cistat, 'Monthly ', iyr, iifcom(ix)
-            goto 9999            
-          endif  
-c	    
+        cCallBy='Mdainp *.ifm'
+        call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
+
+        if(ix.eq.0 .or. iifcom(ix).ne.1) then
+          write(nlog,1311) cistat, 'Monthly ', iyr, iifcom(ix)
+          goto 9999
+        endif
+c
 c ---------------------------------------------------------
 c rrb 2000/10/23; Handle spill for the Rio Grande
-          rgspill(ix)=rgspilx
+        rgspill(ix)=rgspilx
 c
-c	    
+c
 c ---------------------------------------------------------
 c
 c rrb 00/03/16; Carry forecast to end of year
-	    ifor=0
-	    forc1=0.0
+        ifor=0
+        forc1=0.0
     
-	    do i=1,12
-	    IF(diverm(i).GE.-1*small) then
-	      flowr(i,ix)=diverm(i)
+        do i=1,12
+          IF(diverm(i).GE.-1*small) then
+            flowr(i,ix)=diverm(i)
 c
-c rrb 2005/09/20; Save for Type 13 (La Plata Compact) use 		
-	      flowrX(i,ix)=diverm(i)
-	      forecast(i,ix)=0.0
+c rrb 2005/09/20; Save for Type 13 (La Plata Compact) use
+            flowrX(i,ix)=diverm(i)
+            forecast(i,ix)=0.0
 c
 c rrb 00/03/15; Carry forecast to end of year
-	      if(ifor.eq.1) then
-	        flowr(i,ix) = 0.0
-	        forecast(i,ix)=forc1 /ffactoM/MTHDAY(i)
-	      endif
-	           else
-	      flowr(i,ix)=0.0
-	      forecast(i,ix)=diverm(i) 
+            if(ifor.eq.1) then
+              flowr(i,ix) = 0.0
+              forecast(i,ix)=forc1 /ffactoM/MTHDAY(i)
+            endif
+          else
+            flowr(i,ix)=0.0
+            forecast(i,ix)=diverm(i)
 c
 c rrb 00/03/15; Carry forecast to end of year 
-	      ifor=1
-	      forc1=diverm(i) *ffactoM*MTHDAY(I) 
+            ifor=1
+            forc1=diverm(i) *ffactoM*MTHDAY(I)
 c                  write(nlog,*) '  Mdainp; ix, forecast ',
 c    1               ix,forecast(i,ix)
-           endif
-         end do
+         endif
+       end do
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               End ISF structure loop
-	     end do
+       end do
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               End Monthly ISF option
       endif
       
@@ -2944,8 +2943,8 @@ c
       rec256=fileName(ifn)
       rec72=rec256(1:72)
       if(rec72(1:2).ne.'-1') then
-	     iin2=10
-	     filena = '*.rgs'
+        iin2=10
+        filena = '*.rgs'
 c
 c		Loop for two RGDSS compact stations 
        do irg=1,nisfinM
@@ -2955,8 +2954,8 @@ c		Loop for two RGDSS compact stations
 c
 c _________________________________________________________
 c
-	        cCallBy='Mdainp *.rgs'
-	        call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
+          cCallBy='Mdainp *.rgs'
+          call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
           if(ix.eq.0) goto 1304
           
 c        
@@ -2969,24 +2968,24 @@ c
 c rrb 2006/03/20; Adjust character string to left     
 c        
 c ---------------------------------------------------------
-	        if(idyr.ne.iyr) then
+            if(idyr.ne.iyr) then
             write(nlog,1308) 'RioGrande Spill data (*.rgs)',
      1          'N/A',nisfinM, irg, idyr,iyr
-	         goto 9999
-	       endif
+            goto 9999
+          endif
 c
 c ---------------------------------------------------------
 
           rgspill(ix)=0.0
-	       do im=1,12
-	         if(diverm(im).gt.small) then
-	           rgspill(ix)=diverm(im)
-	           
-	           if(ioutRgS.eq.1)
-     1	        write(nlog,*) '  Mdainp Rio Grande Spill Data;',
+          do im=1,12
+            if(diverm(im).gt.small) then
+              rgspill(ix)=diverm(im)
+
+              if(ioutRgS.eq.1)
+     1          write(nlog,*) '  Mdainp Rio Grande Spill Data;',
      1          ' ix, rgspill = ', ix, cifrid(ix), rgspill(ix)
             endif
-	       end do 
+          end do
         end do
       endif    
 c
@@ -2996,20 +2995,20 @@ c rrb; 2006/03/21; Read Rio Grande Monthly Forecast (*.rgf)
 c
       if(ibasef.eq.1) goto 1564
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c		Only read if file is provided      
       ifn=64
       rec256=fileName(ifn)
       rec72=rec256(1:72)
       if(rec72(1:2).ne.'-1') then
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c		Only read only if the counter is > 0
-	      if(nrgfor.eq.0) goto 1564
+      if(nrgfor.eq.0) goto 1564
 c
-	        iin2=64
-	        filena='*.rgf'
-	        do nd=1,nrgfor
+        iin2=64
+        filena='*.rgf'
+        do nd=1,nrgfor
 c         write(nlog,*) '  Mdainp;', nd, iifcom(nd)
           read (iin2,951,end=762,err=928) idyr,cistat,
      1                                    (diverm(im),im=1,12)
@@ -3021,71 +3020,71 @@ c
 c rrb 2006/03/20; Adjust character string to left     
           cistat=adjustl(cistat)     
 
-	        if(idyr.ne.iyr) then
+          if(idyr.ne.iyr) then
             write(nlog,1308) 'Rio Grande Forecast (*.rgf)', 
      1          'N/A',nrgfor, nd, idyr,iyr            
-	          goto 9999
-	        endif
+            goto 9999
+          endif
 C
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               Adjust units
-	        if(rgfacto.ge.small) then
-	          do im=1,12
-	            DIVERM(IM)=DIVERM(IM)/rgfacto/MTHDAY(IM)
-	          end do
-	        endif
-	    
+          if(rgfacto.ge.small) then
+            do im=1,12
+              DIVERM(IM)=DIVERM(IM)/rgfacto/MTHDAY(IM)
+            end do
+          endif
+
 c
 c _________________________________________________________
 c
 c rrb 2005/10/07; Allow forecast data (0) to be provided in any order
 c
-	       cCallBy='Mdainp *.rgf'
-	       call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
+          cCallBy='Mdainp *.rgf'
+          call stafind(nlog,1,1,numifr,ix,cistat,cifrid,cCallBy)
           if(ix.eq.0) goto 1304
 c
           rgspill(ix)=rgspilx
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c rrb 00/03/16; Carry forecast to end of year
-	       ifor=0
-	       forc1=0.0
-	       do i=1,12
-	         IF(diverm(i).GE.-1*small) then
-		       flowr(i,ix)=diverm(i)
+          ifor=0
+          forc1=0.0
+          do i=1,12
+            IF(diverm(i).GE.-1*small) then
+              flowr(i,ix)=diverm(i)
 c
-c rrb 2005/09/20; Save for Type 13 (La Plata Compact) use 		
-		       flowrX(i,ix)=diverm(i)
-		       forecast(i,ix)=0.0
+c rrb 2005/09/20; Save for Type 13 (La Plata Compact) use
+              flowrX(i,ix)=diverm(i)
+              forecast(i,ix)=0.0
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c rrb 00/03/15; Carry forecast to end of year
-		      if(ifor.eq.1) then
-		        flowr(i,ix) = 0.0
-		        forecast(i,ix)=forc1 /RgFacto/MTHDAY(i)
-		      endif
-	            else
-		      flowr(i,ix)=0.0
-		      forecast(i,ix)=diverm(i) 
+              if(ifor.eq.1) then
+                flowr(i,ix) = 0.0
+                forecast(i,ix)=forc1 /RgFacto/MTHDAY(i)
+              endif
+            else
+              flowr(i,ix)=0.0
+              forecast(i,ix)=diverm(i)
 c
 c rrb 00/03/15; Carry forecast to end of year 
-		      ifor=1
-		      forc1=diverm(i) *RgFacto*MTHDAY(I) 
-c           write(nlog,*) '  Mdainp; ix, forecast ',ix,forecast(i,ix)
-	      endif
-	      end do
+              ifor=1
+              forc1=diverm(i) *RgFacto*MTHDAY(I) 
+c             write(nlog,*) '  Mdainp; ix, forecast ',ix,forecast(i,ix)
+            endif
+          end do
           if(ioutRgF.gt.0) then
             write(nlog,*) ' '
             write(nlog,951)  idyr,'-1', 
      1        (forecast(i,ix)*rgfacto*mthday(i),i=1,12)
           endif  
-	  
+
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               End Rio Grande Forecast structure loop
-	      end do
+        end do
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               End Rio Grande Forecast option
       endif
 c _________________________________________________________
@@ -3100,34 +3099,34 @@ c
 c rrb 00/04/14; Add maximum recharge rate (gwmaxr)
 c     if(iwell.eq.1) then
       if(iwell.ge.1) then
-	    if(numdivw.eq.0) goto 1566
+        if(numdivw.eq.0) goto 1566
 c
-	    iin2=9
-	    if(ibasef.eq.0) then
-	      filena='*.wem'
-	    else
-	      filena='*.weh'
-	    endif
-c	
-c ---------------------------------------------------------	      
+        iin2=9
+        if(ibasef.eq.0) then
+          filena='*.wem'
+        else
+          filena='*.weh'
+        endif
+c
+c ---------------------------------------------------------
 c
       if(ichk.eq.94) write(nlog,*)'  Mdainp; reading *.wem '
         icount=0
-	      DO ND=1,NUMDIVw
+        DO ND=1,NUMDIVw
           if(ioutw.eq.1) then
             write(nlog,*) ' '
             write(nlog,'(2(a12,1x), 3i5)')
      1        '  Mdainp;   ', cdividw(nd), nd, icount, idvcomw(nd)
           endif  
-	
+
 c
 c rrb 00/06/19; Allow IWR data and global control (idivtyp) to
 c               control addition
 c
 c rrb 2006/05/18; Temporarily allow more data then well structures
 cr	      if(idvcomw(nd).eq.1 .or. idvcomw(nd).eq.3) then
- 1565	    if(idvcomw(nd).eq.1 .or. idvcomw(nd).eq.3) then
-	          read (9,952,end=1282,err=928) idyr,cistat,
+ 1565    if(idvcomw(nd).eq.1 .or. idvcomw(nd).eq.3) then
+           read (9,952,end=1282,err=928) idyr,cistat,
      1                                    (diverm(im),im=1,12)
 
 c           write(nlog,*) '  Mdainp; Well demands in '
@@ -3138,24 +3137,24 @@ c           write(nlog,*) '  Mdainp; Well demands in '
      1          '  Mdainp;   ', cistat, cdividw(nd), nd, icount,idyr
 c    1          ,(diverm(im),im=1,12)
             endif
-c	
-c ---------------------------------------------------------	      
+c
+c ---------------------------------------------------------
 c rrb 2006/03/20; Adjust character string to left     
             cistat=adjustl(cistat)     
 
-c	
-c ---------------------------------------------------------	      
+c
+c ---------------------------------------------------------
 c		Warn if unexpected data was read
-	    if(idyr.ne.iyr) then
-	      if(ibasef.eq.0) then
+            if(idyr.ne.iyr) then
+              if(ibasef.eq.0) then
                 write(nlog,1308) 'Well Demand (*.wem)',
-     1            '(*.wes or *.wst)',numdivw, nd, idyr,iyr	    
+     1            '(*.wes or *.wst)',numdivw, nd, idyr,iyr
               else
                 write(nlog,1308) 'Historic Pumping (*.weh)',
-     1            '(*.wes or *.wst)',numdivw, nd, idyr,iyr	    
+     1            '(*.wes or *.wst)',numdivw, nd, idyr,iyr
               endif
-	      goto 9999
-	    endif
+              goto 9999
+            endif
 c
 c _________________________________________________________
 c
@@ -3165,7 +3164,7 @@ c			   = 1 OK if not found
             istop=0
             
             cCallBy='Mdainp *.wem'            
-            call stafind(nlog,istop,6,numdivw,ix,cistat,cdividw,cCallBy)            
+            call stafind(nlog,istop,6,numdivw,ix,cistat,cdividw,cCallBy)
 c
 c rrb 2006/05/18; Temporarily allow more data then well structures
 cr	    if(ix.eq.0) goto 1302
@@ -3174,88 +3173,86 @@ cr	    if(ix.eq.0) goto 1302
             goto 1565
           endif  
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               Adjust units and insure data is positive
 c rrb 2006/08/01; Set negative pumping to zero
-	        IF(DFACTO.ge.small) then
-	          DO IM=1,12
-	            if(diverm(im).gt.smalln) then      
-	     	        DIVERM(IM)=DIVERM(IM)/DFACTO/MTHDAY(IM)
-	          	else
-                if(iwarnW(ix).eq.0) then		
-		              if(iwarnWT.eq.0) then
-		                write(nchk,1244)		    
-		              endif  
-		  
-		            iwarnWT=iwarnWT+1
-		            iwarnW(ix) = 1                      
-		            c = diverm(im)/dfacto/mthday(im)
-		            write(nchk,1245) iwarnWT, cistat, idyr, c,diverm(im)		
-		          endif  		  
+          IF(DFACTO.ge.small) then
+            DO IM=1,12
+              if(diverm(im).gt.smalln) then
+                DIVERM(IM)=DIVERM(IM)/DFACTO/MTHDAY(IM)
+              else
+                if(iwarnW(ix).eq.0) then
+                  if(iwarnWT.eq.0) then
+                    write(nchk,1244)
+                  endif  
+
+                  iwarnWT=iwarnWT+1
+                  iwarnW(ix) = 1
+                  c = diverm(im)/dfacto/mthday(im)
+                  write(nchk,1245) iwarnWT, cistat, idyr, c,diverm(im)
+                endif
                 diverm(im)=0.0
-		        endif    
-	        end do
-      
-	    endif
+              endif
+            end do
+          endif
 
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c rrb 00/08/03; Test if tied to a SW structure (idivcow2() > 0
 c               and expect total demand expected in *.ddm 
-	    if(idemtyp.ge.3 .and.idivcow2(ix).gt.0) goto 1303
+          if(idemtyp.ge.3 .and.idivcow2(ix).gt.0) goto 1303
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               Monthly non IWR demand
 c               Check for negatives and set diver to correct station
 c rrb 00/06/16; Data provided as monthly total demand (idvcomw(nu) = 1)
-	    if(idvcomw(ix).eq.1) then
-	      do im=1,12  
-		      diverirw(im,ix)=diverm(im)*(diveffw(im,ix)/100.)
-		      diverw(im,ix)=diverm(im) 
-	      end do
-	    endif
+          if(idvcomw(ix).eq.1) then
+            do im=1,12
+              diverirw(im,ix)=diverm(im)*(diveffw(im,ix)/100.)
+              diverw(im,ix)=diverm(im) 
+            end do
+          endif
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c rrb 00/06/16; Data provided as monthly IWR (idvcomw(nu) = 3)
-	    if(idvcomw(ix).eq.3) then
+          if(idvcomw(ix).eq.3) then
 c           write(nlog,*) '  Mdainp; idvcomw(ix) = 3'
-	      do im=1,12  
-	      	if(diveffw(im,ix).gt.small) then
-	      	  diverirw(im,ix)=diverm(im)     
-	      	  diverw(im,ix)=diverm(im)/(diveffw(im,ix)/100.)
-	      	else                        
+            do im=1,12
+              if(diveffw(im,ix).gt.small) then
+                diverirw(im,ix)=diverm(im)
+                diverw(im,ix)=diverm(im)/(diveffw(im,ix)/100.)
+              else
 c
 c rrb 00/08/02; Data check
-		       if(diverm(im).gt. small) then
-		         c = dfacto*mthday(im)
-		         write(nlog,757) cdividw(ix),divnamw1(ix), 
+                if(diverm(im).gt. small) then
+                  c = dfacto*mthday(im)
+                  write(nlog,757) cdividw(ix),divnamw1(ix),
      1                    iyr, im, diverm(im)*c, diveffw(im,ix)
-		         goto 9999
-		       else
-		        diverirw(im,ix)=0.0  
-		        diverw(im,ix)=0.0
-		      endif
-		    endif
-	      end do
-	    endif
+                  goto 9999
+                else
+                  diverirw(im,ix)=0.0
+                  diverw(im,ix)=0.0
+                endif
+              endif
+            end do
+          endif
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c		Detailed Well Demand Output
-            if(ioutw.eq.1) then
-              write (nlog,'(2(a12,1x),2i5,12f8.0)')
+          if(ioutw.eq.1) then
+            write (nlog,'(2(a12,1x),2i5,12f8.0)')
      1         '  Mdainp;   ', cistat, idyr,idvcomw(ix),
      1        (diverw(im,ix)*dfacto*mthday(im),im=1,12)
-            endif		    
+          endif
 c
 c		Endif for idvcomw = 1 (total demand in *.ddm) or 
 c		       idvcomw=3 (IWR deamnd in *.ddm)
-	         endif
-	  
+        endif
 
 c
-c ---------------------------------------------------------	      
+c ---------------------------------------------------------
 c               End well structure loop
-	      end do
+      end do
 
       endif
 c
@@ -3269,17 +3266,17 @@ c               Step X; Read Annual Time series file (*.ipy or *.tsp)
 c               for RGDSS. Note since some default data varies by month 
 c               (e.g. efficiency) default data is set in bomsec
 c               if itsfile = 0 and for structures not included
-c               in *.ipy or *.tsp as indicated by a zero max. efficiency
+c               in *.ipy or *.tsp as indicated by a zero maximum efficiency
 c 
       if(itsfile.ge.1) then
-	      iin2=10
+        iin2=10
         if(nIpyX.eq.1) then
           call getIpy2(iin2)          
         else
           call getIpy4(iin2)
         endif
       endif   
-      if(ichk.eq.4) write(nlog,*) '  Mdainp; back from getipy2 or 4'     
+      if(ichk.eq.4) write(nlog,*) '  Mdainp; back from getipy2 or 4'
 c
 c
 c ______________________________________________________________
@@ -3288,19 +3285,19 @@ c rrb 00/11/11;
 c  
       if(ichk.eq.4) write(nlog,*) '  Mdainp; isjrip', isjrip
       if(isjrip.eq.1) then
-	      iin2=10
-	      filena = '*.sjr'
-	      read(15,'(a132)') rec132
-	      write(nlog,'(a132)') rec132
-	      backspace (15)
-	      read (15,*,end=1288,err=928) idyr,sjpertb
+        iin2=10
+        filena = '*.sjr'
+        read(15,'(a132)') rec132
+        write(nlog,'(a132)') rec132
+        backspace (15)
+        read (15,*,end=1288,err=928) idyr,sjpertb
 c       write(nlog,*) '  Mdainp; idyr, sjpertb', idyr, sjpertb
 
-	      if(idyr.ne.iyr) then
+        if(idyr.ne.iyr) then
                 write(nlog,1308) 'SJRIP data (*.ddm)',
      1        'N/A',1, 1, idyr,iyr
-	        goto 9999
-	      endif
+          goto 9999
+        endif
       endif  
 c
 c ______________________________________________________________
@@ -3309,8 +3306,8 @@ c rrb 00/11/11;
 c    
       if(ichk.eq.4) write(nlog,*) '  Mdainp; icall', icall
       if(iday.eq.0 .and. idcall.ne.0) then
-	      iin2=90
-	      filena = '*.cal'
+        iin2=90
+        filena = '*.cal'
 c
 c		For monthly model read daily call data and set
 c              to day 1 value
@@ -3336,17 +3333,16 @@ c			diversions and wells
 c
       if(ichk.eq.4) write(nlog,*) '  Mdainp; ieffmax', ieffmax
       if(ieffmax.ge.1) then
-      	iin2=14
-      	filena = '*.ddc'
+        iin2=14
+        filena = '*.ddc'
       
-      	do i=1, maxuse
-      	  idum(i) = 0
-      	  idum2(i) = 0
-      	end do
-      	
+        do i=1, maxuse
+          idum(i) = 0
+          idum2(i) = 0
+        end do
 c
 c               Note allows variable nummber of station to be read
-       	nx = nduser(numdiv+1)-1+numdivw
+        nx = nduser(numdiv+1)-1+numdivw
         if(ichk.eq.94 .or. ichk.eq.4)
      1     write(nlog,*)'  Mdainp; reading *.ddc nx ' ,nx
      
@@ -3381,90 +3377,90 @@ c rrb 2006/03/20; Adjust character string to left
         cistat=adjustl(cistat)
 c
 c rrb 01/08/27; Allow extra data in file
-	      if(idyr.lt.iyr) goto 1701
-	      if(idyr.gt.iyr) then
-	         backspace(14)
-c          write(nlog,1632)
-	        goto 1710
-	      endif
+        if(idyr.lt.iyr) goto 1701
+        if(idyr.gt.iyr) then
+          backspace(14)
+c         write(nlog,1632)
+          goto 1710
+        endif
 c
 c               Adjust units
-	      if(dfacto.ge.small) then
-	        do im=1,12
-	          DIVERM(IM)=DIVERM(IM)/dfacto/MTHDAY(IM)
-	        end do
-	      endif
+        if(dfacto.ge.small) then
+          do im=1,12
+            DIVERM(IM)=DIVERM(IM)/dfacto/MTHDAY(IM)
+          end do
+        endif
 c
 c               Find diversion station associated with this data
-	      ix=0
-	      
-	      cCallBy='Mdainp D.ddc'	  
-	      call stafind(nlog,1,3,numdiv,ix,cistat,cdivid,cCallBy)
+        ix=0
+
+        cCallBy='Mdainp D.ddc'
+        call stafind(nlog,1,3,numdiv,ix,cistat,cdivid,cCallBy)
 c         write(nlog,*) '  Mdainp; ix for diversion', ix      
 c            
 c               Set IWR data for a diversion only (diwr),
 c               and for a D&W (diwr)
-	      if(ix.gt.0) then
-	        do im=1,12
-	          diwr(im,ix)=diverm(im)
-	          if(ioutd.eq.1) then
-	            write(nlog,*) '  Mdainp; ix, im, diwr(im,ix)'
-	            write(nlog,*) '  Mdainp;', ix, im, diwr(im,ix)
-	          endif  
-	        end do
-	        idum(ix)=1  
+        if(ix.gt.0) then
+          do im=1,12
+            diwr(im,ix)=diverm(im)
+            if(ioutd.eq.1) then
+              write(nlog,*) '  Mdainp; ix, im, diwr(im,ix)'
+              write(nlog,*) '  Mdainp;', ix, im, diwr(im,ix)
+            endif
+          end do
+          idum(ix)=1
 
 c         write(nlog,951) idyr, cistat, 
 c    1      (diwr(im,ix)*dfacto*mthday(im), im=1,12)
 c         write(nlog,*) ' '
 
-	      else
+        else
 c
 c              Find WEll ONLY associated with this data
           
           cCallBy='Mdainp W.ddc'
-	        call stafind(nlog,1,6,numdivw,ix,cistat,cdividw,cCallBy)
+          call stafind(nlog,1,6,numdivw,ix,cistat,cdividw,cCallBy)
 c         write(nlog,*) '  Mdainp; ix for well', ix
 c
 c              Set IWR data for a well
-	        if(ix.gt.0) then
-	          do im=1,12
-	    	      diwrw(im,ix)=diverm(im)
+          if(ix.gt.0) then
+            do im=1,12
+              diwrw(im,ix)=diverm(im)
 c
 c rrb 2006/12/20; Reset Well IWR to data read in *.ddc
 c		              Else IWR is set above to be demand * eff
 c		              where eff is average in *.wes; not a sprinkler eff
-	            diverirw(im,ix)=diverm(im)		
-	          end do
-	          idum2(ix)=1  
+              diverirw(im,ix)=diverm(im)
+            end do
+            idum2(ix)=1
 
-c             write(nlog,*) '  Mdainp; ix, idum2(ix)', ix, idum2(ix)  
-c             write(nlog,951) idyr, cistat, 
-c    1          (diwrw(im,ix)*dfacto*mthday(im),im=1,12)
-c             write(nlog,*) ' '
-	        endif
+c           write(nlog,*) '  Mdainp; ix, idum2(ix)', ix, idum2(ix)  
+c           write(nlog,951) idyr, cistat,
+c    1        (diwrw(im,ix)*dfacto*mthday(im),im=1,12)
+c           write(nlog,*) ' '
+          endif
 c
 c               Warn if station is not found
-	        if(ix.eq.0) then
+          if(ix.eq.0) then
             if(ipIpy.eq.0) then
-              rec40='Irrigation Water Requirement (*.ddc)'		    
+              rec40='Irrigation Water Requirement (*.ddc)'
               write(nlog,1281) iyr, rec40
               ipIpy=1
-            endif          
+            endif
 
             iwarnISt=iwarnISt+1
-	          if(iwarnISt.eq.1) write(nchk,1315) 
-	          write(nchk,1316) iwarnISt, cistat, iyr
+            if(iwarnISt.eq.1) write(nchk,1315) 
+            write(nchk,1316) iwarnISt, cistat, iyr
 c
 c rrb 01/03/08; OK if not found that occurs when wells are turned off
 c             goto 9999
-	        endif
+          endif
 
-	      endif
+        endif
 c
 c rrb 2017/12/22; Revise to read an unknown number of records
 c                 until a new year is read or and end of file
-c                 is encountered.	        
+c                 is encountered.
 cx
 cx               End monthly IWR data read
 cx     end do
@@ -3474,7 +3470,7 @@ cx       write(nlog,1654) ndmax
 cx        goto 9999
 cx
        goto 1700
-c       	      
+c
  1710   continue
 
 
@@ -3488,25 +3484,25 @@ c               If not, set to IWR data provided via demand
 
 
         iprinti=0
-      	do nd=1,numdiv
-      	  nui=nduser(nd) 
-      	  nue=nduser(nd+1)-1  
+        do nd=1,numdiv
+          nui=nduser(nd) 
+          nue=nduser(nd+1)-1
       
-      	  if(nui.le.nue) then
-      	    do nu=nui,nue
-      	      if(idum(nu).eq.0) then
-      		      do im=1,12
-      		        diwr(im,nu) = diverir(im,nu)
-      		      end do
+          if(nui.le.nue) then
+            do nu=nui,nue
+              if(idum(nu).eq.0) then
+                do im=1,12
+                  diwr(im,nu) = diverir(im,nu)
+                end do
                 if(area(nu).gt.small) then
                   if(iprinti.eq.0) then
                     write(nchk,1633)
                   endif  
                   
                   if(ipDdc.eq.0) then
-                    rec40='Consumptive Water Requirement (*.ddc)'                  
-		                write(nlog,1281) iyr, rec40
-                    ipDdc=1		    
+                    rec40='Consumptive Water Requirement (*.ddc)'
+                    write(nlog,1281) iyr, rec40
+                    ipDdc=1
                   endif  
                   
                   iprinti=iprinti+1
@@ -3514,10 +3510,10 @@ c               If not, set to IWR data provided via demand
      1                             divnam1(nu), area(nu)
                 endif
 
-	            endif
-	          end do
-	        endif
-	      end do
+              endif
+            end do
+          endif
+        end do
 c
 c ---------------------------------------------------------
 c               Check that all well only lands had IWR data provided
@@ -3526,54 +3522,52 @@ c               If not provided, set to IWR via demand and
 c               warn if area > 0
         iprintw=0
         if(ichk.eq.94 .or. ichk.eq.4)
-     1      write(nlog,*) '  Mdainp; Setting IWR data for a well'
+     1    write(nlog,*) '  Mdainp; Setting IWR data for a well'
         
-	      do nd=1,numdivw
-	        if(idum2(nd).eq.0 .and. idivcow2(nd).eq.0) then
-cx         if(ichk.eq.4) then
+          do nd=1,numdivw
+            if(idum2(nd).eq.0 .and. idivcow2(nd).eq.0) then
+cx          if(ichk.eq.4) then
 cx            write(nlog,*) ' Mdainp; Setting IWR data for a well', nd
 cx            write(nlog,*) 'idum2(nd), idivcow2(nd), cdividw(nd), iyr' 
 cx            write(nlog,*)  idum2(nd), idivcow2(nd), cdividw(nd), iyr 
 cx          endif
               
-	          do im=1,12
-	            diwrw(im,nd)=diverirw(im,nd)
-	          end do
+            do im=1,12
+              diwrw(im,nd)=diverirw(im,nd)
+            end do
             
 cx          if(ichk.eq.4) write(nlog,*) 
 cx   1        ' Mdainp; nd, areaw(nd)', nd, areaw(nd), ipDdc,iprintw
      
-	          if(areaw(nd).gt.small) then
-	            if(iprintw.eq.0) then
-cr	            rec40='Irrig Water Requirement'
-cx 	            if(ichk.eq.4) write(nlog,1634) iyr
-	              write(nchk,1634) iyr
-	            endif  
-	          
+            if(areaw(nd).gt.small) then
+              if(iprintw.eq.0) then
+cr              rec40='Irrig Water Requirement'
+cx              if(ichk.eq.4) write(nlog,1634) iyr
+                write(nchk,1634) iyr
+              endif
+
               if(ipDdc.eq.0) then
-	              rec40='Consumptive Water Requirement (*.ddc)'
-		            write(nlog,1281) iyr, rec40
-                ipDdc=1		
+                rec40='Consumptive Water Requirement (*.ddc)'
+                write(nlog,1281) iyr, rec40
+                ipDdc=1
               endif  
-	          
-	          
-	            iprintw=iprintw+1
+
+              iprintw=iprintw+1
 cx            if(ichk.eq.4) then 
 cx              write(nlog,* ) '  Mdainp; nd ', nd
 cx              write(nlog,1635) iprintw, iyr, cdividw(nd), 
 cx   1          divnamw1(nd), areaw(nd)
 cx            endif
               
-	            write(nchk,1635) iprintw, iyr, cdividw(nd), 
+              write(nchk,1635) iprintw, iyr, cdividw(nd),
      1          divnamw1(nd), areaw(nd)
 c             goto 9999
             endif
-	        endif
-	      end do
+          endif
+        end do
       endif
       
       
-c
 c ______________________________________________________________
 c               Step X; Read JMartin Baseflow percent
 c rrb 00/11/11; 
@@ -3601,7 +3595,7 @@ c
             write(nlog,*) idyr, cistat, 
      1        (cjm(im,1),im=1,12)
           endif
-	    
+
 c
 c rrb 2006/03/20; Adjust character string to left     
           cistat=adjustl(cistat)
@@ -3629,36 +3623,36 @@ c               Step 31a; Diversions
      1  write(nlog,*) '  Mdainp; Calculate total demand'
 
       do nd=1,numdiv
-	      nui = nduser(nd)
-	      nue=nduser(nd+1)-1
+        nui = nduser(nd)
+        nue=nduser(nd+1)-1
         
-	      if(nui.le.nue) then
-	        do nu=nui,nue
-	          do im=1,12  
-	            divert(im,nu) = diver(im,nu)
+        if(nui.le.nue) then
+          do nu=nui,nue
+            do im=1,12  
+              divert(im,nu) = diver(im,nu)
 c
 c rrb 01/04/01; Correction for skip file code
 c             if(ieffmax.eq.0) then
-	      if(ieffmax.le.0) then
-		      diverirT(im,nu) = diver(im,nu) * diveff(im,nd)/100. 
-	            else
-		      diverirT(im,nu) = diwr(im,nu) 
-	      endif
-	    end do
-	    end do
-	    endif
+              if(ieffmax.le.0) then
+                diverirT(im,nu) = diver(im,nu) * diveff(im,nd)/100.
+              else
+                diverirT(im,nu) = diwr(im,nu)
+              endif
+            end do
+          end do
+        endif
       end do
 c     
 c --------------------------------------------------------
 c               Step 31b; Wells
 c
       if(iwell.ge. 1) then
-	      do nw=1,numdivw        
-	        nd=idivcow2(nw)
-	        if(nd.gt.0) then
-	          nu=nduser(nd)
+        do nw=1,numdivw
+          nd=idivcow2(nw)
+          if(nd.gt.0) then
+            nu=nduser(nd)
         
-	          do im=1,12
+            do im=1,12
 c
 c               b. Daily capability
               if(iday.eq.0) then
@@ -3666,38 +3660,38 @@ c               b. Daily capability
               else
                 fac=factor
               endif      
-	    
+
 c
 c rrb 00/07/11; Adjust well demand so that the total refelects SW efficiency
 c               if in addition mode only (idemtyp=2)
 c rrb 01/02/04; Adjust only if in addition mode (idemtyp=2)
-	            if(diveff(im,nu).gt.small .and. idemtyp.eq.2) then
-	             	ceff = diveffw(im,nw)/diveff(im,nu)
-	            else
-	             	ceff = 1.0
-c                     write(nlog,757)
-	            endif
+              if(diveff(im,nu).gt.small .and. idemtyp.eq.2) then
+                ceff = diveffw(im,nw)/diveff(im,nu)
+              else
+                ceff = 1.0
+c               write(nlog,757)
+              endif
               
-	            divert(im,nu) = diver(im,nu) + diverw(im,nw)*ceff
+              divert(im,nu) = diver(im,nu) + diverw(im,nw)*ceff
 c             
-c	            
+c
               if(ioutD.eq.1) then
-	              write(nlog,*) '  Mdainp; idemtyp=2 ',
-     1	          im, nw, nu, diveffw(im,nw), diveff(im,nu),ceff,fac,
+                write(nlog,*) '  Mdainp; idemtyp=2 ',
+     1            im, nw, nu, diveffw(im,nw), diveff(im,nu),ceff,fac,
      1            diver(im,nu)*fac,diverw(im,nw)*fac,divert(im,nu)*fac
               endif
 c
 c rrb 01/04/01; Correction for skip file code
 c             if(ieffmax.eq.0) then
-	            if(ieffmax.le.0) then
-		            diverirT(im,nu) = diver(im,nu)*diveff(im,nd)/100. 
+              if(ieffmax.le.0) then
+                diverirT(im,nu) = diver(im,nu)*diveff(im,nd)/100.
      1                          + diverw(im,nw)*diveffw(im,nw)/100.
-	            else
-		            diverirT(im,nu) = diwr(im,nu) + diwrw(im,nw)
-	            endif
-	          end do
-	        endif
-	      end do
+              else
+                diverirT(im,nu) = diwr(im,nu) + diwrw(im,nw)
+              endif
+            end do
+          endif
+        end do
       endif
 c
 c ________________________________________________________
@@ -3712,20 +3706,20 @@ c        ichk1=0
 c        if(ichk1.eq.1) 
 c    1     write(nlog,*) '  Mdainp; Adjusting demand for type 5'
 
-	        do nd=1,numdiv
-	          do im=1,12
+         do nd=1,numdiv
+           do im=1,12
 c              if(ichk1.eq.1) write(nlog,*) 
 c    1           '  Mdainp; ',im,nd,diver(im,nd),demcond(nd)   
 c
 c rrb 01/04/12; Reset to water right if IWR is > 0)
 c rrb 01/04/12; Reset to demand to handle Closed Basin Pumping
 c            if(diwr(im,nd).gt.small) then 
-	           if(diver(im,nd).gt.small) then
-	             diver(im,nd)=amax1(demcond(nd), diver(im,nd))
-	             divert(im,nd)=diver(im,nd)
-	           endif
-	         end do
-	       end do
+             if(diver(im,nd).gt.small) then
+               diver(im,nd)=amax1(demcond(nd), diver(im,nd))
+               divert(im,nd)=diver(im,nd)
+             endif
+           end do
+         end do
        endif
 
 c
@@ -3797,7 +3791,7 @@ C
   860 if(interv.ne.-999) then
         write(nlog,870) irtnid(idl),maxdlm,ctot
       else
-	write(nlog,872) cirtnid(idl), maxdlm, ctot
+        write(nlog,872) cirtnid(idl), maxdlm, ctot
       endif
   870 format(/
      1 '  Mdainp; Problem.',/

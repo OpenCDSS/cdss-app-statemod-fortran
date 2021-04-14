@@ -70,57 +70,57 @@ c		Print header once per month
 c
 c _________________________________________________________
 c               Print call data for a direct diversion
-	    if(l1.eq.3 .and. crigid(l2).eq.ccall) then
-	      icallx=icallx+1
-	      ND  =IDIVCO(1,L2)
-	      ISCD=IDVSTA(ND)
-	      NDNS=NDNNOD(ISCD)
-        call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)	      
+      if(l1.eq.3 .and. crigid(l2).eq.ccall) then
+        icallx=icallx+1
+        ND  =IDIVCO(1,L2)
+        ISCD=IDVSTA(ND)
+        NDNS=NDNNOD(ISCD)
+        call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)
         bypass=amax1(river(iscd)-avail(imcd), 0.0)
 
         if(iout.eq.1) then
           write(nchkx,*) ' CallDat; cridid(l2), ccall', 
      1      l2, crigid(l2), ccall
         endif
-	      
-	      if(idivsw(nd).eq.0 .or. idvrsw(l2).eq.0) then	      
-		      write(nchkx,324)icallx,iyrmo(mon), xmonam(mon), idy,
+      
+        if(idivsw(nd).eq.0 .or. idvrsw(l2).eq.0) then
+          write(nchkx,324)icallx,iyrmo(mon), xmonam(mon), idy,
      1              crigid(l2), iwx, 0.0,
      1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,     
      1              'Diversion    '
-		      goto 500
-	      endif
+          goto 500
+        endif
 
 
-	      if(icall.gt.1 .and. icallx.eq. 1) write(io99,*) ' '
-	      if (avail(iscd).lt.(.01)) then
-		      if(ishort.eq.0) then
-		        write(nchkx,325)icallx,iyrmo(mon), xmonam(mon), idy,
+        if(icall.gt.1 .and. icallx.eq. 1) write(io99,*) ' '
+          if (avail(iscd).lt.(.01)) then
+            if(ishort.eq.0) then
+              write(nchkx,325)icallx,iyrmo(mon), xmonam(mon), idy,
      1                crigid(l2), iwx, divmon(nd)*fx,
-     1                river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
+     1                river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1                'Diversion    '
           
-		      else
-		        write(nchkx,326)icallx,iyrmo(mon), xmonam(mon), idy,
+             else
+               write(nchkx,326)icallx,iyrmo(mon), xmonam(mon), idy,
      1                crigid(l2), iwx, divmon(nd)*fx,
-     1                river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
+     1                river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1                'Diversion    '
-		      endif
-	      else
-		      if(avail(imcd).le.(.01)) then                           		
-		        write(nchkx,327)icallx, iyrmo(mon), xmonam(mon), idy,
+            endif
+          else
+            if(avail(imcd).le.(.01)) then
+              write(nchkx,327)icallx, iyrmo(mon), xmonam(mon), idy,
      1                crigid(l2), iwx, divmon(nd)*fx,
-     1                river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
+     1                river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1                'Diversion    ',
      1                cstaid(imcd),stanam1(imcd)
-		      else
-		        write(nchkx,325)icallx, iyrmo(mon), xmonam(mon), idy,
-     1                 crigid(l2), iwx, divmon(nd)*fx,
-     1                 river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
-     1                 'Diversion    '
-		      endif
-	      endif
-	    endif
+            else
+              write(nchkx,325)icallx, iyrmo(mon), xmonam(mon), idy,
+     1                crigid(l2), iwx, divmon(nd)*fx,
+     1                river(iscd)*fx, avail(imcd)*fx, bypass*fx,
+     1                'Diversion    '
+            endif
+          endif
+        endif
 
 
 c
@@ -128,111 +128,106 @@ c _________________________________________________________
 c               Print call data for an instream flow
 c jhb 2014/07/07 array index checking
         if(l2.ge.1 .and. l2.le.241) then
-	    if(l1.eq.1 .and. cisfwr(l2).eq.ccall) then
-	      icallx=icallx+1
-	      nf  = iifrco(L2)
-	      ISCD=ifrsta(nf)
-	      NDNS=NDNNOD(ISCD)
-              call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)	      
-              bypass=amax1(avail(imcd)-river(iscd), 0.0)
-	      
-	      if(ifrrsw(nf).eq.0 .or. iifrsw(l2).eq.0) then	        
-		      write(nchkx,324)icallx, iyrmo(mon), xmonam(mon), idy, 
+          if(l1.eq.1 .and. cisfwr(l2).eq.ccall) then
+            icallx=icallx+1
+            nf  = iifrco(L2)
+            ISCD=ifrsta(nf)
+            NDNS=NDNNOD(ISCD)
+            call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)
+            bypass=amax1(avail(imcd)-river(iscd), 0.0)
+
+            if(ifrrsw(nf).eq.0 .or. iifrsw(l2).eq.0) then
+              write(nchkx,324)icallx, iyrmo(mon), xmonam(mon), idy, 
      1            cisfwr(l2), iwx, qdiv(14,iscd)*fx,
      1            river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1            'ISF         '
-		      goto 500
-	      endif
+              goto 500
+            endif
 
+            if(icall.gt.1 .and. icallx.eq. 1) write(io99,*) ' '
 
-	      if(icall.gt.1 .and. icallx.eq. 1) write(io99,*) ' '
-
-	      
-	      if (avail(iscd).lt.(.01)) then
-		      if(ishort.eq.0) then
-                  write(nchkx,325)icallx,iyrmo(mon), xmonam(mon), idy,
+            if (avail(iscd).lt.(.01)) then
+              if(ishort.eq.0) then
+                 write(nchkx,325)icallx,iyrmo(mon), xmonam(mon), idy,
      1              cisfwr(l2), iwx, qdiv(14,iscd)*fx,
-     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
+     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1              'ISF         '
-		      else
-		       write(nchkx,326)icallx,iyrmo(mon), xmonam(mon), idy,
+              else
+                write(nchkx,326)icallx,iyrmo(mon), xmonam(mon), idy,
      1              cisfwr(l2), iwx, qdiv(14,iscd)*fx,
-     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
+     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1              'ISF         '
-		      endif
-	      else
-		      if (avail(imcd).le.(.01)) then
-		        write(nchkx,327)icallx, iyrmo(mon), xmonam(mon), idy,
+              endif
+            else
+              if (avail(imcd).le.(.01)) then
+                write(nchkx,327)icallx, iyrmo(mon), xmonam(mon), idy,
      1              cisfwr(l2), iwx, qdiv(14,iscd)*fx,
-     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
+     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1              'ISF         ',
      1              cstaid(imcd),stanam1(imcd)
 
-		      else
-		         write(nchkx,325)icallx,iyrmo(mon), xmonam(mon), idy,
+              else
+                write(nchkx,325)icallx,iyrmo(mon), xmonam(mon), idy,
      1              cisfwr(l2), iwx, qdiv(14,iscd)*fx, 
-     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
+     1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,
      1              'ISF         '
-		      endif
-	      endif
-	    endif
-	    endif
-
-
-c
+              endif
+            endif
+          endif
+        endif
 
 c _________________________________________________________
 c               Print call data for a reservoir right
-c               Note concept of ishort not applied to resrvoirs
+c               Note concept of ishort not applied to reservoirs
 c           write(io99,*) '  Execut; l1, l2, creswr ccall', 
 c    1        l1, l2, cresid(l2), ccall
 
 c jhb 2014/07/07 array index checking
         if(l2.ge.1 .and. l2.le.351) then
-	    if(l1.eq.2 .and. creswr(l2).eq.ccall) then 
-c             write(nchkx,*) '  Execut; l1, ccall', l1, ccall
-	      icallx=icallx+1
-	      nr  =iresco(1,L2)
-	      ISCD=irssta(nr)
-	      NDNS=NDNNOD(ISCD)
-              call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)	      
-              bypass=amax1(avail(imcd)-river(iscd), 0.0)	      	        
-	      
-	      if(iressw(nr).eq.0) goto 500
-	      if(iressw(nr).eq.0 .or. irsrsw(l2).eq.0) then
-	        write(nchkx,324)icallx,iyrmo(mon), xmonam(mon), idy,
+          if(l1.eq.2 .and. creswr(l2).eq.ccall) then 
+c           write(nchkx,*) '  Execut; l1, ccall', l1, ccall
+            icallx=icallx+1
+            nr  =iresco(1,L2)
+            ISCD=irssta(nr)
+            NDNS=NDNNOD(ISCD)
+            call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)
+            bypass=amax1(avail(imcd)-river(iscd), 0.0)
+
+            if(iressw(nr).eq.0) goto 500
+            if(iressw(nr).eq.0 .or. irsrsw(l2).eq.0) then
+              write(nchkx,324)icallx,iyrmo(mon), xmonam(mon), idy,
      1            creswr(l2), iwx, 0.0,
      1            river(iscd)*fx, avail(imcd)*fx, bypass*fx,     
      1            'Reservoir   '
-		      goto 500
-	      endif
+              goto 500
+            endif
 
 
-	      if(icall.gt.1 .and. icallx.eq. 1) write(io99,*) ' '
-	      if (avail(iscd).lt.(.01)) then
-		      write(nchkx,326)icallx, iyrmo(mon), xmonam(mon), idy,
+           if(icall.gt.1 .and. icallx.eq. 1) write(io99,*) ' '
+           if (avail(iscd).lt.(.01)) then
+             write(nchkx,326)icallx, iyrmo(mon), xmonam(mon), idy,
      1            creswr(l2), iwx, qres(1,nr),
      1            river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
      1            'Reservoir   '
-	      else
-		      if (avail(imcd).le.(.01)) then
-		        write(nchkx,327)icallx,iyrmo(mon), xmonam(mon), idy,
+             else
+               if (avail(imcd).le.(.01)) then
+                 write(nchkx,327)icallx,iyrmo(mon), xmonam(mon), idy,
      1              creswr(l2), iwx, qres(1,nr), 
      1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
      1              'Reservoir   ',
      1              cstaid(imcd),stanam1(imcd)
-		      else
-		        write(nchkx,325)icallx, iyrmo(mon), xmonam(mon), idy,
+               else
+                 write(nchkx,325)icallx, iyrmo(mon), xmonam(mon), idy,
      1              creswr(l2), iwx, qres(1,nr), 
      1              river(iscd)*fx, avail(imcd)*fx, bypass*fx,          
      1              'Reservoir   '
-		      endif
-	      endif
-	    endif
-	    endif
+               endif
+             endif
+           endif
+         endif
 c
 c _________________________________________________________
-c		Formats	    
+c     Formats
  100  format('#',/,
      1 '#  Execut; FYI Detailed call information requested ',
      1          'at right ',a12,/
