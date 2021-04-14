@@ -9,7 +9,9 @@
 ~$*
 
 # Zip files used to transfer files.
+# - use .zip.txt to try to get through gmail, etc.
 *.zip
+*.zip.txt
 
 # Reused junk file for temporary files.
 # - any file that starts with "junk"
