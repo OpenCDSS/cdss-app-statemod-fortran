@@ -26,7 +26,27 @@ echo "StateMod version determined to be: ${statemodVersion}"
 # - the zip file includes the StateMod version from statem.for file
 sevenzip='/C/Program Files/7-Zip/7z.exe'
 listFile="/tmp/statemod-code-list.txt"
-ls -1 fortran/*.inc fortran/*.for fortran/makefile > ${listFile}
+# Include relevant files and ignore dynamic files.
+# - don't include Lahey files because Ray Bennett is in control and needs to make those work
+ls -1 fortran/*.inc fortran/*.for fortran/makefile fortran/*.bash fortran/*.sh fortran/*.md > ${listFile}
 
 zipFile="statemod-${statemodVersion}-code.zip"
+
+# Remove the file first so there is no weird merging.
+zipFile="statemod-${statemodVersion}-code.zip"
+if [ -f "${zipFile}" ]; then
+  echo "Removing old zip file:  ${zipFile}"
+  rm "${zipFile}"
+fi
+
+echo "Running 7zip to create zip file:  ${zipFile}"
 "${sevenzip}" a -tzip ${zipFile} @${listFile}
+exitStatus=$?
+if [ ${exitStatus} -ne 0 ]; then
+  echo "Error running 7zip, exit status (${exitStatus})."
+  exit 1
+fi
+
+echo "Zip file for current code version is:  ${srcMainFolder}/${zipFile}"
+echo "Copy to :  ${srcMainFolder}/${zipFile}.txt if necessary to email."
+exit 0
