@@ -7,6 +7,8 @@ This folder contains the following source code files for StateMod:
 | `*.for` | Fortran source files. |
 | `*.inc` | Include files, mainly the `common.inc` file with shared common blocks. |
 | `makefile` | makefile to control compile/build, initially the Windows version but should work on Linux. |
+| `makestatemodrb` | Run `make statemod` to compile the program, and then copy to `/C/cdss/bin`. |
+| `makeverycleanrb` | Run `make veryclean`, run `make statemod` to compile the program and save output to log file `statemod-compile.log`, and then copy to `/C/cdss/bin`. |
 | `count-warnings.bash` | Run after `make -k statemod 2>&1 | tee statemod-compile.log` to list counts of different warning types, useful when cleaning up code. |
 
 The following Lahey compiler files are included for historical reasons and may be removed in the future:

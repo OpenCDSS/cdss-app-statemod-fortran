@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Simple script to run make for Ray Bennett
+# - veryclean
+# - full compile to log file
+
+echo "Running 'make veryclean' and 'make statemodrb'"
+
+make veryclean
+make -k statemodrb 2>&1 | tee statemod-compile.log
+
+# Concatenate the warning summary.
+
+./count-warnings.bash | tee --append statemod-compile.log
