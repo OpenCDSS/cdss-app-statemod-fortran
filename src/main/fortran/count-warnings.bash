@@ -17,6 +17,10 @@ if [ ! -f "${compileLogFile}" ]; then
 fi
 
 sumCountWarnings=0
+
+# Echo warning summary to stdout.
+
+echo ""
 echo "=====   ============================================================"
 echo "Count : Warning text (searches are case-insensitive)"
 echo "=====   ============================================================"

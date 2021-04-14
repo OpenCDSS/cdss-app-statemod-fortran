@@ -226,16 +226,23 @@ help:
 	@echo "-------------------------------------------------------------------------------------------"
 	@echo "StateMod makefile targets:"
 	@echo ""
-	@echo "all        Default target that prints this help message."
-	@echo "checkarch  Check that object files are consistent with shell 32 or 64 bits."
-	@echo "clean      Remove dynamically created files (but not final executable)."
-	@echo "help       Print this message."
-	@echo "printenv   Helper to print which operating system is used, controls configuration."
-	@echo "statemod   Compile the StateMod executable, recompiling any .o if .for modified."
-	@echo "veryclean  Make the 'clean' target, and also remove the final executable."
+	@echo "all           Default target that prints this help message."
+	@echo "checkarch     Check that object files are consistent with shell 32 or 64 bits."
+	@echo "clean         Remove dynamically created files (but not final executable)."
+	@echo "help          Print this message."
+	@echo "printenv      Helper to print which operating system is used, controls configuration."
+	@echo "statemod      Compile the StateMod executable, recompiling any .o if .for modified."
+	@echo "statemodrb    For Ray Bennett - compile the StateMod executable, and copy to his run folder."
+	@echo "veryclean     Make the 'clean' target, and also remove the final executable."
 	@echo ""
-	@echo "file.o     Compile the source file.for file into object file file.o,"
-	@echo "           useful to check syntax for a single file."
+	@echo "file.o        Compile the source file.for file into object file file.o,"
+	@echo "              useful to check syntax for a single file."
+	@echo "-------------------------------------------------------------------------------------------"
+	@echo "Targets specific to Ray Bennett:"
+	@echo ""
+	@echo "statemodrb    Compile the StateMod executable and copy to Ray's run folder."
+	@echo "verycleanrb   Veryclean full compile, save log to statemod-compile.log,"
+	@echo "              and copy executable to Ray's run folder.  DOES NOT ECHO TO SCREEN UNTIL DONE."
 	@echo "-------------------------------------------------------------------------------------------"
 	@echo "Important makefile variables that are used:"
 	@echo ""
@@ -703,22 +710,27 @@ ifdef OS
 	@echo "-----------------------------------------------------------------------"
 	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe"
 	@echo "-----------------------------------------------------------------------"
-	@# -----------------------
-	@# Uncomment the following if want to copy executable to different location.
-	@# - this is not standard for everyone because some developers may work on drive other than /C
-	@# - put in at Ray Bennett's request
-	@#echo "Copying executable to /C/cdss/bin."
-	@# Create the folder if it does not exist.
-	@#mkdir -p /C/cdss/bin
-	@# Copy the executable to a different location.
-	@#cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe /C/cdss/bin
-	@# -----------------------
 else
 	@# Linux...
 	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
 	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit"
 	@echo "-----------------------------------------------------------------------"
+endif
+
+# Special target for Ray Bennett:
+# - compile as above
+# - copy the executable to a folder that Ray uses to run tests
+statemodrb: statemod
+ifdef OS
+	@# The 
+	@echo "Copying executable to /C/cdss/bin."
+	@# Create the folder if it does not exist.
+	@mkdir -p /C/cdss/bin
+	@# Copy the executable to a different location.
+	@cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe /C/cdss/bin
+else
+	@echo "statemodrb target is only enabled on windows."
 endif
 
 # ======================================================================
@@ -749,7 +761,7 @@ endif
 	$(FC) $(FFLAGS) -c $<
 
 # Utility targets.
-.PHONY: clean veryclean
+.PHONY: clean veryclean vercleanrb
 
 # TODO smalers 2021-03-25 remove when verified
 #	@if [ $(BAD_OBJ_COUNT) -ne 0 ]; then \
@@ -829,6 +841,17 @@ clean: printenv
 	@echo "-----------------------------------------------------------------------"
 	rm -f *.o *.mod *.MOD
 	rm -f *.for.*r.*
+
+# Special target for Ray Bennett.
+# Clean compile and log the results to a file.
+# Count the warnings and print to screen and append to the compile log file.
+# 
+verycleanrb: veryclean
+	@echo "Compiling statemod after veryclean - full compile."
+	@# Have to compile using a shell command because of output redirect.
+	$(shell make -k statemodrb 2>&1 | tee statemod-compile.log)
+	@# Summarize the warning count to the screen and end of compile log file.
+	$(shell ./count-warnings.bash 2>&1 | tee --append statemod-compile.log)
 
 # Print important environment information to help understand setup.
 printenv:

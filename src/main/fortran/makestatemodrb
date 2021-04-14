@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Simple script to run Make for Ray Bennett
+
+echo "Running 'make statemodrb'"
+
+make statemodrb
