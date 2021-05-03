@@ -26,19 +26,20 @@ c                 is off
 c
 c
 c _________________________________________________________
-c	Program Description
+c	    Program Description
 c
 c       Oprfind; it reads various operational right data
 c                called by OprInp.f
 c
-c	Same as OprFind but revised to recognize command line
-c	arguements
+c	               Same as OprFind but revised to recognize command line
+c	               arguements
 c
 c
 c _________________________________________________________
-c	Update History
-c	
+c	    Update History
 c
+c rrb 2021/04/18; Compiler warning
+c	
 c 2020/12/05 Turn carrier losses back on oprlossC(k,i)
 c
 c 2020/12/01 TEST without carrier losses oprlossC(k,i)
@@ -113,12 +114,19 @@ c
 c
 c _________________________________________________________
 c
-c		Detailed output switch
-c		iout=0 none, iout=1 detailed
-c		ioutP=0 No plan output, 1 Plan output itype 7 and 25
-c		ioutR=0 No reservoir output, 1 Reservoir output itype 2
-c		iecho=0 Do not  print data read to *.chk
-c		iecho=1 do print data read to *.chk
+c
+c rrb 2021/04/18; Compiler warning
+      ifound=0
+      rec1=' '
+      rec132=' '
+      rops2=rops2
+
+c		         Detailed output switch
+c		           iout=0 none, iout=1 detailed
+c		           ioutP=0 No plan output, 1 Plan output itype 7 and 25
+c		           ioutR=0 No reservoir output, 1 Reservoir output itype 2
+c		           iecho=0 Do not  print data read to *.chk
+c		           iecho=1 do print data read to *.chk
 c
         iout=0
         ioutP=0
@@ -1014,8 +1022,10 @@ c		               of RG compact
               endif                
               goto 500
             endif 
-
-            idumy = iabs(idumx)-12.0
+c
+c rrb 2021/04/18; Compiler warning
+cx         idumy = iabs(idumx)-12.0
+           idumy = iabs(idumx)-12
 c
 c rrb 2007/11/05; Correction -12 is monthly switches only            
             if (idumy.ge.0) then
@@ -1055,7 +1065,10 @@ c rrb 99/11/02; Allow monthly switch only
           if(idumx.eq.12) idumy = 0
 c
 c               Allow monthly and intervening structures
-          if(idumx.lt.0) idumy = iabs(idumx)-12.0
+c
+c rrb 2021/04/18; Compiler warning
+cx        if(idumx.lt.0) idumy = iabs(idumx)-12.0
+          if(idumx.lt.0) idumy = iabs(idumx)-12
 c
 c ---------------------------------------------------------
 c               Read intervening structure info
@@ -1119,7 +1132,10 @@ c rrb 99/11/02; Allow monthly switch only
           if(idumx.eq.12) idumy = 0
 c
 c               Allow monthly and intervening structures
-          if(idumx.lt.0) idumy = iabs(idumx)-12.0
+c
+c rrb 2021/04/18; Compiler warning
+cx        if(idumx.lt.0) idumy = iabs(idumx)-12.0
+          if(idumx.lt.0) idumy = iabs(idumx)-12
 c
 c               Read intervening structure plus loss info
           if(iout.eq.1)
@@ -1361,12 +1377,12 @@ c __________________________________________________________
      1 11x,' Source Stream ID = ',a12,' in operations file (*.opr) ',/              
      1 11x,' is not in the steam network file (*.rin)')
 
-  160 format(/,72('_'),/                                                          
-     1'  Oprfind; Problem with Right ID ', a12,/                       
-     1 11x,' Destination or source Well ID = ',a12,/
-     1 11x,' in the operations right file (*.opr) ',/              
-     1 11x,' is not in the Well station file (*.wes)') 
-     
+cx  160 format(/,72('_'),/                                                          
+cx     1'  Oprfind; Problem with Right ID ', a12,/                       
+cx     1 11x,' Destination or source Well ID = ',a12,/
+cx     1 11x,' in the operations right file (*.opr) ',/              
+cx     1 11x,' is not in the Well station file (*.wes)') 
+cx     
   170 format(/,72('_'),/                                                         
      1'  Oprfind; ', a8, ' Reading Operating Rule ID = ', a12,/                       
      1 11x,' The Structure type specified for a source, destination',/
@@ -1410,10 +1426,10 @@ c __________________________________________________________
      1 11x, ' it must be in the river network file (*.rin)',/
      1 11x, ' Recommend you adjust accordingly')
      
-  212 format(/,72('_'),/
-     1 '  Oprfind; ',a8, ' Operating Right ', a12,/                       
-     1 11x, ' Found intervening ID  ',a12)
-     
+cx  212 format(/,72('_'),/
+cx     1 '  Oprfind; ',a8, ' Operating Right ', a12,/                       
+cx     1 11x, ' Found intervening ID  ',a12)
+cx     
   214 format(/,72('_'),/
      1 '  Oprfind; ',a8, ' Operating Right ', a12,/                       
      1 11x, ' The first intervening structure has type = ', a12,/
@@ -1441,35 +1457,34 @@ c __________________________________________________________
      1 ' ____________ _____ ____ __________________')
      
   302  format(2x, i5,i5, 1x, a12, 1x, a24, 1x, a12, 1x, 2i5, 1x,a12)       
-  400 format(36x,12i8)
+cx  400 format(36x,12i8)
   410 format(36x,12f8.0)
   
- 1100  format(/,72('_'),/                                                          
-     1'  Oprfind; Problem with Right ID ', a12,/                      
-     1 11x,' Destination ISF ID = ',a12,' in operations file (*.opr)',/              
-     1 11x,' cannot be found in ISF station file (*.ifs)')
-
- 1300 format(/,72('_'),/                                                          
-     1'  Oprfind; ', a8, ' Operating Right ', a12,/                      
-     1 11x,' Destination or source water right Div ID = ',a12,/
-     1 11x,' in the operations right file (*.opr) ',/              
-     1 11x,' is not in the Div right file (*.ddr)')
-     
- 1304 format(/,72('_'),/
-     1 '  Oprfind; Problem with Operating Right ', a12,/
-     1 11x,' Source 2 (a plan ID) = ', a12 ,/
-     1 11x,' Cannot be found in the plan data file (*.pln). Check',/
-     1 11x,' 1. The specified ID is in the plan data (*.pln)',/
-     1 11x,' 2. The plan data (*.pln) is provided, and',/
-     1 11x,' 3. The plan data is in the response file (*.rsp)')
-
- 1305 format(/,72('_'),/
-     1 '  Oprfind; Warning for Operating Right ', a12,/
-     1 11x,' Source 2 (a plan ID) = ', a12 ,/
-     1 11x,' Since it is blank StateMod assumes this operating rule',/
-     1 11x,' has no terms and conditions')
-
-
+cx 1100  format(/,72('_'),/                                                          
+cx     1'  Oprfind; Problem with Right ID ', a12,/                      
+cx     1 11x,' Destination ISF ID = ',a12,' in operations file (*.opr)',/              
+cx     1 11x,' cannot be found in ISF station file (*.ifs)')
+cx
+cx 1300 format(/,72('_'),/                                                          
+cx     1'  Oprfind; ', a8, ' Operating Right ', a12,/                      
+cx     1 11x,' Destination or source water right Div ID = ',a12,/
+cx     1 11x,' in the operations right file (*.opr) ',/              
+cx     1 11x,' is not in the Div right file (*.ddr)')
+cx     
+cx 1304 format(/,72('_'),/
+cx     1 '  Oprfind; Problem with Operating Right ', a12,/
+cx     1 11x,' Source 2 (a plan ID) = ', a12 ,/
+cx     1 11x,' Cannot be found in the plan data file (*.pln). Check',/
+cx     1 11x,' 1. The specified ID is in the plan data (*.pln)',/
+cx     1 11x,' 2. The plan data (*.pln) is provided, and',/
+cx     1 11x,' 3. The plan data is in the response file (*.rsp)')
+cx
+cx 1305 format(/,72('_'),/
+cx     1 '  Oprfind; Warning for Operating Right ', a12,/
+cx     1 11x,' Source 2 (a plan ID) = ', a12 ,/
+cx     1 11x,' Since it is blank StateMod assumes this operating rule',/
+cx     1 11x,' has no terms and conditions')
+cx
  1500 format(/,72('_'),/
      1'  Oprfind; ', a8, ' Operating Right ', a12,/                      
      1 11x,' Cannot find an Operating Right',
@@ -1483,11 +1498,11 @@ c __________________________________________________________
 c
 c               Warnings         
 c ____________________________________________________
-  919 format(/,72('_'),/
-     1 '  OprFind; FYI *.opr rule ID = ', a12,  /
-     1 '           has a destination account = ', i5,/
-     1 '           which means the opr rule treats the reservoir',/ 
-     1 '           as a total, not by an account')
+cx  919 format(/,72('_'),/
+cx     1 '  OprFind; FYI *.opr rule ID = ', a12,  /
+cx     1 '           has a destination account = ', i5,/
+cx     1 '           which means the opr rule treats the reservoir',/ 
+cx     1 '           as a total, not by an account')
   920 format(/,72('_'),/
      1 '  OprFind; Problem with *.opr rule ID = ', a12,/  
      1 '           It has a source or destination account = ', i5,/
@@ -1495,8 +1510,8 @@ c ____________________________________________________
      1 '           recommend you revise the reservoir data (*.res)',/
      1 '           or operating rule (*.opr) data')
      
- 1281  FORMAT(/,72('_'),/
-     1  '  Oprfind; Warning See *.chk for details.')
+cx 1281  FORMAT(/,72('_'),/
+cx     1  '  Oprfind; Warning See *.chk for details.')
      
  1282  FORMAT(/,72('_'),/
      1  '  Oprfind; Warning See *.chk for details regarding: ',a32)
@@ -1514,14 +1529,14 @@ c _________________________________________________________
      1 10x,'13 max exchange values (one per month plus an annual)' ) 
       goto 9999
       
- 2002 write(nlog,2012) cidvri, ityopr1, itype      
- 2012 format(/,72('_'),/
-     1 ' Oprfind; Problem with *.opr rule ID = ', a12,' type ', i5,
-     1 ' Data type ', i5, / 
-     1 10x,'Cannot read the exchange % and 13 maximum exchange',/
-     1 10x,' values (one per month plus an annual)' ) 
-      goto 9999
-      
+cx 2002 write(nlog,2012) cidvri, ityopr1, itype      
+cx 2012 format(/,72('_'),/
+cx     1 ' Oprfind; Problem with *.opr rule ID = ', a12,' type ', i5,
+cx     1 ' Data type ', i5, / 
+cx     1 10x,'Cannot read the exchange % and 13 maximum exchange',/
+cx     1 10x,' values (one per month plus an annual)' ) 
+cx      goto 9999
+cx      
  2004 write(nlog,2014) cidvri, ityopr1, itype      
  2014 format(/,72('_'),/
      1 ' Oprfind; Problem with *.opr rule ID = ', a12,' type ', i5,  

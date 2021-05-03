@@ -25,8 +25,12 @@ c _________________________________________________________
 c	Program Description
 c
 c       Somnmy; It sorts water rights
-c               Called by rigsor.f
+c               Called by rigsor.f                                                             
+c_________________________________________________________________
+c                                                                 
+c       Update History                                            
 c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c	Dimensions
 c
@@ -34,7 +38,12 @@ c
       DIMENSION Rwr(maxnwr), L(maxnwr)
 c
 c _________________________________________________________
-c		Step 1; Initialize
+c		Step 1; Initialize  
+c
+c rrb 2021/04/18; Compiler warning
+      iprob=0                 
+      if(iprob.gt.0) goto 9999
+
       DO 10 I=1,N
 c
 c rrb 2021/03/20; Compiler Update
@@ -48,8 +57,10 @@ c
 c rrb 2021/03/20; Compiler Update
 cx      IF(M1) 60,60,30
       if(m1.le.0) goto 60
-      
-   30 DO 50 I=1,M1
+c
+c rrb 2021/04/18; Compiler warning      
+cx 30 DO 50 I=1,M1 
+      DO 50 I=1,M1   
       II=N-I+1
       J=L(II)
       K=L(II-1)
@@ -68,7 +79,7 @@ cx      IF(M-M1) 20,20,60
    60 RETURN
 c
 c _________________________________________________________
-c
+c  
  9999 write(6,*) '  Stopped in Somnmy, see the log file (*.log)'
       write(99,*) '  Stopped in Somnmy'
       write(6,*) 'Stop 1' 

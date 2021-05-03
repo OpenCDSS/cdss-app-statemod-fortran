@@ -36,6 +36,9 @@ c _________________________________________________________
 c	Update History
 c
 c               Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 99/12/28; New Id convention as follows:
 c                               0-5000 = reservoir
 c                               5001 - 7500 = ISF
@@ -1024,15 +1027,20 @@ c
 c _________________________________________________________
 c               Formats
 c
- 100      format(' DayoutR; Res  ',
-     1                 '  iyr  mon  idy   nr    n irec ireca',/
-     1           ' DayoutR; Res  ', 20i5)
+c
+c rrb 2021/04/18; Compiler warning
+cx 100      format(' DayoutR; Res  ',
+cx     1                 '  iyr  mon  idy   nr    n irec ireca',/
+cx     1           ' DayoutR; Res  ', 20i5)
+
  110      format(' DayoutR; Div  ',
      1                 '  iyr  mon  idy irec irecs',/
      1           ' DayoutR; Div  ', 20i5)
- 120      format(' DayoutR; Well ',
-     1                 '  iyr  mon  idy irec irecs',/
-     1           ' DayoutR; Well ', 20i5)
+c
+c rrb 2021/04/18; Compiler warning
+cx 120      format(' DayoutR; Well ',
+cx     1                 '  iyr  mon  idy irec irecs',/
+cx     1           ' DayoutR; Well ', 20i5)
 
   230   format(' qdiv ',2i10)
   280   format(i5,a12,16f7.2,/,10x,16f7.2)

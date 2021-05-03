@@ -26,6 +26,12 @@ c	Program Description
 c
 c       Deplete;It calculates well depletion
 c
+c _________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2008/01/23;Revise reoperation switch (ireop) to not reoperate
 c		 if the depletion less than a specified amount (divchk)
 c
@@ -402,9 +408,11 @@ c
 c _________________________________________________________
 c
 c               Formats
- 160  format('    Deplete;   l2 iord  mon  idy  imo iend',
-     1                   '    k   im  imx   kk',
-     1                   ' ndlymx mdhday(imx)')
+c
+c rrb 2021/04/18; Compiler warning
+cx 160  format('    Deplete;   l2 iord  mon  idy  imo iend',
+cx     1                   '    k   im  imx   kk',
+cx     1                   ' ndlymx mdhday(imx)')
  170  format('    Deplete;   l2 iord  mon  idy  ido iend',
      1                   '    k   id   kk ndlymx')
  172  format(12x, 20i5)
@@ -419,12 +427,14 @@ c               Formats
      
  190  format('    Deplete; Avail = ', i4, 10f8.2,(/,25x10f8.2))
  192  format('    Deplete; River = ', i4, 10f8.2,(/,25x10f8.2))                                       
- 300  format('  Deplete; Well depletion check',//
-     1 '  iyr  mon  imo  ido  idy   nd   kk iord',     
-     1 '      Depl      rett     delta',/
-     1 ' ____ ____ ____ ____ ____ ____ ____ ____', 
-     1 ' _________ _________ _________')
- 310        format(8i5, 20f10.2)
+c
+c rrb 2021/04/18; Compiler warning
+cx 300  format('  Deplete; Well depletion check',//
+cx     1 '  iyr  mon  imo  ido  idy   nd   kk iord',     
+cx     1 '      Depl      rett     delta',/
+cx     1 ' ____ ____ ____ ____ ____ ____ ____ ____', 
+cx     1 ' _________ _________ _________')
+cx 310        format(8i5, 20f10.2)
 
       END
 

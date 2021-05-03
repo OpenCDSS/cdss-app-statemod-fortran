@@ -36,6 +36,8 @@ c _________________________________________________________
 c
 c               Update history
 c
+c
+c rrb 2021/04/18; Compiler warning
 c      
 c 2020-09-06; Version 16.00.40
 c             If a type 3 - Reservoir to a Conduit (Carrier)
@@ -198,12 +200,22 @@ c
 c      
 c _________________________________________________________
 c               
-c		Step 1; Detailed Output control and header
-c		iout=0 No details
-c		iout=1 Details
-c		iout=2 Summary
-c		iout=99 Summary independent of ichk
-c   ioutQ=1 Print Qres data
+c		Step 1; 
+c
+c rrb 2021/04/18; Compiler warning
+      divreq1=0.0
+      pavail=0.0
+      nro=0  
+c
+c rrb 2021/04/25; Runtine Error
+      nr=0
+c                Detailed Output control and header
+c		              iout=0 No details
+c		              iout=1 Details
+c		              iout=2 Summary
+c		              iout=99 Summary independent of ichk
+c                 ioutQ=1 Print Qres data  
+c                 ioutR = print data around chekres
 c     
       subtypX='divres  '
       if(ichk.eq.94) write(nlog,*) ' DivRes; Type 2 or 3 Processing ',
@@ -212,6 +224,7 @@ c
       iout=0
       ioutiw=0
       ioutQ=0
+      ioutR=0
       
       cDest1='NA'
       cDest1='36_ADC019   '
@@ -390,8 +403,12 @@ c rrb 01/05/15; Check reservoir roundoff when entering routine
 c			Note in1=0 input from a routine
 c			     isub1 = subroutine calling chekres
       in1=0
-      isub1 = 2
-c     write(nlog,*) ' Divres; Corid(lr) ', corid(lr)
+      isub1 = 2     
+      if(ioutR.eq.1) then
+        write(nlog,*) '  Divres; Step 3 Chekres, Corid(lr) ',
+     1                ' corid(lr),lr, nr, iwhy ',corid(lr),lr,nr,iwhy
+      endif
+      
       call chekres(nlog, maxres, in1, isub1, iyr, mon, nr,
      1  nowner, curown, cursto, cresid)
 
@@ -558,8 +575,10 @@ c
           write(nlog,*) '  Divres; effmax(nd)    ', effmax(nd)
           write(nlog,*) '  Divres; diwrreq(iuse) ', diwrreq(iuse)*fac
         endif
-
-        ireltyp=amin0(iopsou(6,lr),ifix(effmax(nd)))
+c
+c rrb 2021/04/18; Compiler warning
+cx      ireltyp=amin0(iopsou(6,lr),ifix(effmax(nd)))
+        ireltyp=min(iopsou(6,lr),ifix(effmax(nd)))
 c
         divmax=0.0
         if(ireltyp.gt.0) then
@@ -818,7 +837,10 @@ c               b. DETERMINE RETURN FLOW PERCENTAGE OF DIVERSION
 c
 c rrb 2006/01/04; Correction to allow variable efficiency      
 c 170 FORET=1.0-DIVEFF(mon,IUSE)/100.
-  170 FORET=1.0-effX/100.
+c
+c rrb 2021/04/18; Compiler warning
+cx170 FORET=1.0-effX/10
+      FORET=1.0-effX/100.
 c  
 c
 c ---------------------------------------------------------
@@ -973,8 +995,10 @@ c
 c               Step 22; Update storage, demand, etc.
 c
 c               a. Destination is a reservoir, update storage data
-  250 if (iresw.eq.1) then
 c
+c rrb 2021/04/18; Compiler warning
+cx250 if(iresw.eq.1) then
+      if(iresw.eq.1) then
         divaf=divact*fac
         cursto(nd)=cursto(nd)+divaf
 cr      curown(irow)=curown(irow)+divaf
@@ -1127,7 +1151,10 @@ c
 c
 c ---------------------------------------------------------
 c               i. Adjust source reservoir #1 data
-  310 ACTACF=RELACT*fac
+c
+c rrb 2021/04/18; Compiler warning
+cx310 ACTACF=RELACT*fac
+      ACTACF=RELACT*fac
       CURSTO(NR  )=CURSTO(NR  )+ACTACF
       PROJTF(NR  )=PROJTF(NR  )-RELACT
       CUROWN(IOWN)=CUROWN(IOWN)+ACTACF
@@ -1236,6 +1263,11 @@ c			Note in1=1 output from a routine
 c			     isub1 = subroutine calling chekres
       in1=1
       isub1 = 2
+      if(ioutR.eq.1) then
+        write(nlog,*) '  Divres; Step 25 Chekres, Corid(lr) ',
+     1                ' corid(lr),lr, nr, iwhy ',corid(lr),lr,nr,iwhy
+      endif
+            
       call chekres(nlog, maxres, in1, isub1, iyr, mon, nr,
      1  nowner, curown,cursto,cresid)
 c
@@ -1280,17 +1312,17 @@ cx    if(iout.eq.99 .and. cDest.eq.cDest1) then
 c _________________________________________________________
 c               Formats
 c
- 141    format(       
-     1    '  Divres (Type 2 or 3);',/
-     1    '     #   Iyr   Imo  Iter  iwhy',
-     1    '      Demand    Capacity         IWR',
-     1    '     Eff_opr     Eff_max    Eff_used  Dem f(iwr)',      
-     1    '      Pavail      Alocfs      Divact      Divmon',/
-     1    ' _____ _____ _____ _____ _____', 
-     1    ' ___________ ___________ ___________',          
-     1    ' ___________ ___________ ___________ ___________',
-     1    ' ___________ ___________ ___________ ___________') 
-  142   format(5i6, 20f12.2)
+cx 141    format(       
+cx     1    '  Divres (Type 2 or 3);',/
+cx     1    '     #   Iyr   Imo  Iter  iwhy',
+cx     1    '      Demand    Capacity         IWR',
+cx     1    '     Eff_opr     Eff_max    Eff_used  Dem f(iwr)',      
+cx     1    '      Pavail      Alocfs      Divact      Divmon',/
+cx     1    ' _____ _____ _____ _____ _____', 
+cx     1    ' ___________ ___________ ___________',          
+cx     1    ' ___________ ___________ ___________ ___________',
+cx     1    ' ___________ ___________ ___________ ___________') 
+cx  142   format(5i6, 20f12.2)
   
   270   format(/, 
      1  '  DivRes (Type 2 &3); Operation Right ID = ', a12,
@@ -1317,21 +1349,21 @@ c
      1    ' ____ ',48('_')) 
      
 
-  350    format(
-     1     '  Divres; Rep limit;  tranlim',/
-     1     '                    ', 20f8.2)
-
-  360 FORMAT(I5,'TH OPERATION RIGHT AT RIVER STATION ',I8,
-     1 ' ASKS RELEASE FROM RESERVOIR NUMBER ',I5,
-     1 ' AT RIVER STATION ',I8,' IN YEAR ',I5,' MONTH',I5)
+cx  350    format(
+cx     1     '  Divres; Rep limit;  tranlim',/
+cx     1     '                    ', 20f8.2)
+cx
+cx  360 FORMAT(I5,'TH OPERATION RIGHT AT RIVER STATION ',I8,
+cx     1 ' ASKS RELEASE FROM RESERVOIR NUMBER ',I5,
+cx     1 ' AT RIVER STATION ',I8,' IN YEAR ',I5,' MONTH',I5)
 
   370      format(
      1       '  Divres; Rep limit;',
      1       '  tranlim, tranlic,  alocfs1,    alocfs',/
      1       '                    ', 20f8.2)
 
-  380  format(
-     1       '  Divres; Problem with ', a12, 1x, a24,' Type = ', i5)
+cx  380  format(
+cx     1       '  Divres; Problem with ', a12, 1x, a24,' Type = ', i5)
 
   390      format(
      1       '  Divres; Release for Depletion Data;',/
@@ -1340,7 +1372,10 @@ c
 c     
 c _________________________________________________________
 c               Error warnings
- 9999 write(6,1050) 
+c
+c rrb 2021/04/18; Compiler warning
+cx9999 write(6,1050) 
+      write(6,1050)  
       write(nlog,1051) 
     
  1050 format('    Stopped in Divres',/,

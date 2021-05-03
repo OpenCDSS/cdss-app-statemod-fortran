@@ -37,10 +37,14 @@ c	      and avail to be performed
 c _________________________________________________________
 c       Update History
 c
-c rrb; 95/03/18; removed redundant reference to over 50 tables
-c                saved as old code f031596.zip
-c rrb; 98/03/17; Revised to handle daily operation
-c rrb; 00/12/09; Revised to handle variable efficiency
+c rrb 2021/04/18; Compiler warning
+c
+c rrb 1995/03/18; Removed redundant reference to over 50 tables
+c                 saved as old code f031596.zip
+c
+c rrb 1998/03/17; Revised to handle daily operation
+c
+c rrb 2000/12/09; Revised to handle variable efficiency
 c
 cc _________________________________________________________
 c       Called By:
@@ -107,7 +111,7 @@ c                      = -n = variable number of returns per pattern
 c
 c               irnsta(irn) = ircd = return location 
 c               idncod(ircd)= iscd = river location just downstream
-c			      of the return location (ircd)
+c			                               of the return location (ircd)
 c
 c               irnsta(irn) = ircd = return location node
 c               irnord(ircd)= set in datinp.  Return pointer associated
@@ -153,13 +157,14 @@ c               Step 1 - Initialize
 c
 c     write(6,*)    '  Rtnsec;'
 c     write(nlog,*) '  Rtnsec;'
-c
-c		iout=0 no detailed checks
-c		iout=1 details for immediate returns 
-c		iout=2 details for immediate and future returns
-c
-c		ichkwr details for water right (l2) ichkwr 
-c			when iout=2
+c   
+c               Detalied Output
+c		              iout=0 no detailed checks
+c		              iout=1 details for immediate returns 
+c		              iout=2 details for immediate and future returns
+c                 
+c		              ichkwr details for water right (l2) ichkwr 
+c		              	when iout=2
       iout = 0
       ichkD = 0
       ichkWR = 0
@@ -423,8 +428,11 @@ c                        beginning of each month in
 c                        bomsec.for for a monthly model and in
 c                        dayset.for for a daily model
 
-
-  130   IM=0
+c rrb 2021/04/18; Compiler warning
+cx130   IM=0
+  130   continue
+c
+        im=0
         IEND=IMO+ndly(idly)-1
 c        
 c ---------------------------------------------------------        
@@ -587,14 +595,14 @@ c               Formats
  160  format('     Rtnsec;   l2 iord  mon  idy  imo iend',
      1                   '    k   im  imx   kk',
      1                   ' ndlymx mdhday(imx)')
- 170  format('     Rtnsec;   l2 iord  mon  idy  ido iend',
-     1                   '    k   id   kk ndlymx')
+cx 170  format('     Rtnsec;   l2 iord  mon  idy  ido iend',
+cx     1                   '    k   id   kk ndlymx')
  172  format(12x, 20i5)
 
  180  format('  Rtnsec; iday   l2  imd ircd divact    retM    retD',/,
      1             9x, 4i5, 10f8.2)
- 190  format('     Rtnsec; Avail = ', i4, 10f12.0,/,(25x10f12.0))
-     
+cx 190  format('     Rtnsec; Avail = ', i4, 10f12.0,/,(25x10f12.0))
+cx     
  318  format('  Rtnsec; Return Array (retur(k,iord) for ',
      1 'month (mon) = ',i5, ' pointer (imo) = ', i5)
  320  format('  From ', i5, ' To ', i5, 1000f8.2)             

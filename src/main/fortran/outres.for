@@ -27,6 +27,11 @@ c
 c       Outres; It prints reservoir data *.xre by reservoir then account
 c
 c _________________________________________________________
+c       Update History
+c
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+c _________________________________________________________
 c       Documentation
 c
 c               ir   = reservoir counter (active or inactive)
@@ -43,8 +48,11 @@ c
 c
 c _________________________________________________________
 c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+      nacc=0
+c
 c     	iout =	1 details
-c		2 summary
+c		            2 summary
       iout=0
       write(6,101) 'OutRes  '
       write(nlog,101) 'OutRes  '
@@ -232,10 +240,15 @@ c rrb 2006/01/20; New inforamtion at end (nr)
 c           ida  = dat2(nres-1) 
 c           ida0 = ida + 1
 c           nacc = dat2(nres)
-            
-            ida  = dat2(nidr) 
+c
+c rrb 2021/04/18; Compiler warning
+cx          ida  = dat2(nidr)
+            ida  = nint(dat2(nidr)) 
             ida0 = ida + 1
-            nacc = dat2(naccX)
+c
+c rrb 2021/04/18; Compiler warning
+cx          nacc = dat2(naccX)
+            nacc = nint(dat2(naccX))
             
         if(iout.eq.2) then
 c         write(nlog,*) ' '        

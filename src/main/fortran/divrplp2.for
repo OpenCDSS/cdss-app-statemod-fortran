@@ -41,6 +41,8 @@ c
 c       Update History
 c
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/12/05; Correction add in a reservoir release only
 c                 when the exchange is from a reservoir
 c                 (e.g. not when the source is a non reservoir
@@ -50,8 +52,8 @@ c rrb 2020/12/01; Correction qdiv(28 is not used in outmon
 c                 so commented out
 c
 c rrb 2020/12/01; Correction the source should be iscd
-cx        qdiv(18,idcd)=qdiv(18,idcd)+divaf
-cx        qdiv(18,iscd)=qdiv(18,iscd)+divaf
+cx                qdiv(18,idcd)=qdiv(18,idcd)+divaf
+cx                qdiv(18,iscd)=qdiv(18,iscd)+divaf
 c
 c rrb 2020/12/01; Increment qdiv(38,idcd) to show as Carried,
 c                 exchanged or other at destination        
@@ -59,13 +61,13 @@ c
 c rrb 2020/12/01; The following are limited to a diversion destination
 c                 that is not currently supported but keep for future 
 c
-c rrb 2020/11/08 StateMod 16.00.44ab
-c                Revised DivRplP2 (type 49) to not increment qdiv(35,)
+c rrb 2020/11/08  StateMod 16.00.44ab
+c                 Revised DivRplP2 (type 49) to not increment qdiv(35,)
 c                  to help resolve double accounting of From Plan
 c                  in water budget (*.xwb)
 c
 c rrb 2008/06/10; Allow return to river then diversion
-c		             from a carrier again (internT = 1 Carrier, 2=Return)        
+c		              from a carrier again (internT = 1 Carrier, 2=Return)        
 c
 c rrb 2007/12/26; Copy DivRplP and edit appropriately
 c
@@ -238,7 +240,16 @@ c
 c ---------------------------------------------------------
 c
 c 2020/09/30; Add quick exit for testing; Turned off
-cx    goto 500
+c
+c rrb 2021/04/18; Compiler warning
+      iexit=0
+      if(iexit.gt.0) goto 500
+      iprob=0
+      if(iprob.gt.0) goto 9999
+      cplntyp=' '
+      cresid1=' '
+      rec12=' '
+c
 c               Control debut printout
 c	  	iout=0 none, iout=1 detailed, iout=2 summary
 c     outX=1 details on progress through this subroutine
@@ -248,6 +259,10 @@ c
       ioutiw=0
       ioutq=0
       ioutX=0
+c
+c rrb 2021/04/18; Compiler warning
+      idcdd=0
+      isown=0
       
       isub=49
       

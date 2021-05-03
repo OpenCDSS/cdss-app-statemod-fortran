@@ -39,6 +39,15 @@ c
       include 'common.inc'
       character rec12*12, ctype*16, rec12b*12, nameX*24
 c
+c _________________________________________________________
+c		Step 1; Initialize
+c                                  
+c
+c rrb 2021/04/18; Compiler warning
+      real*8 cpri
+      ishort=ishort
+      udem=udem      
+c
 c
 c rrb 2015/06/25; Add code to limit the volume of output when
 c                 variable ichk = 4 or 94

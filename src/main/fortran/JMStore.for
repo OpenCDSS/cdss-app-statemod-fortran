@@ -62,6 +62,8 @@ c
 c       Update History
 c
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/07/15; 2020/07/15 (16.00.35)
 c                 Revise the Available flow printed to *.xjm
 c                 (divoWWX(l2) to be the min flow downstream from 
@@ -163,6 +165,14 @@ c _________________________________________________________
 c
 c               Step 1 Common Initialization
 c
+c rrb 2021/04/18; Compiler warning
+      pcts=0.0
+      pcts2=0.0
+      availr=0.0
+      cidbal=' '
+      cidriv=' '
+      rec12=' '
+
 c
 c ---------------------------------------------------------
 c
@@ -475,7 +485,7 @@ cx      if(ioutX.eq.1) then
      1               ' rtot, rlossX,  '
         write(nlog,*) '  JMStore_3;', ns, ns2, AvailX*fac,
      1                avail(ns)*fac,  availG1*fac,
-     1                avail(ns2)*fac, availG2*fac
+     1                avail(ns2)*fac, availG2*fac,
      1                rtot*fac, rlossX*fac  
 cx      endif
 c
@@ -500,7 +510,10 @@ c rrb 2018/12/15; Revise because oprlimit is +1 to include
 c                 the operating rule data
       ndes=int(oprlimit(l2))
       ndes=ndes-1
-      ndes=amax0(1, ndes)
+c
+c rrb 2021/04/18; Compiler warning
+cx    ndes=amax0(1, ndes)
+      ndes=max(1, ndes)
 
       n1=0
       n2=0        
@@ -562,7 +575,10 @@ c
           irowD  =nowner(ndR)+iopdes(n2,l2)-1          
           curown1=curown(irowD)         
           
-          availD=amax1(ownmax(irowD)-curown1, 0.0)/fac
+c
+c rrb 2021/04/18; Compiler warning
+cx        availD=amax1(ownmax(irowD)-curown1, 0.0)/fac
+          availD=max(ownmax(irowD)-curown1, 0.0)/fac
           
           if(availD.le.small) then
             iwhy=5
@@ -577,8 +593,12 @@ c
           curstoV=volmax(ndR)-cursto1  
           curstoT=tarmax(ndR)-cursto1
           
-          availR=amin1(curstoV, curstoT)          
-          availR=amax1(availR, 0.0)/fac
+c
+c rrb 2021/04/18; Compiler warning
+cx        availR=amin1(curstoV, curstoT)          
+cx        availR=amax1(availR, 0.0)/fac
+          availR=min(curstoV, curstoT)          
+          availR=max(availR, 0.0)/fac
           
           if(availR.le.small) then
             iwhy=6
@@ -589,7 +609,9 @@ c _________________________________________________________
 c
 c		            Step 12; Determine diversion amount from Ark River 
 c 
-          divact  = amin1(availX, availD, availR, availG)
+c rrb 2021/04/18; Compiler warning
+cx        divact  = amin1(availX, availD, availR, availG)
+          divact  = min(availX, availD, availR, availG)
           divact1 = divact
 c
 c rrb 2019/10/27; Store total diversion in divactT          
@@ -684,8 +706,12 @@ c                  reach to be accmondated
               write(nlog,*) '  JMStore_7; Purgatoire n = ', n
             endif
 c            
-            availD2=amax1(0.0, availD-divact)
-            availR2=amax1(0.0, availR-divact)
+c
+c rrb 2021/04/18; Compiler warning
+cx          availD2=amax1(0.0, availD-divact)
+cx          availR2=amax1(0.0, availR-divact)
+            availD2=max(0.0, availD-divact)
+            availR2=max(0.0, availR-divact)
                      
             ns2  = iopsou(3,l2)
             pct2 = iopsou(4,l2)
@@ -717,9 +743,12 @@ c
 cx          divact2 = amin1(availX2, availD, availR)
             availG  = availG2 * pct2/100.
             
-            divact2 = amin1(availG, availD, availR)
-            
-            divact2 = amax1(divact2, 0.0)
+c
+c rrb 2021/04/18; Compiler warning
+cx          divact2 = amin1(availG, availD, availR)       
+cx          divact2 = amax1(divact2, 0.0)
+            divact2 = min(availG, availD, availR)       
+            divact2 = max(divact2, 0.0)
             
             divact  = divact1+divact2
 c
@@ -866,7 +895,7 @@ c _________________________________________________________
 c
 c               Step 20; Detailed output within destination loop 
 c 
-  260     continue        
+cx260     continue        
           if((iout.ge.2 .and. iw.eq.ioutiw) .or. ioutX.ge.1) then
 c
 c ---------------------------------------------------------
@@ -967,13 +996,13 @@ c
      
   280  FORMAT(a12, i5,1x,a4,i5, 1x,3a12, 9i8, 15f8.0, i5,1x, a48)
   
-  290  format(/,'JMStore; Detailed results of avail where idcd = ',i5,/
-     1 '  iyr  mon  idy    # River ID    Riv Name                ',
-     1 '  avtemp  divert   avail',/
-     1 ' ____ ____ ____ ____ ___________ ________________________',
-     1 ' _______ _______ _______')  
-        
-  292  format(i5,1x,a4,i5, i5,1x,a12, a24, 20f8.0)
+cx290  format(/,'JMStore; Detailed results of avail where idcd = ',i5,/
+cx   1 '  iyr  mon  idy    # River ID    Riv Name                ',
+cx   1 '  avtemp  divert   avail',/
+cx   1 ' ____ ____ ____ ____ ___________ ________________________',
+cx   1 ' _______ _______ _______')  
+cx      
+cx292  format(i5,1x,a4,i5, i5,1x,a12, a24, 20f8.0)
                  
 c
 c _________________________________________________________
@@ -988,7 +1017,7 @@ c
      1        pct, pctS*100., pctS2*100., 
      1        AvailX*fac, AvailG1*fac,  AvailG*fac,  AvailD*fac,
      1        AvailR*fac, curown1, curown2,  divact1*fac, availX2*fac, 
-     1        divact2*fac, divact*fac, divactT*fac iwhy, cwhy
+     1        divact2*fac, divact*fac, divactT*fac, iwhy, cwhy
       
 c    
       write(6,340) 

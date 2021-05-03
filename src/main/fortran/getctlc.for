@@ -25,27 +25,32 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       GetCtlC; A control file reader taht recognizes command arguements
+c       GetCtlC; A control file reader that recognizes command arguements
 c		 (e.g. Starting_Year = 1950)
 c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c	Documentation
 c
 c               iok     0 not OK if not found
 c                       1 OK if not found
-c			-1 Stop read exit
+c			                 -1 Stop read exit
 c               itype   0 integer
 c                       1 = real
 c                       2 = character *12
-c			3 = character *80
+c			                  3 = character *80
 c               iX = integer value output
 c               rX = real value output
 c               cX = character *12 value output
-c		cY = character *80 value output
+c		            cY = character *80 value output
 c
-c		ifound=0 data not found
-c		ifound=1 data is found
-c		ifound=-1 data not found but ok or stop
+c		            ifound=0 data not found
+c		            ifound=1 data is found
+c		            ifound=-1 data not found but ok or stop
 c
 c		Data Types
 c	Title
@@ -71,7 +76,9 @@ c       Soil_Moisture_Depth
 c _________________________________________________________
 c	Dimensions
       character ctype*24, ctype1*24, ctype2*24, cdata*132, 
-     1 rec1*1, rec132*132, cx*12, cy*80, c*12, ctypeX*24
+cx   1 rec1*1, rec132*132, cx*12, cy*80, c*12, ctypeX*24
+     1 rec1*1, rec132*132, cx*12, cy*80, ctypeX*24
+cx
       dimension ctype(35)
       
       data ctype/
@@ -133,7 +140,7 @@ c		iout=2 summary detail
       rec132=' '
       ctypeX=adjustl(cTypeX)
       ctype1=' '
-
+c
       
       if(iout.eq.1) then
         write(Nlog,*) ' '
@@ -343,10 +350,10 @@ c               Formats
      1 '  GetCtlC; ', a64)
  220  format(/,72('_'),/
      1 '  GetCtlC; ', a8, ' Case ', i5, ' not available')
- 230  format(
-     1 '  GetCtlC; ', /
-     1 '           ' a24,/
-     1 '           ' a24)
+cx 230  format(
+cx     1 '  GetCtlC; ', /
+cx     1 '           ' a24,/
+cx     1 '           ' a24)
      
  240  format(
      1 '  GetCtlC; Data type ', a24, ' Integer Value  = ',i8)        
@@ -364,9 +371,9 @@ c               Error Processing
  300  write(nlog,210) '  GetCtlC; Problem reading data'
       goto 900
       
- 310  write(nlog,320) ctypeX
- 320  format(
-     1 ' GetCtlC; Problem cannot find data type = ',a24)
+cx310  write(nlog,320) ctypeX
+cx 320  format(
+cx     1 ' GetCtlC; Problem cannot find data type = ',a24)
       goto 900
       
  900  write(6,910) 

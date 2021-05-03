@@ -21,7 +21,7 @@ c_________________________________________________________________NoticeEnd___
 
 c       Update History
 c
-
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c       Documentation
@@ -794,11 +794,13 @@ c
 c _________________________________________________________
 c               Formats
 c
- 100  format
-     1    ('  Dayset; Warning < 0 before allocation ',
-     1    ' on ',i4,1x,a3,i4,'. Set to zero from ',
-     1     f10.3, ' cfs or ', f10.0, ' af at ', a24)
- 110  format('  dayset;  mon  idy idyt',/,10x, 3i5)
+c
+c rrb 2021/04/18; Compiler warning
+cx 100  format
+cx     1    ('  Dayset; Warning < 0 before allocation ',
+cx     1    ' on ',i4,1x,a3,i4,'. Set to zero from ',
+cx     1     f10.3, ' cfs or ', f10.0, ' af at ', a24)
+cx 110  format('  dayset;  mon  idy idyt',/,10x, 3i5)
   
  130  format(
      1 '  DaySet;   nr ID            ID_WR        ',

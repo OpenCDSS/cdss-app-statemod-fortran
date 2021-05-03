@@ -30,12 +30,19 @@ c       Called once per year from Virgen.for
 c
 c_______________________________
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2008/10/31; Included to recharge. Note it is part of
 c                 total diversion, therefore must be removed
 c                 to irrigate
+c
 c rrb 2003/03/03  Revised roundoff issues related to -999
+c
 c rrb 2001/07/30; Refined soil moisture capability
+c
 c rrb 2001/03/12; Added daily capability
+c
 c rrb 2000/12/26; Added variable efficiency capability to:
 c                 call rtnsec, rtnsecw, deplete
 c
@@ -1279,10 +1286,10 @@ c
      1  4(' _________'))
   111   format(9x,i5, 1x,a4, 2i5, 1x,a12,1x, 20f10.2)
   
-  112   format(
-     1  '  Vircom;   nr iss      delst     temps',/
-     1      9x,2i5,20f10.2)
-     
+cx112   format(
+cx   1  '  Vircom;   nr iss      delst     temps',/
+cx   1      9x,2i5,20f10.2)
+cx   
   120   format(///,' Naturalized Flow Estimate Information',
      1   ' From ', i5, 1x, a4, ' To ', i5, 1x, a4,/     
      1   ' Note: Annual Average Base Flows have negatives set to zero',/
@@ -1332,13 +1339,13 @@ c
    
  305  format(2i5, 2(1x,a12,1x), 20f8.0)    
  
- 306  format(/, '  Vircom; Detailed CU Report',/
-     1 '  Type           # ID           Year  Mon',
-     1 '              Cu',
-     1 '           CuMon',
-     1 '           CuAnn',/
-     1 ' ___________ _____ ____________ ____ ____',
-     1 3(' _______________'))
+cx 306  format(/, '  Vircom; Detailed CU Report',/
+cx     1 '  Type           # ID           Year  Mon',
+cx     1 '              Cu',
+cx     1 '           CuMon',
+cx     1 '           CuAnn',/
+cx     1 ' ___________ _____ ____________ ____ ____',
+cx     1 3(' _______________'))
  308  format(a12, 1x, i5, 1x, a12, 2i5, 20f16.2)     
  
  520        format(/, '  Vircom; Return & Depletion Detail',/

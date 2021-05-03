@@ -19,8 +19,12 @@ c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
       PROGRAM StateM
-
+c
+c_________________________________________________________________
+c
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2019/01/31; Increase Dimension for ArkDss.  Specifically
 c                   Daily delay values (maxdld) from 3660 to 7320
@@ -114,7 +118,6 @@ c ______________________________________________________________________
 c       Documentation
 C
 C      PROGRAM LIMITS:
-C
 c
 c rrb 99/08/26; Rio Grande
 c                                          Pre-RG    RG RG-Daily ArkDSS
@@ -181,7 +184,11 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      character getid*12, fnlog*256, rec48*48, rec256b*256,
+c
+c rrb 2021/04/18; Compiler not used
+cx    character getid*12, fnlog*256, rec48*48, rec256b*256,
+cx   1          rec8*8
+      character getid*12, fnlog*256, rec48*48,
      1          rec8*8
 c jhb 2014/07/21 initialize this variable passed to xdebug and report
       integer :: nreach=0
@@ -207,7 +214,7 @@ c                8 includes daily capability
 c                7 includes new binary output format
 
         ver = '16.00.48'
-        vdate = '2021/04/14'
+        vdate = '2021/04/19'
 
         igui = 0
         istop = 0
@@ -467,8 +474,8 @@ c rrb 03/06/02; Allow log file to be an option
 c
 c         write(6,81) ioptio, ioptio2, getid
 c         write(nlog,81) ioptio, ioptio2, getid
- 81       format(2x, 'Statem.for; Ioptio, Ioptio2, Getid = ', 
-     1           2i5, 1x, a12)
+cx 81       format(2x, 'Statem.for; Ioptio, Ioptio2, Getid = ', 
+cx     1           2i5, 1x, a12)
       endif
 c
 c
@@ -483,6 +490,11 @@ c     if(ioptio.eq.7) then
 
         write(nlog,200) ver, vdate
         write(nlog,201)
+c
+c rrb 2021/04/18; Compiler not used
+        iold=0
+        if(iold.gt.0) write(nlog,209)
+        
         goto 190
       endif
 c
@@ -3378,6 +3390,7 @@ c
      1        ' Revised outmon to correct divert from river by',/
      1 '        excluding CU from soil.',/
  
+ 
      1 '    - 2001/07/17 (9.89)',/
      1 '        Max dimension for daily back to 930 from 7320.',/
      1 '    - 2001/07/17 (9.88)',/
@@ -4247,29 +4260,34 @@ c     1 '        of the river network file contain a blank',/
 c     1 '        downstream location',/
 c     1 '    - Output files have been renamed for scenario mgt')
 
- 300  format(/,72('_'),/
-     1 '  StateM; Warning an old Irrigation Practice File (*.ipy)',/
-     1 '          (IrrigationPractice_Yearly) has been provided.',/
-     1 '          To avoid confusion StateMod version 12.01 and',/
-     1 '          greater requires the user specify if they want',/
-     1 '          to provide 2 or 4 land use types.',/
-     1 '          Recommend you revise your response file (*.rsp) to:',/
-     1 '          IrrigationPractice_2Types_Yearly or',/
-     1 '          IrrigationPractice_4Types_Yearly')
+c
+c rrb 2021/04/14 Not used
+cx 300  format(/,72('_'),/
+cx     1 '  StateM; Warning an old Irrigation Practice File (*.ipy)',/
+cx     1 '          (IrrigationPractice_Yearly) has been provided.',/
+cx     1 '          To avoid confusion StateMod version 12.01 and',/
+cx     1 '          greater requires the user specify if they want',/
+cx     1 '          to provide 2 or 4 land use types.',/
+cx     1 '          Recommend you revise your response file (*.rsp) to:',/
+cx     1 '          IrrigationPractice_2Types_Yearly or',/
+cx     1 '          IrrigationPractice_4Types_Yearly')
 
- 310  format(/,72('_'),/
-     1 '  StateM; Warning Two Irrigation Practice Files (*.ipy)',/
-     1 '          have been provided as follows:',/
-     1 '          IrrigatonPractice_2Types_Yearly and',/
-     1 '          IrrigatonPractice_4Types_Yearly',/
-     1 '          Recommend you revise your response file (*.rsp)',/
-     1 '          and remove one ipy file')
-
- 320  format(/,72('_'),/
-     1 '  StateM; Warning number of water rights for all structures',/
-     1 '          (reservoir, diversion, ISF, wells & Operating',/
-     1 '          rules) ', i5, ' Exceeds the maximum ', i5,/
-     1 '          Recommend you revise StateM.for and the common.inc')
+c
+c rrb 2021/04/18 Compiler not used
+cx 310  format(/,72('_'),/
+cx     1 '  StateM; Warning Two Irrigation Practice Files (*.ipy)',/
+cx     1 '          have been provided as follows:',/
+cx     1 '          IrrigatonPractice_2Types_Yearly and',/
+cx     1 '          IrrigatonPractice_4Types_Yearly',/
+cx     1 '          Recommend you revise your response file (*.rsp)',/
+cx     1 '          and remove one ipy file')
+c
+c rrb 2021/04/18 Compiler not used
+cx 320  format(/,72('_'),/
+cx     1 '  StateM; Warning number of water rights for all structures',/
+cx     1 '          (reservoir, diversion, ISF, wells & Operating',/
+cx     1 '          rules) ', i5, ' Exceeds the maximum ', i5,/
+cx     1 '          Recommend you revise StateM.for and the common.inc')
  330  format(/,
      1 '  StateM; Dimension Problem',/
      1 '    The maximum years in a delay table (MAXdlA) = ', i5,' and',/

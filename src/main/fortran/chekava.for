@@ -65,6 +65,9 @@ c _________________________________________________________
 c
 c               Step 1; Check array avail
 c
+c rrb 2021/04/18; Compiler warning
+      icall=icall
+c
       iout=0
 
       nlog=99

@@ -36,6 +36,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2005/10/24; Separated from Datinp
 c
 c _________________________________________________________
@@ -44,7 +46,7 @@ c	Dimensions
 c
       DIMENSION ITEMP(numstax), ctemp(numstax)
 
-      dimension x(12)
+cx    dimension x(12)
 C
       character rec3*3, blank*12, crtnid*12,
      1          recin*256, cgoto2*12, cx*12, rec4*4, rec24*24,
@@ -53,6 +55,17 @@ c
 c _________________________________________________________
 c
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      iin=iin
+      inx=inx
+      cgoto2=' '
+      cx=' '
+      rec1=' '
+      rec12=' '
+      rec4=' '
+      recin=' '
+c      
 c		0=no details
 c		1= print details of input
 c		2=print return flow details
@@ -459,8 +472,11 @@ c rrb 09/31/96; Check regarding return flows upstream
 c rrb 00/03/07; Allow simulation to proceed with warning
 c     if(iwarnx.eq.1) goto 9999
       iwarnx=iwarnx
-
-      NUMDIV=amax0(ND-1,0)
+c
+c rrb 2021/04/18; Compiler warning
+cx    NUMDIV=amax0(ND-1,0)
+      NUMDIV=max(ND-1,0)
+      
       numdxw=numdiv
       
       write(nlog,211) numdiv
@@ -637,8 +653,10 @@ cr      backspace(iin2)
 cr      read(iin2, '(a256)',end=926,err=926) recin
 cr      write(nlog,'(a256)') recin
 cr      goto 9999
-     
- 1410  write(nlog,1420) filena
+c
+c rrb 2021/04/18; Compiler warning     
+cx1410 write(nlog,1420) filena
+       write(nlog,1420) filena
  1420  format('  GetDiv; Problem opening file: ', a256)
        goto 9999      
       
@@ -664,10 +682,10 @@ c		Formats
      1          ' type = 4 which indicates transmountain, but',/
      1 '          efficiency is not 100%.',
      1 '          To do; Change type or efficiency data to 100%')
-  930  FORMAT(A256)
-  
-  940  format(/, 72('_'), /,
-     1 '  GetDiv; Diversion Station ', a24,/,4x, a256)
+cx  930  FORMAT(A256)
+cx  
+cx  940  format(/, 72('_'), /,
+cx     1 '  GetDiv; Diversion Station ', a24,/,4x, a256)
      
  1021  FORMAT(/,72('_'),/
      1  ' GetDiv; Problem.',
@@ -698,10 +716,10 @@ c		Formats
      1  '          adjustments to historic diversion and well',/ 
      1  '          pumping data')
  
- 1239  format(/,
-     1  '  GetDiv; Warning, in baseflow therefore ID ', a12, 'has had',/
-     1  '          its demand type (idvcomw) reset to 1.  Recall',/
-     1  '          the baseflow mode reads *.weh in lie of *.wem')
+cx1239  format(/,
+cx    1  '  GetDiv; Warning, in baseflow therefore ID ', a12, 'has had',/
+cx    1  '          its demand type (idvcomw) reset to 1.  Recall',/
+cx    1  '          the baseflow mode reads *.weh in lie of *.wem')
  1240  format(/,
      1  '  GetDiv; Warning, Annual diversions not used in base',
      1  ' flow calcs'/)
@@ -713,35 +731,35 @@ c		Formats
      1  '          Set to 1 to avoid having historic diversion', 
      1           ' data weighted by efficiency.')
      
- 1242  format(/,
-     1  '  GetDiv; Warning, Wells must have a return & depletion',
-     1  ' location',/ '          Check ID ', a12 )
-     
- 1243  format(/,72('_'),/
-     1  '  GetDiv; Problem, In Baseflow mode yet diversion code',/
-     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
-     1  '          Stopped to avoid having historic pumping',/, 
-     1  '          data weighted by efficiency.  To do: revise *.wes')
-     
+cx 1242  format(/,
+cx     1  '  GetDiv; Warning, Wells must have a return & depletion',
+cx     1  ' location',/ '          Check ID ', a12 )
+cx     
+cx 1243  format(/,72('_'),/
+cx     1  '  GetDiv; Problem, In Baseflow mode yet diversion code',/
+cx     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
+cx     1  '          Stopped to avoid having historic pumping',/, 
+cx     1  '          data weighted by efficiency.  To do: revise *.wes')
+cx     
  1250  FORMAT(/,72('_'),/
      1  ' GetDiv; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
      
- 1255 format(/,72('_'),/
-     1 '  GetDiv; Problem with Well Station ', a12,/
-     1 10x,'The augmentation plan code (planw) = ', a12,
-     1 10x,'But this plan is type ', i4,/
-     1 10x,'(Note a well agumentation plan should be a type 2)')
-     
- 1256 format(/,
-     1 '  GetDiv; FYI at least one Well Station (e.g.) ', a12,/
-     1 9x,' is tied to an augmentation plan (planw) = ', a12,
-     1     ' Plan Pointer = ', i5)
-     
- 1257 format(/,
-     1 '  GetDiv; Warning Well Station ', a12,/
-     1 9x,' IS NOT TIED to an augmentation plan (planw) = ', a12,
-     1     ' plan pointer = ', i5)
-     
+cx 1255 format(/,72('_'),/
+cx     1 '  GetDiv; Problem with Well Station ', a12,/
+cx     1 10x,'The augmentation plan code (planw) = ', a12,
+cx     1 10x,'But this plan is type ', i4,/
+cx     1 10x,'(Note a well agumentation plan should be a type 2)')
+cx     
+cx 1256 format(/,
+cx     1 '  GetDiv; FYI at least one Well Station (e.g.) ', a12,/
+cx     1 9x,' is tied to an augmentation plan (planw) = ', a12,
+cx     1     ' Plan Pointer = ', i5)
+cx     
+cx 1257 format(/,
+cx     1 '  GetDiv; Warning Well Station ', a12,/
+cx     1 9x,' IS NOT TIED to an augmentation plan (planw) = ', a12,
+cx     1     ' plan pointer = ', i5)
+cx     
  1260  format(36x,a12,f8.0,i8)
  1262  format(36x,a12,f8.0,a12)
  1270  FORMAT(/,72('_'),/
@@ -751,22 +769,22 @@ c		Formats
      1  '          was not found or is not allowed at the last',/
      1  '          river station.  For the latter case, add one',/
      1  '          additional river node to the *.rin file')
- 1280  FORMAT(/,72('_'),/
-     1  '  GetDiv; Problem.'
-     1  ' Station ',a12,' of diversion station file',
-     1  ' has return flows going back to the diverting node',
-     1  ' at ', a12)
-     
+cx 1280  FORMAT(/,72('_'),/
+cx     1  '  GetDiv; Problem.'
+cx     1  ' Station ',a12,' of diversion station file',
+cx     1  ' has return flows going back to the diverting node',
+cx     1  ' at ', a12)
+cx     
  1281  FORMAT(/,
      1  '  GetDiv; Warning See *.chk for details regarding: ', a32)
      
- 1282  FORMAT(/,
-     1  '  GetDiv; Warning the following diversion has a return ',/
-     1  '          location that is available to the diverter:',/
-     1  '          Diversion ID:                  ',a12,/, 
-     1  '          Diversion name:                ',a24,/, 
-     1  '          Located at river ID:           ',a12,/,  
-     1  '          Has a return flow to river ID: ',a12)
+cx 1282  FORMAT(/,
+cx     1  '  GetDiv; Warning the following diversion has a return ',/
+cx     1  '          location that is available to the diverter:',/
+cx     1  '          Diversion ID:                  ',a12,/, 
+cx     1  '          Diversion name:                ',a24,/, 
+cx     1  '          Located at river ID:           ',a12,/,  
+cx     1  '          Has a return flow to river ID: ',a12)
  1283  FORMAT(/,72('_'),/
      1  '  GetDiv; Problem the following structure(s) ',
      1    'return water upstream',//
@@ -775,26 +793,26 @@ c		Formats
      1  ' ____ ____________ ________________________', 
      1  ' ____________ ____________')
  1284  format(i5,1x, a12, 1x, a24, 1x, a12, 1x a12)
- 1285  FORMAT(/,
-     1 '  GetDiv; Warning the following structure(s) return water',/
-     1 10x,'to at least one non-downstream node. Only the first',/ 
-     1 10x,'non-downstream occurance is printed per structure.',/
-     1 10x,'Note, a non-downstream return is OK but it can cause',/ 
-     1 10x,'the system to reoperate and impact performance if',/
-     1 10x,'the immediate (current month or days) return flow',/
-     1 10x,'exceeds the prescribed tolerance (see Performance Info',/
-     1 10x 'in the *.log file'//
-     1  '    # Str ID       Str Name                ', 
-     1  ' Located at   Returns to',/ 
-     1  ' ____ ____________ ________________________', 
-     1  ' ____________ ____________')
-
- 1291  format(2x, i5, 1x, a12, 1x, a24, 1x,3f8.0)
- 1292  FORMAT(/,72('_'),/
-     1 '  GetDiv; Problem station ',a12,
-     1 ' of the Direct Diversion Station File (*.dds)',/
-     1  10x, ' has the following return data:',/
-     1  10x, ' Total of all returns = ', f8.2)
+cx 1285  FORMAT(/,
+cx     1 '  GetDiv; Warning the following structure(s) return water',/
+cx     1 10x,'to at least one non-downstream node. Only the first',/ 
+cx     1 10x,'non-downstream occurance is printed per structure.',/
+cx     1 10x,'Note, a non-downstream return is OK but it can cause',/ 
+cx     1 10x,'the system to reoperate and impact performance if',/
+cx     1 10x,'the immediate (current month or days) return flow',/
+cx     1 10x,'exceeds the prescribed tolerance (see Performance Info',/
+cx     1 10x 'in the *.log file'//
+cx     1  '    # Str ID       Str Name                ', 
+cx     1  ' Located at   Returns to',/ 
+cx     1  ' ____ ____________ ________________________', 
+cx     1  ' ____________ ____________')
+cx
+cx 1291  format(2x, i5, 1x, a12, 1x, a24, 1x,3f8.0)
+cx 1292  FORMAT(/,72('_'),/
+cx     1 '  GetDiv; Problem station ',a12,
+cx     1 ' of the Direct Diversion Station File (*.dds)',/
+cx     1  10x, ' has the following return data:',/
+cx     1  10x, ' Total of all returns = ', f8.2)
      
  1300  FORMAT(/,72('_'),/
      1 ' GetDiv; Problem.',

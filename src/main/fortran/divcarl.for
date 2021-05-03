@@ -31,6 +31,9 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/04/25; Runtime Error
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/01/24; Version 16.00.23 Revise to allow a spill order by 
 c                 setting oprimit = 7.  Specifically the opr rule
@@ -380,6 +383,14 @@ c
 c
 c _________________________________________________________
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      iscd=0
+      nso=0
+      divalo6=0.0
+      irow=0
+      nds=0
+      nsr=0
 c
 c                                                          
 c ---------------------------------------------------------
@@ -1956,7 +1967,13 @@ c
 c _________________________________________________________
 c          
 c               Step 14; Set Qdiv for the source and destination only
-       IF(IRTURN(IUSE).LE.3) ISHORT=1
+c
+c rrb 2021/04/25; Runtime Error
+cx     IF(IRTURN(IUSE).LE.3) ISHORT=1
+       write(nlog,*) '  DivcarL; iuse',  iuse
+       if(iuse.gt.0) then
+         IF(IRTURN(IUSE).LE.3) ISHORT=1
+       endif
 c
        EffmaxT1=(100.0-OprLossC(l2,1))/100.0   
 c
@@ -2698,11 +2715,11 @@ c _________________________________________________________
 c
 c               Formats
 c
-  260   format(/, 
-     1  '  DivCarL (Type 45); Problem with Operation Right ID = ', a12,/
-     1  '         The source is a reservoir right but no carrier is',/
-     1  '         specified. Recommend you add a carrier or use a ',/
-     1  '         Standard reservoir storage right, not a type 11')
+cx 260   format(/, 
+cx    1  '  DivCarL (Type 45); Problem with Operation Right ID = ', a12,/
+cx    1  '         The source is a reservoir right but no carrier is',/
+cx    1  '         specified. Recommend you add a carrier or use a ',/
+cx    1  '         Standard reservoir storage right, not a type 11')
 
 
   270   format(/, 
@@ -2770,9 +2787,9 @@ c
      1  ' _________ _________ _________',/,
      1  i5,1x,a4,1x,a12,1x, 9i8, 20F10.2)
      
-  400 format(/, 
-     1 '  DivCarL: avail  ',(10f10.2))
-  410 format('  DivCarL: river  ',10f10.2)
+cx400 format(/, 
+cx   1 '  DivCarL: avail  ',(10f10.2))
+cx410 format('  DivCarL: river  ',10f10.2)
   420 format('  DivCarL; ',a12,1x,6i5,20f8.0)
 c
 c rrb 2018/08/11; Allow WWSP Supply Plan (type 14)     

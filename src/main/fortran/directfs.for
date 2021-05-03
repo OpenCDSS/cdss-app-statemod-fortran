@@ -50,8 +50,10 @@ c                  2. as an operating rule right.
 c
 c
 c _________________________________________________________
-c	Update History
 c
+c	     Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 99/11/02; Revised to allow destination water right to be
 c               tied to a carrier
@@ -93,6 +95,13 @@ c
 c _________________________________________________________
 c
 c               Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      cstaid1=cstaid1
+      rec12=rec12
+      iown=0
+      ndc=0
+c
 c		iout=0 no details
 c		     1 details
 c		     2 summary

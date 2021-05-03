@@ -21,16 +21,25 @@ c_________________________________________________________________NoticeEnd___
         subroutine SetGw(isub, small, fac, corid1)
 c
 c _________________________________________________________
-c     SetGW; It Sets to GW when a well depletion drives available
+c      Program Description
+c            SetGW; It Sets to GW when a well depletion drives available
 c            flow (Avail) negative
-        
+c                                                                 
+c_________________________________________________________________
+c                                                                 
+c       Update History                                            
+c                                                                 
+c rrb 2021/04/18; Compiler warning                                
 c _____________________________________________________________
-c	Dimensions
+c	      Dimensions
 c
       include 'common.inc'        
       character corid1*12
 c _____________________________________________________________
-c
+c  
+c rrb 2021/04/18; Compiler warning
+      corid1=corid1
+      
       iout=1
 c rrb 00/05/03; Check entire array, not just downstream         
       do nx=1,numsta
@@ -89,9 +98,9 @@ c_____________________________________________________________
 c              Formats
 c        
         
-  310 FORMAT(/, '  DivAlt Print 5',I10,6x,a4,4i10,
-     1             F10.2,3I10,F10.2, f20.10)
-      
+cx310 FORMAT(/, '  DivAlt Print 5',I10,6x,a4,4i10,
+cx   1             F10.2,3I10,F10.2, f20.10)
+cx    
   320 format(/, '  SetGW: avail  ',/,(10f10.2))
   330 format(/, '  SetGW: river  ',/,(10f10.2))        
 c

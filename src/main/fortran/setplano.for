@@ -19,14 +19,19 @@ c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
         Subroutine SetPlanO
-c		
-c	It ties a plan to an operating rule for Plan Reporting
-c	Called by Execut.f
+c
+c _________________________________________________________		
+c
+c       Program Description
+c	              It ties a plan to an operating rule for Plan Reporting
+c	              Called by Execut.f
 c
 c _________________________________________________________
 c
 c
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2019/11/17; Allow multiple type 12 (release limit) plans 
 c
@@ -67,11 +72,13 @@ c
 c _________________________________________________________
 c
       include 'common.inc'
-
-      real*8 rtem
 c
-      character*12 cidvri,  ciopde,  ciopso1, ciopso2, ciopso3,
-     1             ciopso4, ciopso5, blank,   czero,  cx
+c rrb 2021/04/18; Compiler warning
+cx      real*8 rtem
+c
+c rrb 2021/04/18; Compiler warning
+cx    character*12 cidvri,  ciopde,  ciopso1, ciopso2, ciopso3,
+cx   1             ciopso4, ciopso5, blank,   czero,  cx
       character recin*256, creuse*12, rec12*12, rec2*2,
      1          csource*12, cdest*12, rec72*72, rec1*1
 
@@ -86,6 +93,16 @@ c
 c _________________________________________________________
 c		            Step 1; Initialize Plan to Operating Rule ties
 c
+c rrb 2021/04/18; Compiler warning
+c
+      cdest=' '
+      csource=' '
+      creuse=' '
+      rec1=' '
+      rec2=' '
+      rec12=' '
+      rec72=' ' 
+      recin=' '
 c               iout   = 0 detailed output
 c                        2 summary of results
 c               iout12 = 0 no details when plan type = 12
@@ -93,7 +110,7 @@ c                        1 details when plan type = 12
       iout=0
       iout12=0  
       maxPlnU=0
-      
+c      
       do np=1,nplan
 c
 c 2009/06/09; correction
@@ -612,7 +629,10 @@ cx            maxplnU=amax0(maxplnO,maxP1)
 c
 c rrb 2019/04/27; Correction
 cx        maxplnU=amax0(maxopr,maxP1)  
-          maxplnU=amax0(maxplnU,maxP1)     
+c
+c rrb 2021/04/18; Compiler warning
+cx        maxplnU=amax0(maxplnU,maxP1)     
+          maxplnU=max(maxplnU,maxP1)     
 c
 c ---------------------------------------------------------
 c		End Operating rule loop           

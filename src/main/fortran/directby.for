@@ -38,6 +38,8 @@ c
 c _________________________________________________________
 c	Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 2019/07/30; Revise to not  report the bypass as carried
 c                 (qdiv(38,) if the destination is a plan 
 c                 (idtype=7 = iopdesr(l2)
@@ -272,6 +274,23 @@ c                          control file
 c     write(nlog,*) ' DirectBy; nplan', nplan    
 c 
       subtypX='directby'
+c
+c rrb 2021/04/18; Compiler warning
+      divreq=0.0
+      divreqx=0.0
+      divreqx2=0.0
+      divacts=0.0
+      dcrdiv1=0.0
+      dcrdiv2=0.0
+      culimit=0.0
+      availx=0.0
+      pavail=0.0
+      pavail1=0.0
+      nro=0
+      irow=0
+      np11=0
+      
+      
       iout=0
       ioutX=0
       ioutA=0
@@ -1410,7 +1429,11 @@ c ---------------------------------------------------------
 c rrb 2018/10/21; Provide control on ability to divert
 c                 more water at the Source if the
 c                 bypass was shorted.
-      iadd=oprlimit(l2)
+c
+c rrb 2021/04/18; Compiler warning
+cx    iadd=oprlimit(l2)
+      iadd=nint(oprlimit(l2))
+      
       iadd=0     
       if(ioutA.eq.1) write(nlog,*) '  DirectBy; iadd = ', iadd 
       if(iadd.eq.0) then 
@@ -1492,7 +1515,11 @@ c     if(iout.eq.1) write(6,*) '  DirectBy; Past 250', imcd
 
 c             
 c rrb 2008/06/20; Allow minor roundoff
-      iavail=avail(imcd)
+c
+c rrb 2021/04/18; Compiler warning
+cx    iavail=avail(imcd)
+      iavail=nint(avail(imcd))
+      
       IF(AVAIL(IMCD).le.(-1.*small) .and. iavail.gt.-1) avail(imcd)=0.0
 c             
 c               Print warning if negative available flow      
@@ -1844,8 +1871,9 @@ c
   280   FORMAT(a12, i5,1x,a4, i5, 2(1x,a12),14i8,20F8.0,i8,1x,
      1   1x, a48)
   281   FORMAT(a12, 143x, i8, f8.0, f8.2, 1x, a24)
-  290   FORMAT(/, '  DirectBy_0 QDIV ',a12,/,16F7.1)
-  300   FORMAT(/, '  DirectBy_0 QRES ',a12,/,16F7.1)
+  
+cx  290   FORMAT(/, '  DirectBy_0 QDIV ',a12,/,16F7.1)
+cx 300   FORMAT(/, '  DirectBy_0 QRES ',a12,/,16F7.1)
   310   FORMAT(/, '  DirectBy; Problem negative avail',/
      1  '  DirectBy    iyr  mon',
      1  '      Iw  nwrord      l2      lr     ND2   iuse2', 
@@ -1857,18 +1885,22 @@ c
      
      
   320   format(/, '  DirectBy_0; avail  ',/,(10f10.2))
-  330   format(/, '  DirectBy_0; river  ',/,(10f10.2))
-  332   format(/, '  DirectBy_0; qtribu ',/,(10f10.2))
-  334   format(/, '  DirectBy_0; qstern ',/,(10f10.2))
-  340   format(/, '  DirectBy_0; Pavail, imcd, stanam ',
-     1    f8.2, i8, 1x,a24)
-  350   format(/, '  DirectBy; Problem with the bypass reach')   
+cx  330   format(/, '  DirectBy_0; river  ',/,(10f10.2))
+cx  332   format(/, '  DirectBy_0; qtribu ',/,(10f10.2))
+cx  334   format(/, '  DirectBy_0; qstern ',/,(10f10.2))
+c
+c rrb 2021/04/18; Compiler warning
+cx  340   format(/, '  DirectBy_0; Pavail, imcd, stanam ',
+cx     1    f8.2, i8, 1x,a24)
+cx  350   format(/, '  DirectBy; Problem with the bypass reach')   
 c
 c rrb 2007/05/25; Add carrier Loss      
- 400  format('  DirectBy;   i ncar',
-     1          '  OprLossC  effmaxTX  effmaxT1',
-     1          '    divcap   divcapX   CapRemX')         
- 410  format(a10, 2i5, 20f10.0)   
+c
+c rrb 2021/04/18; Compiler warning
+cx 400  format('  DirectBy;   i ncar',
+cx     1          '  OprLossC  effmaxTX  effmaxT1',
+cx     1          '    divcap   divcapX   CapRemX')         
+cx 410  format(a10, 2i5, 20f10.0)   
 c
 c_____________________________________________________________
 c               Error warnings

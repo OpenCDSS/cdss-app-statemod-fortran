@@ -19,7 +19,8 @@ c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
 c	Dimensions
-cC     Last change:  C    19 May 97   11:56 pm
+c
+C     Last change:  C    19 May 97   11:56 pm
 c
 c                                        
 c *******************************************************
@@ -30,7 +31,6 @@ c
 c _________________________________________________________
 c	Program Description
 c
-
 c     Demcons It calculates the demand constrained by
 c                 water right and capacity                  
 c
@@ -39,6 +39,11 @@ c               right or capacity
 c !!!! Subroutine with ioptiox used requires local variables
 c               demconi and demcond be remembered
 c
+c _________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c
 c       Documentation
@@ -60,6 +65,7 @@ c
 c	Dimensions
       include 'common.inc'
       character rec32*32
+c
 c
 c _________________________________________________________
 c
@@ -264,14 +270,16 @@ c
   200 continue
 c
 c              Preliminary Check on results
-  210 format( '  Demcons; ',/
-     1        '                      direct  direct',/  
-     1        '  iyr  mon  iss   nd  limit1  demand  limit2',/
-     1        ' ---- ---- ---- ----', 3(' -------'))
-  220 format( '  Demcons; ',/
-     1        '                      instrm  instrm    both',/  
-     1        '  iyr  mon  iss   nd  limit1  demand  limit2',/
-     1        ' ---- ---- ---- ----', 3(' -------'))
+c
+c rrb 2021/04/18; Compiler warning
+cx  210 format( '  Demcons; ',/
+cx     1        '                      direct  direct',/  
+cx     1        '  iyr  mon  iss   nd  limit1  demand  limit2',/
+cx     1        ' ---- ---- ---- ----', 3(' -------'))
+cx  220 format( '  Demcons; ',/
+cx     1        '                      instrm  instrm    both',/  
+cx     1        '  iyr  mon  iss   nd  limit1  demand  limit2',/
+cx     1        ' ---- ---- ---- ----', 3(' -------'))
   230 format(/ 
      1  72('_'),//   
      1     '  Demcons; Warning the following structure has a',
@@ -294,7 +302,10 @@ c              Preliminary Check on results
 
   500 return
 c
-  999 write(6,*) '  Stopped in Demcons, see the log file (*.log)'
+c
+c rrb 2021/04/18; Compiler warning
+cx999 write(6,*) '  Stopped in Demcons, see the log file (*.log)'
+      write(6,*) '  Stopped in Demcons, see the log file (*.log)'
       write(99,*) '  Stopped in Demcons'
       write(6,*) 'Stop 1'
       call flush(6)

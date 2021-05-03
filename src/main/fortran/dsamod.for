@@ -33,6 +33,9 @@ c	    minimum available flow (pavail) given the demand (divalo)
 c
 c _____________________________________________________________
 c	Update History
+c
+c rrb  2021/04/18; Compiler warning
+c
 c      2015/06/15; Revised edits by jhb to correct a problem
 c                  and revised typo (iretsw = iresw)
 c
@@ -96,6 +99,15 @@ c    	Dimensions
 c     
 c_____________________________________________________________
 c               Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      ioutin=0
+      ioutz=0
+      divmon1=0.0
+      divact1=0.0
+      avail1=0.0
+      avail2=0.0
+      rec12=' '
 c
 c		iout=0 No details
 c		    =1 details

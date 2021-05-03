@@ -34,6 +34,8 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb; 2005/10/14; Separated from Datinp
 c
 c _________________________________________________________
@@ -43,9 +45,11 @@ c
       DIMENSION ITEMP(numstax), cgotoX(numstax), cgotoX2(numstax),
      1          divefcY(numstax)
 c
-      dimension mthd(12), xmon(12), x(12)
+c
+c rrb; 2005/10/14; Separated from Datinp
+cx    dimension mthd(12), xmon(12), x(12)
 C
-      character ch2*2, ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
+      character ch2*2, ch3*3, ch4*4, blank*12, crtnid*12,
      1          recin*256, cgoto2*12, cx*12, rec4*4, rec24*24,
      1          rec1*1, rec12*12,
 c
@@ -55,6 +59,19 @@ c rrb; 2005/10/14; Separate return and depletion files
 c     
 c__________________________________________________________
 c               Initialize
+c
+c rrb; 2005/10/14; Separated from Datinp
+      inx=inx
+      ch2=' '
+      ch4=' '
+      crtnid=' '
+      cx=' '
+      rec1=' '
+      rec4=' '
+      filenaS=' '
+      filenaE=' '
+      filenaR=' '
+      filenaD=' '
 
 C		0=no details
 c		1=detailed of data read
@@ -632,9 +649,9 @@ c ___________________________________________________
      1 '          efficiency is not 100%.',
      1 '          To do; Change type or efficiency data to 100%')
 
-  930  FORMAT(A256)
-  940  format(/, 72('_'), /,
-     1 '  GetWel; Well Station ', a24,/,4x, a256)
+cx  930  FORMAT(A256)
+cx  940  format(/, 72('_'), /,
+cx     1 '  GetWel; Well Station ', a24,/,4x, a256)
   
  1021  FORMAT(/,
      1  ' GetWel; Problem.',
@@ -649,7 +666,7 @@ c ___________________________________________________
      1  '          cannot be found in the network file (*.rin)',/
      1  '          (If the id looks ok, Check to be sure it',/
      1  '          does not contain a tab character')
- 1230  FORMAT(12X,a24,12x, 2I8,2F8.0,I8)
+cx 1230  FORMAT(12X,a24,12x, 2I8,2F8.0,I8)
  1232  format(12x,24x,a12, 3i8, 2f8.0, i8, f8.0)
 
 c
@@ -673,27 +690,27 @@ c
      1  ' ____ ____________')
  1242  format(i5, 1x, a12)  
 
- 1243  format(/,
-     1  '  GetWel; Problem, In Baseflow mode yet diversion code',/
-     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
-     1  '          Stopped to avoid having historic pumping',/, 
-     1  '          data weighted by efficiency.  To do: revise *.wes')
+cx 1243  format(/,
+cx     1  '  GetWel; Problem, In Baseflow mode yet diversion code',/
+cx     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
+cx     1  '          Stopped to avoid having historic pumping',/, 
+cx     1  '          data weighted by efficiency.  To do: revise *.wes')
  1250  FORMAT(/,
      1  ' GetWel; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
- 1255 format(/'  GetWel; Problem with Well Station ', a12,/
-     1 10x,'The augmentation plan code (planw) = ', a12,
-     1 10x,'But this plan is type ', i4,/
-     1 10x,'(Note a well agumentation plan should be a type 2)')
- 1256 format(/'  GetWel; FYI at least one Well Station (e.g.) ', a12,/
-     1 9x,' is tied to an augmentation plan (planw) = ', a12,
-     1     ' plan pointer = ', i5)
- 1257 format(/'  GetWel; Warning Well Station ', a12,/
-     1 9x,' IS NOT TIED to an augmentation plan (planw)',/
-     1    ' Plan ID = ', a12,' plan pointer = ', i5,/
-     1    ' If OK enter NA as the plan ID')
-     
- 1260  format(36x,a12,f8.0,i8)
- 1262  format(36x,a12,f8.0,a12)
+cx1255 format(/'  GetWel; Problem with Well Station ', a12,/
+cx    1 10x,'The augmentation plan code (planw) = ', a12,
+cx    1 10x,'But this plan is type ', i4,/
+cx    1 10x,'(Note a well agumentation plan should be a type 2)')
+cx1256 format(/'  GetWel; FYI at least one Well Station (e.g.) ', a12,/
+cx    1 9x,' is tied to an augmentation plan (planw) = ', a12,
+cx    1     ' plan pointer = ', i5)
+cx1257 format(/'  GetWel; Warning Well Station ', a12,/
+cx    1 9x,' IS NOT TIED to an augmentation plan (planw)',/
+cx    1    ' Plan ID = ', a12,' plan pointer = ', i5,/
+cx    1    ' If OK enter NA as the plan ID')
+cx    
+cx 1260  format(36x,a12,f8.0,i8)
+cx 1262  format(36x,a12,f8.0,a12)
  
  1270 format(/,
      1 '  GetWel; Number of Supplemental Wells    = ', i5,/
@@ -716,10 +733,10 @@ c
  1302  FORMAT(/,
      1 ' GetWel; Problem. Too MANY Well Stations,     MAXIMUM = ',I5)
 
- 1310  FORMAT(a12,a24,a12,i8,f8.0,1x,a12)
+cx 1310  FORMAT(a12,a24,a12,i8,f8.0,1x,a12)
 c
 c rrb; 2004/25/97; Daily model
- 1312  FORMAT(a12, a24, a12, 1x, a12)
+cx 1312  FORMAT(a12, a24, a12, 1x, a12)
  1322  FORMAT(/,
      1  '  GetWel; Warning Well structure not tied to a SW structure',/
      1  '          and not specified as NA or a SW structure cannot',/ 
@@ -735,19 +752,19 @@ c
 c _________________________________________________________
 c               Error Tracking
       
- 1400 write(nlog,1402) cistat,iyr
- 1402 FORMAT(/,
-     1 '  GetWel;; Problem.'
-     1 ' Structure ',a12,' of well efficiency file (*.wef)',
-     1 ' not found in well station file') 
+cx 1400 write(nlog,1402) cistat,iyr
+cx 1402 FORMAT(/,
+cx     1 '  GetWel;; Problem.'
+cx     1 ' Structure ',a12,' of well efficiency file (*.wef)',
+cx     1 ' not found in well station file') 
      
       numdivw=nw-1
       write(nlog,1270) numdivwS, numdivwX, numdivw, ndemW
      
       goto 9999
       
- 1410 write(nlog,1412) filena
- 1412 format('  GetWel; Problem opening file: ', a256)
+cx 1410 write(nlog,1412) filena
+cx 1412 format('  GetWel; Problem opening file: ', a256)
       goto 9999      
       
       

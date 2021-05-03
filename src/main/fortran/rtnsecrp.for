@@ -32,6 +32,8 @@ c		Called by DivcarL, DirectBy, & DirectEx
 c
 c _________________________________________________________
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 2006/04/11; Copy RtnsecP (plans) edit as follows:
 c		Add returns to Psuply (RtnsecP added returns to Pdem)
 c		Route return flows to the river via Call Takout
@@ -114,6 +116,7 @@ c _________________________________________________________
 c	Dimensions
 
       include 'common.inc'
+c
       character pid1*12
 c
 c _________________________________________________________
@@ -121,7 +124,13 @@ c
 c               Step 1 - Initialize
 c
 c
-c		iout =  1 details
+c rrb 2021/04/18; Compiler warning
+      idly=0
+      irni=0
+      irne=0
+      const=0.0
+c
+c		            iout =  1 details
 c                       2 summary
 c                       3 print future return data
 c
@@ -274,7 +283,7 @@ cx      IORD=IRNORD(IRCD)
           write(nlog,'(a12,20i5)')
      1       '  RtnsecRP; ', nr, irn, ircd, iord, iplan
         endif  
-        
+c       
 c _________________________________________________________
 c
 c               Step 3 - Calculate return to location irn (const)
@@ -375,7 +384,10 @@ c
 c _________________________________________________________
 c
 c               Step 8 - Calculate future returns (pobl1)
-  130   IM=0
+c
+c rrb 2021/04/18; Compiler warning
+cx130   IM=0
+        IM=0
         IEND=IMO+ndly(idly)-1
 c
 c _________________________________________________________
@@ -557,7 +569,10 @@ c
 c _________________________________________________________
 c
 c               Error Processing
- 200  write(nlog,210) nr
+c
+c rrb 2021/04/18; Compiler warning
+c 200 write(nlog,210) nr
+      write(nlog,210) nr
  210  format('  RtnSecRP; Problem when called by SepSec',
      1       ' nr = ', i15)
                                       

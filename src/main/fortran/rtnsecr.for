@@ -40,6 +40,7 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c
@@ -526,19 +527,19 @@ c               Formats
  160  format('     RtnsecR;   l2 iord  mon  idy  imo iend',
      1                   '    k   im  imx   kk',
      1                   ' ndlymx mdhday(imx)')
- 170  format('     RtnsecR;   l2 iord  mon  idy  ido iend',
-     1                   '    k   id   kk ndlymx')
+cx 170  format('     RtnsecR;   l2 iord  mon  idy  ido iend',
+cx     1                   '    k   id   kk ndlymx')
  172  format(12x, 20i5)
 
  180  format('     RtnsecR; iday   l2  imd  divact    retM    retD',/,
      1             12x, 3i5, 10f8.2)
  190  format('     RtnsecR; Avail = ', i4, 10f8.2,/,(25x10f8.2))
- 300  format('  RtnsecR; Diversion check',//
-     1 '  iyr  mon  imo   nd   kk iord     retur      rett     delta',/
-     1 ' ____ ____ ____ ____ ____ ____ _________ _________ _________')
- 302  format('  RtnsecR; Return Reuse check',//
-     1 '  iyr  mon  imo ipUse  kk iord      psup      rett     delta',/
-     1 ' ____ ____ ____ ____ ____ ____ _________ _________ _________')
+cx300 format('  RtnsecR; Diversion check',//
+cx   1 '  iyr  mon  imo   nd   kk iord     retur      rett     delta',/
+cx   1 ' ____ ____ ____ ____ ____ ____ _________ _________ _________')
+cx302 format('  RtnsecR; Return Reuse check',//
+cx   1 '  iyr  mon  imo ipUse  kk iord      psup      rett     delta',/
+cx   1 ' ____ ____ ____ ____ ____ ____ _________ _________ _________')
  310  format('  RtnsecR; Return data ', 6i5, 20f10.2)
  312  format('  RtnsecR; Plan data   ', 6i5, 20f10.2)
  318  format('  RtnsecR; Return Array (retur(k,iord) for ',

@@ -41,10 +41,12 @@ c _________________________________________________________
 c
 c       Update History
 c
-c rrb 03/08/18; Revised to allow a random file read
-c rrb 99/08/20; Revised to handle daily data (monthly checks)     
-c rrb 99/09/22; Revised to handle dummy files better
-c rrb 00/08/04; Added maxfn and revised file length from 72 to 256
+c
+c rrb 2021/04/18; Compiler warning
+c rrb 1903/08/18; Revised to allow a random file read
+c rrb 1999/08/20; Revised to handle daily data (monthly checks)     
+c rrb 1999/09/22; Revised to handle dummy files better
+c rrb 2000/08/04; Added maxfn and revised file length from 72 to 256
 c
 c
 c _________________________________________________________
@@ -86,8 +88,12 @@ c	Dimensions
 c                                              
       character filena*256, fpath1*256, cyr1*5, rec3*3
 c
-c		iout=1 details
-c		iout=2 summary      
+c
+c rrb 2021/04/18; Compiler warning
+      rec3=rec3
+    
+c		  iout=1 details
+c		  iout=2 summary      
       iout=0
       iin2=ifinr
       idummy=1

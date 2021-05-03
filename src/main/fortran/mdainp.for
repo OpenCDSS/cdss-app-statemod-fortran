@@ -49,6 +49,7 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/07/27; Ver = 16.00.36
 c                   Correction do not set zero values in import
@@ -139,7 +140,19 @@ c
 c jhb 2014/06/26
       character(len=256) rec256x
 c _________________________________________________________
+c
+c
 c              Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      itarx=0
+      monppt=0 
+      iuse=0
+      rec12b=' '
+      rec3=' '
+      do i=1,12
+        y(i)=0.0
+      end do
 c
       nscrn=6
 c
@@ -1056,7 +1069,10 @@ c rrb 01/02/01; Allow return and delay data to be a fraction
 c     
       if(interv.eq.-100) then
         cfac=float(iabs(interv))
-        cfac=amax1(cfac, 100.0)
+c
+c rrb 2021/04/18; Compiler warning
+cx      cfac=amax1(cfac, 100.0)
+        cfac=max(cfac, 100.0)
       else
         cfac=1.0
       endif
@@ -1138,13 +1154,18 @@ c rrb 99/10/16; Check for blanks
 c
 c ---------------------------------------------------------
 c
-
-       ndlymx=amax0(ndlymx,ndly(idl))
+c
+c rrb 2021/04/18; Compiler warning
+cx     ndlymx=amax0(ndlymx,ndly(idl))
+       ndlymx=max(ndlymx,ndly(idl))
 c
 c rrb 05/28/98; allow return id to not be the array counter
 c       IF(IDLY.LE.0.OR.IDLY.GT.MAXDLY) GO TO 860
        IF(ndly(idl).gt.maxdlm) GO TO 860
-       ndlymx=amax0(ndlymx,ndly(idl))
+c
+c rrb 2021/04/18; Compiler warning
+cx     ndlymx=amax0(ndlymx,ndly(idl))
+       ndlymx=max(ndlymx,ndly(idl))
 C
 c rrb 05/28/98; allow return id to not be the array counter
 c       IDLORD(IDLY)=IDL
@@ -1173,7 +1194,11 @@ C
 C
   880 continue
 c     NUMDLY=IDL-1,0
-      numdly=amax0(IDL-1,0)
+c
+c rrb 2021/04/18; Compiler warning
+cx    numdly=amax0(IDL-1,0)
+      numdly=max(IDL-1,0)
+      
       write(nlog,*) ' ' 
       write(Nlog,799) numdly
  799  format('  Mdainp; Number of delay tables read = ', i5)
@@ -1382,11 +1407,11 @@ c
       munmin=munmin
 C
 
-  890 write(nlog,109)
-c     write(nscrn,,109)
- 109  format(/,72('_'),/
-     1 '  Mdainp; Reservoir Target Content File (*.tam (*.tar)) ')
-c
+cx  890 write(nlog,109)
+cx     write(nscrn,,109)
+cx 109  format(/,72('_'),/
+cx     1 '  Mdainp; Reservoir Target Content File (*.tam (*.tar)) ')
+cx
       nc = 0
       if(nrsact.eq.0 .or. numres.eq.0) nc = 1
 
@@ -2577,16 +2602,21 @@ c     DO 1360 ND=1,NUMDIV
 c     if(cistat.eq.cdivid(nd)) go to 1380
 c1360 CONTINUE
 C
- 1380 IUSE=NDUSER(ND)
-      IF(IUSE.LE.NDUSER(ix+1)-1) GO TO 1400
-      write(nlog,1390) cdivid(ix)
- 1390 FORMAT(/
-     1 '  Mdainp; Problem.'
-     1 ' THE STRUCTURE ',a12,' in the diversion override file',
-     1 ' (*.ddo) DOES NOT HAVE A USER')
-      goto 9999
-C
- 1400 IF(dfacto.LE.small) GO TO 1420
+cx 1380 IUSE=NDUSER(ND)
+cx      IF(IUSE.LE.NDUSER(ix+1)-1) GO TO 1400
+cx      write(nlog,1390) cdivid(ix)
+c
+c rrb 2021/04/18; Compiler warning
+cx 1390 FORMAT(/
+cx     1 '  Mdainp; Problem.'
+cx     1 ' THE STRUCTURE ',a12,' in the diversion override file',
+cx     1 ' (*.ddo) DOES NOT HAVE A USER')
+cx      goto 9999
+c
+c
+c rrb 2021/04/18; Compiler warning
+cx1400 IF(dfacto.LE.small) GO TO 1420
+      IF(dfacto.LE.small) GO TO 1420
       DO 1410 I=1,12
 c
 c rrb 2021/03/20; Compiler Update
@@ -3321,7 +3351,7 @@ c933      read(90,*,end=928,err=928) icd1, rec3, icy1, rec10, dcall1
 c         call findmo(nlog, cyr1, rec3, icm1,imnum)
           dcallm(im)=dcall1          
 c         write(nlog,934)  icd1, icm1, icd1, dcallm(im) 
- 934      format(' Mdainp; Monthly Call data ', 3i8.0, f20.5)
+cx 934      format(' Mdainp; Monthly Call data ', 3i8.0, f20.5)
 
         end do  
       endif              
@@ -3715,7 +3745,10 @@ c rrb 01/04/12; Reset to water right if IWR is > 0)
 c rrb 01/04/12; Reset to demand to handle Closed Basin Pumping
 c            if(diwr(im,nd).gt.small) then 
              if(diver(im,nd).gt.small) then
-               diver(im,nd)=amax1(demcond(nd), diver(im,nd))
+c
+c rrb 2021/04/18; Compiler warning
+cx             diver(im,nd)=amax1(demcond(nd), diver(im,nd))
+               diver(im,nd)=max(demcond(nd), diver(im,nd))
                divert(im,nd)=diver(im,nd)
              endif
            end do
@@ -3763,8 +3796,8 @@ c
      1 'efficiency is < 0 for: ', /,
      1 '          ID: ' ,a12, ' Name: ', a24, ' Date: ',2i5,  
      1 ' Demand: ', f8.0, ' Efficiency: ' f8.0)
-  758 format('  Mdainp;', 3(i5), 12f8.0) 
-  759 format('  Mdainp;', i5, 12f8.0)
+cx  758 format('  Mdainp;', 3(i5), 12f8.0) 
+cx  759 format('  Mdainp;', i5, 12f8.0)
   760 write(nlog,770)
   770 FORMAT(/
      1 '  Mdainp; Problem.',/
@@ -3781,12 +3814,12 @@ c
       Goto 9999
 
 C
-  780 write(nlog,790)  cistat
-  790 FORMAT(/
-     1 '  Mdainp; Problem.'/
-     1 '          STRUCTURE ',a12,' in the annual instream demand',
-     1 '          file (*.ifa) cannot be found')
-      Goto 9999
+cx  780 write(nlog,790)  cistat
+cx  790 FORMAT(/
+cx     1 '  Mdainp; Problem.'/
+cx     1 '          STRUCTURE ',a12,' in the annual instream demand',
+cx     1 '          file (*.ifa) cannot be found')
+cx      Goto 9999
 
   860 if(interv.ne.-999) then
         write(nlog,870) irtnid(idl),maxdlm,ctot
@@ -3825,13 +3858,13 @@ cr    write(nlog,'(a256)') recin
       goto 9999
 c
 c
-  930 write(nlog,931)
-  931 format(/
-     1 '  Mdainp; Problem reading the delay table (*.dly or *.urm)',/
-     1 '          Note for a simulation with wells or a daily',/
-     1 '          time step, the control file (*.ctl) variable',/
-     1 '          (interv) must be less than zero to indicate ',/
-     1 '          a variable number of entries is provided')
+cx  930 write(nlog,931)
+cx  931 format(/
+cx    1 '  Mdainp; Problem reading the delay table (*.dly or *.urm)',/
+cx    1 '          Note for a simulation with wells or a daily',/
+cx    1 '          time step, the control file (*.ctl) variable',/
+cx    1 '          (interv) must be less than zero to indicate ',/
+cx     1 '          a variable number of entries is provided')
       write(nlog,929) iin2, filena
       backspace(iin2)
       backspace(iin2)
@@ -3876,14 +3909,14 @@ c
      1 ' NOT ENOUGH DATA IN San Juan Recovery File (*.sjr)')
       goto 9999
       
- 1291 write(nlog,1292)
- 1292 FORMAT(/,
-     1 '  Mdainp; Problem.'
-     1 ' NOT ENOUGH DATA IN Irrigation Water Requirement FILE (*.iwr)')
-      goto 9999
+cx 1291 write(nlog,1292)
+cx 1292 FORMAT(/,
+cx     1 '  Mdainp; Problem.'
+cx     1 ' NOT ENOUGH DATA IN Irrigation Water Requirement FILE (*.iwr)')
+cx      goto 9999
 c
 c
- 1301 write(nlog,1311) cistat, 'Monthly ', iyr, iifcom(nd)
+cx 1301 write(nlog,1311) cistat, 'Monthly ', iyr, iifcom(nd)
  1311 FORMAT(/,'  Mdainp; Problem',
      1 ' Structure ',a12,' of the ',a8, ' ISF demand file',/
      1 10x,'In year',I5, ' is not found in file (*.ifs)',/
@@ -3892,7 +3925,7 @@ c
       goto 9999
 c
 c
- 1302 write(nlog,1312) ' Problem', cistat,iyr
+cx 1302 write(nlog,1312) ' Problem', cistat,iyr
  1312 FORMAT(/,
      1 '  Mdainp; ',a8,
      1 ' Structure ',a12,' of well demand file (*.wem)',
@@ -3922,7 +3955,7 @@ c
       goto 9999
 
 c
- 1305 write(nlog,1306) cdivid(nd)
+cx1305 write(nlog,1306) cdivid(nd)
  1306 FORMAT(/,
      1 '  Mdainp; Warning. '
      1 ' Structure ID ',a12,' in the diversion file (*.ddm)',/ 
@@ -3992,12 +4025,12 @@ c                 but no annual time series file is provided.
       goto 9999
 c
 c rrb 2017/12/11; Warn if the number of data reads is too small
- 1654 FORMAT(/,
-     1  72('_'),//  
-     1 '  Mdainp;  Warning when reading *.iwr',/
-     1 '           the number of data points read = ', i8,/
-     1 '           that is too small.  ',/
-     1 '           Reconmend you revise Mdainp.for')
+cx 1654 FORMAT(/,
+cx     1  72('_'),//  
+cx     1 '  Mdainp;  Warning when reading *.iwr',/
+cx     1 '           the number of data points read = ', i8,/
+cx     1 '           that is too small.  ',/
+cx     1 '           Reconmend you revise Mdainp.for')
       
 C
  
@@ -4018,31 +4051,31 @@ c
  532  format(5x,a12,12f8.0) 
  534  format(i5, 5x,a12,12f8.0) 
  536  format(i4,1x, i4,1x, a12,12f8.0) 
- 545  format(/,
-     1  72('_'),//  
-     1 '  Mdainp; Problem Annual time series data (*.ipy or *.tsp)',/
-     1 '          Well ID = ', a12,' is tied to Diversion ID = ',a12,/
-     1 '          To do; provide data in *.ipy or *.tsp once under', 
-     1          ' diversion ID')      
+cx 545  format(/,
+cx     1  72('_'),//  
+cx     1 '  Mdainp; Problem Annual time series data (*.ipy or *.tsp)',/
+cx     1 '          Well ID = ', a12,' is tied to Diversion ID = ',a12,/
+cx     1 '          To do; provide data in *.ipy or *.tsp once under', 
+cx     1          ' diversion ID')      
+cx
+cx 547  format(/,
+cx     1  72('_'),//  
+cx     1 '  Mdainp; Problem for Div or Well station = ', a12,/
+cx     1 '          The type = 4 which indicates transmountain, but',/
+cx     1 '          the max efficiency data (*.ipy or *.tsp) ',/
+cx     1 '          is not 100%.',/
+cx     1 '          To do: Revise type or max. efficiency')
+cx
+cx 550   FORMAT(16X,I8,12F8.0)
 
- 547  format(/,
-     1  72('_'),//  
-     1 '  Mdainp; Problem for Div or Well station = ', a12,/
-     1 '          The type = 4 which indicates transmountain, but',/
-     1 '          the max efficiency data (*.ipy or *.tsp) ',/
-     1 '          is not 100%.',/
-     1 '          To do: Revise type or max. efficiency')
 
- 550   FORMAT(16X,I8,12F8.0)
-
-
- 828   format(a12,1x,i4,/,(10f10.6))
+cx 828   format(a12,1x,i4,/,(10f10.6))
  829   format(a12,1x,i4,1x,(10f10.6))
- 832   format(/,
-     1  72('_'),//  
-     1   '  Mdainp;',
-     1   ' Warning in delay table file (*.dly or *.urm), the',
-     1   ' total return for table ', i5,' =',f10.2, ' Continuing on')
+cx 832   format(/,
+cx     1  72('_'),//  
+cx     1   '  Mdainp;',
+cx     1   ' Warning in delay table file (*.dly or *.urm), the',
+cx     1   ' total return for table ', i5,' =',f10.2, ' Continuing on')
  850   FORMAT(/
      1  72('_'),//  
      1   '  Mdainp; Problem'
@@ -4061,7 +4094,7 @@ c
  951  format(i4, 1x, a12, 12f8.0, 10x, f8.2)
  952  format(i4, 1x, a12, 12f8.0)
  953  format(2i4, 1x, a12, 12f8.4)
- 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
+cx 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
  
  955  format(i4, 1x, i4, 1x, i4, 1x, a12)
 
@@ -4080,11 +4113,11 @@ c
      
  1242 format(i5,1x,a12,i5, 20f10.2)
 
- 1243 format(/,
-     1  72('_'),//  
-     1 '  Mdainp; Warning negative demand of ', f10.2,
-     1    ' set to' f10.2)
-
+cx 1243 format(/,
+cx     1  72('_'),//  
+cx     1 '  Mdainp; Warning negative demand of ', f10.2,
+cx     1    ' set to' f10.2)
+cx
  1244 format(/,
      1  72('_'),//  
      1   '  Mdainp; FYI at least one pumping value is less than 0 for ',
@@ -4110,34 +4143,34 @@ c
      
  1316 format(i5, 1x, a12, 1x, i5)
      
- 1318 FORMAT(/,
-     1  72('_'),//  
-     1 '  Mdainp; Problem',
-     1  ' Structure ID ',a12,' in *.ipy or *.tsp has conveyance,',
-     1  ' flood or',/ 
-     1 10x, ' sprinkler efficiency less than 0 or greater than 1.',/ 
-     1 10x, ' To do; Revise efficiency data.', 20f8.2)
-
- 1319 FORMAT(/,
-     1  72('_'),//  
-     1 '  Mdainp; Warning in *.ipy or *.tsp',/
-     1 '          Sprinkler area > ground water area, ',
-     1           ' setting sprinkler = GW area or',/
-     1 '          GW area > Total Area ',
-     1           ' setting GW area = Total area',//
-     1  '    # Year ID             Spr Area   GW Area     Delta',
-     1                          '   GW Area  Tot Area     Delta'/
-     1  ' ____ ____ _____________ _________ _________ _________',
-     1                          ' _________ _________ _________')
- 
- 1321 FORMAT(/,
-     1  72('_'),//  
-     1 '  Mdainp; Warning in year ',i5, ' Well Only ID ',a12,/
-     1 10x  'in *.ipy or *.tsp has GW area ', f10.0,
-     1 ' < total area ', f10.0,/  
-     1 10x, 'Set GW area = Total area and moving on')
-     
- 1322 format(i5, i5, 1x, a12,1x 20f10.2)
+cx 1318 FORMAT(/,
+cx     1  72('_'),//  
+cx     1 '  Mdainp; Problem',
+cx     1  ' Structure ID ',a12,' in *.ipy or *.tsp has conveyance,',
+cx     1  ' flood or',/ 
+cx     1 10x, ' sprinkler efficiency less than 0 or greater than 1.',/ 
+cx     1 10x, ' To do; Revise efficiency data.', 20f8.2)
+cx
+cx 1319 FORMAT(/,
+cx     1  72('_'),//  
+cx     1 '  Mdainp; Warning in *.ipy or *.tsp',/
+cx     1 '          Sprinkler area > ground water area, ',
+cx     1           ' setting sprinkler = GW area or',/
+cx     1 '          GW area > Total Area ',
+cx     1           ' setting GW area = Total area',//
+cx     1  '    # Year ID             Spr Area   GW Area     Delta',
+cx     1                          '   GW Area  Tot Area     Delta'/
+cx     1  ' ____ ____ _____________ _________ _________ _________',
+cx     1                          ' _________ _________ _________')
+cx 
+cx 1321 FORMAT(/,
+cx     1  72('_'),//  
+cx     1 '  Mdainp; Warning in year ',i5, ' Well Only ID ',a12,/
+cx     1 10x  'in *.ipy or *.tsp has GW area ', f10.0,
+cx     1 ' < total area ', f10.0,/  
+cx     1 10x, 'Set GW area = Total area and moving on')
+cx     
+cx 1322 format(i5, i5, 1x, a12,1x 20f10.2)
 
  1323 FORMAT(/,
      1  72('_'),//  
@@ -4165,27 +4198,27 @@ c
      1 '  Streamflow data (*.rim) has missing data (-999)',
      1 '  temporarily set to 0.0',/
      1 i4, 1x, a12, 12f8.0)
- 1630 format(/,
-     1  72('_'),//  
-     1   '  Mdainp; Problem with the monthly Well demand file ',/
-     1   '    (*.wem).  Either not enough data or too much data',/
-     1   '    for a given year.  Note, if a well is tied to a',/
-     1   '    diversion, the demand code (idvcomw) should be 6',/
-     1   '    and no data is expected in the well demand file',/
-     1   '    (*.wem).  The last record read for simulation year ',
-     1        i5,' is:',/,a256)
- 1631 format(/,
-     1  72('_'),//  
-     1   '  Mdainp; Problem with the annual time series',
-     1   ' file (*.ipy or *.tsp)',/
-     1   '    Either not enough data or too much data for a year',/
-     1   '    The last record read for simulation year', i5,' is:',/
-     1   a256)
- 1632 format(/,
-     1  72('_'),//  
-     1   '  Mdainp; Warning the annual time series file ',
-     1   '(*.ipy or *.tsp)',/
-     1   '    has more data then wells. Moving on')
+cx 1630 format(/,
+cx     1  72('_'),//  
+cx     1   '  Mdainp; Problem with the monthly Well demand file ',/
+cx     1   '    (*.wem).  Either not enough data or too much data',/
+cx     1   '    for a given year.  Note, if a well is tied to a',/
+cx     1   '    diversion, the demand code (idvcomw) should be 6',/
+cx     1   '    and no data is expected in the well demand file',/
+cx     1   '    (*.wem).  The last record read for simulation year ',
+cx     1        i5,' is:',/,a256)
+cx 1631 format(/,
+cx     1  72('_'),//  
+cx     1   '  Mdainp; Problem with the annual time series',
+cx     1   ' file (*.ipy or *.tsp)',/
+cx     1   '    Either not enough data or too much data for a year',/
+cx     1   '    The last record read for simulation year', i5,' is:',/
+cx     1   a256)
+cx 1632 format(/,
+cx     1  72('_'),//  
+cx     1   '  Mdainp; Warning the annual time series file ',
+cx     1   '(*.ipy or *.tsp)',/
+cx     1   '    has more data then wells. Moving on')
      
  1633 format(/,
      1  72('_'),//  

@@ -25,10 +25,16 @@ c _________________________________________________________
 c	Program Description
 c
 c       Outtbl; It prints summary tables of input data
-c
-c _________________________________________________________
-c	Dimensions
-c
+c                                                                    
+c_________________________________________________________________   
+c                                                                    
+c       Update History                                               
+c                                                                                                       
+c_________________________________________________________________                                      
+c                                                                    c
+c       Update History                                               c _________________________________________________________
+c                                                                    c	      Dimensions
+c rrb 2021/04/18; Compiler warning                                   c
       include 'common.inc'
        dimension
 cx   1 oprtyp(50),   cdem(5)
@@ -96,9 +102,16 @@ c rrb 2018-07/15; Revise to allow up to 55 operating rules
 c
         data cdem /
      1     ' Mon-Tot', ' Ann-Tot', ' Mon-Iwr', ' Ann-Iwr', '    Zero'/
+
+c                                                                    
+c_________________________________________________________________   
+c                                                                    
+c       Initilize
 c
-c                Similar to outsyt but it prints average
-c _________________________________________________________
+c       Update History                                               
+c                                                                    
+c rrb 2021/04/18; Compiler warning
+        cname1=' '                            
 c
 
         blank = '            '
@@ -371,7 +384,7 @@ c _________________________________________________________
 c
 c
 c               f. Print reservoir summary
-  269    write(19,270) 
+cx269    write(19,270) 
 c 270    format('',/,
   270    format(    /,
      1   'Table 4.3.1a',/
@@ -644,9 +657,9 @@ cr         if(nw2.gt.0)  write(19,153)  cix2, cname2
   152      format(1x, i4,',',i4,',',
      1            1x, a12,',', 1x, a24,',', 1x, a24,',',
      1            7(f8.0,','),a8, ',', 3i8)
-  153      format(1x, 4x,',',
-     1            1x, a12,',', 1x, a24,',', 1x, 24x,',',
-     1            8(8x,','), 8x)
+cx153      format(1x, 4x,',',
+cx   1            1x, a12,',', 1x, a24,',', 1x, 24x,',',
+cx   1            8(8x,','), 8x)
          end do
 c
 c _________________________________________________________
@@ -883,16 +896,18 @@ c _________________________________________________________
 c
 c
 c               n. Print base flow data by month
-c 480    format(''/,
-  480    format(   /,
-     1   'Table N/A',/
-     1   'Stream Flow Comparison',/
-     1   'Average (af/yr) ',i4, '-', i4,//
-     1   '    #, ID          , Name                    ,  Mon,',
-     1   '   BaseFlow,   Historic Adjustment',/,
-     1   ' ____, ____________, ________________________, ____,',
-     1   ' __________, __________, __________')
-                         
+c 480    format('                                                           
+
+cxcx cx '/,
+cx  480    format(   /,
+cx     1   'Table N/A',/
+cx     1   'Stream Flow Comparison',/
+cx     1   'Average (af/yr) ',i4, '-', i4,//
+cx     1   '    #, ID          , Name                    ,  Mon,',
+cx     1   '   BaseFlow,   Historic Adjustment',/,
+cx     1   ' ____, ____________, ________________________, ____,',
+cx     1   ' __________, __________, __________')
+cx                         
          npp=0
          do 510 nh=1,numhis
 c          write(19,410) iystr, iyend
@@ -909,9 +924,9 @@ c               Print header
              c = dum2(im,iss) - dum3(im,iss)
 c             write(19,412) nh, cstaid(iss),stanam1(iss),
 c     1                   xmonam(im),
-c     1                   dum2(im,iss)/rn, dum3(im,iss)/rn, c/rn
-  490        format(1x, i4,',', 1x, a12,',', 1x, a4,',', 
-     1              1x, a24,',', 2(1x, f10.0,','), 1x, f10.0)
+cxc     1                   dum2(im,iss)/rn, dum3(im,iss)/rn, c/rn
+cx  490        format(1x, i4,',', 1x, a12,',', 1x, a4,',', 
+cx     1              1x, a24,',', 2(1x, f10.0,','), 1x, f10.0)
   500      continue
   510    continue
 c

@@ -20,7 +20,7 @@ c_________________________________________________________________NoticeEnd___
 
 c       Update History
 c
-
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c       Documentation
@@ -55,6 +55,9 @@ c
 c _________________________________________________________
 c              Step 1; Initialize
 c
+c
+c rrb 2021/04/18; Compiler warning
+      nacc=0
 
       write(6,*) ' Subroutine Outplr'
       write(6,*) ' '
@@ -116,9 +119,13 @@ c         if(iresop.ne.1) cx=cu*mthday(im)
 c
           irecr=((iy-iystr0)*12+(im-1))*nrsactx+ir1+numtop
           read(44,rec=irecr) (dat2(i),i=1,nres)
-
-          ida  = dat2(nres-1)
-          nacc = dat2(nres)
+c
+c rrb 2021/04/18; Compiler warning
+cx        ida  = dat2(nres-1)
+cx        nacc = dat2(nres)
+          ida  = nint(dat2(nres-1))
+          nacc = nint(dat2(nres))
+          
 c
 c               Annual total, except for initial and ending stroage
           do 150 i=1,nres-2

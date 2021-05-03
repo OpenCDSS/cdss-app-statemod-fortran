@@ -138,12 +138,19 @@ c
 c
 c _________________________________________________________
 c       Step 1 Common Initialization
-c
-c		iout = 0 No details
-c		       1 Details
+c rrb 2021/04/18; Compiler warning    
+      rec12=' '
+      iexit=0                     
+      if(iexit.gt.0) goto 500  
+         
+c 
+c --------------------------------------------------------
+c             Detailed output
+c		            out = 0 No details
+c		                  1 Details
 c                      2 Summary      
-c		       3 Well Augmentation details
-c		       4 Sum
+c		                  3 Well Augmentation details
+c		                  4 Sum
 c
 c ---------------------------------------------------------
 c		a. OutPut control
@@ -633,12 +640,12 @@ c
 c _________________________________________________________
 c
 c                Formats
-  240   format(/,
-     1         '  WelAugP; mon, l2, nwe,iuse,iscd,ndns',/,10x,20i5)
- 
-  250   format(/,'  WelAugP (Total)',/
-     1  '  WelAugP; divreqx,divcapx,divmonx,dcrdivx,divdx,',
-     1           'divsprx, divothx',/,10x, 20f8.0)
+cx  240   format(/,
+cx     1         '  WelAugP; mon, l2, nwe,iuse,iscd,ndns',/,10x,20i5)
+cx 
+cx  250   format(/,'  WelAugP (Total)',/
+cx     1  '  WelAugP; divreqx,divcapx,divmonx,dcrdivx,divdx,',
+cx     1           'divsprx, divothx',/,10x, 20f8.0)
   262   format(/, 
      1  '  WelAugP Augmentation Summary;  Well Right ID = ', a12,
      1  ' Destination Type = ', a12,/,

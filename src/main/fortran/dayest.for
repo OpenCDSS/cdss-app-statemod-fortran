@@ -45,10 +45,12 @@ c __________________________________________________________
 c
 c       Update History
 c
-c rrb 01/02/01; Revise read file numbers 
-c rrb 01/02/19; Add Demand type checks 
+c
+c rrb 2021/04/18; Compiler warning
+c rrb 2001/02/01; Revise read file numbers 
+c rrb 2001/02/19; Add Demand type checks 
 c               Add daily consumptive requirement file read
-c rrb 04/05/06; Make detailed streamflow output total not gains
+c rrb 2004/05/06; Make detailed streamflow output total not gains
 c
 c
 c __________________________________________________________
@@ -87,6 +89,9 @@ c
 c _________________________________________________________
 c              Initialize
 c
+c
+c rrb 2021/04/18; Compiler warning
+      rec3=rec3
 c     write(6,*) '  Dayest; iin, i12', iin, i12
 c
 c
@@ -385,8 +390,10 @@ c
            else
              read(87,*,end=100,err=510)
      1       irtnid(idl),ndly(idl), (dlyratd(i,idl),i=1,ndly(idl))
-
-             ndlymx=amax0(ndlymx,ndly(idl))
+c
+c rrb 2021/04/18; Compiler warning
+cx           ndlymx=amax0(ndlymx,ndly(idl))
+             ndlymx=max(ndlymx,ndly(idl))
              numdld=ndlymx
              if(ndly(idl).gt.maxdld) then
                write(io99,110) irtnid(idl),maxdly
@@ -912,10 +919,12 @@ c               Formats
      1 ' The variable interv from the control file (*.ctl)',
      1 ' must be a negative value and data in both the monthly',/,10x,
      1 ' and daily delay tables must be formatted accordingly')
-  130 format(/,
-     1 '  Dayest;',
-     1 ' Warning in the Daily delay table file (*.dld), the',
-     1 ' total return for table ', i5,' = ',f10.2,' not 100.00')
+c
+c rrb 2021/04/18; Compiler warning
+cx  130 format(/,
+cx     1 '  Dayest;',
+cx     1 ' Warning in the Daily delay table file (*.dld), the',
+cx     1 ' total return for table ', i5,' = ',f10.2,' not 100.00')
 
   150 format(
      1 '  Dayest;'
@@ -928,14 +937,16 @@ c               Formats
      1 '    #      ID   Sum %    CumSum %',/
      1 ' ____ _______ _______ ___________')
   161 format(i5, i8, f8.2, f12.2)
-  757 format(
-     1 '  Dayest; Problem division by zero',/
-     1 '          Demand data provided as IWR is > 0 and ', 
-     1 'efficiency is < 0 for: ', /,
-     1 '          ID: ' ,a12, ' Name: ', a24, ' Date: ',2i5,  
-     1 ' Dayest: ', f8.0, ' Efficiency: ' f8.0)
-  758 format('  Dayest;', 2(i5), 12f8.0) 
-  759 format('  Dayest;', i5, 12f8.0)
+c
+c rrb 2021/04/18; Compiler warning
+cx  757 format(
+cx     1 '  Dayest; Problem division by zero',/
+cx     1 '          Demand data provided as IWR is > 0 and ', 
+cx     1 'efficiency is < 0 for: ', /,
+cx     1 '          ID: ' ,a12, ' Name: ', a24, ' Date: ',2i5,  
+cx     1 ' Dayest: ', f8.0, ' Efficiency: ' f8.0)
+cx  758 format('  Dayest;', 2(i5), 12f8.0) 
+cx759 format('  Dayest;', i5, 12f8.0)
   770 format(
      1  '  Dayest; Problem diversion array is too small for',
      1  ' IWR data.  To do make new variable'/

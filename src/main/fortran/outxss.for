@@ -32,6 +32,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2007/09/06; Revised format with acreage data
 c
 c _________________________________________________________
@@ -57,6 +59,10 @@ c
 c _________________________________________________________
 c               Step 1; Print to Screen
 c
+c
+c rrb 2021/04/18; Compiler warning
+      idx=0
+c      
       iout=0
       write(6,101) 'OutXss  '
       if(ichk.eq.94) write(nlog,101) 'OutXss  '
@@ -486,7 +492,7 @@ c    1'  FldEff  SprEff   To CU To Soil',
   112 format(a12, 1x, i5, 2x, a3, 30f8.1)
   120 format('____________', 2(' ____'), 30(' _______'))
 
-  200 format(2('___________ '), 2(' ____'), 10(' _______'))
+cx200 format(2('___________ '), 2(' ____'), 10(' _______'))
   210 FORMAT('',/, '   Structure Summary ',a5,/,2x,a80,/,
      1  2X,a80,33X, 'PAGE NO. ',I3,//,
      1  '    STRUCTURE ID (0 _ total)  : ',a12,/,
@@ -507,7 +513,10 @@ c               Error messages
      1  '  To fix use D&W ID but for now this ID has been skipped')
 c
 c               Error Warning
-  290 write(6,300) 
+c
+c rrb 2021/04/18; Compiler warning
+cx290 write(6,300) 
+      write(6,300) 
       write(99,310) 
       call flush(6)
   300 format('    Stopped in Outxss',/,

@@ -31,6 +31,8 @@ c _________________________________________________________
 c       Update History
 c
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020-04-03; Add qdiv(38 to .xdd reporting to include
 c                 From Storage to River for Exchange in column
 c                 Carried, Exchange, Other
@@ -79,10 +81,14 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
 c
-c		iout=0 No details
-c		iout=1 Details
-c		iout=2 Summary
-c		iout=99 Summary independent of ichk
+c
+c rrb 2021/04/18; Compiler warning
+      iownd=0
+      fac=0.0
+c		           iout=0 No details
+c		           iout=1 Details
+c		           iout=2 Summary
+c		           iout=99 Summary independent of ichk
       if(ichk.eq.4) write(nlog,*) ' Resrpl; Type 5 Processing ', 
      1  corid(l2)
       iout=0

@@ -30,7 +30,9 @@ c     rewinds the file and skips period of record (POR) record.
 c      
 c _________________________________________________________
 c     Update History
-c       NA
+c
+c rrb 2021/04/18; Compiler not used or initilize
+c      
 c
 c _________________________________________________________
 c     Documentation
@@ -84,10 +86,11 @@ c rrb 2006/12/12; Allow an annual file with ityr=0
 c
 c     Return
  500  return
-
- 112  format(
-     1  '  Count; FYI, A dummy (blank) file determined for ',/
-     1  '         file: ', a256)
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx 112  format(
+cx     1  '  Count; FYI, A dummy (blank) file determined for ',/
+cx     1  '         file: ', a256)
      
  200  format(
      1 '  Count; Number of stations = ', i5,/     

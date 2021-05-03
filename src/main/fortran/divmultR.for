@@ -43,6 +43,9 @@ c_____________________________________________________________
 c
 c       Update History
 c 
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2018/07/29; Copied divmultR.for and replaced plans with 
 c                 Reservoirs
 c rrb 2018/11/27; Added capability for ropdes(l2,2) to be a
@@ -77,11 +80,18 @@ c _________________________________________________________
 c
 c       Step 1 Common Initialization
 c
+c rrb 2021/04/18; Compiler warning
+      cidbal=' '
+      cidriv=' '
+      cresid1=' '
+      rec12=' '
+      pct=0.0
+c
+c
+c ---------------------------------------------------------
 c		      iout = 0 No details
 c		             1 Details
 c                2 Summary      
-c
-c ---------------------------------------------------------
 c		a. OutPut control
       subtypX='divmultR'
       
@@ -289,12 +299,13 @@ c             If it does; adjust transfer
           curown(IROWd) = curown(IROWd) - c 
           divactT = divactT - c
           divafx = divaf-c
-
+c
+c rrb 2021/04/18; Compiler warning
 cx        write(nlog,252) curown(IROWd)+c, ownmax(IROWd)
- 252      format(
-     1     ' DivmultR;', 
-     1     'Warning destination storage = ',f8.0,' is > capacity',f8.0,
-     1     '          Excess storage is left at source')
+cx 252      format(
+cx     1     ' DivmultR;', 
+cx     1     'Warning destination storage = ',f8.0,' is > capacity',f8.0,
+cx     1     '          Excess storage is left at source')
 cx        goto 9999
         endif    
 c
@@ -436,9 +447,10 @@ c
      1    ' Diversion Type = ', a12,/     
      1 10x,'The diversion type should be Percent or Volume')
     
-     
-  320   format(/, '  divmultR; avail  ',/,(10f10.2))
-  330   format(/, '  divmultR; river  ',/,(10f10.2))
+c
+c rrb 2021/04/18; Compiler warning     
+cx  320   format(/, '  divmultR; avail  ',/,(10f10.2))
+cx  330   format(/, '  divmultR; river  ',/,(10f10.2))
      
 c
 c _________________________________________________________

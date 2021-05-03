@@ -97,7 +97,15 @@ c
         character corid1*12
 c
 c _________________________________________________________
-c		Step 1; Initialize        
+c		Step 1; Initialize 
+c
+c rrb 2021/04/18; Compiler warning       
+      ipuse=ipuse
+      nd2=nd2
+      nriver=nriver
+      pctlospp=pctlospp
+      rlossp=rlossp
+      
 c		    iout=0 No detailed output
 c           =1 Details
         iout=0
@@ -302,5 +310,5 @@ c		Formats
      1 '   qdiv(32   qdiv(33   qdiv(36',/
      1 ' ___________ ____ ____________', 19(' _________'))
  210   format(a12, i5,1x,a12, 7i10, 20f10.0)                        
- 250   format(/,72('_'))       
+cx250   format(/,72('_'))       
         end

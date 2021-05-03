@@ -24,8 +24,18 @@ c *********************************************************
 c
       subroutine OutWelP
 c
+c_________________________________________________________________  
+c          
+c       Program Description 
+c                                                        
 c       OutWelP; It prints for every well structure 
 c	         every Aug plan with well pumping 
+
+c_________________________________________________________________
+c                                                                 
+c       Update History                                            
+c                                                                 
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c
@@ -42,22 +52,22 @@ c                     = 1, a *.out file provided see idallx
 c              idallx = 0, print all
 c                      =1, print some provided in *.out
 c
-c		qt    = total monthly pumping by a ditch in a month
-c		qp(i) = monthly pumping by a ditch associated with plan i
-c
-c		qtA   = total annual pumping by a ditch in a month
-c		qpA(i)= annual pumping by a ditch associated with plan i
-c
-c		qtAA(im) = Average total basin pumping in month im
-c		qpAA(im) = Average basin pumping to a plan in month im
-c		qxAA(im) = Average basin pumping not to a plan in month im
-c
-c		iplan     = number of plans tied to this well
-c		cwellP(i) = augmentation plan ID associated with this well
-c		nplanP(i) = plan ID associated with this well
-c
-c		nwellW(k) = well structure associated with well right k
-c		nwellP(k) = plan associated with well right k,
+c		           qt    = total monthly pumping by a ditch in a month
+c		           qp(i) = monthly pumping by a ditch associated with plan i
+c              
+c		           qtA   = total annual pumping by a ditch in a month
+c		           qpA(i)= annual pumping by a ditch associated with plan i
+c              
+c		           qtAA(im) = Average total basin pumping in month im
+c		           qpAA(im) = Average basin pumping to a plan in month im
+c		           qxAA(im) = Average basin pumping not to a plan in month im
+c              
+c		           iplan     = number of plans tied to this well
+c		           cwellP(i) = augmentation plan ID associated with this well
+c		           nplanP(i) = plan ID associated with this well
+c              
+c		           nwellW(k) = well structure associated with well right k
+c		           nwellP(k) = plan associated with well right k,
 c _________________________________________________________
 c
 c
@@ -73,7 +83,12 @@ c
       data qpAA/13*0.0/, qxAA/13*0.0/, qtAA/13*0.0/
 c
 c _________________________________________________________
-c		Step 1; Initialize
+c		Step 1; Initialize        
+c                                 
+c rrb 2021/04/18; Compiler warning
+      iprob=0                 
+      if(iprob.gt.0) goto 9999
+
       write(6,101) 'OutWelP  '
       write(nlog,101) 'OutWelP  '
  101  format(/,72('_'),/'  Subroutine ', a8)
@@ -567,7 +582,7 @@ c _________________________________________________________
 c
 c        Formats
 c
-  200 format(2('___________ '), 2(' ____'), 12(' ____________'))
+cx200 format(2('___________ '), 2(' ____'), 12(' ____________'))
 c 210 FORMAT('',/, '   Well Water Only Summary ',a5,/,3x,a80,/,
   210 FORMAT('',/, '   Well Augmentation Plan Summary ',a5,/,3x,a80,/,
      1  3X,a80,33X, 'PAGE NO. ',I3,//,
@@ -593,10 +608,10 @@ c 210 FORMAT('',/, '   Well Water Only Summary ',a5,/,3x,a80,/,
      1 '  OutWelP; Warning Well ID = ', a12, ' is not tied to a plan',/
      1 '           But pumping = ', f8.0, ' in ', i5)
  
-  240  format(2a12,i5, 2x, a3, 20(1x,f12.0))
-  242  format(2a12,  '  Ave', 2x, a3, 20(1x,f12.0))
-  
-  250  format(a12, i5, 2x, a3, 20f8.0)
+cx240  format(2a12,i5, 2x, a3, 20(1x,f12.0))
+cx242  format(2a12,  '  Ave', 2x, a3, 20(1x,f12.0))
+cx
+cx250  format(a12, i5, 2x, a3, 20f8.0)
   260   format('+', '   Printing Well Augmentation Plan Summary',
      1        i5,' of ', i5, '; or ',f8.0, ' % Complete')
      
@@ -667,8 +682,12 @@ c               Error Warning
 c
 c _________________________________________________________
 c
-
- 500  stop 
+      iprob=0                  
+      if(iprob.gt.0) goto 9999 
+c                                 
+c rrb 2021/04/18; Compiler warning
+cx500 stop 
+ 9999 stop 
       END
 
 

@@ -35,6 +35,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c                                
+c rrb 2021/04/18; Compiler warning
 c rrb 1996/04/10; added special logic for out of priority storage 
 c                 right (ityrsr(l2) = -1)
 c                 Revised to distribute one water right to many owners
@@ -69,11 +71,11 @@ c                       reservoir and water is distributed based
 c                       on available space in each
 c
 c         iressw(l2)    0 DO NOT STORE above target DO NOT CHARGE
-c			  to decree
-c			3 DO NOT STORE above target but DO CHARGE to
-c		          to decree (e.g. paper fill)
-c	  PaperFil	Storage passed because of a target limit
-c			(e.g. paper fill)
+c			                    to decree
+c			                  3 DO NOT STORE above target but DO CHARGE to
+c		                      to decree (e.g. paper fill)
+c	        PaperFil	    Storage passed because of a target limit
+c		      	             (e.g. paper fill)
 c _________________________________________________________
 c	Dimensions
 c
@@ -86,8 +88,12 @@ c _________________________________________________________
 c
 c               Step 1; Initialize
 c
-c		iout = 0 no details
-c		       1 details
+c                                
+c rrb 2021/04/18; Compiler warning
+      cidvri=' '
+
+c		            iout = 0 no details
+c		                   1 details
 c                      2 summary      
       iout=0
       
@@ -448,7 +454,7 @@ c               Formats
      1  '    iwhy Comment'/,
      1  ' Resrg1;', 5(' ____'), 1x, '____________', 8(' _______'),
      1  14 (' _______'), ' ________________________')
-  160   FORMAT(/, 80('-'),/,' Resrg1; Avail in')
+cx160   FORMAT(/, 80('-'),/,' Resrg1; Avail in')
   170   FORMAT(/,' Resrg1; Avail out')
   180   format(10f8.0)
 c

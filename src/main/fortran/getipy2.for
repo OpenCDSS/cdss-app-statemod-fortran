@@ -29,6 +29,8 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2007/9/04; Separated from Mdainp
 c _________________________________________________________
 c	Documentaiton
@@ -47,7 +49,23 @@ c
       character cistat*12, cista2*12, blank*12, recin*256, rec72*72
 c
 c _________________________________________________________
+c
+c rrb 2021/04/18; Compiler warning
 c		Step 1: Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      iwarnw=0
+      blank=' '
+      cista2=' '
+      rec12b=' '
+      rec3=' '
+      rec72=' '
+      recin=' '
+      
+      do i=1,12
+        x(i)=0.0
+        y(i)=0.0
+      end do
 
       filena = '*.ipy'
       ipIpy=1      
@@ -614,11 +632,11 @@ c               Formats
  
  1324 format(2x, a12, 1x, i5, i5, 1x, a12,1x, 20f10.2)
      
- 1632 format(/,
-     1  72('_'),//  
-     1   '  GetIpy2; Warning the annual time series file ',
-     1   '(*.ipy or *.tsp)',/
-     1   '    has more data then wells. Moving on')
+cx 1632 format(/,
+cx     1  72('_'),//  
+cx     1   '  GetIpy2; Warning the annual time series file ',
+cx     1   '(*.ipy or *.tsp)',/
+cx     1   '    has more data then wells. Moving on')
 c     
  1680  format(
      1 '  GetIpy2; Area Report for 2 Supply-Irrrigation Approach',

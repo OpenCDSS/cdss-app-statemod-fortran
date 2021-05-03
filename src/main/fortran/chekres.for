@@ -31,8 +31,10 @@ c_______________________________________________
 c
 c       Update History
 c
-c rrb 99/05/10; Additional Check
-c rrb 02/01/15; Dimension clean up
+c
+c rrb 2021/04/18; Compiler warning
+c rrb 1999/05/10; Additional Check
+c rrb 2002/01/15; Dimension clean up
 c
 c _____________________________________________________________
 c
@@ -64,14 +66,16 @@ cx      dimension subtyp(50)
      1    ' ',      ' ',       'PowResP    ','DivRplP2 ',' ',
      1    'FlowRes','DivMultR','WWSP ',    ' ',        ' ',     
      1    ' ',      ' ',       ' ',        ' ',        ' '/
-
+c
 c _________________________________________________________
 c              Step 1; Initialize
-c
-        iout=1
+        iout=0
 c
 c rrb 2018/07/29; Check for operating rule limit
-        if(maxoprin.gt.60) goto 900
+c
+c rrb 2021/04/18; Compiler warning
+cx      if(maxoprin.gt.60) goto 900
+        if(isub.le.0 .or. isub.gt.60) goto 900
                 
 c
 c rrb 2015/07/20; Test        
@@ -81,7 +85,8 @@ cx      small2=0.1
         if(in.eq.1) cin='Out of'
         
         if(nr.gt.maxres) then
-          write(nlog,*) '  Chekres; Problem nr < maxres', nr, maxres
+          write(nlog,*) '  Chekres; Problem nr < maxres,isub,nr,maxres'
+          write(nlog,*) '  Chekres; isub, nr, maxres',isub,nr,maxres 
           goto 9999
         endif 
 

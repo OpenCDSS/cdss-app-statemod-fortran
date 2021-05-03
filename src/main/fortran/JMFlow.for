@@ -77,6 +77,19 @@ c
 c               Step 1 Common Initialization
 c
 c
+c rrb 2021/04/18; Compiler warning
+      iexit=0
+      if(iexit.gt.0) goto 500
+      ccarry=' '
+      cdestyp=' '
+      cidbal=' '
+      cidriv=' '
+      cpuse=' '
+      cresid1=' '
+      cstaid1=' '
+      ctandc=' '
+      rec12=' '
+c
 c ---------------------------------------------------------
 c
       cCallBy='JMFlow    '      

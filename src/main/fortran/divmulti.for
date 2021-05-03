@@ -44,6 +44,8 @@ c_____________________________________________________________
 c
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c  
 c rrb 2020/05/31; Revise the correction to psuply (ndP) 
 c                 to emphasize this only occurs for a plan
@@ -158,16 +160,24 @@ c _________________________________________________________
 c
 c               Step 1 Common Initialization
 c
-c		iout = 0 No details
-c		       1 Details
-c          2 Summary      
-c		       3 Well Augmentation details
-c		       4 Sum   
-c   ioutP = 1 Print details of plan allocation
-c   ioutX = 1 Print details if allocation exceeds supply & is 
-c             getting adjusted
-c   ioutW = 1 Print warning if allocation exceeds the supply
-c             and is getting adjusted
+c
+c rrb 2021/04/18; Compiler warning
+      cidbal=' '
+      cidriv=' '
+      cresid1=' '
+      rec12=' '
+      psuplyd=0.0
+      
+c		         iout = 0 No details
+c		                1 Details
+c                   2 Summary      
+c		                3 Well Augmentation details
+c		                4 Sum   
+c            ioutP = 1 Print details of plan allocation
+c            ioutX = 1 Print details if allocation exceeds supply & is 
+c                      getting adjusted
+c            ioutW = 1 Print warning if allocation exceeds the supply
+c                      and is getting adjusted
 c
 c ---------------------------------------------------------
 c		a. OutPut control

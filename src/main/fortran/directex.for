@@ -46,9 +46,10 @@ c      6. Determine if more water can be diverted at source
 c         (can occur if the exchange was limited for any reason)
 C         STEP 16
 c		 
-
 c _________________________________________________________
 c	Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2019/07/30; Revise to not report the exchange as carried
 c                 in *.xdd (qdiv(38,) if the destination is a plan 
@@ -241,6 +242,17 @@ c               Step 1; Common Initialization
 c
 
       subtypX='directex'
+c
+c rrb 2021/04/18; Compiler warning
+      nro=0
+      irow=0
+      
+      dcrdiv=0.0
+      dcrdiv1=0.0
+      dcrdiv2=0.0
+      tclimit=0.0
+      divreqx2=0.0
+      
       corid1=corid(l2)
       cCallBy='DirectEx    '
 c
@@ -1279,8 +1291,10 @@ c rrb 2018/10/21; Provide control on ability to divert
 c                 more water at the Source if the
 c                 bypass was shorted.
 
-
-      iadd=oprlimit(l2)
+c
+c rrb 2021/04/18; Compiler warning
+cx    iadd=oprlimit(l2)
+      iadd=nint(oprlimit(l2))
       iadd=0
       
       if(ioutA.eq.1) write(nlog,*) '  DirectEX; iadd = ', iadd      
@@ -1356,7 +1370,11 @@ c
      1  cCallBy)
 c             
 c rrb 2008/06/20; Allow minor roundoff
-      iavail=avail(imcd)
+c
+c rrb 2021/04/18; Compiler warning
+cx      iavail=avail(imcd)
+      iavail=nint(avail(imcd))
+      
       IF(AVAIL(IMCD).le.(-1.*small) .and. iavail.gt.-1) then
         avail(imcd)=0.0
       endif
@@ -1772,8 +1790,8 @@ c 280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,13i8,23F8.0,i8,
   280   FORMAT(a12, i5,1x,a4, i5, 2(1x,a12),14i8,21F8.0,i8,
      1   1x, a48)
   281   FORMAT(a12, 143x, i8, f8.0, f8.2, 1x, a24)
-  290   FORMAT(/, '  DirectEx   QDIV ',a12,/,16F7.1)
-  300   FORMAT(/, '  DirectEx   QRES ',a12,/,16F7.1)
+cx290   FORMAT(/, '  DirectEx   QDIV ',a12,/,16F7.1)
+cx300   FORMAT(/, '  DirectEx   QRES ',a12,/,16F7.1)
   310   FORMAT(/, '  DirectEx   Problem negative avail',/
      1  '  DirectEx    iyr  mon',
      1  '      Iw  nwrord      l2      lr     ND2   iuse2', 
@@ -1783,14 +1801,16 @@ c 280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,13i8,23F8.0,i8,
      1  ' _______ _______ _______ _______ _______ _______ _______',/
      1 a12, 2i5, 8i8, 20f8.0)
      
-     
-  320   format(/, '  DirectEx; avail  ',/,(10f10.2))
-  330   format(/, '  DirectEx; river  ',/,(10f10.2))
-  332   format(/, '  DirectEx; qtribu ',/,(10f10.2))
-  334   format(/, '  DirectEx; qstern ',/,(10f10.2))
-  340   format(/, '  DirectEx; Pavail, imcd, stanam ',
-     1    f8.2, i8, 1x,a24)
-  350   format(/, '  DirectEx; Problem with the exchange reach')   
+c
+c rrb 2021/04/18; Compiler warning
+cx   
+cx320   format(/, '  DirectEx; avail  ',/,(10f10.2))
+cx330   format(/, '  DirectEx; river  ',/,(10f10.2))
+cx332   format(/, '  DirectEx; qtribu ',/,(10f10.2))
+cx334   format(/, '  DirectEx; qstern ',/,(10f10.2))
+cx340   format(/, '  DirectEx; Pavail, imcd, stanam ',
+cx   1    f8.2, i8, 1x,a24)
+cx350   format(/, '  DirectEx; Problem with the exchange reach')   
 c
 c_____________________________________________________________
 c               Error warnings

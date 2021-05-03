@@ -37,7 +37,8 @@ c
 c
 c _________________________________________________________
 c	Update History
-c		NA
+c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c	Documentation
@@ -49,6 +50,11 @@ c	Dimensions
 c
 c _________________________________________________________
 c               Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler not used or initilize
+      iexit=0
+      if(iexit.gt.0) goto 500
+      
 c       iout=1
         iout=0
 c
@@ -84,9 +90,13 @@ c     write(99,210)
      1 '  Coeffa (Bomsec); Warning *.tsp file has diversion ID ', a12, 
      1         ' with area = ', f8.2, ' Set ca = ', f8.2)
     
- 200  format('    Stopped in Coeffa (Bomsec)',/,
-     1       '    See the *.log file')
- 210  format('    Stopped in Coeffa (Bomsec)')
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx 200  format('    Stopped in Coeffa (Bomsec)',/,
+cx     1       '    See the *.log file')
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx210  format('    Stopped in Coeffa (Bomsec)')
 c     write (6,*) 'Stop 1'
 c     call flush(6)
 c     call exit(1)

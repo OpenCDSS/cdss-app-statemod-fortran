@@ -27,7 +27,7 @@ c_________________________________________________________________NoticeEnd___
      1    maxdiv,  maxqdiv,  maxopr,    intern,  idvsta, 
      1    qdiv,    divmon,   maxRtnPP,   maxPlan, Opreff1, 
      1    ipuse,   pctlosPP,  rlossP,  oprLossC,  internT, 
-     1    icx,      corid1)
+     1    icx,     corid1)
 c
 c
 c _________________________________________________________
@@ -98,9 +98,18 @@ c
         character corid1*12
 c
 c _________________________________________________________
-c		Step 1; Initialize        
-c		  iout=0 No detailed output
-c         =1 Details
+c		Step 1; Initialize      
+c                                  
+c rrb 2021/04/18; Compiler warning 
+        ipuse=ipuse                  
+        nd2=nd2                      
+        nriver=nriver                
+        pctlospp=pctlospp            
+        rlossp=rlossp 
+c
+c           Detailed Output                 
+c		          iout=0 No detailed output
+c                 =1 Details
         iout=0
         
         small=0.001
@@ -280,5 +289,5 @@ c		Formats
      1 '   qdiv(32',/
      1 ' ___________ ____ ____________', 17(' _________'))
  210   format(12x, i5,1x,a12, 8i10, 20f10.0)    
- 250   format(/,72('_'))       
+cx 250   format(/,72('_'))       
         end

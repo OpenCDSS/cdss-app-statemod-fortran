@@ -33,6 +33,9 @@ c
 c _____________________________________________________________
 c	Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c      2018/07/29; Revised to allow multiple destination accounts
 c                  to be specified as a percentage 
 c                    
@@ -104,15 +107,18 @@ c _________________________________________________________
 c
 c		Step 1; Initialize
 c
+c rrb 2021/04/18; Compiler warning
+      idow=0
+c
 c
 c _________________________________________________________
 c
 c		Step 1; Detailed Output control and header
-c		iout=0 No details
-c		iout=1 Details
-c		iout=2 Summary
-c		iout=3 Qres(29 details
-c		iout=99 summary independent of ioutiw
+c		           iout=0 No details
+c		           iout=1 Details
+c		           iout=2 Summary
+c		           iout=3 Qres(29 details
+c		           iout=99 summary independent of ioutiw
       iout=0
       ioutiw=0
 c
@@ -468,7 +474,10 @@ c _________________________________________________________
 c
 c		Step 11; CALCULATE ACTUAL DIVERSION
 c
-  120 DIVACT=AMIN1(RAVCFS,RALCFS,CAPREM)
+c
+c rrb 2021/04/18; Compiler warning
+cx120 DIVACT=AMIN1(RAVCFS,RALCFS,CAPREM)
+      DIVACT=AMIN1(RAVCFS,RALCFS,CAPREM)
 C
 c		The followig exit should never occur
 c     IF(DIVACT.LE.0.00001) Goto 140
@@ -718,7 +727,7 @@ c _________________________________________________________
 c
 c		Formats
 
-  150 FORMAT(/,' RsrSpu ',4I5,2(I5,2F8.2),2(I5,F8.2))
+cx150 FORMAT(/,' RsrSpu ',4I5,2(I5,2F8.2),2(I5,F8.2))
      
   270   format(/, 
      1  ' Rsrspu (Type 6); Operation Right ID = ', a12,

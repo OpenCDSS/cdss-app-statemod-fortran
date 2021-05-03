@@ -42,7 +42,7 @@ c
 c _________________________________________________________
 c       Documentation
 c               numdivw	number of diversions
-c		numrtnx		number of returns
+c		            numrtnx		number of returns
 c               cistat		Structure ID
 c
 c
@@ -68,6 +68,20 @@ cr   1             cirtndlw(maxdvrw)
 c
 c _________________________________________________________
 c
+c
+c rrb 2021/04/18; Compiler warning
+        iin2=iin2
+        in1=in1
+        interv=interv
+        iloss=iloss
+        maxdvrw=maxdvrw
+        cgoto=' '
+        cirtndlw=' '
+        ji=0
+        je=0  
+        do i=1,maxrtnw
+          pctlosw(i)=pctlosw(i)
+        end do
 c
         blank = '            '
         numrtnX=0
@@ -177,7 +191,9 @@ c             even if provided in a random order
       j1=0
       do nw=1,numdivw
         do j=1,numrtnX
-          k=tempX(j)
+c rrb 2021/04/18; Compiler warning 
+cx        k=tempX(j)
+          k=nint(tempX(j))
           if(k.eq.nw) then
             j1=j1+1
             pcttotw(j1) = pcttotwX(j)
@@ -222,7 +238,8 @@ c
 c               Error Handling
 c _________________________________________________________
 c
-  928 write(nlog,929) in2, filena
+cx928 write(nlog,929) in2, filena
+      write(nlog,929) in2, filena
   929 format(/,72('_'),/
      1  ' GetRtn; Problem reading file # ', i4,/,
      1  '   File name: ', a256,/
@@ -239,9 +256,9 @@ c
       goto 9999
       
 
- 1260 format(36x,a12,f8.0,i8)
-
- 1262 format(36x,a12,f8.0,a12)
+cx 1260 format(36x,a12,f8.0,i8)
+cx
+cx 1262 format(36x,a12,f8.0,a12)
 
  1272 FORMAT(/,72('_'),/
      1  '  GetRtn:  Problem the ', a12, ' station return flow to ',a12,

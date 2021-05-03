@@ -26,6 +26,12 @@ c	Program Description
 c
 c       Outsp; It prints a special parameter output file (*.xsp, *.xs2)
 c
+c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c       Documentation
 c               itype = 0  diversion
@@ -43,13 +49,19 @@ c
 c _________________________________________________________
 c
 c              Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      nacc=0
+      ida=0
+c      
       iout = 0
+c
 c rrb 2005/11/22; River Loss and Carrier Loss
-c     ndiv = 35
-c     ndiv = 37
-c     ndivw= 18
-c     nres = 24
-c     nres = 26
+c              ndiv = 35
+c              ndiv = 37
+c              ndivw= 18
+c              nres = 24
+c              nres = 26
 c
 c		Set number of output values 1x in StateM.for
 c	        and store in common.inc      
@@ -344,10 +356,15 @@ c           ir1=nowner(nr)+nr-1
           ip1=ip1+1
           ir1=ir1+1
           ipout=1
-C
-  200     write(21,330) idreq(ip),
-     1                RESNAM1(nr),ptype, ip1,cunitm,
-     1                (XMONAM(I),I=1,12)
+C  
+c                                  
+c rrb 2021/04/18; Compiler warning 
+cx200     write(21,330) idreq(ip),
+cx   1                RESNAM1(nr),ptype, ip1,cunitm,
+cx   1                (XMONAM(I),I=1,12)
+          write(21,330) idreq(ip),                        
+     1                RESNAM1(nr),ptype, ip1,cunitm,      
+     1                (XMONAM(I),I=1,12)                  
           write(24,330) idreq(ip),
      1                RESNAM1(nr),ptype, ip1,cunitm
 
@@ -364,9 +381,12 @@ c
               nf=44
               IRECR=((IY-IYSTR0)*12+(IM-1))*NRSACTx+IR1+numtop
               READ(44,REC=IRECR,err=340) (DAT2(I),I=1,nres)
-
-              ida  = dat2(nres-1) 
-              nacc = dat2(nres)
+c
+c rrb 2021/04/18; Compiler warning
+cx            ida  = dat2(nres-1) 
+cx            nacc = dat2(nres)
+              ida  = nint(dat2(nres-1)) 
+              nacc = nint(dat2(nres))
 C                                           
               do i=1,nresx
                 DATA2(IM,i )=DAT2(i)
@@ -572,8 +592,8 @@ c
   320 FORMAT(/,'AVE ',1X,a12, 13F8.0)
   322 FORMAT(/,'AVE ',1X,a12, 13F8.1)
   
-  321   format(/,
-     1 '  Outsp; Warning structure # =', i5, ' Id ', a12, 'not found')            
+cx  321   format(/,
+cx     1 '  Outsp; Warning structure # =', i5, ' Id ', a12, 'not found')            
   324   format(/,
      1 '  Outsp; FYI',i5, ' structures printed for data type = ', a24)            
   
@@ -587,14 +607,14 @@ c 330 FORMAT(/,'',/,
      1       'ID           Year',
      1       12(4X,A4),'   TOTAL',/
      1       '____________ ____', 13(' _______'))
-  332 FORMAT(/,/,
-     1       'Reservoir ID  : ',a12,69X,/
-     1       'Reservoir Name: ',a24,/,
-     1       'Parameter     : 'A20,/,
-     1       'Table         : ',1x,i4,/,
-     1       'Units         : ',A5,//,
-     1       'ID           Year  Mon   Value',/,
-     1       '____________ ____ ____ _______')
+cx  332 FORMAT(/,/,
+cx     1       'Reservoir ID  : ',a12,69X,/
+cx     1       'Reservoir Name: ',a24,/,
+cx     1       'Parameter     : 'A20,/,
+cx     1       'Table         : ',1x,i4,/,
+cx     1       'Units         : ',A5,//,
+cx     1       'ID           Year  Mon   Value',/,
+cx     1       '____________ ____ ____ _______')
   360    format(a12, i5, i5, f8.0)
   362    format(a12, i5, i5, f8.1)
 c

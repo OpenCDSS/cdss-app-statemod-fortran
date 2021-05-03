@@ -55,6 +55,8 @@ c                6 = before type 6 well
 c _________________________________________________________
 c
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 01/29/95 Simplified logic per R. Bethel & R. Bennett
 c rrb 04/22/96 Added instream reach capabilities by minimum 
 c rrb 08/07/96 Instream Flow reach by reach node
@@ -91,6 +93,12 @@ c
 c _________________________________________________________
 c
 c
+c rrb 2021/04/18; Compiler warning
+      aloifr=0.0
+      flowrq1=0.0
+      avail1=0.0
+      divi1=0.0
+c      
 c               Initialize
 c
 c		iout = detailed output

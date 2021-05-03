@@ -1,8 +1,3 @@
-c return2 - calculates returns (rettot), IWR remaining
-c           (diwrx), and actual CU (dcux) given actual diversion (divact) and efficiecny (eff).
-c           Same as Return.f but revised to treat the following uniquely:
-c           1. Surface Water Flood Irrigated
-c           2. Surface Water Sprinkler Irrigated
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
@@ -44,13 +39,15 @@ c            (diwrx), and actual CU (dcux) given actual
 c             diversion (divact) and efficiency (eff).
 c	      Same as Return.f but revised to treat the following
 c             uniquely:
-c		1. Surface Water Flood Irrigated
-c		2. Surface Water Sprinkler Irrigated
+c		          1. Surface Water Flood Irrigated
+c		          2. Surface Water Sprinkler Irrigated
 c             Note efficiency varies from average to maximum
 c             based on switches ieffmax and ieff2
 c     CALLED BY: Rtnsec and RtnsecW
 c _________________________________________________________
 c       Update History
+c                                
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2006/08/31; Revised Return to include new CU approach
 c
@@ -61,9 +58,9 @@ c               nlog    log file #
 c               nd      diversion ID
 c               nw      well ID
 c
-c		itype   1 New CU Approach SW Only
-c		itype   2 New CU Approach D&W Structure
-c		itype   3 New CU Approach Well Only Structure
+c		           itype   1 New CU Approach SW Only
+c		           itype   2 New CU Approach D&W Structure
+c		           itype   3 New CU Approach Well Only Structure
 c
 c               eff     efficiency (average or maximum)
 c
@@ -79,17 +76,17 @@ c               effmax  maximum efficiency from mdainp (*.tsp)
 c
 c               effC	Carrier Efficiency
 c               effF	Flood Efficiency
-c		effS	Sprinkler Efficiency
-c		
-c		FOR A GIVEN CALL (SURFACE WATER OR GROUND)
-c		AreaF	Fraction of land Flood irrigated
-c		AreaS	Fraction of land Sprinkler irrigated
+c		            effS	Sprinkler Efficiency
+c		            
+c		            FOR A GIVEN CALL (SURFACE WATER OR GROUND)
+c		            AreaF	Fraction of land Flood irrigated
+c		            AreaS	Fraction of land Sprinkler irrigated
 c
 c               fac     converts cfs to af
 c
 c               rettot  return flow    
 c               diwrT   irrigation water requirement for this time step
-c			(does not get adjusted as water is supplied)
+c			                  (does not get adjusted as water is supplied)
 c               diwrx   irrigation water requirement going out of sub
 c               dcux    running total consumptive use for structure
 c                       Note if a D&W it is SW + GW
@@ -108,9 +105,9 @@ c                       1=do not print
 c               cumax   maximum CU (function of max eff)
 c               cuact   actual CU
 c
-c		ispr    -1 SW supply
-c			0  GW supply Non Sprinkler
-c			1  GW supply Sprinkler
+c		            ispr    -1 SW supply
+c			                  0  GW supply Non Sprinkler
+c			                  1  GW supply Sprinkler
 c			
 c
 c
@@ -119,21 +116,26 @@ c	Dimensions
 c		
        dimension ctype(5)
        character cdividx*12, ctype*16, ccall*12
+c
+c _________________________________________________________
+c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning 
+      divcapw=divcapw
+      effmax=effmax
+c
+
+c		        iout=0 no details
+c		            =1 details
+c		            =2 summary (divert, CU, Soil, Return)
+c		            =3 StateCU format
+       iout=0
        
        ctype(1)='Diversion       '
        ctype(2)='Diversion & Well'
        ctype(3)='Well Only       '
        ctype(4)='NA              '
-       ctype(5)='NA              '
-c
-c _________________________________________________________
-c		Step 1; Initialize
-c		iout=0 no details
-c		    =1 details
-c		    =2 summary (divert, CU, Soil, Return)
-c		    =3 StateCU format
-       iout=0
-       
+       ctype(5)='NA              '      
 c
 c							Detailed printout for a selected structure       
 cx       if(cdividx.eq.'01_AWP022   ') iout=3
@@ -452,25 +454,27 @@ c _________________________________________________________
 c
 c               Formats
 c
- 100   format(/,
-     1 '  Return2; for ID = ', a12, ' Type = ', a16,
-     1 ' Div # = ', i5,' Well # = ', i5,
-     1 ' ieffmax = ', i5, ' and ieff2 = ', i5,/
-     1 ' Year  Mon ID          ','    ispr', 
-     1 '  Divert  ToFarm  EffAve    EffC    EffF    EffS',
-     1 '  AreaSF  AreaSS  AreaGF  AreaGS   AreaT',
-     1 '  dIwrSF  dIwrSS, dIwrGF, dIwrGS,  dIwrT',
-     1 '   IWR-1   CUmax   CUact',
-     1 '  Return  EffMax  EffAct   TotCU   IWR-2',
-     1 '  Soil-1  ToSoil   Soil2   Delta   ',/
-     1 ' ____ ____ ____________',' _______',
-     1 ' _______ _______ _______ _______ _______ _______',
-     1 ' _______ _______ _______ _______ _______',
-     1 ' _______ _______ _______ _______ _______',
-     1 ' _______ _______ _______',
-     1 ' _______ _______ _______ _______ _______',
-     1 ' _______ _______ _______ _______')
- 110   format(2i5, 1x, a12, i8, 2f8.0, 4f8.2, 5f8.3, 20f8.0)
+cx 100   format(/,
+cx     1 '  Return2; for ID = ', a12, ' Type = ', a16,
+cx     1 ' Div # = ', i5,' Well # = ', i5,
+cx     1 ' ieffmax = ', i5, ' and ieff2 = ', i5,/
+cx     1 ' Year  Mon ID          ','    ispr', 
+cx     1 '  Divert  ToFarm  EffAve    EffC    EffF    EffS',
+cx     1 '  AreaSF  AreaSS  AreaGF  AreaGS   AreaT',
+cx     1 '  dIwrSF  dIwrSS, dIwrGF, dIwrGS,  dIwrT',
+cx     1 '   IWR-1   CUmax   CUact',
+cx     1 '  Return  EffMax  EffAct   TotCU   IWR-2',
+cx     1 '  Soil-1  ToSoil   Soil2   Delta   ',/
+cx     1 ' ____ ____ ____________',' _______',
+cx     1 ' _______ _______ _______ _______ _______ _______',
+cx     1 ' _______ _______ _______ _______ _______',
+cx     1 ' _______ _______ _______ _______ _______',
+cx     1 ' _______ _______ _______',
+cx     1 ' _______ _______ _______ _______ _______',
+cx     1 ' _______ _______ _______ _______')         
+cx
+cx 110   format(2i5, 1x, a12, i8, 2f8.0, 4f8.2, 5f8.3, 20f8.0)
+cx
  120   format('  Return2; Problem delta see above = ', f10.4)
  
  150   format(/,

@@ -40,10 +40,12 @@ c                      Code to stamp info on output
 c
 c _________________________________________________________
 c       Update History
+c                     
+c rrb 2021/04/18; Compiler warning   
 c
-c rrb 02/045/07; Revised non time series header (itype=1)
-c                to include POR and unit information to satisfy
-c                the GUI need to process daily (*.xds via outspd.f)       
+c rrb 2002/04/07; Revised non time series header (itype=1)
+c                 to include POR and unit information to satisfy
+c                 the GUI need to process daily (*.xds via outspd.f)       
 c
 c
 c _________________________________________________________
@@ -156,7 +158,12 @@ cx     1    ' ', ' ', ' ', ' ', ' ', ' '/
 c
 c _________________________________________________________
 c		Step 1; Initialize
-c
+c      
+c                                  
+c rrb 2021/04/18; Compiler warning 
+       dtype=' ' 
+       cyr=' '
+       
        iout=0
        
        if(iout.eq.1) write(99,*) '  Outtop; nout', nout

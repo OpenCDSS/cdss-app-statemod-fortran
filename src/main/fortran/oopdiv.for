@@ -26,28 +26,24 @@ c _________________________________________________________
 c	Program Description
 c
 c 	Type 38
-c	OopDiv  Out-of-Priority diversion (not storage)
+c	     OopDiv  Out-of-Priority diversion (not storage)
 c               via the upstream storage statute
 c		
 c
-c	Source 1 is the senior (subordinated) reservoir water right
-c	Source 2 is the junior diversion or reservoir right diverting
+c	    Source 1 is the senior (subordinated) reservoir water right
+c	    Source 2 is the junior diversion or reservoir right diverting
 c                out of priority
-c
-c	Updates:
-c rrb 2006/05/26; Copied DirectBy and revised as appropriate
-c
 c                Approach: 
 c                1. Copy DirectBy and make edits 
+c _________________________________________________________
+c	    Update History
+c
+c rrb 2021/04/18; Compiler warning
+c rrb 2006/05/26; Copied DirectBy and revised as appropriate
 c
 c _________________________________________________________
-c	Update History
-c                Note for this operating rule, the water right
-c                  operates as: 
 c
-c _________________________________________________________
-c
-c      Documentation
+c     Documentation
 c
 c        IW : OVERALL WATER RIGHT ORDER
 c        L2 : LOC. OF operation right  in opr RIGHT TABLE
@@ -58,7 +54,7 @@ c        iopsou(2,l2)   Not used
 c        iopsou(3,l2)   source 2 Junior diversion or reservoir
 c                       water right
 c
-c	 oprpct(l2)     Percent of the source water right to be bypassed
+c	       oprpct(l2)     % of the source water right to be bypassed
 c	
 c
 c        iopdes(1,l2)   if > 0 diversion ID 
@@ -75,13 +71,14 @@ c
 c        nDes           destination diversion ID
 c        nRes           destination reservoir ID
 
-c        isDes          stream ID of destination diversion (nDes) or reservoir
-c                       or carrier
+c        isDes          stream ID of destination diversion (nDes) 
+c                       or reservoir or carrier
 c        ndns2          # of nodes downstream of destination 
 c                       diversion (nDes) or reservoir
 c        iuseD          destination user 
 c
-c	 imcdX          pointer to avail array. It chnages from 1 (to allow
+c	       imcdX          pointer to avail array. It chnages from 1 
+c                       (to allow
 c                       debug printout to isDes (flow at destination) to
 c                       imcd flow at the minimum location
 c
@@ -90,24 +87,24 @@ c        IW             Global water right counter
 c        L2             Operational right pointer
 c        ishort         code for reoperation; 0=no, 1=yes
 c
-c	 CuLimit        fraction to be diverted (diversion or depletion)
-c	 TcLimit        fraction to apply to T&C requirement
+c	       CuLimit        fraction to be diverted (diversion or depletion)
+c	       TcLimit        fraction to apply to T&C requirement
 c
-c	 divaloS        Allowable diversion 
-c	 divaloS1       Remaining decree at source
-c	 divaloD	Remaining decree at destinaion
-c	 divact         actual diversion at source 
+c	       divaloS        Allowable diversion 
+c	       divaloS1       Remaining decree at source
+c	       divaloD	      Remaining decree at destinaion
+c	       divact         actual diversion at source 
 c
 c        divreqx        Diversion demand for types 1-3 (standard)
 c
 c        dcrdivS        Water right at source  (cfs) Set in oprinp
-c	 divdS          Amount diverted at source in previous iterations (cfs)
-c	 dcrdiv1        Remaining water right used by source for 
+c	       divdS          Amount diverted at source in previous iterations (cfs)
+c	       dcrdiv1        Remaining water right used by source for 
 c                         source (cfs)
 c
-c	 dcrdivE        Water right at bypass (cfs) Set in oprinp
-c	 divdE          Amount diverted at source in previous iterations (cfs)
-c	 dcrdiv2        Remaining water right at bypass (cfs)
+c	       dcrdivE        Water right at bypass (cfs) Set in oprinp
+c	       divdE          Amount diverted at source in previous iterations (cfs)
+c	       dcrdiv2        Remaining water right at bypass (cfs)
 c
 c        divcap         Structure capacity
 c        divmon         Capacity diverted in previous iterations
@@ -119,8 +116,8 @@ c
 c        ieff2         =0 always use average efficiency
 c                      =1 let ieffmax control variable efficiency 
 c
-c	 ieffmax       =0 use average efficiency
-c		       =1 use maximum efficiency
+c	       ieffmax       =0 use average efficiency
+c		                   =1 use maximum efficiency
 c
 c        ioprtn         Switch for handling return flows when
 c                       multiple structures exist at 1 location
@@ -175,6 +172,17 @@ c
 c
 c_____________________________________________________________
 c               Step 1; Common Initialization
+c
+c rrb 2021/04/18; Compiler warning
+      pcte=0.0
+      divalod=0.0
+      divreqx2=0.0
+      lrdes=0
+      isdesd=0
+      nro=0
+      irow=0
+      rec12=' '
+      
 c
 c		iout=0 no detials
 c		     1 details
@@ -836,7 +844,10 @@ c_____________________________________________________________
 c               Step 20; Double Check available flow from the
 c                        destination (isDes) downstream
 c
- 250  CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
+c
+c rrb 2021/04/18; Compiler warning
+cx250 CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
+      CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
 c             
 c               Print warning if negative available flow
       IF(AVAIL(IMCD).le.(-1.*small)) then
@@ -1086,8 +1097,8 @@ c
   280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,9i8,18F8.0,i8,1x,
      1   1x, a48)
   281   FORMAT(a12, 143x, i8, f8.0, f8.2, 1x, a24)
-  290   FORMAT(/, '  OopDiv_0 QDIV ',a12,/,16F7.1)
-  300   FORMAT(/, '  OopDiv_0 QRES ',a12,/,16F7.1)
+cx  290   FORMAT(/, '  OopDiv_0 QDIV ',a12,/,16F7.1)
+cx  300   FORMAT(/, '  OopDiv_0 QRES ',a12,/,16F7.1)
   310   FORMAT(/, '  OopDiv_0 Problem negative avail',/
      1  '  OopDiv    iyr  mon',
      1  '      Iw  nwrord      l2     lrS     nDes  iuseD', 
@@ -1098,13 +1109,13 @@ c
      1 a12, 2i5, 8i8, 20f8.0)
      
      
-  320   format(/, '  OopDiv_0; avail  ',/,(10f10.2))
-  330   format(/, '  OopDiv_0; river  ',/,(10f10.2))
-  332   format(/, '  OopDiv_0; qtribu ',/,(10f10.2))
-  334   format(/, '  OopDiv_0; qstern ',/,(10f10.2))
-  340   format(/, '  OopDiv_0; Pavail, imcd, stanam ',
-     1    f8.2, i8, 1x,a24)
-  350   format(/, '  OopDiv; Problem with the bypass reach')   
+cx  320   format(/, '  OopDiv_0; avail  ',/,(10f10.2))
+cx  330   format(/, '  OopDiv_0; river  ',/,(10f10.2))
+cx  332   format(/, '  OopDiv_0; qtribu ',/,(10f10.2))
+cx  334   format(/, '  OopDiv_0; qstern ',/,(10f10.2))
+cx  340   format(/, '  OopDiv_0; Pavail, imcd, stanam ',
+cx     1    f8.2, i8, 1x,a24)
+cx  350   format(/, '  OopDiv; Problem with the bypass reach')   
   360   format(
      1  'OopDiv_19;  divact  rettot  divact culimit   iP',
      1             '      imo    pdem    pdemT',/

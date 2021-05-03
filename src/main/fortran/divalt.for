@@ -36,8 +36,10 @@ c                  =1 the diversion is limited by flow
 c                     at the decreed location 
 c
 c _________________________________________________________
-c	Update History
+c	     Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 2010/11/15; More corrections and refinements
 c rrb 2008/09/19; Miscellaneous corrections, primarily related
 c		              to alternate points = wells
@@ -128,6 +130,11 @@ c
 c
 c_____________________________________________________________
 c               Step 1; Common Initialization
+c
+c rrb 2021/04/18; Compiler warning
+      cidvri=' '
+      pavail2=0.0
+c      
 c		iout = 0 no details
 c		       1 details
 c          2 summary      
@@ -704,9 +711,11 @@ c
   280   FORMAT(a14,1x, a12, 1x, i5,1x,a4,12i5,i8,
      1    8F10.0,i5,1x,a50)
      
-  290   FORMAT(/, '  DivAlt; QDIV ',a12,/,16F7.1)
-  300   FORMAT(/, '  DivAlt; QRES ',a12,/,16F7.1)
-  310   format(/',  DivAlt; Problem the alternate point type = ', i5)
+c
+c rrb 2021/04/18; Compiler warning
+cx290   FORMAT(/, '  DivAlt; QDIV ',a12,/,16F7.1)
+cx300   FORMAT(/, '  DivAlt; QRES ',a12,/,16F7.1)
+  310 format(/',  DivAlt; Problem the alternate point type = ',i5)
 c
 c_____________________________________________________________
 c               Error warnings

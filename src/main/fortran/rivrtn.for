@@ -50,6 +50,8 @@ c _________________________________________________________
 c
 c               Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2008/10/23; Revised to readjust when a shortage
 c		  occurs, even if adj > 0
 c
@@ -126,6 +128,18 @@ c
 c _________________________________________________________      
 c
 c	              Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      rec12=rec12
+      cwhy=' '
+      ctandc=' '
+      csour=' '
+      criver=' '
+      cresid1=' '
+      ccarry=' '
+      cdestyp=' '
+      cpuse=' '
+c      
 c		            iout = 1 details
 c		            iout = 2 summary
 c		            iout = 3 summary & details on last diversion
@@ -264,9 +278,12 @@ c               (InternT()=1
             nlast=1   
 c            
             if(iout.eq.1) then
-              idcd0=amax0(idcd1-1,1)
-              idcd2=idcd1+1
 c
+c rrb 2021/04/18; Compiler warning
+cx            idcd0=amax0(idcd1-1,1)
+              idcd0=max(idcd1-1,1)
+              
+              idcd2=idcd1+1
               nchkA=3 
               call chkAvail(nlog, icx, nchkA, maxsta, 
      1          AVTEMP, divact2, idcd0, idcd1, idcd, fac)
@@ -292,7 +309,10 @@ c
 c ---------------------------------------------------------
 c		            Step 4c; Detailed output at 3 locations          
           if(iout.eq.1) then
-            idcd0=amax0(idcd1-1,1)
+c
+c rrb 2021/04/18; Compiler warning
+cx          idcd0=amax0(idcd1-1,1)
+            idcd0=max(idcd1-1,1)
             idcd2=idcd1+1
 c
             nchkA=4 
@@ -644,7 +664,10 @@ c		            that adjustment occurs in step in the calling routine
             ndnd1=NDNNOD(idcd1)
 c
 c rrb 2014-07-28; Clean up debug printout
-            idcdA=amax0(idcd1-1,1)
+c
+c rrb 2021/04/18; Compiler warning
+cx          idcdA=amax0(idcd1-1,1)
+            idcdA=max(idcd1-1,1)
             idcdB=idcd1
             idcdC=idcd1+1
 
@@ -688,7 +711,11 @@ c		            Step 15; Adjust AVAIL for water returned to the river
           nlast=0
 c
 c rrb 2014-07-28; Clean up debug printout
-            idcdA=amax0(idcd1-1,1)
+c
+c rrb 2021/04/18; Compiler warning
+cx          idcdA=amax0(idcd1-1,1)
+            idcdA=max(idcd1-1,1)
+            
             idcdB=idcd1
             idcdC=idcd1+1
           

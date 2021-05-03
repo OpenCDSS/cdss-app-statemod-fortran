@@ -27,9 +27,11 @@ c
 c       outxssMo; It prints a structure Summary to a binary file
 c
 c _________________________________________________________
-c       Update History
+c       Update History      
+c                                 
+c rrb 2021/04/18; Compiler warning                            
 c
-c       2007/09/18; Broken out from OutMon
+c rrb 2007/09/18; Broken out from OutMon
 c _________________________________________________________
 c       Documentation
 c
@@ -39,14 +41,20 @@ c
 c _________________________________________________________
 c       Dimensions
       include 'common.inc'
-      
-      character ftype*24, parType*24, cfail1*3, cfail2*3
+c                                 
+c rrb 2021/04/18; Compiler warning      
+cx    character ftype*24, parType*24, cfail1*3, cfail2*3 
+cx 
       dimension
      1  totothw(numstax)
 c
 c _________________________________________________________
 c              Step 1; Initialize
 c
+c                                 
+c rrb 2021/04/18; Compiler warning
+      iprob=0                 
+      if(iprob.gt.0) goto 9999
      
       iout=0
       
@@ -152,7 +160,10 @@ c rrb 2007/09/06; New Format
             shortiw1=diverirt(mon,nd)-dcu(nd)-qdivso(nd)
 
 c           write(io99,*) ' outmon nd, dcu, dcut', nd,dcu(nd),dcut(nd)
-            irecmax=amax0(irecmax,irecs)   
+c
+c rrb 2021/04/18; Compiler warning
+cx          irecmax=amax0(irecmax,irecs) 
+            irecmax=max(irecmax,irecs) 
 c
 c rrb 2007/09/06; Revised format                             
 cx            write(67,rec=irecs)
@@ -181,7 +192,7 @@ cx     1        rett,          1.0,              rnd,         rnw
      1        ' OutXssMo; Div Only', 
      1        iyr, mon, numdxw, irec, irecs, cdivid(nd)      
      
- 501      format(30f8.0)
+cx 501      format(30f8.0)
           else
 c
 c ---------------------------------------------------------
@@ -290,7 +301,10 @@ c rrb 2007/09/06; New Format
             
 
             irecs=irec+numdiv+nw1
-            irecmax=amax0(irecmax,irecs)   
+c
+c rrb 2021/04/18; Compiler warning
+cx          irecmax=amax0(irecmax,irecs)   
+            irecmax=max(irecmax,irecs)   
 c
 c              Calculate area from fraction data
             Area1=Areaw(nw)
@@ -347,10 +361,10 @@ c
 c               Formats
 c
  
-  260 format(/,
-     1 ' OutXssMo; Problem cannot find a supply or demand for ',/
-     1 '           Plan number ', i5,' Plan Type ', i5,' Plan ID ',a12)
-    
+cx260 format(/,
+cx   1 ' OutXssMo; Problem cannot find a supply or demand for ',/
+cx   1 '           Plan number ', i5,' Plan Type ', i5,' Plan ID ',a12)
+cx  
   500 format( ' Stopped in OutXssMo, see log file (*.log)')
 c
 c _________________________________________________________

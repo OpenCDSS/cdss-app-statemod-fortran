@@ -32,17 +32,20 @@ c _________________________________________________________
 c
 c       Update History
 c
-c rrb 98/03/03; Added daily option
-c rrb 00/12/26; Added variable efficiency capability by adding
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+c
+c rrb 1998/03/03; Added daily option
+c rrb 2000/12/26; Added variable efficiency capability by adding
 c               ieff2 to call rtnsec but turned off operation (ieff2=0)
-c rrb 01/12/07; Revised to allow a type 14 operaring rule exchange that
+c rrb 2001/12/07; Revised to allow a type 14 operaring rule exchange that
 c               limits the carrier based on a demand
 c                 iopsou(2,l2opr) = 1 monthly limit from *.ddm
 c                 iopsou(2,l2opr) > 1 annual limit from *.opr
-c rrb 01/12/26; Removed equivalence by adding avtemp & awvret
+c rrb 2001/12/26; Removed equivalence by adding avtemp & awvret
 c               to common and changing retpct to dumx
 c
-c rrb 02/10/25; Allow monthly on/off switch
+c rrb 2002/10/25; Allow monthly on/off switch
 c _________________________________________________________
 c
 c	Documentation
@@ -116,6 +119,16 @@ c
 c _________________________________________________________
 c               Step 1; Initialize
 c
+c
+c rrb 2021/04/18; Compiler not used or initilize
+      iexit=0
+      if(iexit.gt.0) goto 500
+      iusec=0
+      iown=0
+      iri=0
+      ire=0
+      irow=0
+      
 c		a. Output Control      
       iout=0
       ioutiw=0
@@ -142,7 +155,9 @@ c		c. Detailed Output
       ipuse=-1
       nd=0
       lr=l2
-      
+c
+c rrb 2021/04/18; Compiler warning
+      divalo=0.0     
       divact = 0.0
       repact = 0.0
       ACTACF=0.0
@@ -376,8 +391,10 @@ c        iwhy=4
 c        cwhy='Demand is Zero'
 c        goto 420
 c      endif
-
-  140 IF(iresw.eq.0) then
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx140 IF(iresw.eq.0) then
+      IF(iresw.eq.0) then
         if(DIVREQ(IUSE).LE.small) then
           iwhy=4
           cwhy='Demand is Zero'
@@ -406,7 +423,10 @@ c               a. If release type code is on
 c                  Limit release to occur only if an IWR exists
 c                  Note still releasing to meet 100% of demand
 c
-        ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx      ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+        ireltyp=min(iopsou(6,l2),ifix(effmax(nd)))
 c
         divmax=0.0
         if(ireltyp.gt.0) then 
@@ -739,7 +759,9 @@ c _________________________________________________________
 c               Step 17a; Destination is a Reservoir. Update 
 c                        reservoir data
 c
-  330 if (iresw.eq.1) then
+c rrb 2021/04/18; Compiler not used or initilize
+cx330 if (iresw.eq.1) then
+      if (iresw.eq.1) then
 c
 c rrb 98/03/03; Daily capability
 c       divaf=divact*mthday(mon)*factor
@@ -886,7 +908,10 @@ c
 c _________________________________________________________
 c               Step 19; UPDATE Supply Reservoir
 c
-  400 ACTACF=REPACT*fac
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx400 ACTACF=REPACT*fac
+      ACTACF=REPACT*fac
       CURSTO(NR  )=CURSTO(NR  )+ACTACF
       REPLAC(NR  )=REPLAC(NR  )-REPACT
       CUROWN(IOWN)=CUROWN(IOWN)+ACTACF
@@ -926,7 +951,10 @@ c               annual total adjusted 1x/year in bomsec.for
 
 c
 c               UPDATE OPERATING RIGHT DIVERSION
- 500  divo(l2) = divo(l2)+divact
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx500 divo(l2) = divo(l2)+divact
+      divo(l2) = divo(l2)+divact
 
       if(iout.eq.2 .and. iw.eq.ioutiw) then      
         ncallx=ncallx+1
@@ -946,7 +974,10 @@ c               UPDATE OPERATING RIGHT DIVERSION
      1    cstaid(idcd),
      1    divactx*fac, repact*fac,      
      1    qres(4,nd), qres(29,nd), 
-     1    qres(8,nr), qres(9,nr), qres(18,ir) 
+c
+c rrb 2021/04/18; Compiler not used or initilized or
+cx   1    qres(8,nr), qres(9,nr), qres(18,ir) 
+     1    qres(8,nr), qres(9,nr), qres(18,nr) 
      
       endif
 c
@@ -982,7 +1013,10 @@ c
 c _________________________________________________________
 c               Step 20; Return
 c
-      return
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx    return
+ 500  return
 c
 c _________________________________________________________
 c
@@ -1024,7 +1058,9 @@ c               Formats
   302   format(14i8)
   304   format(112x, 20f16.4)
   310   format(' carrpl: avail  ',10f10.2)
-  320   format(' carrpl: river  ',10f10.2)
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx320   format(' carrpl: river  ',10f10.2)
 
 c
 c _________________________________________________________

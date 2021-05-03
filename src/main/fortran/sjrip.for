@@ -33,6 +33,12 @@ c               Approach:
 c                 1. Copied powsea (type 9)
 c                 2. Adjusted accordingly
 c
+c_________________________________________________________________
+c
+c       Update History
+c
+c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c       Documentation
@@ -55,6 +61,19 @@ c
 c _________________________________________________________
 c
 c               Step 1; Initialize
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+      sjrel0 = 0.0
+      sjrel1 = 0.0
+      sjrel2 = 0.0
+      sjrel3 = 0.0
+      
+      do i=1,13
+        sjrelm(i)=0.0
+      end do
 c
 c               Temporary 
       iout=0

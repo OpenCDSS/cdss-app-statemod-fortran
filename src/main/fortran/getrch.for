@@ -23,24 +23,29 @@ C
      1  RchId, RchIdR, RchNameR, cstaid)
 c
 c _________________________________________________________
-c	Program Description
+c	    Program Description
 c
 c       GetRch; Get Reach Data
 c
 c	 Called by Report.f and Virin.f
 c
 c _________________________________________________________
-c	Documentation
 c
-c 	iget   = 1 Get River Reach Info
-c	         = 2 Get River Data Info			
+c     Update History
+c
+c rrb 2021/04/18; Compiler warning
+c _________________________________________________________
+c	    Documentation
+c
+c 	            iget   = 1 Get River Reach Info
+c	                     = 2 Get River Data Info			
 C
-c	Itype           Type used by GetID 
+c              	Itype  Type used by GetID 
 c                       -3=Diversion Only
 c                       6=Well
 c
-c	RchidDr		Diversion Reach ID
-c	RchidDd		Diversion Reach
+c	              RchidDr		Diversion Reach ID
+c	              RchidDd		Diversion Reach
 c _________________________________________________________
 c	Dimensions
 c
@@ -58,6 +63,10 @@ c
 c
 c _________________________________________________________
 c		Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      recid=' '
+      staname=' '
 c
 c				iout =1 details
 c				iout =2 summary
@@ -191,7 +200,10 @@ c		      Set reach ID and name for every stream node
         irch(is1)=irchX
         Rchid(is1)=RchidX
 c       RchName(is1)=RchNameX
-        nreach=amax0(nreach,iRchX)
+c
+c rrb 2021/04/18; Compiler warning
+cx      nreach=amax0(nreach,iRchX)
+        nreach=max(nreach,iRchX)
 c
 c ---------------------------------------------------------
 c		      Set reach id and name for every reach 

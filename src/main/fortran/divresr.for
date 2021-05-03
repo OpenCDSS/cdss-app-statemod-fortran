@@ -35,6 +35,9 @@ c           Called by Execut
 c _________________________________________________________
 c	Update history
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/09/20; Version 16.00.41;
 c                 Add to qdiv(22 similar to a type 3 to allow
 c                 Outbal2 to adjust for a release To_Conduit
@@ -253,14 +256,27 @@ c          2 summary
 c          3 details of plan storage   
 c
 c
-c rrb 2020/08/30; TEST
-cx    goto 500
+c rrb 2021/04/18; Compiler not used or initilize
+      iexit=0
+      if(iexit.gt.0) goto 500
+
 c     
       subtypX='divresr '
       iout=0
       ioutX=0
       ioutIR=0
       ioutQ=0
+      ioutiw=0
+c
+c rrb 2021/04/18; Compiler warning
+      divreq1=0.0
+      divmax=0.0
+      alocfsr=0.
+      nro=0
+      irow=0
+      idcdd=0
+      ib=0
+      ie=0
       
       if(ichk.eq.132) ioutX=2
       if(corid(l2).eq. ccall) ioutiw=iw
@@ -592,7 +608,10 @@ cx      write(nlog,*) '  DivResP2;', ndI, flowrq(ndI)*fac
 c
 c ---------------------------------------------------------
 c               4e. Carrier system data 
- 120  if(ityopr(l2).ne.10) then
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx120 if(ityopr(l2).ne.10) then
+      if(ityopr(l2).ne.10) then
         if(intern(l2,1).gt.0) then
           ncarry=intern(l2,1)
           nc=intern(l2,1)
@@ -638,7 +657,11 @@ c            ireltyp = 0 release to meet demand
 c            ireltyp > 0 release only if a CIR (IWR) exists
 c                        and limit release to not exceed IWR/n 
 c 
-        ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+c
+c rrb 2021/04/18; Compiler warning
+cx      ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+        ireltyp=min(iopsou(6,l2),ifix(effmax(nd)))
+        
 c       write(nlog,*) ' ireltyp = ', ireltyp, 
 c    1                ' diwrreq(iuse)', diwrreq(iuse)
         divmax=-1.0/fac
@@ -1327,7 +1350,10 @@ c               Formats
 c
 c               Error warnings
 c _________________________________________________________
- 900  write(nlog,910) corid(l2), diveff1*100.
+c
+c rrb 2021/04/18; Compiler warning
+cx00  write(nlog,910) corid(l2), diveff1*100.
+      write(nlog,910) corid(l2), diveff1*100.
  910  format(/,72('_'),/,
      1 ' DivResR (Type 32); Problem with Operation Right ID = ', a12,/
      1 '         The destination efficiency = ', f8.2,/

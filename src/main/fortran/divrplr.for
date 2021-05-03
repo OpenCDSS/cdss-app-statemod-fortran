@@ -38,9 +38,7 @@ c _________________________________________________________
 c
 c       Update History
 c
-c
-c ---------------------------------------------------------
-c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/12/12; Corrected a problem related to using variable
 c                 ncarry as a stream location w/o realizing it
@@ -225,6 +223,10 @@ c _____________________________________________________________
 c
 c               Step 1a - Initialize general variables
 c
+c rrb 2021/04/18; Compiler warning
+      iprob=0
+      if(iprob.gt.0) goto 9999
+c
 c
 c               Control debut printout
 c		iout=0 none, iout=1 detailed, iout=2 summary
@@ -244,6 +246,14 @@ cx      write(nlog,*) '  DivRplR; ', corid(l2), ccall, ioutiw, iw
       nr=0
       idcd=0
       imcd=0
+c
+c rrb 2021/04/18; Compiler warning
+      irow=0
+      idcdd=0
+      nro=0
+      idcdr=0
+      ib=0
+      ie=0
 
       small=0.001
       smalln=-1.0*small
@@ -501,7 +511,10 @@ c               Determine Demand limited by supply
 c        
 c               If release type code is on
 c                  Limit release to occur only if an IWR exists
-        ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+c
+c rrb 2021/04/18; Compiler warning
+cx      ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+        ireltyp=min(iopsou(6,l2),ifix(effmax(nd)))
 c
         divmax=divreq(iuse)
 
@@ -1168,9 +1181,9 @@ cx     1  9(' _______'))
  280   format(1x,a12, i5, 1x,a4, 7i5, 10f8.1, i8, 1x,a45, 3i5, 20f8.1)
  282   format(1x,a12, i5, 1x,a4, 7i5, 10f8.3, i8, 1x,a45, 3i5, 20f8.3)
 
- 301   format(/,60('_'),/,
-     1   '  divRplR;  iyr  mon iteration ', 3i5,/
-     1   '  divRplR;   iw iout    ichk99 ', 3i5)
+cx301   format(/,60('_'),/,
+cx   1   '  divRplR;  iyr  mon iteration ', 3i5,/
+cx   1   '  divRplR;   iw iout    ichk99 ', 3i5)
 
  342    format(
      1     '  divRplR; Diversion Limit;',

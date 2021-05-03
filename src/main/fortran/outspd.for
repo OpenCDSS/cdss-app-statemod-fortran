@@ -16,20 +16,11 @@ c     GNU General Public License for more details.
 c 
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
-c_________________________________________________________________NoticeEnd___
-
-c	Update History
-c
-
-c
-c _________________________________________________________
-c	Documentation
-c
 
 c
 c _________________________________________________________
 c	Dimensions
-cC     Last change:  C    20 May 97    0:08 am
+c     Last change:  C    20 May 97    0:08 am
 C
       SUBROUTINE OUTspd
 c
@@ -38,6 +29,12 @@ c	Program Description
 c
 c               Daily Special parameter and id printout
 c               Same as outsp but daily
+c
+c_________________________________________________________________c
+c	Update History
+c
+c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c	Documentation
@@ -58,6 +55,11 @@ c
 c
 c _________________________________________________________
 c               Step 1; Initialize
+
+c rrb 2021/04/18; Compiler warning
+      ida=0
+      nacc=0
+
       ichk1 = 0
 c     ndiv = 23
 c rrb 2005/11/22; River Loss and Carrier Loss
@@ -293,7 +295,10 @@ c           ir1=nowner(nr)+nr-1
           ip1=ip1+1
           ir1=ir1+1
 C
-  200     write(21,330) idreq(ip),
+c
+c rrb 2021/04/18; Compiler warning
+cx200     write(21,330) idreq(ip),
+          write(21,330) idreq(ip),
      1                RESNAM1(nr),ptype, ip1,cunitm2,
      1                (i,i=1,31)
           write(24,332) idreq(ip),
@@ -316,9 +321,12 @@ c               IRECR=((IY-IYSTR0)*12+(IM-1))*NRSACTx+IR1+numtop
 
                 nf=nfr
                 READ(nfr,REC=IRECR,err=340) (DAT2(I),I=1,nres)
-
-                ida  = dat2(nres-1) 
-                nacc = dat2(nres)
+c
+c rrb 2021/04/18; Compiler warning
+cx              ida  = dat2(nres-1) 
+cx              nacc = dat2(nres)
+                ida  = nint(dat2(nres-1)) 
+                nacc = nint(dat2(nres))
 C                                           
                 do i=1,nresx
                   DATAd(Id,i)=DAT2(i)*fdy(im)
@@ -458,7 +466,9 @@ c
 c _________________________________________________________ 
 c               Step 8; Return
 c
-  290 return
+c rrb 2021/04/18; Compiler warning
+cx290 return
+      return
 c
 c _________________________________________________________ 
 c               Formats

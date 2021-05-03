@@ -29,6 +29,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a
 c                   type 14 and a WWSP User Plan is a type 15
 c rrb 2018/08/05; Revise to allow a WWSP Plan or User (type 14) 
@@ -61,7 +63,15 @@ c
      1  iptotal(40),     datBeg(maxPlan)
 c _________________________________________________________
 c
-c              Step 1; Initialize
+c              Step 1; Initialize 
+c                                        
+c rrb 2021/04/18; Compiler warning 
+      ciy=' '
+      ftype=' '
+      partype=' '     
+      iprob=0                    
+      if(iprob.gt.0) goto 9999   
+
 c		
 c		iout = 1 detailed output
 c          2 summary of print arrays
@@ -92,8 +102,11 @@ cr    maxResPX=12
       maxResP=22
       maxResPX=22      
       maxRch=23
-      maxAll=amax0(maxTC, maxAug, maxResP, maxResPX)
-      
+c
+c rrb 2021/04/18; Compiler warning
+cx    maxAll=amax0(maxTC, maxAug, maxResP, maxResPX)
+      maxAll=max(maxTC, maxAug, maxResP, maxResPX)
+       
       do np=1,nplan
         pfailx(np)=0.0
       end do
@@ -415,7 +428,11 @@ c _________________________________________________________
 c
 c		Step 7; Month Loop              
             DO IM=1,12
-              imx=amax0(1, im-1)
+c
+c rrb 2021/04/18; Compiler warning
+cx            imx=amax0(1, im-1)
+              imx=max(1, im-1)
+              
               do i=1,40
                 dat2(i)=0.0
               end do
@@ -1626,9 +1643,9 @@ c		Average Annual
  2431   format(a12,1x,a12, '  AVE',2x,a3,22f8.1, 20f8.1)  
  2432   format(a12,1x,a12, '  AVE',2x,a3,22f8.2, 20f8.2)  
 
- 245    format(a12,1x,a12, '  AVE',2x,a3,40f8.0)
- 2451   format(a12,1x,a12, '  AVE',2x,a3,40f8.1)
- 2452   format(a12,1x,a12, '  AVE',2x,a3,40f8.2)
+cx 245    format(a12,1x,a12, '  AVE',2x,a3,40f8.0)
+cx 2451   format(a12,1x,a12, '  AVE',2x,a3,40f8.1)
+cx 2452   format(a12,1x,a12, '  AVE',2x,a3,40f8.2)
 c
 c		Type 1 Standard T&C
   230   format(/,
@@ -1860,12 +1877,12 @@ c		Type 14 WWSP-Supply and type 15 WWSP-User Plans
      1  ' _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______ _______ _______')
  
- 254  format(
-     1  '____________ ____________ ____ ____',
-     1  ' _______ _______ _______ _______ _______',
-     1  ' _______ _______ _______ _______ _______',
-     1  ' _______ _______ _______ _______')
-
+cx 254  format(
+cx     1  '____________ ____________ ____ ____',
+cx     1  ' _______ _______ _______ _______ _______',
+cx     1  ' _______ _______ _______ _______ _______',
+cx     1  ' _______ _______ _______ _______')
+cx
  256  format(
      1  '____________ ____________ ____ ____ _______ _______',      
      1  ' _______ _______ _______ _______ _______',
@@ -1892,9 +1909,9 @@ c		Type 14 WWSP-Supply and type 15 WWSP-User Plans
      1 '   ID = ', a12, ' Admin # = ', f11.5,'   Name = ',a24, 
      1 '   Opr Type = ', i3,
      1 '   Destination = ', a12,'   Status = ', a3)    
- 304  format(/,'Note: Any sources > 6 are summed under use 6')
- 305  format(/,'Note: Any uses > 9 are summed under use 9')
- 
+cx 304  format(/,'Note: Any sources > 6 are summed under use 6')
+cx 305  format(/,'Note: Any uses > 9 are summed under use 9')
+cx 
  310  FORMAT(//,72('_'),//
      1 'Total Plan Summary', a5,/
      1 'Plan Type      = ',i5, 1x, a25)
@@ -1912,8 +1929,10 @@ c
 c _________________________________________________________ 
 c        Error Messages
 c
-
-  350 write(6,*)  '  Stopped in OutPln; see the log file (*.log)'
+c                                        
+c rrb 2021/04/18; Compiler warning       
+cx350 write(6,*)  '  Stopped in OutPln; see the log file (*.log)' 
+ 9999 write(6,*)  '  Stopped in OutPln; see the log file (*.log)'
       write(nlog,*) '  Stopped in OutPln'                        
       write(6,*) 'Stop 1' 
       call flush(6)

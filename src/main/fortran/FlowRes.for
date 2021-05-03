@@ -55,6 +55,8 @@ c _________________________________________________________
 c
 c     Update history
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2018/07/15; Created by editing DivResP2
 c ________________________________________________________
 c	Documentation
@@ -108,6 +110,17 @@ c
 c               Step 1; Initialize
 c
 c ---------------------------------------------------------
+c
+c rrb 2021/04/18; Compiler warning
+      irep=0
+      ioutiw=0
+      divact=0.0
+      iprob=0
+      rec12=' '
+      cidbal=' '
+      cidriv=' '
+      cstaid1=' '
+      if(iprob.gt.0) goto 9999
 c
 c               a. Diversion Type
       ndtype = iopdesr(l2)

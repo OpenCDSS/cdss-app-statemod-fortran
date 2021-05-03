@@ -39,7 +39,10 @@ c
 c       Update History
 c
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2006/08/18; Revised to work with multiple reservoir
+c
 c rrb 2005/03/29; Copied Divcar. 
 c               Minor clean up 
 c               Added reuse capability
@@ -48,9 +51,9 @@ c _________________________________________________________
 c
 c               Documentation
 c
-c 	icx 		subroutine call # (2)
-c       IW         	OVERALL WATER RIGHT ORDER
-c       L2         	LOC. OF operation right  in opr RIGHT TABLE
+c 	    icx 		  subroutine call # (2)
+c       IW        OVERALL WATER RIGHT ORDER
+c       L2        LOC. OF operation right  in opr RIGHT TABLE
 c
 c       IDVSTA(L2) 	STATION CODE OF WHERE DIV. RIGHT L2 LOCATES
 c
@@ -96,6 +99,11 @@ c
 c _________________________________________________________
 c               Step 1; Initialize
 c
+c
+c rrb 2021/04/18; Compiler warning
+      divreqx2=0.0
+      irow=0  
+      nro=0
 c
 c		iout = 0 no details
 c		       1 details

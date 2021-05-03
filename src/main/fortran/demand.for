@@ -33,6 +33,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/07/28; Version 16.00.38
 c                 Replaced diwrreqw(nw)=diwrwx(nd)* ca with
 c                          diwrreqw(nw)=diwrreqw(nw)* ca
@@ -94,6 +96,11 @@ c       Dimensions
         Character rec12*12
 c
 c _________________________________________________________
+c
+c
+c rrb 2021/04/18; Compiler warning
+      maxdivwx=maxdivwx
+      ichkx=0
 
 c rrb 01/12/18; Daily printout
       if(iday.eq.0) then

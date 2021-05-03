@@ -22,6 +22,13 @@ c_________________________________________________________________NoticeEnd___
      1            noutGVC, fac, l2, cRule,  
      1            l1, rec12, nameX)
 c    
+c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
 c _________________________________________________________
 c      Dimensions
       include 'common.inc'
@@ -31,7 +38,16 @@ c      Dimensions
 
 c
 c _________________________________________________________
-      
+c		Step 1; Initialize
+c                                  
+c
+c rrb 2021/04/18; Compiler warning
+      crule=crule
+      cstaid1=' '
+      ctype=' '
+      rec12b=' '
+      fileopen=' '
+c      
       if(mon.ne.7) goto 500
       ioutGVC=0
       nout=0

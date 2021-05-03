@@ -28,7 +28,8 @@ sevenzip='/C/Program Files/7-Zip/7z.exe'
 listFile="/tmp/statemod-code-list.txt"
 # Include relevant files and ignore dynamic files.
 # - don't include Lahey files because Ray Bennett is in control and needs to make those work
-ls -1 fortran/*.inc fortran/*.for fortran/makefile fortran/*.bash fortran/*.sh fortran/*.md > ${listFile}
+# - ignore specific files that are used in development but should not be included (can't seem to use ls -I for this so use grep)
+ls -1 fortran/*.inc fortran/*.for fortran/makefile fortran/*.bash fortran/*.sh fortran/*.md | grep -v junk-statem.for > ${listFile}
 
 zipFile="statemod-${statemodVersion}-code.zip"
 

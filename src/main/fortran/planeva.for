@@ -32,6 +32,9 @@ c
 c _________________________________________________________
 c	Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2006/04/05; Corrected a problem associated with assigning
 c                   the correct reservoir ID and
 c		  Revised common and bomsec to initialize
@@ -60,6 +63,10 @@ c
 c _________________________________________________________
 c
 c               Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      pevap1=0.0
+      
       iout = 0
 
       small=0.001

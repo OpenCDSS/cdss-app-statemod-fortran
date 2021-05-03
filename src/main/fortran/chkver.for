@@ -44,6 +44,10 @@ c
 c
 c _________________________________________________________
 c
+c
+c rrb 2021/04/18; Compiler warning
+      iprob=0
+      if(iprob.gt.0) goto 9999
 
       iout=0     
      
@@ -156,7 +160,9 @@ c
 c _________________________________________________________
 c
 c		Formats     
- 200  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
+c
+c rrb 2021/04/18; Compiler warning
+cx200  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
 
  300  format(/,72('_'),/
      1   '  ChkVer; Warning two ',a32,/

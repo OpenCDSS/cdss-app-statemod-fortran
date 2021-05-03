@@ -30,6 +30,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 1996/03/13; Initialize divact, send returns to bottom & set divo
 c rrb 1996/08/07; Instream Flow reach included by reoperating instream
 c                 right to insure whole reach is available to releases
@@ -68,6 +70,11 @@ c
 c _________________________________________________________
 c
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      ib=0
+      ie=0
+c
       iw = iw
       iout=0
       ioutiw=0
@@ -255,7 +262,10 @@ c
 c _________________________________________________________
 c
 c		Step 11; Adjust running variables
-  120 RELAF=DIVACT*fac
+c
+c rrb 2021/04/18; Compiler warning
+cx120 RELAF=DIVACT*fac
+      RELAF=DIVACT*fac
 c
 c		a. Reservoir
       CURSTO(NR  )=CURSTO(NR  )-RELAF

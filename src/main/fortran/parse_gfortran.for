@@ -33,17 +33,20 @@ c
 c _________________________________________________________
 c       Update History
 c
-c rrb 01/01/02; Added option 10 (baseflows with variable efficiency)
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+c
+c rrb 2001/01/02; Added option 10 (baseflows with variable efficiency)
 c               and option 11 (baseflow with variable efficiency and
 c               wells with sprinklers get used first).
 c
-c rrb 02/05/07; Added gettyp and getpar for daily plotting capability.
+c rrb 2002/05/07; Added gettyp and getpar for daily plotting capability.
 c
-c rrb 03/06/02; Revise to recognize -NoLog as a secondary
+c rrb 2003/06/02; Revise to recognize -NoLog as a secondary
 c               option and to print to a log file only if
 c               -NoLog is off.
-c rrb 05/01/06  Add plan output type 21a.
-c jhb 05/06/14  Convert to the gfortran method of accessing command
+c rrb 2005/01/06  Add plan output type 21a.
+c jhb 2005/06/14  Convert to the gfortran method of accessing command
 c               line arguments.  Convert the command line into a
 c               string starting at the 1st (not 0th) argument
 c               to reuse as much of the old code as possible
@@ -124,7 +127,19 @@ c rrb 00/08/04; Revise maximum command line length
 
 c _________________________________________________________
 c
+c
+c
+c rrb 2021/04/18; Compiler not used or initilize
+      maxfn=maxfn
+      j1=0
+      j=0
+c
 c               Step 1; Initialize
+c
+c
+c rrb 2021/04/18; Compiler not used
+        iexit=0
+        if(iexit.gt.0) goto 500
 c
 c               iout = logging level
 c                      0 no details
@@ -387,7 +402,11 @@ c _________________________________________________________
 c
 c               Step 10;  Print help data
 c
-  190   if(ioptio.eq.6) then
+c
+c rrb 2021/04/18; Compiler not used
+cx190   if(ioptio.eq.6) then
+        if(ioptio.eq.6) then
+  
 c         open(99,file='statem.log', status='unknown')
           write(99,*) ' '
           write(99,*) ' Primary options are:'
@@ -472,7 +491,9 @@ c
 c               Formats
 c
   100   format('  Parse; Command line: ',/, 2x, a256)
-  101   format(i1)
+c
+c rrb 2021/04/18; Compiler not used
+cx101   format(i1)
   
   192  format(2x, a12, ' or ', a12)
   200  format('  Parse Results:',/

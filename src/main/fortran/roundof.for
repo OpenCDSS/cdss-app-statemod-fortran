@@ -33,6 +33,8 @@ c
 c
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/06/03; Add iout and warn if small values are reset to zero
 c
 c _________________________________________________________
@@ -121,7 +123,7 @@ c
      1   ' avail (cfs) = ',f20.8,
      1   '  Called by ',a8, ' at Step ', i5)                   
   
-  210 format(/,'  Roundof; Local dimension exceeded, problem = ',i5)
+cx210 format(/,'  Roundof; Local dimension exceeded, problem = ',i5)
 c
 c
 c_______________________________________________________________

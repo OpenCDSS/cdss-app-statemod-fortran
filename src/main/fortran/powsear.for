@@ -36,6 +36,9 @@ c
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2006/10/02; Copy PowSeaP and update accordingly
 c _________________________________________________________
 c	Dimensions
@@ -47,8 +50,13 @@ c
 c
 c _________________________________________________________
 c
-c		iout = 0 No detailed printout
-c		     = 2 Summary printout
+c
+c rrb 2021/04/18; Compiler warning
+      ioutiw=0
+      rec12=' '
+c
+c		            iout = 0 No detailed printout
+c		                 = 2 Summary printout
       iout=0
       if(ichk.eq.4) then
         write(nlog,*) ' PowseaR; Type 42'
@@ -217,7 +225,8 @@ c
 c _________________________________________________________
 c
 c               Print warning
- 9999 write(6,*) '  Stopped in PowSeaR, see the log file (*.log)'
+cx9999 write(6,*) '  Stopped in PowSeaR, see the log file (*.log)'
+      write(6,*) '  Stopped in PowSeaR, see the log file (*.log)'
       write(nlog,*) '  Stopped in PowSeaR'
       write(6,*) 'Stop 1' 
       call flush(6)

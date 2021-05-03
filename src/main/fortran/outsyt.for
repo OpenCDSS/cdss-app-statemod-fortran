@@ -22,12 +22,18 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c	      Program Description
 c
 c       Outsyt; it prints a system report by year
-c
+c        
+c                                                                    
+c_________________________________________________________________   
+c                                                                    
+c       Update History                                               
+c                                                                    
+c rrb 2021/04/18; Compiler warning                                   
 c _________________________________________________________
-C	Dimensions
+C	      Dimensions
 c
       include 'common.inc'
       character*24 term1(35),term2(30)
@@ -168,7 +174,9 @@ c rrb 01/12/26; Accommodate futile call
           endif
 
 C
-  270     continue
+c                                  
+c rrb 2021/04/18; Compiler warning 
+cx270     continue
 c
 c		Demand  
           do i=1,2
@@ -208,8 +216,11 @@ c		Station Balance an Available Flow
 C
 c              Reservoir Output
 c ___________________________________________________
-c
-  360     ILINE(2)=ILINE(2)-20
+c 
+c                                   
+c rrb 2021/04/18; Compiler warning  
+cx360     ILINE(2)=ILINE(2)-20    
+          ILINE(2)=ILINE(2)-20
 C
   361     IF(NUMRES.EQ.0.OR.NRSACT.EQ.0.OR.
      1      IRSORD(2,IS).EQ.0) GO TO 600
@@ -260,7 +271,9 @@ c
           endif
 
 C
-  530     continue
+c                                   
+c rrb 2021/04/18; Compiler warning  
+cx530     continue
           DO I=1,1
             WRITE(16,290) TERM2(I),(DATA2(IM,I),IM=1,13)
           end do
@@ -289,8 +302,10 @@ C
           DO I=19,23
             WRITE(16,290) TERM2(I),(DATA2(IM,I),IM=1,13)
           end do
-
-  590     ILINE(2)=ILINE(2)-20
+c                                        
+c rrb 2021/04/18; Compiler warning       
+cx590     ILINE(2)=ILINE(2)-20       
+          ILINE(2)=ILINE(2)-20     
 C
   600   CONTINUE
 C

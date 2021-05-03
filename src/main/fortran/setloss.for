@@ -34,6 +34,7 @@ c
 c _________________________________________________________
 c		Update History
 c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2008/06/10; Allow return to river then diversion
 c		  from a carrier again (internT = 1 Carrier, 2=Return)        
@@ -92,7 +93,11 @@ cx   1 OprlossC(maxopr,10)
 c
 c
 c _________________________________________________________
-c		Step 1;  Initialize
+c		Step 1;  Initialize         
+c
+c rrb 2021/04/18; Compiler warning
+      fac=fac
+c
       iout=0
       
       ioprloss=int(OprLoss(l2))

@@ -45,7 +45,10 @@ c _________________________________________________________
 c
 c 	Update history
 c
-c	05/03/31	Copied Divres
+c
+c rrb 2021/04/18; Compiler warning
+c
+c	rrb 2005/03/31	Copied Divres
 c			Removed ability to release for depletion only
 c                       Removed ability to be called by replacement res
 c			Removed stuff related to a transfer limit 
@@ -132,6 +135,9 @@ c _________________________________________________________
 c               Step 1; Initialize
 c
       subtypX='divimpr2'
+c
+c rrb 2021/04/18; Compiler warning
+      relalo=0.0
       
       iout=0
       if(ichk.eq.135) iout=2
@@ -314,7 +320,10 @@ c               b. Destination is a diversion (nd>0 & iresw=0)
 c
 c ---------------------------------------------------------
 c               e. Carrier system data 
- 120  if(ityopr(l2).ne.10) then
+c
+c rrb 2021/04/18; Compiler warning
+cx 120  if(ityopr(l2).ne.10) then
+      if(ityopr(l2).ne.10) then
 cr      if(intern(l2,1).eq.0) go to 130
         if(intern(l2,1).gt.0) then
           ccarry='Yes'
@@ -363,7 +372,10 @@ c               ireltyp = 0 release to meet demand
 c               ireltyp > 0 release only if a CIR (IWR) exists
 c                           and limit release to not exceed IWR/n  
         effmax1=effmax(nd)
-        ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+c
+c rrb 2021/04/18; Compiler warning
+cx      ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+        ireltyp=min(iopsou(6,l2),ifix(effmax(nd)))
 
         if(ireltyp.gt.0) then 
           diwrreqX=diwrreq(iuse)        
@@ -683,7 +695,10 @@ c               Formats
 c
 c               Error warnings
 c _________________________________________________________
- 9999 write(6,1050) 
+c
+c rrb 2021/04/18; Compiler warning
+cx9999 write(6,1050) 
+      write(6,1050)
       write(nlog,1051) 
     
  1050 format('    Stopped in DivImpR',/,

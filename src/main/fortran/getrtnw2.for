@@ -36,6 +36,8 @@ c
 c _________________________________________________________
 c
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c        
 c rrb 2005/10/15; Copied GetRtn
 c                 Revised to handle new station format
@@ -71,7 +73,18 @@ c
 c _________________________________________________________
 c
 c
-c		iout=1 print return flow details
+c
+c rrb 2021/04/18; Compiler warning
+        iin2=iin2
+        iloss=iloss
+        in1=in1
+        interv=interv
+        cirtndlw=' '
+        ji=0
+        je=0
+        pctlosw(1)=pctlosw(1)
+        
+c		              iout=1 print return flow details
         iout=0
 
         blank = '            '
@@ -202,7 +215,10 @@ c             even if provided in a random order
       j1=0
       do nw=1,numdivw
         do j=1,numrtnX
-          k=tempX(j)
+c
+c rrb 2021/04/18; Compiler warning
+cx        k=tempX(j)
+          k=nint(tempX(j))
           if(k.eq.nw) then
             j1=j1+1
             pcttotw(j1) = pcttotwX(j)
@@ -244,14 +260,14 @@ c
 c               Error Handling
 c _________________________________________________________
 c
-  928 write(nlog,929) in2, filena
+cx928 write(nlog,929) in2, filena
+      write(nlog,929) in2, filena
   929 format(/,72('_'),/
      1' GetRtnw2; Problem reading file # ', i4,/,
      1       '   File name: ', a256,/
      1       '   Problem record (next line):')
       goto 9999
-      
-      
+         
  1400 write(nlog,1402) cistat
  1402 FORMAT(/,72('_'),/
      1 '  GetRtnW2; Problem.'
@@ -260,8 +276,8 @@ c
       goto 9999
       
 
- 1260 format(36x,a12,f8.0,i8)
- 1262 format(36x,a12,f8.0,a12)
+cx 1260 format(36x,a12,f8.0,i8)
+cx 1262 format(36x,a12,f8.0,a12)
  1272 FORMAT(/,72('_'),/
      1 '  GetRtnw2: Return flow to ',a12,' from Well',a12, /
      1 '           cannot be the most downstream node in a ',/
@@ -281,26 +297,26 @@ c
      1  ' ____________ ____________ ____________')
  1285 format(i5, 1x,a12, 1x,a24, 1x,a12, 1x,a12, 1x,a12)
  
- 1290 FORMAT(/,72('_'),/ 
-     1 '  GetRtnw2;',
-     1       ' FYI Well Structues with Loss or Salvage Data ',/
-     1       '          ID            Return    Loss Deplete',
-     1                            ' Salvage   Total',/
-     1       '          ____________ _______ _______ _______',
-     1                            ' _______ _______')
-     
- 1291 format(10x,a12, 2f8.0, 16x,f8.0)
- 
- 1293 format(10x,a12, 16x, 3f8.0)
- 
- 1292 FORMAT(/,72('_'),/
-     1 '  GetRtnw2; Problem station ',a12,
-     1 ' of the Well Station File (*.dds)',/
-     1 10x, ' has the following return data:',/
-     1 10x, ' Total of all returns = ', f8.2)
-
- 1300 FORMAT(/,72('_'),/
-     1 ' GetRtnw2; TOO MANY DIVERSION PROJECTS,   MAXIMUM = ',I5)
+cx 1290 FORMAT(/,72('_'),/ 
+cx     1 '  GetRtnw2;',
+cx     1       ' FYI Well Structues with Loss or Salvage Data ',/
+cx     1       '          ID            Return    Loss Deplete',
+cx     1                            ' Salvage   Total',/
+cx     1       '          ____________ _______ _______ _______',
+cx     1                            ' _______ _______')
+cx     
+cx 1291 format(10x,a12, 2f8.0, 16x,f8.0)
+cx 
+cx 1293 format(10x,a12, 16x, 3f8.0)
+cx 
+cx 1292 FORMAT(/,72('_'),/
+cx     1 '  GetRtnw2; Problem station ',a12,
+cx     1 ' of the Well Station File (*.dds)',/
+cx     1 10x, ' has the following return data:',/
+cx     1 10x, ' Total of all returns = ', f8.2)
+cx
+cx 1300 FORMAT(/,72('_'),/
+cx     1 ' GetRtnw2; TOO MANY DIVERSION PROJECTS,   MAXIMUM = ',I5)
      
  1302 FORMAT(/,72('_'),/
      1 ' GetRtnw2; TOO MANY RETURN FLOW STATIONS, MAXIMUM = ',I5) 

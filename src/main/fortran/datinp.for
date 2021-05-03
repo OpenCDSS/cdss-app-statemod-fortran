@@ -18,9 +18,6 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
-c	Update History
-c
-
 C     Last change:  RRB  16 Oct 99   12:18 pm
 c
 C
@@ -115,17 +112,19 @@ c _________________________________________________________
 c
 c               Update History
 c
-c rrb 05/08/22; Remove reservoir read to getres.for
-c rrb 04/09/07; Revise diversions to allow multiple owners
+c
+c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2005/08/22; Remove reservoir read to getres.for
+c rrb 2004/09/07; Revise diversions to allow multiple owners
 c		ndown. Note multiple users are still not
 c		allowed.
-c rrb 03/08/18; Revise to allow random file read
+c rrb 2003/08/18; Revise to allow random file read
 c
-c rrb 99/09/15; Revised instream flows to allow monthly data
-c rrb 00/05/30; Revised to allow Irrigation Water Req. data for
+c rrb 1999/09/15; Revised instream flows to allow monthly data
+c rrb 2000/05/30; Revised to allow Irrigation Water Req. data for
 c               demand information
-c rrb 00/11/10; Revised to read itsfile; annual time series code
-c rrb 00/12/04; Revised to add ieffmax; variable efficiency code
+c rrb 2000/11/10; Revised to read itsfile; annual time series code
+c rrb 2000/12/04; Revised to add ieffmax; variable efficiency code
 c               (0=no, 1=yes)
 c
 c
@@ -148,6 +147,16 @@ C
 c
 c__________________________________________________________
 c               Initialize
+c
+c rrb 2021/04/18; Compiler not used or initilize
+      rec1=rec1
+      rec132=rec132
+      mthd(1) = mthd(1)
+      itemp=itemp
+      ch3=ch3
+      ch4=ch4   
+      rec4=rec4
+      cgoto2=cgoto2
 c
 c		Details:
 c		  ioutC = Control Data (*.ctl)
@@ -235,7 +244,10 @@ c _________________________________________________________
 c
 c               Read Control Data (*.ctl)
 c
-  110 write(nlog,101)
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx110 write(nlog,101)
+      write(nlog,101)
       write(6,101)
   101 format(/,72('_'),/
      1 '  Datinp; Control File (*.ctl) ')
@@ -547,8 +559,11 @@ cr      cunitd='(cfs)'
           faf(i)=factor*mthday(i)
         end do
       endif
+c 
 c
-      idemtyp = amax0(1,icondem)
+c rrb 2021/04/18; Compiler not used or initilize
+cx    idemtyp = amax0(1,icondem)
+      idemtyp = max(1,icondem)
 c
 c _________________________________________________________
 c               Check option
@@ -559,7 +574,10 @@ c     write(nlog,*) ' '
       if(ireopx.gt.0)
      1  write(nlog,*)'  ** Datinp; Warning reoperation off'
 
- 160  write(nlog,159)
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx160 write(nlog,159)
+      write(nlog,159)
  159  format(/,72('_'),/ '  Datinp; ',/)
       if(iday.eq.0)  then
         write(nlog,*)'  ** Monthly Model                            **'
@@ -589,7 +607,11 @@ c
 c _________________________________________________________
 c               Well Swicth
 
- 162  if(iwell.le.0)  then                 
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx162 if(iwell.le.0)  then  
+      if(iwell.le.0)  then                 
+                
         if(iwell.eq.0) 
      1  write(nlog,*)'  ** Wells                                Off **'
         if(iwell.lt.0)
@@ -695,7 +717,9 @@ c               *.ifm is opened
 c
 c _________________________________________________________
 c               SJRIP Sediment File Switch               
- 166  if(isjrip.eq.0) then
+c rrb 2021/04/18; Compiler not used or initilize
+cx 166  if(isjrip.eq.0) then
+      if(isjrip.eq.0) then
         write(nlog,*)'  ** SJRIP Sediment file (*.sjr)          Off **'
       endif
       if(isjrip.eq.-1) then
@@ -708,8 +732,10 @@ c
 c _________________________________________________________
 c               Annual Time series Switch               
 
-
- 164  if(itsfile.eq.0) then
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx164 if(itsfile.eq.0) then
+      if(itsfile.eq.0) then
         write(nlog,*)'  ** Annual time series (*.tsp) file      Off **'
       endif
       if(itsfile.eq.-1) then
@@ -722,8 +748,10 @@ c
 c _________________________________________________________
 c               Variable efficiency switch
 c
-
- 165  if(ieffmax.eq.0) then
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx165 if(ieffmax.eq.0) then
+      if(ieffmax.eq.0) then
         write(nlog,*)'  ** Variable efficiency                  Off **'
       endif
       if(ieffmax.eq.-1) then
@@ -742,8 +770,9 @@ c               0=No, 1=Yes Max Supply, 2=Mutual Supply
 c               Note the above work in conjunction with gwmode
 c               in *.tsp
 c
-
- 167  if(isprink.le.0) then
+c rrb 2021/04/18; Compiler not used or initilize
+cx 167  if(isprink.le.0) then
+      if(isprink.le.0) then
         write(nlog,*)'  ** Sprinklers                           Off **'
         isprink=0
       endif
@@ -763,7 +792,10 @@ c
       if(ioutC.eq.1)
      1  write(nlog,*) '  Datinp; soild, small = ', soild, small
 
- 168  isoil=int(soild)
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx 168  isoil=int(soild)
+      isoil=int(soild)
       if(ioutC.eq.1)
      1  write(nlog,*) '  Datinp; isoil = ', isoil 
 
@@ -1149,7 +1181,8 @@ c
 c _________________________________________________________
 c		INITIALIZE RETURN FLOW ARRAY
 C
-  730   continue
+c rrb 2021/04/18; Compiler not used or initilize
+cx  730   continue
       if(ichk.eq.4) write(nlog,*) 
      1  'Datinp initialize monthly return flow arrays'
      
@@ -1352,8 +1385,10 @@ c _________________________________________________________
 c
 c               Read Instream Flow Station (*.ifs) 
 c
-
-  830 write(6,107)
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx830 write(6,107)
+      write(6,107)
       write(nlog,107)
   107   format(/,72('_'),/,
      1 '  Datinp; Instream Flow Station File (*.ifs) ')
@@ -1560,8 +1595,10 @@ c rrb 99/09/15; Set code for mix of data provided
 c               monisf = 1 annual only, 2=monthly only; 3=both
       monisf=itmpi1+itmpi2
 cr    write(nlog,*) '  Datinp; monisf = ', monisf
-
- 902  close(55)
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx 902 close(55)
+       close(55)
 c
 c _________________________________________________________
 c               Step X; Read Well Station Data (*.wes)
@@ -1595,7 +1632,10 @@ c		  nf = file #
 c
 c _________________________________________________________
 c               Step X; Read Plan data (*.pln)
-  901 iprintdp=0
+c rrb 2021/04/18; Compiler not used or initilize
+cx  901 iprintdp=0
+      iprintdp=0
+
 c
 c
 c rrb 2008/02/22; Read new or old response file formats (infile)
@@ -1667,8 +1707,11 @@ c               Step X; Network Checks
 c
 c rrb 10/02/95; check for more than one final outlet
 
-        if(iout.eq.1) write(nlog,*) ' Datinp; network checks'
-  909   ix = 0
+        if(iout.eq.1) write(nlog,*) ' Datinp; network checks'     
+c                                                       
+c rrb 2021/04/18; Compiler not used or initilize  
+cx909   ix = 0      
+        ix = 0
         do 910 is=1,numsta
           if (idncod(is).eq.0) ix = ix + 1
   910   continue                        
@@ -1825,36 +1868,36 @@ c ___________________________________________________
      1    '          a -999 allows a character format',/
      1    '          a -100 expects data as a decimal' )
      
-  544  format(/,72('_'),/       
-     1   '  Datinp; Warning well id ', a12,
-     1    ' has idvcomw = ', i8, ' which is no longer supported. ',/
-     1          '          It has been reset to 1 since ichk = 2')
-     
-  545  format(/,72('_'),/       
-     1 '  Datinp; Problem well id ', a12,
-     1    ' has idvcomw = ', i8, ' which is not supported.')
-     
-  546  format(/,72('_'),/
-     1 '  Datinp; Problem in *.wes well id ', a12,
-     1          ' has idvcomw = ', i4, /
-     1 '          But in *.ctl the variable icondem (idemtyp) = ',i4,
-     1          ' which is inconsitant.')
-     
-  547  format(/,72('_'),/
-     1 '  Datinp; Problem for Div or Well station = ', a12,
-     1          ' type = 4 which indicates transmountain, but',/
-     1 '          efficiency is not 100%.',
-     1 '          To do; Change type or efficiency data to 100%')
-
-  758  format(/,72('_'),/
-     1  '  Datinp; Problem Multi User no longer supported', 
-     1 ' but specified in *.dds for ID: ',a12)  
-     
-  903 format(/,72('_'),/
-     1 '  Datinp; Warning well control switch = ', i5,' (on)',/ 
-     1 '          but no well station data was not provided.',/
-     1 '          Setting well control switch = 0 and proceeding')
-     
+cx  544  format(/,72('_'),/       
+cx     1   '  Datinp; Warning well id ', a12,
+cx     1    ' has idvcomw = ', i8, ' which is no longer supported. ',/
+cx     1          '          It has been reset to 1 since ichk = 2')
+cx     
+cx  545  format(/,72('_'),/       
+cx     1 '  Datinp; Problem well id ', a12,
+cx     1    ' has idvcomw = ', i8, ' which is not supported.')
+cx     
+cx  546  format(/,72('_'),/
+cx     1 '  Datinp; Problem in *.wes well id ', a12,
+cx     1          ' has idvcomw = ', i4, /
+cx     1 '          But in *.ctl the variable icondem (idemtyp) = ',i4,
+cx     1          ' which is inconsitant.')
+cx     
+cx  547  format(/,72('_'),/
+cx     1 '  Datinp; Problem for Div or Well station = ', a12,
+cx     1          ' type = 4 which indicates transmountain, but',/
+cx     1 '          efficiency is not 100%.',
+cx     1 '          To do; Change type or efficiency data to 100%')
+cx
+cx  758  format(/,72('_'),/
+cx     1  '  Datinp; Problem Multi User no longer supported', 
+cx     1 ' but specified in *.dds for ID: ',a12)  
+cx     
+cx  903 format(/,72('_'),/
+cx     1 '  Datinp; Warning well control switch = ', i5,' (on)',/ 
+cx     1 '          but no well station data was not provided.',/
+cx     1 '          Setting well control switch = 0 and proceeding')
+cx     
   911  format(/,72('_'),/
      1 '  Datinp;  Warning more than one final outlet',/
      1 '           Will treat tributary like a futile call',//
@@ -1862,17 +1905,17 @@ c ___________________________________________________
      1 '      #  Fr node Fr Name                  To node  # down',/
      1 '  _____ ________ ________________________ _______ _______')
 
-  930  FORMAT(A256)
-  940  format(4x, a256)
+cx930  FORMAT(A256)
+cx940  format(4x, a256)
   950  FORMAT(a80)
-  960  format(i8)
-  970  FORMAT(F8.5)
-  972  FORMAT(F8.3)
-
-  980  FORMAT(12I4)
-  990  format(/,72('_'),/
-     1  '  Datinp; Problem. Year type must be CYR, WYR or IYR',/
-     1  '     Not ', a5)
+cx960  format(i8)
+cx970  FORMAT(F8.5)
+cx972  FORMAT(F8.3)
+cx
+cx980  FORMAT(12I4)
+cx990  format(/,72('_'),/
+cx   1  '  Datinp; Problem. Year type must be CYR, WYR or IYR',/
+cx   1  '     Not ', a5)
      
  1000  format(a12,a24,a12, 1x, 12x, 1x, f8.0)
  1001  format(/,72('_'),/
@@ -1890,9 +1933,9 @@ c ___________________________________________________
      
  1020  FORMAT(/,72('_'),/
      1 ' Datinp; Problem. Too Many Stations, Maximum = ',I5)
- 1021  FORMAT(/,72('_'),/
-     1  ' Datinp; Problem.',
-     1  ' Too many return stations, max = ', i5)
+cx 1021  FORMAT(/,72('_'),/
+cx     1  ' Datinp; Problem.',
+cx     1  ' Too many return stations, max = ', i5)
 
  1030  format(/,72('_'),/
      1'  Datinp; River Network Summary',//
@@ -1901,17 +1944,17 @@ c ___________________________________________________
      
  1040  format(i4, 2(1x, a12), 1x, 2i8)
  
- 1050  format(24x,4f8.0,4i8)
- 
- 1060  FORMAT(/,72('_'),/
-     1  ' Datinp; Problem.',
-     1  ' Reservoir ',a12,' not found in river station file')
-     
- 1070  FORMAT(/,72('_'),/
-     1  ' Datinp; Problem. TOO MANY RESERVOIR OWNERSHIPS ',I5,
-     1  '  MAXIMUM = ',I5)
-     
- 1080  FORMAT(12x,a12,3f8.0,i8)
+cx 1050  format(24x,4f8.0,4i8)
+cx 
+cx 1060  FORMAT(/,72('_'),/
+cx     1  ' Datinp; Problem.',
+cx     1  ' Reservoir ',a12,' not found in river station file')
+cx     
+cx 1070  FORMAT(/,72('_'),/
+cx     1  ' Datinp; Problem. TOO MANY RESERVOIR OWNERSHIPS ',I5,
+cx     1  '  MAXIMUM = ',I5)
+cx     
+cx 1080  FORMAT(12x,a12,3f8.0,i8)
  
 
      
@@ -1930,137 +1973,137 @@ c ___________________________________________________
      1  '  Total of River nodes                      = ',i5,//,
      1  '  (1) May be negative if multiple activities occur at the',
      1  '  same node',//)
- 1130  FORMAT(/,
-     1  '  Datinp; Problem. Too MANY EVAPO. COMBINATIONS ',I5,
-     1  '     MAXIMUM = ',I5)
- 1140  format(/,
-     1 '  Datinp; Warning Res. ', i4, ' has no evap data')
- 1150  FORMAT(24x, a12,F8.0)
- 1160  FORMAT(/,
-     1  ' Datinp; Problem. Too MANY RAINFALL COMBINATIONS ',I5,
-     1  '   MAXIMUM = ',I5)
- 1170  FORMAT(24X,8F8.0)
- 1180  FORMAT(/,
-     1  ' Datinp; Problem. Too MANY RESERVOIRS,    MAXIMUM = ',I5)
- 1190  format(/,
-     1   ' Datinp: Problem',/
-     1   '         Area capacity curve for reservoir ', a12, /
-     1   '         is not increasing',//
-     1   '            Entry       Value',/
-     1   '         ________ ___________', /,
-     1   9x, i8, f12.4,/, 9x, i8, f12.4,//
-     1   '         Problem could be number of accounts specified',/
-     1   '         is not consistent with the ownership data')
- 1191  format(/,
-     1   ' Datinp: Warning',/
-     1   '         Capacity in area-capacity curve for reservoir ',a12,/
-     1   '         entry ', i5, ' is not increasing.',/
-     1   '         Value adjusted by ',f8.4,//
-     1   '            Entry       Value   Adj Value',/
-     1   '         ________ ___________ ___________', /,
-     1   9x, i8, f12.4, f12.4,/, 9x, i8, f12.4, f12.4)
- 1192  format(/,
-     1   ' Datinp: Warning',/
-     1   '         Area in area-capacity curve for reservoir ',a12,/
-     1   '         entry ', i5,' is not increasing. ',/
-     1   '         Value adjusted by ', f8.4,//
-     1   '            Entry       Value   Adj Value',/
-     1   '         ________ ___________ ___________', /,
-     1   9x, i8, f12.4, f12.4,/, 9x, i8, f12.4, f12.4)
-
- 1210  FORMAT(
-     1  '  Datinp; Problem for diversion id = ', a12,/
-     1  '          in the diversion station file (*.dds) ',/
-     1  '          the river location (cgoto) = ', a12,/
-     1  '          cannot be found in the network file (*.rin)',/
-     1  '          (If the id looks ok, Check to be sure it',/
-     1  '          does not contain a tab character')
- 1212  FORMAT(
-     1  '  Datinp; Problem for well id = ', a12,/
-     1  '          in the well station file (*.wes) ',/
-     1  '          the river location (cgoto) = ', a12,/
-     1  '          cannot be found in the network file (*.rin)',/
-     1  '          (If the id looks ok, Check to be sure it',/
-     1  '          does not contain a tab character')
- 1220  FORMAT(/,
-     1  '  Datinp; Problem. Too MANY DIVERSION USERS      ',I5,
-     1  '  MAXIMUM = ',I5)
-c1232  FORMAT(12X,24x,a12, 2I8,2F8.0,i8)
- 1232  format(12x,24x,a12, 3i8, 2f8.0, i8, f8.0)
- 
- 1238  format(/,72('_'),/ 
-     1  '  Datinp; Warning, for baseflow calculations reset control',/
-     1  '          variable icondem (idemtyp) = 1 to insure no ',/
-     1  '          adjustments to historic diversion and well',/ 
-     1  '          pumping data')
+cx 1130  FORMAT(/,
+cx     1  '  Datinp; Problem. Too MANY EVAPO. COMBINATIONS ',I5,
+cx     1  '     MAXIMUM = ',I5)
+cx 1140  format(/,
+cx     1 '  Datinp; Warning Res. ', i4, ' has no evap data')
+cx 1150  FORMAT(24x, a12,F8.0)
+cx 1160  FORMAT(/,
+cx     1  ' Datinp; Problem. Too MANY RAINFALL COMBINATIONS ',I5,
+cx     1  '   MAXIMUM = ',I5)
+cx 1170  FORMAT(24X,8F8.0)
+cx 1180  FORMAT(/,
+cx     1  ' Datinp; Problem. Too MANY RESERVOIRS,    MAXIMUM = ',I5)
+cx 1190  format(/,
+cx     1   ' Datinp: Problem',/
+cx     1   '         Area capacity curve for reservoir ', a12, /
+cx     1   '         is not increasing',//
+cx     1   '            Entry       Value',/
+cx     1   '         ________ ___________', /,
+cx     1   9x, i8, f12.4,/, 9x, i8, f12.4,//
+cx     1   '         Problem could be number of accounts specified',/
+cx     1   '         is not consistent with the ownership data')
+cx 1191  format(/,
+cx     1   ' Datinp: Warning',/
+cx     1   '         Capacity in area-capacity curve for reservoir ',a12,/
+cx     1   '         entry ', i5, ' is not increasing.',/
+cx     1   '         Value adjusted by ',f8.4,//
+cx     1   '            Entry       Value   Adj Value',/
+cx     1   '         ________ ___________ ___________', /,
+cx     1   9x, i8, f12.4, f12.4,/, 9x, i8, f12.4, f12.4)
+cx 1192  format(/,
+cx     1   ' Datinp: Warning',/
+cx     1   '         Area in area-capacity curve for reservoir ',a12,/
+cx     1   '         entry ', i5,' is not increasing. ',/
+cx     1   '         Value adjusted by ', f8.4,//
+cx     1   '            Entry       Value   Adj Value',/
+cx     1   '         ________ ___________ ___________', /,
+cx     1   9x, i8, f12.4, f12.4,/, 9x, i8, f12.4, f12.4)
+cx
+cx 1210  FORMAT(
+cx     1  '  Datinp; Problem for diversion id = ', a12,/
+cx     1  '          in the diversion station file (*.dds) ',/
+cx     1  '          the river location (cgoto) = ', a12,/
+cx     1  '          cannot be found in the network file (*.rin)',/
+cx     1  '          (If the id looks ok, Check to be sure it',/
+cx     1  '          does not contain a tab character')
+cx 1212  FORMAT(
+cx     1  '  Datinp; Problem for well id = ', a12,/
+cx     1  '          in the well station file (*.wes) ',/
+cx     1  '          the river location (cgoto) = ', a12,/
+cx     1  '          cannot be found in the network file (*.rin)',/
+cx     1  '          (If the id looks ok, Check to be sure it',/
+cx     1  '          does not contain a tab character')
+cx 1220  FORMAT(/,
+cx     1  '  Datinp; Problem. Too MANY DIVERSION USERS      ',I5,
+cx     1  '  MAXIMUM = ',I5)
+cx1232  FORMAT(12X,24x,a12, 2I8,2F8.0,i8)
+cx1232  format(12x,24x,a12, 3i8, 2f8.0, i8, f8.0)
+cx 
+cx 1238  format(/,72('_'),/ 
+cx     1  '  Datinp; Warning, for baseflow calculations reset control',/
+cx     1  '          variable icondem (idemtyp) = 1 to insure no ',/
+cx     1  '          adjustments to historic diversion and well',/ 
+cx     1  '          pumping data')
+cx     
+cx 1239  format(/,72('_'),/
+cx     1  '  Datinp; Warning, in baseflow therefore ID ', a12, 'has had',/
+cx     1  '          its demand type (idvcomw) reset to 1.  Recall',/
+cx     1  '          the baseflow mode reads *.weh in lie of *.wem')
+cx 1240  format(/,72('_'),/
+cx     1  '  Datinp; Warning, Annual diversions not used in base',
+cx     1  ' flow calcs'/)
+cx
+cx 1241  format(/,72('_'),/
+cx     1  '  Datinp; Problem, In Baseflow mode yet diversion code',
+cx     1           ' in *.dds says IWR data provided (idvcom = 3).', 
+cx     1           ' for ID = ', a12,/
+cx     1  '          Set to 1 to avoid having historic diversion', 
+cx     1           ' data weighted by efficiency.')
+cx     
+cx 1242  format(/,72('_'),/
+cx     1  '  Datinp; Warning, Wells must have a return & depletion',
+cx     1  ' location',/ '          Check ID ', a12 )
+cx     
+cx 1243  format(/,72('_'),/
+cx     1  '  Datinp; Problem, In Baseflow mode yet diversion code',/
+cx     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
+cx     1  '          Stopped to avoid having historic pumping',/, 
+cx     1  '          data weighted by efficiency.  To do: revise *.wes')
+cx     
+cx 1250  FORMAT(/,72('_'),/
+cx     1  ' Datinp; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
+cx     
+cx 1255 format(/,72('_'),/
+cx     1 '  Datinp; Problem with Well Station ', a12,/
+cx     1 10x,'The augmentation plan code (planw) = ', a12,/
+cx     1 10x,'But this plan is type ', i4,/
+cx     1 10x,'(Note a well agumentation plan should be a type 2)')
+cx     
+cx 1256 format(/,72('_'),/
+cx     1 '  Datinp; FYI at least one Well Station (e.g.) ', a12,/
+cx     1 9x,' is tied to an augmentation plan (planw) = ', a12,
+cx     1     ' plan pointer = ', i5)
+cx     
+cx 1257 format(/,72('_'),/,
+cx     1 '  Datinp; Well Station augmentation plan ties',/
+cx     1          'plan (planw) = ', a12,
+cx     1     ' plan pointer = ', i5)
+cx     1 ' Well_ID     Aug_ID        Tie Note',/
+cx     1 ' ___________ ___________ _____ ____________')
+cx     
+cx 1258 format(i5, 1x, a12, 1x, a12, 1x, i5, 1x, a12)       
+cx     
+cx 1260  format(36x,a12,f8.0,i8)
+cx 1262  format(36x,a12,f8.0,a12)
      
- 1239  format(/,72('_'),/
-     1  '  Datinp; Warning, in baseflow therefore ID ', a12, 'has had',/
-     1  '          its demand type (idvcomw) reset to 1.  Recall',/
-     1  '          the baseflow mode reads *.weh in lie of *.wem')
- 1240  format(/,72('_'),/
-     1  '  Datinp; Warning, Annual diversions not used in base',
-     1  ' flow calcs'/)
-
- 1241  format(/,72('_'),/
-     1  '  Datinp; Problem, In Baseflow mode yet diversion code',
-     1           ' in *.dds says IWR data provided (idvcom = 3).', 
-     1           ' for ID = ', a12,/
-     1  '          Set to 1 to avoid having historic diversion', 
-     1           ' data weighted by efficiency.')
-     
- 1242  format(/,72('_'),/
-     1  '  Datinp; Warning, Wells must have a return & depletion',
-     1  ' location',/ '          Check ID ', a12 )
-     
- 1243  format(/,72('_'),/
-     1  '  Datinp; Problem, In Baseflow mode yet diversion code',/
-     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
-     1  '          Stopped to avoid having historic pumping',/, 
-     1  '          data weighted by efficiency.  To do: revise *.wes')
-     
- 1250  FORMAT(/,72('_'),/
-     1  ' Datinp; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
-     
- 1255 format(/,72('_'),/
-     1 '  Datinp; Problem with Well Station ', a12,/
-     1 10x,'The augmentation plan code (planw) = ', a12,/
-     1 10x,'But this plan is type ', i4,/
-     1 10x,'(Note a well agumentation plan should be a type 2)')
-     
-cr 1256 format(/,72('_'),/
-cr     1 '  Datinp; FYI at least one Well Station (e.g.) ', a12,/
-cr     1 9x,' is tied to an augmentation plan (planw) = ', a12,
-cr     1     ' plan pointer = ', i5)
-     
- 1257 format(/,72('_'),/,
-     1 '  Datinp; Well Station augmentation plan ties',/
-     1          'plan (planw) = ', a12,
-     1     ' plan pointer = ', i5)
-cr     1 ' Well_ID     Aug_ID        Tie Note',/
-cr     1 ' ___________ ___________ _____ ____________')
-     
- 1258 format(i5, 1x, a12, 1x, a12, 1x, i5, 1x, a12)       
-     
- 1260  format(36x,a12,f8.0,i8)
- 1262  format(36x,a12,f8.0,a12)
-     
- 1280  FORMAT(/,72('_'),/
-     1  '  Datinp; Problem.'
-     1  ' Station ',a12,' of diversion station file',
-     1  ' has return flows going back to the diverting node',
-     1  ' at ', a12)
+cx 1280  FORMAT(/,72('_'),/
+cx     1  '  Datinp; Problem.'
+cx     1  ' Station ',a12,' of diversion station file',
+cx     1  ' has return flows going back to the diverting node',
+cx     1  ' at ', a12)
      
  1281  FORMAT(/,72('_'),/
      1  '  Datinp; Warning See *.chk for details regarding: ',a32)
      
- 1283  FORMAT(/,72('_'),/
-     1  '  Datinp; Problem the following structure(s) ',
-     1    'return water upstream',//
-     1  '    # Str ID       Str Name                ', 
-     1  ' Located at   Returns to',/ 
-     1  ' ____ ____________ ________________________', 
-     1  ' ____________ ____________')
+cx 1283  FORMAT(/,72('_'),/
+cx     1  '  Datinp; Problem the following structure(s) ',
+cx     1    'return water upstream',//
+cx     1  '    # Str ID       Str Name                ', 
+cx     1  ' Located at   Returns to',/ 
+cx     1  ' ____ ____________ ________________________', 
+cx     1  ' ____________ ____________')
      
  1284  format(i5,1x, a12, 1x, a24, 1x, a12, 1x a12)
      
@@ -2079,18 +2122,18 @@ cr     1 ' ___________ ___________ _____ ____________')
      1  ' ____________ ____________')
 
  
- 1292  FORMAT(/,72('_'),/
-     1 '  Datinp; Problem station ',a12,
-     1 ' of the Direct Diversion Station File (*.dds)',/
-     1  10x, ' has the following return data:',/
-     1  10x, ' Total of all returns = ', f8.2)
-     
- 1300  FORMAT(/,72('_'),/
-     1 ' Datinp; Problem.',
-     1 ' Too MANY DIVERSION PROJECTS,     MAXIMUM = ',I5)
-     
- 1302  FORMAT(/,72('_'),/
-     1 ' Datinp; Problem. Too MANY Well Stations,     MAXIMUM = ',I5)
+cx 1292  FORMAT(/,72('_'),/
+cx     1 '  Datinp; Problem station ',a12,
+cx     1 ' of the Direct Diversion Station File (*.dds)',/
+cx     1  10x, ' has the following return data:',/
+cx     1  10x, ' Total of all returns = ', f8.2)
+cx     
+cx 1300  FORMAT(/,72('_'),/
+cx     1 ' Datinp; Problem.',
+cx     1 ' Too MANY DIVERSION PROJECTS,     MAXIMUM = ',I5)
+cx     
+cx 1302  FORMAT(/,72('_'),/
+cx     1 ' Datinp; Problem. Too MANY Well Stations,     MAXIMUM = ',I5)
 
 c rrb 04/25/97; Daily model
  1312  FORMAT(a12, a24, a12, 1x, a12)
@@ -2101,13 +2144,13 @@ c rrb 04/25/97; Daily model
      1  ' STATION ',a12,' OF *.ris file not found in',
      1 ' the river network (*.rin) file')
      
- 1322  FORMAT(/,72('_'),/
-     1  '  Datinp; Warning Well structure not tied to a SW structure',/
-     1  '          and not specified as N/A or a SW structure cannot',/ 
-     1  '          be found in the diversion station file (*.dds).',/
-     1  '          Treating these as well only structures',//
-     1  '  Well ID      Well Name                SW ID',/ 
-     1  '  ____________ ________________________ ____________')
+cx 1322  FORMAT(/,72('_'),/
+cx     1  '  Datinp; Warning Well structure not tied to a SW structure',/
+cx     1  '          and not specified as N/A or a SW structure cannot',/ 
+cx     1  '          be found in the diversion station file (*.dds).',/
+cx     1  '          Treating these as well only structures',//
+cx     1  '  Well ID      Well Name                SW ID',/ 
+cx     1  '  ____________ ________________________ ____________')
      
  
  1330  FORMAT(/,72('_'),/
@@ -2129,12 +2172,12 @@ c rrb 99/09/15; Allow isf to have monthly data
      1  19x, 'a reach but control variable ireach = ', i5,/,19x,
      1  'Check documentation and revise to be consistent')
      
- 1370  format(/,72('_'),/
-     1 '  Datinp; Warning. ',
-     1 ' Instream flow points or reaches ',a12,' and ',a12,/
-     1  18x, ' overlap before the downstream point is found'/
-     1  18x, ' Recommend you check your isf station (*.ifs) file',/
-     1  18x, ' and or your river network (*.rin) file')
+cx 1370  format(/,72('_'),/
+cx     1 '  Datinp; Warning. ',
+cx     1 ' Instream flow points or reaches ',a12,' and ',a12,/
+cx     1  18x, ' overlap before the downstream point is found'/
+cx     1  18x, ' Recommend you check your isf station (*.ifs) file',/
+cx     1  18x, ' and or your river network (*.rin) file')
      
  1380     format('  Datinp; too many instream reach values, max = ',i5)
  
@@ -2146,16 +2189,16 @@ c rrb 99/09/15; Allow isf to have monthly data
      1  '  Datinp; Problem the network loops onto itself',/
      1  '          Check the *.rin file ID = ', a12)
      
- 1402  format(/,72('_'),/
-     1 '  Datinp; Problem res. ID ', a12, ' has a daily ID = ', a12,/
-     1 '          which says monthly data controls.  This approach ',/
-     1 '          is not supported since it is EOM data.',/
-     1 '          To do: set daily ID to type 0 (average) or ', 
-     1           'type 3 (daily controls)')
+cx 1402  format(/,72('_'),/
+cx     1 '  Datinp; Problem res. ID ', a12, ' has a daily ID = ', a12,/
+cx     1 '          which says monthly data controls.  This approach ',/
+cx     1 '          is not supported since it is EOM data.',/
+cx     1 '          To do: set daily ID to type 0 (average) or ', 
+cx     1           'type 3 (daily controls)')
 
- 1410  write(nlog,1420) filena
- 1420  format(/,72('_'),/
-     1'  Datinp; Problem opening file: ', a256)
+cx 1410  write(nlog,1420) filena
+cx 1420  format(/,72('_'),/
+cx     1'  Datinp; Problem opening file: ', a256)
      
  1430  format(/,72('_'),/
      1 '  Datinp; Problem max eff is on (ieffmax =1)',/
@@ -2164,16 +2207,16 @@ c rrb 99/09/15; Allow isf to have monthly data
      1 ' Datinp; Problem',
      1 ' The last downstream station should be blank')
      
- 1470  format(/,72('_'),/
-     1   ' Datinp; Problem',
-     1   ' two reservoirs at the same river node',/
-     1   '         Reservor IDs = ', a12, 1x, a12)
-     
- 1490   format(/,72('_'),/
-     1  '  Datinp; Problem sprinkler option (isprink) = 2',/
-     1  '          is not supported during simulation'/
-     1  '          Set isprink=0 or 1')
-     
+cx 1470  format(/,72('_'),/
+cx     1   ' Datinp; Problem',
+cx     1   ' two reservoirs at the same river node',/
+cx     1   '         Reservor IDs = ', a12, 1x, a12)
+cx     
+cx 1490   format(/,72('_'),/
+cx     1  '  Datinp; Problem sprinkler option (isprink) = 2',/
+cx     1  '          is not supported during simulation'/
+cx     1  '          Set isprink=0 or 1')
+cx     
  1492 format(/72('_'),/
      1  '  Datinp; Problem ndnnt=0 (number of downstream nodes = 0)'/
      1  '          at river node ', a12,' To fix:',/
@@ -2183,11 +2226,11 @@ c rrb 99/09/15; Allow isf to have monthly data
      1  '              node go to a blank just like the last node',/
      1  '              in the network')
      
- 1500   format(/,72('_'),/
-     1  '  Datinp; Problem diversion ownership is less than 100%',
-     1           ' for ID: ', a12, /
-     1  20(i5, ' Owner Name = ', a24,
-     1  ' Percent = ', f10.0,/))
+cx 1500   format(/,72('_'),/
+cx     1  '  Datinp; Problem diversion ownership is less than 100%',
+cx     1           ' for ID: ', a12, /
+cx     1  20(i5, ' Owner Name = ', a24,
+cx     1  ' Percent = ', f10.0,/))
      
  1510   format(/,72('_'),/
      1  '  Datinp; Problem starting year ', i4, ' is less than',/
@@ -2266,8 +2309,13 @@ c     write(99,*) '  Getctl; iok, cx = ', iok, cx
       endif
 c
 c _________________________________________________________
-c               Check if eof is OK
- 110  if(iout.eq.1) write(99,*) ' GetCtl; iok = ',iok
+c               Check if eof is OK    
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx 110  if(iout.eq.1) write(99,*) ' GetCtl; iok = ',iok
+ 110  continue
+      if(iout.eq.1) write(99,*) ' GetCtl; iok = ',iok
+ 
       if(iok.eq.0) goto 200
 c
 c _________________________________________________________

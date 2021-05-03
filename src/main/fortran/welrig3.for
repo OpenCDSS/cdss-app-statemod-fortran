@@ -30,6 +30,8 @@ c_____________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2007/09/27; Copied WelRig2.
 c		  Revised to focus on IWR as the indicator for
 c		  a well demand, not total headgate demand.
@@ -141,6 +143,13 @@ c
 c
 c _________________________________________________________
 c       Step 1 Common Initialization
+c
+c rrb 2021/04/18; Compiler warning
+      ceff=0.0
+      divmonx=0.0
+      avail0=0.0
+      ispruse=ispruse
+      rec12=' '
 c
 c		iout = 0 no details
 c		       1 details
@@ -701,14 +710,14 @@ c _________________________________________________________
 c
 c                Formats
 c
-  200   format(/, '  WelRig3; Problem with sprinkler calcs (Total)',/
-     1         10x, i5, 1x, a12,/ 
-     1         10x,'   isprink      effs1      efff1      effa' ,/
-     1         10x, i10, 3f10.2,/
-     1         10x,'   divsprx   divothx   divreqx     small',/   
-     1         10x,  20f20.0) 
-  240   format(/,
-     1         '  WelRig3; mon, l2, nwe,iuse,iscdx,ndnsx',/,10x,20i5)
+cx200   format(/, '  WelRig3; Problem with sprinkler calcs (Total)',/
+cx   1         10x, i5, 1x, a12,/ 
+cx   1         10x,'   isprink      effs1      efff1      effa' ,/
+cx   1         10x, i10, 3f10.2,/
+cx   1         10x,'   divsprx   divothx   divreqx     small',/   
+cx   1         10x,  20f20.0) 
+cx240   format(/,
+cx   1         '  WelRig3; mon, l2, nwe,iuse,iscdx,ndnsx',/,10x,20i5)
  
   250   format(/,'  WelRig3; Demand Data',/
      1  '  WelRig3; ID            iyr  mon  idy   nd  nd2',
@@ -736,9 +745,9 @@ c
      1  ' _________ _________ _________ _________',/   
      1  '  WelRig3;', 8I5,20F10.2)
      
-  320   format(   ' WelRig3: avail  ',10f10.2)
-  330   format(   ' WelRig3: river  ',10f10.2)
-  380   format(   '  WelRig3; Problem with ', a12, 1x, a24)
+cx320   format(   ' WelRig3: avail  ',10f10.2)
+cx330   format(   ' WelRig3: river  ',10f10.2)
+cx380   format(   '  WelRig3; Problem with ', a12, 1x, a24)
 
 c
 c _________________________________________________________

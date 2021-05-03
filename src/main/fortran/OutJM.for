@@ -41,6 +41,8 @@ c _________________________________________________________
 c
 c               Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c 2020/07/28; Revised a typo to the Section III
 c               reporting by setting 68.8% to 68.6%          
 
@@ -93,6 +95,13 @@ c
 c _________________________________________________________
 c
 c               Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      nomax=0
+c
+c rrb 2021/04/18; Compiler warning
+      iexit=0
+      if(iexit.gt.0) goto 500
 c		
 c		            ioutJM = 1 detailed output level 1 (less)
 c                        2 detailed output level 2 (more)
@@ -246,7 +255,10 @@ c
 c                 Set the number of columns to print to oprlimit(k)
 c                 unless it is a type 53, then set to 8.
 c                                   
-                  jout1=oprlimit(k)
+c
+c rrb 2021/04/18; Compiler warning
+cx                jout1=oprlimit(k)
+                  jout1=nint(oprlimit(k))
                   if(ityopr(k).eq.53) jout1=8
                   
                   nomax=nomax+jout1                  
@@ -506,9 +518,9 @@ cs     1  ' (10.1%) (16.8%) ( 2.4%)',/
   262   format(i5, 2x, a3, 40f8.1) 
   264   format(i5, 2x, a3, 40f8.2) 
                
-  320   format(/,'  OutJM; Reading Binary Operating Rule file'/
-     1              ' outJM (8a); np, pID,  ifound, k, ityopr iop',
-     1              ' i46, p46',/, a14, 1x,a12, 1x, 6i5,20f8.0)
+cx320   format(/,'  OutJM; Reading Binary Operating Rule file'/
+cx   1              ' outJM (8a); np, pID,  ifound, k, ityopr iop',
+cx   1              ' i46, p46',/, a14, 1x,a12, 1x, 6i5,20f8.0)
 
   330  format(/,'  OutJM; Problem array size maxopr2 = 40 exceeded'/
      1          '  Reconmend you revise Statem and common.inc')

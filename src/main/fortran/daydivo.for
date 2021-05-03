@@ -35,6 +35,9 @@ c __________________________________________________________
 c
 c               Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020-04-03; Redefine column 11 from Carried or Exchang to'
 c                 Carried, Exchang, Other'
 c
@@ -71,6 +74,11 @@ c
       character  blank*12, cdx*12, ftype*24, ptype*24, ccallID*12,
      1           cname1*24  
 
+c
+c rrb 2021/04/18; Compiler warning
+      is2=0
+      nd=0
+      
       write(6,*) ' Subroutine Daydivo'
       write(6,*) ' '             
 c     write(nlog,*) ' '             
@@ -193,9 +201,12 @@ c       write(nlog,*) '  Daydivo 1', (dat1(i), i=1,ndiv)
                      
 c       nd = dat1(ndiv-3) 
 c       na = dat1(ndiv-2)
-        
-        nd = dat1(nRid)
-        na = dat1(nXstr)
+c
+c rrb 2021/04/18; Compiler warning        
+cx        nd = dat1(nRid)
+cx        nd = dat1(nRid)
+        na = nint(dat1(nXstr))
+        na = nint(dat1(nXstr))
 c
 c              Print to gage file if no diversions at this station
         if(nd.eq.0) then
@@ -428,7 +439,10 @@ c
 c _________________________________________________________
 c
 c		Set call location
-            imcdX=dat1(nRimcdX)
+c
+c rrb 2021/04/18; Compiler warning        
+cx            imcdX=dat1(nRimcdX)
+            imcdX=nint(dat1(nRimcdX))
             if(imcdX.gt.0) then
               ccallID=cstaid(imcdX)
             else
@@ -581,7 +595,10 @@ cr242  format(2a12,i5, 2x, a3, i4, 40f8.2)
 
   260   format('+', '   Printing Diversion & Stream Summary',
      1        i5,' of ', i5, '; or ',f8.0, ' % Complete')
-  270  return
+c
+c rrb 2021/04/18; Compiler warning
+cx270  return
+       return
 c
 c               Error messages
   280  write(nlog,*) '   Daydivo; Requested data exceeds binary size'

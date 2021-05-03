@@ -38,7 +38,8 @@ c                negative value.
 c
 c _________________________________________________________
 c	Update History
-c		NA
+c
+c rrb 2021/04/18; Compiler warning
 c
 c	Called By:
 c   Divalt, Reodep, RivRtn
@@ -67,6 +68,10 @@ cx    dimension subtyp2(55)
       character subtypX*8
 c _________________________________________________________
 c
+c
+c rrb 2021/04/18; Compiler warning
+      icall=icall
+
 c               Step 1; Check entire array avail
 c
       nlog=99
@@ -92,7 +97,8 @@ c
 c _________________________________________________________
 c               Error Processing
 c
- 510  write(6,1050)
+cx510 write(6,1050)
+      write(6,1050)
       write(nlog,*) 
      1 '  CheckAv2; Problem max  # of operating rules exceeded'
       goto 550

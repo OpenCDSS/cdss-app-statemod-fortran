@@ -63,7 +63,10 @@ c
 c _________________________________________________________
 c	Update History
 c
-C
+c
+c rrb 2021/04/25; Runtime Error
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2018/07/29; For the ArkDSS added capability to limit operation 
 c                 based on a project on/project off condition calculated
@@ -239,6 +242,19 @@ c_____________________________________________________________
 c               Step 1; Common Initialization
 c  
       subtypX='directwr'
+c
+c rrb 2021/04/18; Compiler warning
+      cresid1=' '
+      divaloe=0.0
+      dcrdiv=0.0
+      dcrdiv2=0.0
+      divreqx2=0.0
+      dcrdiv1=0.0
+      oprmax1=0.0
+c
+c rrb 2021/04/18; Runtime Error
+      iscd=0
+            
       corid1=corid(l2)
       cCallBy='directwr    '
 c
@@ -259,7 +275,8 @@ c
       if(corid(l2).eq. ccall) ioutiw=iw      
 c      
       if(iout.eq.1) then
-        write(nlog,*) ' '
+        write(nlog,*) ' '   
+        write(nlog,*) ' ___________________________________________'
         write(nlog,*) '  DirectWR  ',     
      1    iyrmo(mon),xmonam(mon)      
         write(Nlog,*)        
@@ -536,7 +553,7 @@ c
 c ---------------------------------------------------------
 c                 a2. Set Demand at source                      
 c           
-c     write(nlog,*) '  directwr; iscd, ndns ', iscd, ndns
+      write(nlog,*) '  directwr; iscd, ndns ', iscd, ndns
 c
       if(idemtyp.le.3) then
         divreqx=divreq(iuse)
@@ -987,7 +1004,10 @@ c
      1  cCallBy)
 c             
 c                 Allow minor roundoff
-      iavail=avail(imcd)
+c
+c rrb 2021/04/18; Compiler warning
+cx    iavail=avail(imcd)
+      iavail=nint(avail(imcd))
       IF(AVAIL(IMCD).le.(-1.*small) .and. iavail.gt.-1) then
         avail(imcd)=0.0
       endif
@@ -1120,7 +1140,10 @@ c
 c_____________________________________________________________
 c               Step 29; Print detailed results if requested
 c 
-  260 continue
+  260 continue 
+      if(iout.eq.1) then
+        write(nlog,*) '  Directwr; iscd, imcd, iwhy ',iscd, imcd, iwhy
+      endif
 c
 c ---------------------------------------------------------
 c		Detailed header      
@@ -1153,15 +1176,19 @@ cx   1    nd2, ND2x,iuse2x,imcdX,imcdS, nriver, ncarry, oprEfft*100.,
      1    divcarry*fac, divcap1, divcap2,pdem2*fac, dcrdiv1*fac,
      1    divact0*fac, divAdd*fac, divact1*fac,divactE*fac,
      1    (divactE+divact1)*fac, iwhy, cwhy
-     
-        if(iout.eq.1) then
+c
+c rrb 2021/04/25; runtime error
+cx      if(iout.eq.1) then     
+        if(iout.eq.1 .and. iscd.gt.0) then
           write(nlog,*) 'directwr; qdiv 8, 14, & 5'
           write(nlog,*)  Qdiv(8,iscd)*fac, qdiv(14,iscd)*fac, 
      1      qdiv(5,iscd)*fac
         endif
 
-
-        if(iout.eq.1) then
+c
+c rrb 2021/04/25; runtime error
+cx        if(iout.eq.1) then
+          if(iout.eq.1 .and. imcd.gt.0) then
           if(imcd.gt.0) then
             write(nlog,281) '  directwr;',
      1        imcd, divactE*fac,pavail*fac, stanam1(imcd)
@@ -1189,7 +1216,10 @@ c
 c               Step 31; Set Call data at source 
 c rrb 2008/06/10	      
 
-      if(nd.gt.0) then
+c
+c rrb 2021/04/25; runtime error
+cx      if(nd.gt.0) then
+        if(nd.gt.0 .and. iscd.gt.0) then
         ctype1='Diversion'
         call GetCall(iscd, imcdL(iscd), nd, ctype1)        
       endif  
@@ -1262,8 +1292,10 @@ c 280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,13i8,23F8.0,i8,
   280   FORMAT(a12, i5,1x,a4, i5, 2(1x,a12),16i8,20F8.0,i8,
      1   1x, a48)
   281   FORMAT(a12, 143x, i8, f8.0, f8.2, 1x, a24)
-  290   FORMAT(/, '  directwr   QDIV ',a12,/,16F7.1)
-  300   FORMAT(/, '  directwr   QRES ',a12,/,16F7.1)
+c
+c rrb 2021/04/18; Compiler warning
+cx290   FORMAT(/, '  directwr   QDIV ',a12,/,16F7.1)
+cx300   FORMAT(/, '  directwr   QRES ',a12,/,16F7.1)
   310   FORMAT(/, '  directwr   Problem negative avail',//
      1  '  directwr    iyr  mon',
      1  '      Iw  nwrord      l2      lr     ND2   iuse2', 
@@ -1272,15 +1304,15 @@ c 280   FORMAT(a12, i5,1x,a4, i5, 1x, a12,13i8,23F8.0,i8,
      1  ' _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ _______ _______ _______ _______ _______',/
      1 a12, 2i5, 8i8, 20f8.0)
-     
-     
-  320   format(/, '  directwr; avail  ',/,(10f10.2))
-  330   format(/, '  directwr; river  ',/,(10f10.2))
-  332   format(/, '  directwr; qtribu ',/,(10f10.2))
-  334   format(/, '  directwr; qstern ',/,(10f10.2))
-  340   format(/, '  directwr; Pavail, imcd, stanam ',
-     1    f8.2, i8, 1x,a24)
-  350   format(/, '  directwr; Problem with the changed WR reach')   
+cx   
+cx   
+cx320   format(/, '  directwr; avail  ',/,(10f10.2))
+cx330   format(/, '  directwr; river  ',/,(10f10.2))
+cx332   format(/, '  directwr; qtribu ',/,(10f10.2))
+cx334   format(/, '  directwr; qstern ',/,(10f10.2))
+cx340   format(/, '  directwr; Pavail, imcd, stanam ',
+cx   1    f8.2, i8, 1x,a24)
+cx350   format(/, '  directwr; Problem with the changed WR reach')   
   360   format(' directwr;',
      1  '   divact2   dcrdiv2  divreqX2 pdem(np2)   oprmax1',
      1  '   OprEffT   divaloE',/' directwr;',

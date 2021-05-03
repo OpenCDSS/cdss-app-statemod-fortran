@@ -25,6 +25,11 @@ c _________________________________________________________
 c	Program Description
 c
 c       Xdebug; It controls the data check option
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c       Documentation
@@ -67,6 +72,11 @@ c	Dimensions
 c
 c _________________________________________________________
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      iprob=0
+      if(iprob.gt.0) goto 9999
+
       write(99,10)
  10   format(/, ' Check Option',//)
 c
@@ -113,13 +123,19 @@ c _________________________________________________________
 c
 
 C               Read in response file (*.rsp)
-  100 FORMAT(A20)
+C
+c
+c rrb 2021/04/18; Compiler warning
+cx  100 FORMAT(A20)
       call namext(maxfn, filenc, 'rsp', filena) 
       open (20,file=filena,status='old',err=9997)
       call skipn(20)
       IIN=20
 C
-  120 numstax=maxsta
+c
+c rrb 2021/04/18; Compiler warning
+cx120 numstax=maxsta
+      numstax=maxsta
       CALL DATINP(IIN,0,numstax)
 
       maxwrx=maxwr

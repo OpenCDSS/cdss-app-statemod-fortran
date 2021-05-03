@@ -47,9 +47,10 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/04/18; Compiler warning
 c
-c rrb 04/12/28; Revise to allow return flow reuse by not making it 
-c		available to downstream users (see iplan) 
+c rrb 2004/12/28; Revise to allow return flow reuse by not making it 
+c		                available to downstream users (see iplan) 
 c		
 c
 c _________________________________________________________
@@ -70,24 +71,29 @@ c               ndnr = number of downstream nodes from return location
 c               avwret=temporary array of return %
 c               avtemp=temporary array of available flow (avail)
 c
-c		foret = return flow fraction
+c		            foret = return flow fraction
 c               ipnode(ns)=reuse occurs at node ns 
 c               
 c
 c _________________________________________________________
-c	Dimensions
+c	      Dimensions
 c
         include 'common.inc'
         character cCallBy*12, corid1*12
 c
 c _________________________________________________________
 c		Step 1; Initialize
-
+c
+c rrb 2021/04/18; Compiler warning
+        ccallby=ccallby
+        corid1=corid1
+        ieff2=ieff2
+               
         f=factor*mthday(mon)
         f=f
 c
-c		iout = detailed output
-c		ioutP=detailed plan output
+c		            iout = detailed output
+c		            ioutP=detailed plan output
         iout=0
         ioutp=0
 c

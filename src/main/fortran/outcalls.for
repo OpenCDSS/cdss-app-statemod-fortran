@@ -29,6 +29,11 @@ c	GetCallS; It estimates the calling water right (ccallR1)
 c                 when a structure is shorted. Note the shortage
 c                 is controlled at river location imcd1
 c
+c ____________________________________________________
+c       Update History
+c
+c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c	Documentation
@@ -52,6 +57,10 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
 c
+c rrb 2021/04/18; Compiler warning
+      nr=0
+      iexit=0
+      if(iexit.gt.0) goto 500
 c
 c		iout = 0 Do not print details
 c		       1 Print details
@@ -232,12 +241,14 @@ c		Detailed printout for structures w/o a call
      1  ' ________ _______________________________')
  110  format(' OutCallS   ',i5,1x,a4, i5, i5, i5,i5, 1x,
      1 a12, a12, 2x,a12, f12.4, 1x,a4, 1x,f8.1, 1x,a32)
-  92  format(/
-     1  ' OutCallS    iyr  mon   day Iter   nx Imcd ',
-     1  'Calling ID   Calling Rgt Unit',/
-     1  ' ___________ ____ ____ ____ ____ ____ ____ ',      
-     1  '___________  ___________ ____')
- 112  format(' OutCallS   ',i5,1x,a4, i5, i5, i5,i5,1x,
-     1 a12, f12.4, 1x,a4)
+cx
+cx  92  format(/
+cx     1  ' OutCallS    iyr  mon   day Iter   nx Imcd ',
+cx     1  'Calling ID   Calling Rgt Unit',/
+cx     1  ' ___________ ____ ____ ____ ____ ____ ____ ',      
+cx     1  '___________  ___________ ____')
+cx 112  format(' OutCallS   ',i5,1x,a4, i5, i5, i5,i5,1x,
+cx     1 a12, f12.4, 1x,a4)
+cx
       end
       

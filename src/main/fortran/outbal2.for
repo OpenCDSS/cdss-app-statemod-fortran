@@ -30,6 +30,9 @@ c
 c ____________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2011/11/15; Revise footnote 5 From Plan to indicate
 c                 it only shows water imported to system
 c
@@ -125,15 +128,19 @@ c ____________________________________________________
 c
 c		Step 1; Initialize
 c
-c		iout=0 no details
-c		iout =1 print all adjustments to balance
-c		iout =2 print Carrier to Storage adjustments to balance
-c		ioutD=1 print total diversion data
-c		ioutP=1 print plan data
-c		ioutI=1 print inflow data
-c   ioutS=1 print to storage data 
-c   ioutR=1 print binary read of reservoir (*.xre) data
-c   iout43=1 print binary read of diversion (*.xdd) data
+c rrb 2021/04/18; Compiler warning
+
+      tgwinxt=0.0
+c
+c		           iout=0 no details
+c		           iout =1 print all adjustments to balance
+c		           iout =2 print Carrier to Storage adjustments to balance
+c		           ioutD=1 print total diversion data
+c		           ioutP=1 print plan data
+c		           ioutI=1 print inflow data
+c              ioutS=1 print to storage data 
+c              ioutR=1 print binary read of reservoir (*.xre) data
+c              iout43=1 print binary read of diversion (*.xdd) data
 c
       iout=0
       
@@ -664,7 +671,10 @@ c							 Read Reservoir data
 c
 c ---------------------------------------------------------
 c              Skip account data
-            ida = dat2(nidR)
+c
+c rrb 2021/04/18; Compiler warning
+cx          ida = dat2(nidR)
+            ida = nint(dat2(nidR))
             if(ida.ne.0) goto 160
 
 c           write(nlog,'(20f8.2)') (dat2(i),i=1,nres)
@@ -1225,12 +1235,12 @@ c               Formats
  2322 format('Ave  ', 1x, a4, 30f12.2)
  
   234 format('Ave  ,', 1x, a4,',', 10(f10.0,','), f10.0)
- 2341 format('Ave  ,', 1x, a4,',', 10(f10.1,','), f10.1)
- 2342 format('Ave  ,', 1x, a4,',', 10(f10.2,','), f10.2)
+cx 2341 format('Ave  ,', 1x, a4,',', 10(f10.1,','), f10.1)
+cx 2342 format('Ave  ,', 1x, a4,',', 10(f10.2,','), f10.2)
  
-  236 format('Ave  ', 1x, a4, 30f12.0)
- 2361 format('Ave  ', 1x, a4, 30f12.1)
- 2362 format('Ave  ', 1x, a4, 30f12.2)
+cx  236 format('Ave  ', 1x, a4, 30f12.0)
+cx 2361 format('Ave  ', 1x, a4, 30f12.1)
+cx 2362 format('Ave  ', 1x, a4, 30f12.2)
 c
 c
 c 240 format(/,30x,'***  Stream Water Balance ', a5,' ***')
@@ -1306,17 +1316,17 @@ c 240 format(/,30x,'***  Stream Water Balance ', a5,' ***')
      1 ' ___________ ___________ ___________ ___________ ___________',
      1 ' ___________')
 
-  261 format(
-     1 ' ____, ____,',
-     1 ' _________, _________, _________, _________, _________,',
-     1 ' _________, _________, _________, _________, _________,',
-     1 ' _________')
-     
-  262 format(
-     1 ' ____, ____,',
-     1 ' _________, _________, _________, _________, _________,',
-     1 ' _________, _________, _________, _________, _________')
-
+cx  261 format(
+cx     1 ' ____, ____,',
+cx     1 ' _________, _________, _________, _________, _________,',
+cx     1 ' _________, _________, _________, _________, _________,',
+cx     1 ' _________')
+cx     
+cx  262 format(
+cx     1 ' ____, ____,',
+cx     1 ' _________, _________, _________, _________, _________,',
+cx     1 ' _________, _________, _________, _________, _________')
+cx
   265 format(
      1 ' ____ ____ ___________ ___________ ___________ ___________',
      1           ' ___________ ___________ ___________ ___________',
@@ -1394,8 +1404,8 @@ cx
      1         ' (e.g. Native ET, etc.) to Consumptive Use')
  256  format(/72('_'),/
      1 '  Outbal2; Average Inflow - Outflow = ', f8.0)          
- 266  format(' Outbal2 Diversion adjustment;',
-     1          ' #, dat1(30), dat1(31), dat1(32) = ',2i5, 20f8.1)  
+cx 266  format(' Outbal2 Diversion adjustment;',
+cx     1          ' #, dat1(30), dat1(31), dat1(32) = ',2i5, 20f8.1)  
  268  format(/,' Outbal2; Balance adjustment;',/
      1 '    # Year  Mon Type                     River ID       is ',
      1 'ip/ir istr     AdjXX      AdjT    AdjToT',/

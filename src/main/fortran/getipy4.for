@@ -30,32 +30,38 @@ c			for backward compatibility
 c
 c _________________________________________________________
 c
-c	Update History
+c	    Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2007/9/04; Separated from Mdainp
 c _________________________________________________________
-c	Documentaiton
-c		iwarnISp counter for *.ipy file sprinkler warning
+c	    Documentaiton
+c		            iwarnISp counter for *.ipy file sprinkler warning
 c               itspd=0 no *.tsp (*.ipy) data for a diversion
 c                    =1 yes *.tsp (*.ipy) rdata for a diversion
 c               itspw=0 no *.tsp (*.ipy) data for a well
 c                    =1 yes *.tsp (*.ipy) data for a well
 c
-c		ireset=0 If Sprinkler Acres > GW Acres 
-c			 DO NOT reset Sprikler Acres = GW Acres
-c			 (e.g. Sprinkler Acres can be Surface Water)
-c		       1 If Sprinkler Acres > GW Acres 
-c			 DO reset Sprikler Acres = GW Acres
-c			 (e.g. Sprinkler Acres must be GW Acres)
-c
-c		ioutA  =1 print Area data 
-c		ioutEf =1 print Eff data 
-c		ioutSM =1 print Soil Moisture data
+c		            ireset=0 If Sprinkler Acres > GW Acres 
+c		            	 DO NOT reset Sprikler Acres = GW Acres
+c		            	 (e.g. Sprinkler Acres can be Surface Water)
+c		                   1 If Sprinkler Acres > GW Acres 
+c		            	 DO reset Sprikler Acres = GW Acres
+c		            	 (e.g. Sprinkler Acres must be GW Acres)
+c               
+c		            ioutA  =1 print Area data 
+c		            ioutEf =1 print Eff data 
+c		            ioutSM =1 print Soil Moisture data
 c
 c _________________________________________________________
 c	Dimensions
       include 'common.inc'
-      dimension x(12), y(12), iwarnw(maxdivw)
+c
+c rrb 2021/04/18; Compiler warning      
+cx    dimension x(12), y(12), iwarnw(maxdivw)
+      dimension x(12)
+c
       character rec3*3, rec40*40, rec12*12, rec12b*12, cCallBy*12
 
 c
@@ -64,7 +70,15 @@ c
 c _________________________________________________________
 c
 c		Step 1; Initialize      
-
+c
+c rrb 2021/04/18; Compiler warning
+      blank=' '
+      cista2=' '
+      rec12b=''
+      rec3=' '
+      rec72=' '
+      recin=' '
+      
       filena = '*.ipy'
       ipIpy=1
       iwarnISt = 0
@@ -587,7 +601,9 @@ cx    write(nlog,1320) ndmax
 cx    goto 9999
 
       goto 100 
- 110  continue
+c
+c rrb 2021/04/18; Compiler warning
+cx110  continue
 c
 c _________________________________________________________
 c		  Return
@@ -658,22 +674,22 @@ c 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
      1                          ' _________ _________ _________')     
 c
 c rrb 2017/12/11; Warn if the number of data reads is too small
- 1320 FORMAT(/,
-     1  72('_'),//  
-     1 '  GetIpy4; Warning in *.ipy or *.tsp',/
-     1 '           the number of data points read = ', i8,/
-     1 '           that is too small.  ',/
-     1 '           Reconmend you revise GetIpy4.for')
+cx1320 FORMAT(/,
+cx    1  72('_'),//  
+cx    1 '  GetIpy4; Warning in *.ipy or *.tsp',/
+cx    1 '           the number of data points read = ', i8,/
+cx    1 '           that is too small.  ',/
+cx    1 '           Reconmend you revise GetIpy4.for')
      
  1322 format(i5, i5, 1x, a12,1x 20f10.2)
  
  1324 format(2x, a12, 1x, i5, i5, 1x, a12,1x, 20f10.2)
      
- 1632 format(/,
-     1  72('_'),//  
-     1   '  GetIpy4; Warning the annual time series file ',
-     1   '(*.ipy or *.tsp)',/
-     1   '    has more data then wells. Moving on')
+cx 1632 format(/,
+cx     1  72('_'),//  
+cx     1   '  GetIpy4; Warning the annual time series file ',
+cx     1   '(*.ipy or *.tsp)',/
+cx     1   '    has more data then wells. Moving on')
 c     
  1680  format(/, 72('_'),/
      1 '  GetIpy4; Area Report for 4 Supply-Irrigation Approach',

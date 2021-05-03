@@ -18,17 +18,28 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
       SUBROUTINE DnmFso2(maxsta, AVAIL ,IDNCOD,ISCD,NDNS,IMCD,
      1  cCallBy)
 c
+c _________________________________________________________
+c
+c       Program Description
 c       DnmFso2; It finds the minimum flow at station iscd
 c               and downstream.
 c		    Same as DnmFso but it includes cCallBy
 c
+c ________________________________________________________
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
+
       DIMENSION AVAIL(maxsta),IDNCOD(maxsta)
       character cCallBy*12
-
+c
+c ________________________________________________________
+c       Initilize
 C
 C-------------------------------------------------------------------
 C
@@ -39,6 +50,13 @@ C
       iout=0
       if(iout.eq.1) write(99,*) '  DnmFso2; In, maxsta, iscd, ndns ', 
      1  maxsta, iscd, ndns
+
+c jhb 2014/06/26 temporary fix...
+      if(ndns.lt.0 .or. ndns.gt.maxsta) then
+        write(99,*) '  DnmFso2; ndns has invalid value. ndns = ', ndns
+        imcd=iscd
+        return
+      endif
      
       IMCD=ISCD
       ISS=ISCD

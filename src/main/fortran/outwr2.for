@@ -30,6 +30,11 @@ c       Outwr2; It finds all water rights associated with a structure
 c		Same as OutWr but prints a summary, not every right
 c		Since Outwr stops at 50 and the total is incorrect
 c
+c_________________________________________________________________
+c                                                                 
+c       Update History                                            
+c                                                                 
+c rrb 2021/04/18; Compiler warning                                
 c _________________________________________________________
 c       Documentation                                                                 
 c              maxwrx  max # of water rights per structure
@@ -49,11 +54,15 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-
-      character titlwr*32, cstr*12, dcrtyp*6, titlwr2*32
+c                                 
+c rrb 2021/04/18; Compiler warning
+cx    character titlwr*32, cstr*12, dcrtyp*6, titlwr2*32
 c
 c _________________________________________________________
 c	Initialize
+c                                 
+c rrb 2021/04/18; Compiler warning
+      maxwrx=maxwrx
 
       k1=0
       kdiv=0
@@ -268,15 +277,16 @@ c _________________________________________________________
 c
 c               Formats
 c
-  130 format(a32, 2x, 15i12,     /, (34x, 15i12)     )
-  131 format(a32, 2x, 15(f12.5), /, (34x, 15(f12.5)) )
-  132 format(a32, 2x, 15a12,     /, (34x, 15a12)     )
-  133 format(a32, 2x, 15(6x,a6), /, (34x, 15(6x,a6)) )
-  140 format(a32, 2x, 15f12.2,   /, (34x, 15(f12.2)) )
-  150 format(a32, 2x, 15f12.0,   /, (34x, 15(f12.0)) )
-  160 format(/,'# of ,Right,s =     ,', i8)
-  170 format(  'Struc,ture ,ID  =   ,', 15(a12,','), 
-     1                           /, (34x, 15(a12,',')) )
+cx130 format(a32, 2x, 15i12,     /, (34x, 15i12)     )
+cx131 format(a32, 2x, 15(f12.5), /, (34x, 15(f12.5)) )
+cx132 format(a32, 2x, 15a12,     /, (34x, 15a12)     )
+cx133 format(a32, 2x, 15(6x,a6), /, (34x, 15(6x,a6)) )
+cx140 format(a32, 2x, 15f12.2,   /, (34x, 15(f12.2)) )
+cx150 format(a32, 2x, 15f12.0,   /, (34x, 15(f12.0)) )
+cx160 format(/,'# of ,Right,s =     ,', i8)
+cx170 format(  'Struc,ture ,ID  =   ,', 15(a12,','), 
+cx   1                           /, (34x, 15(a12,',')) )  
+cx
   180 format(/
      1 '    STRUCTURE DATA            : ',
      1 '    #       cfs     af@30     af@31',/
