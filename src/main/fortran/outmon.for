@@ -185,12 +185,16 @@ c
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/09/07; Update for a reservoir release direct 
 c                 (Rcarry = qres(38,nr)
 c                 that is currently reported as part of the total
 c                 release but in the future will be reported like
 c                 Carried, Exchanged & Other (column 11) of *.xdd
 c                 that does not impact the stream balance
+c
 c
 c rrb 2020/03/03; Remove adjustment to AVT(is that is set to ävflow
 c                 the min flow downstream).  This is no longer needed
@@ -245,7 +249,12 @@ C
 c
 c _________________________________________________________
 c               Step 1; Initialize
-c
+c    
+c                                  
+c rrb 2021/04/18; Compiler warning 
+      iexit=0
+      if(iexit.gt.0) goto 500
+      
 c	     iout=1 details on reservoir output
 c	     iout=2 summary details on reservoir output
 c	     iout=3 details on *.b43
@@ -795,7 +804,10 @@ c rrb 99/12/23; identify if a diversion plus a gage
             if(rid.gt.0 .and. ris.lt.-10000.0) rid=-1.0*rid
 
             k1 = k1+1
-            k1=amin0(maxStr,k1)
+c
+c rrb 2021/04/18; Compiler warning
+cx          k1=amin0(maxStr,k1)
+            k1=min(maxStr,k1)
             cstr(k1) = cdivid(nd)
 c
 c __________________________________________________
@@ -886,7 +898,10 @@ c rrb 99/12/23; identify if a reservoir plus a gage
             if(rid.gt.0 .and. ris.lt.-10000.0) rid=-1.0*rid
 
             k1 = k1+1
-            k1=amin0(maxStr,k1)            
+c
+c rrb 2021/04/18; Compiler warning
+cx          k1=amin0(maxStr,k1) 
+            k1=min(maxStr,k1)            
             cstr(k1) = cresid(nr)
 c
 c __________________________________________________
@@ -912,7 +927,10 @@ c rrb 99/12/23; identify if an ISF plus a gage
             if(rid.gt.0 .and. ris.lt.-10000.0) rid=-1.0*rid
 
             k1 = k1+1
-            k1=amin0(maxStr,k1)                        
+c
+c rrb 2021/04/18; Compiler warning
+cx          k1=amin0(maxStr,k1)   
+            k1=min(maxStr,k1)                     
             cstr(k1) = cifrid(nf)
 c
 c __________________________________________________
@@ -939,7 +957,11 @@ c 		Identify if a Plan plus a gage
             if(rid.gt.0 .and. ris.lt.-10000.0) rid=-1.0*rid
 
             k1 = k1+1
-            k1=amin0(maxStr,k1)                        
+c
+c rrb 2021/04/18; Compiler warning
+cx          k1=amin0(maxStr,k1)   
+            k1=min(maxStr,k1)                        
+                                 
             cstr(k1) = Pid(np)
 c
 c 		Adjust diversion to include spill from a plan (a negative value)
@@ -975,7 +997,10 @@ c
               k1 = k1+1
 c
 c rrb 2009/02/23; Correction              
-              k1=amin0(maxStr,k1)                        
+c
+c rrb 2021/04/18; Compiler warning
+cx            k1=amin0(maxStr,k1)                        
+              k1=min(maxStr,k1)                        
               cstr(k1) = cdividw(nw)
 c
 c __________________________________________________
@@ -1568,20 +1593,23 @@ c
 c _________________________________________________________
 c               Task 30; Return
 c
-      RETURN
+c                                   
+c rrb 2021/04/18; Compiler warning  
+cx    RETURN
+ 500  RETURN
 c
 c _________________________________________________________
 c               Formats
 c
- 191  format('  Outmon; Adjusting demand at river node ', i8, 
-     1       ' from ', f8.0, ' to ', 20f8.0)
-
- 500  format(
-     1  '  Outmon; Problem the numbers used to define structure type',/
-     1  '          exceeded ',/
-     1  '          numdiv = ', i5, ' but sized to ', i5,/
-     1  '          numisf = ', i5, ' but sized to ', i5,/
-     1  '          numres = ', i5, ' but sized to ', i5)
+cx 191  format('  Outmon; Adjusting demand at river node ', i8, 
+cx     1       ' from ', f8.0, ' to ', 20f8.0)
+cx
+cx 500  format(
+cx     1  '  Outmon; Problem the numbers used to define structure type',/
+cx     1  '          exceeded ',/
+cx     1  '          numdiv = ', i5, ' but sized to ', i5,/
+cx     1  '          numisf = ', i5, ' but sized to ', i5,/
+cx     1  '          numres = ', i5, ' but sized to ', i5)
  510  format(
      1  '  Outmon; Problem, user ID (iu) does not equal Ditch ID (nd)',
      1 /,'          iu = ', i5, ' nd = ', i5)

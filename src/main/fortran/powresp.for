@@ -66,7 +66,8 @@ c _________________________________________________________
 c       Update History
 c
 c
-c ---------------------------------------------------------
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/12/07; Adjust from River by Other (qdiv(31,iscd)
 c                 If the supply is an admin plan (type 11)
 c                 
@@ -120,6 +121,11 @@ c
 c _________________________________________________________
 c
 c		            Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      iown=0
+      psuply1=0.0
+      rec12=rec12
 c
 c 2020/09/30; Add quick exit for testing; Turned off
 cx    goto 500
@@ -728,13 +734,14 @@ c               Formats
      1    ' ___________ ___________ ___________ ___________',
      1    ' ___________ ___________ ___________ ___________',
      1    ' ____ ________________________')
-
- 
 c
 c_____________________________________________________________
 c               Error warnings
 c
- 9999 write(6,1050) 
+c
+c rrb 2021/04/18; Compiler warning
+cx9999 write(6,1050) 
+      write(6,1050) 
       write(nlog,1051) 
       
  1050 format('    Stopped in PowResP',/,

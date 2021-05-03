@@ -28,39 +28,41 @@ c rrb 2010/11/01; Revise to pass iplan
      1    icx, corid1)
 c
 c _________________________________________________________
-c	Program Description
 c
-c	  It calculates return flows for Carrier Losses
+c	     Program Description
 c
-c
-c _____________________________________________________________
-c	Update	History
-c
-c
-c      2009/01/24; Copied SetQdivC and removed references to qdiv
+c	     It calculates return flows for Carrier Losses
 c
 c
 c _____________________________________________________________
-c	Documentation
+c	     Update	History
+c 
+c rrb 2021/04/18; Compiler warning
 c
-c      2009/01/24; Copied SetQdivC and removed references to qdiv
+c rrb 2009/01/24; Copied SetQdivC and removed references to qdiv
 c
-c	  Note:
-c	       nCarry  = 0 No carrier
-c			             1 No return to River, Final Destination from a carrier
-c	            	   2 Return to River, Final Destination from a carrier
-c		 	             3 Return to River, Final Destination from the river
-c		     ncnum    = number of carriers
-c		     nd       = source diversion
-c		     nd2      = destination diversion, reservoir, or plan
 c
-c		     oprloss1 = transit efficiency (set in SetLoss)
-c		     iscd     = diversion location
-c        idcdX    = stream ID of destination diversion (nd2) or reservoir
-c			              or plan (NOT CARRIER)
-c        idcdC    = stream ID of destination carrier 
+c _____________________________________________________________
+c	     Documentation
 c
-c		     divactX  =amount diverted (cfs)
+c rrb 2009/01/24; Copied SetQdivC and removed references to qdiv
+c
+c            Note:
+c            nCarry  = 0 No carrier
+c                     1 No return to River, Final Destination from a carrier
+c                 	   2 Return to River, Final Destination from a carrier
+c                       3 Return to River, Final Destination from the river
+c            ncnum    = number of carriers
+c            nd       = source diversion
+c            nd2      = destination diversion, reservoir, or plan
+c            
+c            oprloss1 = transit efficiency (set in SetLoss)
+c            iscd     = diversion location
+c            idcdX    = stream ID of destination diversion (nd2) or reservoir
+c                      or plan (NOT CARRIER)
+c            idcdC    = stream ID of destination carrier 
+c            
+c            divactX  =amount diverted (cfs)
 c
 c _____________________________________________________________
 c	Dimensions
@@ -71,9 +73,19 @@ c
         character corid1*12
 c
 c _________________________________________________________
-c		Step 1; Initialize        
-c		iout=0 No detailed output
-c                   =1 Details
+c		Step 1; Initialize  
+
+c rrb 2021/04/18; Compiler warning
+        maxdivw=maxdivw    
+        maxqdiv=maxqdiv
+        maxrtnw=maxrtnw    
+        nriver=nriver  
+        tranloss=tranloss  
+        nd2=nd2
+c
+c   
+c		           iout=0 No detailed output
+c                     =1 Details
         iout=0
         
         small=0.001
@@ -185,5 +197,5 @@ c		Formats
      1 '   EffmaxT1   OprlosT',/
      1 ' ___________ ____ ____________', 12(' _________'))
  210   format(12x, i5,1x,a12, 7i10, 20f10.0)    
- 250   format(/,72('_'))       
+cx250  format(/,72('_'))       
         end

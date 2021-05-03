@@ -35,6 +35,8 @@ c
 c _________________________________________________________
 c	Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 2019/08/12; V16.00.16 Revised to pass psuply() in addition
 c                 to psto2() for a WWSP Supply (14) or WWSP-User 
 c                 (15) plan because DivMulti (46) uses psuply() 
@@ -96,11 +98,15 @@ c
 c _________________________________________________________
 c
 c		Step 1; Detailed Output control and header
-c		iout=0 no details
-c		     1 details
-c		     2 summary
-c		     3 qres(29 details
-c		    99 summary independent of ccall
+c
+c rrb 2021/04/18; Compiler warning
+      idow=0
+c
+c		            iout=0 no details
+c		                 1 details
+c		                 2 summary
+c		                 3 qres(29 details
+c		                99 summary independent of ccall
 
       iout=0
       ioutiw=0

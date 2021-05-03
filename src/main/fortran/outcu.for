@@ -29,6 +29,11 @@ c               Code to read and print total cu (-xcu) to 33
 c               Code to read and print total shortage (-xsh) to 34
 c               Code to read and print total supply (-xsu) to 35
 c               Code to calculate and print total by WD (-xwd) to 37
+c ____________________________________________________
+c       Update History
+c
+c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c       Documentation
@@ -79,6 +84,14 @@ c
 c _________________________________________________________
 c
 c
+c ____________________________________________________
+c       Update History
+c
+c
+c rrb 2021/04/18; Compiler warning
+      iz=0  
+      rec48=' '
+
 c		iout=1 print ID information
        iout=2       
        if(iout.ge.1) write(nlog,300)
@@ -307,8 +320,12 @@ c
 c                        Process diversions only
 c                          nd .eq. 0 = gauge location
 c                          na .gt. 1 = multiple diversion location
-            nd = dat1(nrid)
-            na = dat1(nxstr)
+c
+c rrb 2021/04/18; Compiler warning
+cx          nd = dat1(nrid)
+cx          na = dat1(nxstr)
+            nd = nint(dat1(nrid))
+            na = nint(dat1(nxstr))
 c 
 c rrb 00/01/24; New ID convention (see top)
 c            if(nd.le.0) goto 170
@@ -883,8 +900,8 @@ c 312  format(a4, 1x, a2, 1x, a4, 5x, 13f8.1)
   
 c 314  format(a4, 1x, a2, 1x, i4, 5x, 13f8.0)
 c 316  format(a4, 1x, a2, 1x, i4, 5x, 13f8.1)
-  314  format(a4, 1x, a12,            13f8.0)
-  316  format(a4, 1x, a12,            13f8.1)
+cx  314  format(a4, 1x, a12,            13f8.0)
+cx  316  format(a4, 1x, a12,            13f8.1)
   
   322  format(
      1 '____ ____________', 13(' _______')) 

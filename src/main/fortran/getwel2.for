@@ -36,6 +36,8 @@ c _________________________________________________________
 c
 c      Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2005/10/14; Separated from Datinp and allowed revised file format
 c
 c _________________________________________________________
@@ -44,10 +46,16 @@ c
       include 'common.inc'
 c
       DIMENSION ITEMP(numstax)
+c
+c rrb 2021/04/18; Compiler warning
+cx    dimension mthd(12), xmon(12), x(12)
+      dimension x(12)
 
-      dimension mthd(12), xmon(12), x(12)
 C
-      character ch2*2, ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
+c
+c rrb 2021/04/18; Compiler warning
+cx    character ch2*2, ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
+      character ch2*2, ch3*3, ch4*4, blank*12, crtnid*12, 
      1          cgoto2*12, cx*12, rec4*4, rec24*24,
      1          rec1*1, rec12*12, 
 c
@@ -59,7 +67,21 @@ c rrb 2005/10/14; Separate return and depletion files
 c__________________________________________________________
 c
 c               Step 1; Initialize
-c		Details iout = well data
+c
+c rrb 2021/04/18; Compiler warning
+      inx=inx
+      ch2=' '
+      ch4=' '
+      crtnid=' '
+      cx=' '
+      rec1=' '
+      rec4=' '
+      filenaS=' '
+      filenaE=' '
+      filenaR=' '
+      filenaD=' '
+
+c		            Details iout = well data
 c rrb 2005/10/14; Separate files
       write(nlog,90)
  90   format(/, '  Subroutine GetWel2')
@@ -665,13 +687,13 @@ c ___________________________________________________
      1 '          But in *.ctl the variable icondem (idemtyp) = ',i4,
      1          ' which is inconsitant.')
      
-  547  format(/,72('_'),/,
-     1 '  GetWel2; Problem for Div or Well station = ', a12,
-     1          ' type = 4 which indicates transmountain, but',/
-     1 '          efficiency is not 100%.',
-     1 '          To do; Change type or efficiency data to 100%')
-
-  930  FORMAT(A256)
+cx  547  format(/,72('_'),/,
+cx     1 '  GetWel2; Problem for Div or Well station = ', a12,
+cx     1          ' type = 4 which indicates transmountain, but',/
+cx     1 '          efficiency is not 100%.',
+cx     1 '          To do; Change type or efficiency data to 100%')
+cx
+cx  930  FORMAT(A256)
   940  format(/,
      1 '  GetWel2; Well Station ',a24,/,4x, a256)
      
@@ -679,7 +701,7 @@ c ___________________________________________________
      1  ' GetWel2; Problem.',
      1  ' Too many return stations, max = ', i5)
      
- 1203  format(a12,a24,a12,i8,f8.0,1x,a12,1x,f12.5,1x,a12)      
+cx 1203  format(a12,a24,a12,i8,f8.0,1x,a12,1x,f12.5,1x,a12)      
      
  1212  FORMAT(/,72('_'),/,
      1  '  GetWel2; Problem for well id = ', a12,/
@@ -688,40 +710,40 @@ c ___________________________________________________
      1  '          cannot be found in the network file (*.rin)',/
      1  '          (If the id looks ok, Check to be sure it',/
      1  '          does not contain a tab character')
- 1230  FORMAT(12X,a24,12x, 2I8,2F8.0,I8)
- 1232  format(12x,24x,a12, 3i8, 2f8.0, i8, f8.0)
+cx 1230  FORMAT(12X,a24,12x, 2I8,2F8.0,I8)
+cx 1232  format(12x,24x,a12, 3i8, 2f8.0, i8, f8.0)
 
  1242  format(/,
      1  '  GetWel2; Warning, Wells must have a return & depletion',
      1  ' location',/ '          Check ID ', a12 )
- 1243  format(/,
-     1  '  GetWel2; Problem, In Baseflow mode yet diversion code',/
-     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
-     1  '          Stopped to avoid having historic pumping',/, 
-     1  '          data weighted by efficiency.  To do: revise *.wes')
- 1250  FORMAT(/,72('_'),/,
-     1  ' GetWel2; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
-     
- 1255 format(/,72('_'),/,
-     1'  GetWel2; Problem with Well Station ', a12,/
-     1 10x,'The augmentation plan code (planw) = ', a12,
-     1 10x,'But this plan is type ', i4,/
-     1 10x,'(Note a well agumentation plan should be a type 2)')
-     
- 1256 format(/,
-     1 '  GetWel2; FYI at least one Well Station (e.g.) ', a12,/
-     1 9x,' is tied to an augmentation plan (planw) = ', a12,
-     1     ' plan pointer = ', i5)
-     
- 1257 format(/,
-     1 '  GetWel2; Warning Well Station ', a12,/
-     1 9x,' IS NOT TIED to an augmentation plan (planw)',/
-     1    ' Plan ID = ', a12,' plan pointer = ', i5,/
-     1    ' If OK enter N/A or NA as the plan ID')
-     
- 1260  format(36x,a12,f8.0,i8)
- 
- 1262  format(36x,a12,f8.0,a12)
+cx 1243  format(/,
+cx     1  '  GetWel2; Problem, In Baseflow mode yet diversion code',/
+cx     1  '          in *.wes says *.ddc data provided (idvcomw = 3).',/ 
+cx     1  '          Stopped to avoid having historic pumping',/, 
+cx     1  '          data weighted by efficiency.  To do: revise *.wes')
+cx 1250  FORMAT(/,72('_'),/,
+cx     1  ' GetWel2; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
+cx     
+cx 1255 format(/,72('_'),/,
+cx     1'  GetWel2; Problem with Well Station ', a12,/
+cx     1 10x,'The augmentation plan code (planw) = ', a12,
+cx     1 10x,'But this plan is type ', i4,/
+cx     1 10x,'(Note a well agumentation plan should be a type 2)')
+cx     
+cx 1256 format(/,
+cx     1 '  GetWel2; FYI at least one Well Station (e.g.) ', a12,/
+cx     1 9x,' is tied to an augmentation plan (planw) = ', a12,
+cx     1     ' plan pointer = ', i5)
+cx     
+cx 1257 format(/,
+cx     1 '  GetWel2; Warning Well Station ', a12,/
+cx     1 9x,' IS NOT TIED to an augmentation plan (planw)',/
+cx     1    ' Plan ID = ', a12,' plan pointer = ', i5,/
+cx     1    ' If OK enter N/A or NA as the plan ID')
+cx     
+cx 1260  format(36x,a12,f8.0,i8)
+cx 
+cx 1262  format(36x,a12,f8.0,a12)
 
  1292  FORMAT(
      1 '  GetWel2; Problem the Well Efficiency file (*.wef)',/
@@ -741,10 +763,10 @@ c ___________________________________________________
  1302  FORMAT(/,72('_'),/,
      1 ' GetWel2; Problem. Too MANY Well Stations,     MAXIMUM = ',I5)
 
- 1310  FORMAT(a12,a24,a12,i8,f8.0,1x,a12)
+cx 1310  FORMAT(a12,a24,a12,i8,f8.0,1x,a12)
 c
 c rrb 04/25/97; Daily model
- 1312  FORMAT(a12, a24, a12, 1x, a12)
+cx 1312  FORMAT(a12, a24, a12, 1x, a12)
  
  1322  FORMAT(/,
      1  '  GetWel2; Warning Well structure not tied to a SW structure',/

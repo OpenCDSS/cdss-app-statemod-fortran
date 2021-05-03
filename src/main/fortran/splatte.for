@@ -40,6 +40,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/07/28; Revise check if more can be diverted to not include 
 c                 the unit conversion(fac) and re format output warning
 c
@@ -242,6 +244,16 @@ c _____________________________________________________________
 c
 c               Step 1a - Initialize general variables
 c
+c rrb 2021/04/18; Compiler warning
+      iuse=0
+      ndnd=0
+      oprefft=0.0
+      cresid1=' '
+c
+c rrb 2021/04/18; Compiler warning
+      iexit=0
+      if(iexit.gt.0) goto 500
+c
 c ---------------------------------------------------------
 c               Control debut printout
 c		iout=0 none, iout=1 detailed, iout=2 summary
@@ -283,8 +295,6 @@ c ---------------------------------------------------------
 c
 c rrb 2011/01/02; ND is passed into this routine
 cx    nd=0
-
-cx      goto 500
       idcd=0
       imcd=0
       
@@ -1130,11 +1140,12 @@ cx     1  ' ____ ____ _______ _______')
  342   format(
      1     '  SPlatte; Diversion Limit;',
      1     '  pavail  divalo  alocfs  divact',/
-     1     '                          ', 20f8.2)
- 390   format(
-     1       '  SPlatte; Release for Depletion Data;',/
-     1       '                  #  divact  pavail  relact      CU',/
-     1       '           ', i8, 20f8.2)
+     1     '                          ', 20f8.2)  
+cx     
+cx 390   format(
+cx     1       '  SPlatte; Release for Depletion Data;',/
+cx     1       '                  #  divact  pavail  relact      CU',/
+cx     1       '           ', i8, 20f8.2)
      
 c
 c _____________________________________________________________

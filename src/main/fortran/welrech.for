@@ -38,8 +38,9 @@ c
 c_____________________________________________________________
 c       Update History
 c 
-c rrb 2006/04/27; Copied WelAugP
-c		  Revised accordingly
+c
+c rrb 2021/04/18; Compiler warning
+c rrb 2006/04/27; Copied WelAugP & revised accordingly
 c               
 c _________________________________________________________
 c       Documentation
@@ -100,8 +101,8 @@ c
 c        idivsww        on/off switch (0=off, 1=on)
 c        idivcow2(nw)   SW diversion, if any, associated with well nw 
 c
-c	 ipAug		0=no Well Augmentation Calculations
-c			1 yes Well Augmentation Calculations 
+c	       ipAug		      0=no Well Augmentation Calculations
+c		                  	1 yes Well Augmentation Calculations 
 c
 c        iscd           River location of well (iscd = idvstaw(nwe))
 c
@@ -144,6 +145,10 @@ c
 c _________________________________________________________
 c
 c       Step 1 Common Initialization
+c
+c rrb 2021/04/18; Compiler warning
+      irow=0
+      rec12=' '
 c
 c		iout = 0 No details
 c		       1 Details
@@ -794,18 +799,18 @@ c _________________________________________________________
 c
 c                Formats
 c
-  200   format(/, '  WelRech; Problem with sprinkler calcs (Total)',/
-     1         10x, i5, 1x, a12,/ 
-     1         10x,'   isprink      effs      efff      effa' ,/
-     1         10x, i10, 3f10.2,/
-     1         10x,'   divsprx   divothx   divreqx1    small',/   
-     1         10x,  20f20.0) 
-  240   format(/,
-     1         '  WelRech; mon, l2, nd,iuse,iscd,ndnsx',/,10x,20i5)
- 
-  250   format(/,'  WelRech (Total)',/
-     1  '  WelRech; divreqx1,divcapx,divmonx,dcrdivx,divdx,',
-     1           'divsprx, divothx',/,10x, 20f8.0)
+cx200   format(/, '  WelRech; Problem with sprinkler calcs (Total)',/
+cx   1         10x, i5, 1x, a12,/ 
+cx   1         10x,'   isprink      effs      efff      effa' ,/
+cx   1         10x, i10, 3f10.2,/
+cx   1         10x,'   divsprx   divothx   divreqx1    small',/   
+cx   1         10x,  20f20.0) 
+cx240   format(/,
+cx   1         '  WelRech; mon, l2, nd,iuse,iscd,ndnsx',/,10x,20i5)
+cx
+cx250   format(/,'  WelRech (Total)',/
+cx   1  '  WelRech; divreqx1,divcapx,divmonx,dcrdivx,divdx,',
+cx   1           'divsprx, divothx',/,10x, 20f8.0)
   262   format(/, 
      1  '  WelRech Augmentation Summary;  Well Right ID = ', a12,
      1  ' Destination Type = ', a12,/,

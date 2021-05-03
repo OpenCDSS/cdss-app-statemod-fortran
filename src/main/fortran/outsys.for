@@ -25,16 +25,15 @@ c
 c _________________________________________________________
 c	Update History
 c
-
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c	Documentation
 c
-
 c
 c _________________________________________________________
 c	Dimensions
-cC     Last change:  C    20 May 97    0:09 am
+c      Last change:  C    20 May 97    0:09 am
 c *********************************************************
 C
       SUBROUTINE OUTSYS(IYS,IYE)
@@ -54,6 +53,9 @@ c
 c _________________________________________________________
 c
       include 'common.inc'
+c
+c rrb 2021/04/18; Compiler warning
+
 C
 C
 C-------------------------------------------------------------------
@@ -165,15 +167,15 @@ c
 c _________________________________________________________
 c
 c       Formats
-  160 FORMAT(8(/),49X,'***  Diversion & Reservoir Output ',a5,' ***')
+cx160 FORMAT(8(/),49X,'***  Diversion & Reservoir Output ',a5,' ***')
   170 format('+', ' Processing Year = ', i5)
 c 180 format('',/, 
   180 format(    /, 
      1       '  Stream and Diversion data as follows ', a5,':',
      1       ' irecs, IS, CSTAID(IS), DAT1(I), I=1,ndivO)',//,
      1       '  Year ', i5, ' Month ', a3)
-  190 FORMAT(2I5,3x,a12,10F10.0,/,20X,10F10.0,/,
-     1       20X,10F10.0,/,20x,10f10.0)
+cx190 FORMAT(2I5,3x,a12,10F10.0,/,20X,10F10.0,/,
+cx   1       20X,10F10.0,/,20x,10f10.0)
   191 FORMAT(2I5,3x,a12,100F10.0)
   192 format(25x, 100i10)
 c 200 FORMAT('',/,

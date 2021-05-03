@@ -35,7 +35,11 @@ c _________________________________________________________
 c
 c       Update History
 c
+c                                 
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 01/01/26; Revised state summary output to reflect a spill
+c
 c rrb 01/08/09; Revised state summary to reflect revised spill
 c               treatment for surplus calculations.
 c               Added average w/o spills
@@ -342,10 +346,10 @@ c
 c _________________________________________________________
 c               Formats
 c
-  140  format (/,'Rio Grande Compact ',/)
+cx140  format (/,'Rio Grande Compact ',/)
   150  format ('____________ ____ ____',23(' ________'))
   160  format(a12, i5, 2x, a3, 22f9.0, f9.2)
-  170  format(a12, i5, 5x, 25f9.0)
+cx170  format(a12, i5, 5x, 25f9.0)
 
   179  format(''/,' Rio Grande Compact (*.xrg) ',a5,/,
      1    '    Where monthly data is:',/

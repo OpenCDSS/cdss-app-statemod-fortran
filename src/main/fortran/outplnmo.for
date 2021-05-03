@@ -22,12 +22,14 @@ c
 c
 c
 c _________________________________________________________
-c	Program Description
+c	      Program Description
 c
 c       outplnMo; It prints plan data to a binary file
 c
 c _________________________________________________________
 c       Update History
+c                                 
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a
 c                   type 14 and a WWSP User Plan is a type 15
@@ -69,20 +71,26 @@ c       pon()     =    0 Plan off
 c                      1 Plan on
 c
 c _________________________________________________________
-c	Dimensions
+c	      Dimensions
 c
       include 'common.inc'
       character ftype*24, parType*24, cfail1*3, cfail2*3
 c
 c _________________________________________________________
 c
-c              Step 1; Initialize
+c              Step 1; Initialize  
+c                                 
+c rrb 2021/04/18; Compiler warning  
+      ftype=' '
+      partype=' '
+      iprob=0                    
+      if(iprob.gt.0) goto 9999   
 c
-c		ioutP=0 No details
-c		ioutP=1 Details
-c		ioutP=11 Details on plan type 11
-c   ioutP=12 Details on plan type 12
-c   ioutP=13 Details on plan type 13
+c		            ioutP=0 No details
+c		            ioutP=1 Details
+c		            ioutP=11 Details on plan type 11
+c               ioutP=12 Details on plan type 12
+c               ioutP=13 Details on plan type 13
 c
       ioutP=0
       small=0.1
@@ -339,7 +347,10 @@ c
 c		Source is Well pumping in priority
           if(kS.eq.-1) then
             iox=iox+1        
-            iox=amin0(iox,mTot-1)            
+c
+c rrb 2021/04/18; Compiler warning
+cx          iox=amin0(iox,mTot-1)  
+            iox=min(iox,mTot-1)       
             dat2(iox)  = dat2(iox)  + pwellC(np)
             dat2(mTot) = dat2(mTot) + pwellC(np)
           endif    
@@ -349,7 +360,10 @@ c
 c		Other operating rule sources
           if(kS.gt.0) then
             iox=iox+1
-            iox=amin0(iox,mTot-1)                        
+c
+c rrb 2021/04/18; Compiler warning
+cx            iox=amin0(iox,mTot-1)    
+              iox=min(iox,mTot-1)                         
             dat2(iox)  = dat2(iox)  + divo(kS)
             dat2(mTot) = dat2(mTot) + divo(kS)
           endif
@@ -360,7 +374,10 @@ c		Re diversion operating rules
           if(kR.gt.0) then
 cr          iox=iox+1
             ior=ior+1
-            ior=amin0(ior,23)                        
+c
+c rrb 2021/04/18; Compiler warning
+cx          ior=amin0(ior,23)  
+            ior=min(ior,23)                
             dat2(ior)  = dat2(ior)  + divo(kR)
             dat2(24)   = dat2(24) + divo(kR)
           endif  
@@ -371,7 +388,11 @@ c		Use operating rules
 c		Note associated with plan Types 3-7, 11, 12 and 13
           if(kU.gt.0 .and. kP.eq.0) then
             iox=iox+1
-            iox=amin0(iox,mTot-1)                        
+c
+c rrb 2021/04/18; Compiler warning
+cx          iox=amin0(iox,mTot-1) 
+            iox=min(iox,mTot-1)  
+                            
             dat2(iox) = dat2(iox) + divo(kU)
             dat2(mTot)  = dat2(mTot)    + divo(kU)
             
@@ -399,7 +420,10 @@ c                   (type 15)
           if(kU.gt.0 .and. kP.gt.0) then
             iox=iox+1
             iox1=iox
-            iox=amin0(iox,mTot-1) 
+c
+c rrb 2021/04/18; Compiler warning
+cx          iox=amin0(iox,mTot-1) 
+            iox=min(iox,mTot-1) 
 cx          write(nlog,*) '  OutPlnMo; iox1, mtot iox ', iox1, mtot, iox
 c
 c rrb 2008/09/03; Correction the following overrides data used later            
@@ -432,7 +456,10 @@ c
 c		Out of Priority operating rule sources
           if(kO.gt.0) then
             iox=iox+1
-            iox=amin0(iox,mTot-1)                        
+c
+c rrb 2021/04/18; Compiler warning
+cx          iox=amin0(iox,mTot-1)  
+            iox=min(iox,mTot-1)                        
             dat2(iox)  = dat2(iox)  + divo(kO)
             dat2(mTot) = dat2(mTot) + divo(kO)
           endif
@@ -444,7 +471,11 @@ c		Evaporation
 c		Note associated with plan Types 3 and 5			
           if(kE.gt.0) then
             iox=iox+1
-            iox=amin0(iox,maxresP-1)
+c
+c rrb 2021/04/18; Compiler warning
+cx          iox=amin0(iox,maxresP-1)
+            iox=min(iox,maxresP-1)
+            
             dat2(iox)=dat2(iox)+Pevap(np)    
             dat2(maxresP)=dat2(maxresP)+Pevap(np)  
           endif  

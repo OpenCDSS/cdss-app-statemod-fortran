@@ -50,6 +50,8 @@ c _________________________________________________________
 c	Update History
 c
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2008/06/24; Revised to recognize 4 land use types
 c		
 c
@@ -68,7 +70,7 @@ c               iday = daily model switch
 
 c               ndns = number of downstream nodes from diversion 
 c               small= small convergence number passed into the routine
-c		smallX=  small convergence number used herein
+c		            smallX=  small convergence number used herein
 c
 c
 c               ndnr = number of downstream nodes from return location
@@ -81,11 +83,11 @@ c               AreaSF= Area SW Sprinkler (fraction)
 c               AreaSF= Area GW Flood (fraction)
 c               AreaSF= Area GW Sprinkler (fraction)
 c
-c		dumx  = temporary array of return in cfs
-c		effF  = Efficiency Flood (fraction)
-c		effS  = Efficiency Sprinkler (fraction)
-c
-c		foret = return flow fraction
+c		            dumx  = temporary array of return in cfs
+c		            effF  = Efficiency Flood (fraction)
+c		            effS  = Efficiency Sprinkler (fraction)
+c               
+c		            foret = return flow fraction
 c               pavail=amount available                
 c
 c _________________________________________________________
@@ -97,12 +99,16 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
 c
-c		iout=0 no details
-c		iout=1 details
-c		iout=2 detail on plan data      
-c		iout=3 summary for weighted efficiency 
-c
-c		ioutL=1 details on return flow loop
+c rrb 2021/04/18; Compiler warning
+      ccallby=ccallby    
+      ioutz=ioutz 
+      
+c		            iout=0 no details
+c		            iout=1 details
+c		            iout=2 detail on plan data      
+c		            iout=3 summary for weighted efficiency 
+c               
+c		            ioutL=1 details on return flow loop
 cx    iout=3
 cx    iout=0
 cx    iout=ioutZ  
@@ -469,11 +475,11 @@ c               Formats
      1  ' _________ _________ _________ _________ _________',/
      1  '  RtnMax;', i10, 20f10.3)       
      
- 344  format(/,72('_'),//,        
-     1  '  RtnMax; Warning IWR>0 for iteration 2.',/
-     1  '          Called by: ', a12, ' for right ', a12,
-     1  ' IWR (ac-ft) = ',f10.3)        
-      
+cx 344  format(/,72('_'),//,        
+cx     1  '  RtnMax; Warning IWR>0 for iteration 2.',/
+cx     1  '          Called by: ', a12, ' for right ', a12,
+cx     1  ' IWR (ac-ft) = ',f10.3)        
+cx      
  346   format(/,        
      1  '  RtnMax;    iter     iri     ire ieffmax   ieff2   AreaT',
      1  '    effx   foret  effmax') 

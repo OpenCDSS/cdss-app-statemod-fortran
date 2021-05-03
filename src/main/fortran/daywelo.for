@@ -19,7 +19,7 @@ c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
 c	Dimensions
-cC     Last change:  C    20 May 97    0:04 am
+c      Last change:  C    20 May 97    0:04 am
 C
 c *********************************************************
       subroutine daywelo
@@ -50,8 +50,10 @@ c
 c
 c _________________________________________________________
 c	Update History
-c		NA
 c
+c rrb 2021/04/18; Compiler warning
+c
+c _________________________________________________________
       include 'common.inc'
 c                           
       character  cdx*12,   ida0*12, ftype*24, ptype*24, cname1*24
@@ -283,21 +285,31 @@ c        Formats
 
 
   240  format(2a12,i5, 2x, a3, i4, 20f8.0)
-  250  format( a12,i5, 2x, a3, i4, 20f8.0)
+c rrb 2021/04/18; Compiler warning
+cx250  format( a12,i5, 2x, a3, i4, 20f8.0)
+
   260   format('+', '   Printing Diversion & Stream Summary',
      1        i5,' of ', i5, '; or ',f8.0, ' % Complete')
-  270  return
+c _________________________________________________________
+c     
+c rrb 2021/04/18; Compiler warning
+cx  270  return
+       return
 c
 c               Error messages
   280  write(io99,*) 
      1  '   Daywelo; Requested data exceeds binary file size'
 c
 c               Error Warning
-  290 write(6,300) 
+c
+c rrb 2021/04/18; Compiler warning
+cx290 write(6,300) 
       write(io99,310) 
 
-  300 format('    Stopped in Daywelo',/,
-     1       '    See the *.log file')
+c
+c rrb 2021/04/18; Compiler warning
+cx300 format('    Stopped in Daywelo',/,
+cx   1       '    See the *.log file')
   310 format('    Stopped in Daywelo')
       write(6,*) 'Stop 1'
       call flush(6)

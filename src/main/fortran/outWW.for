@@ -38,6 +38,7 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a
 c                   type 14 and a WWSP User Plan is a type 15
@@ -58,8 +59,13 @@ c
       include 'common.inc'
       character ftype*24, parType*24, cfail1*3, cfail2*3, cfail2T*3,
      1          copOff*3, rec12*12, rec24*24, ciy*4, cwwX*3
+c                                 
+c rrb 2021/04/18; Compiler warning     
+cx    dimension                                     
+cx   1  pfailx(maxplan), planTot(maxplnT,maxyrs,40), 
+cx
       dimension 
-     1  pfailx(maxplan), planTot(maxplnT,maxyrs,40), 
+     1  planTot(maxplnT,maxyrs,40), 
      1  iptotal(40),     datBeg(maxPlan),
      1  dat1x(40)
 c
@@ -69,7 +75,22 @@ c rrb 2018/10/07; Define variables for monthly average
      
 c _________________________________________________________
 c
+
 c              Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      n52=0
+      i52=0
+      c=0.0   
+      fac=0.0   
+      iprob=0   
+      cfail1=' '
+      cfail2=' '      
+      cfail2t=' '              
+      ciy=' '
+      ftype=' '
+      partype=' '
+      if(iprob.gt.0) goto 9999      
 c		
 c		           ioutWW = detailed output
       ioutWW = 0
@@ -197,7 +218,11 @@ c		            Step 5; Month Loop
                 write(nlog,*) ' OutWW (5); ', iyrmo(im), xmonam(im)
               endif
               
-              imx=amax0(1, im-1)
+c
+c rrb 2021/04/18; Compiler warning
+cx            imx=amax0(1, im-1)
+              imx=max(1, im-1)
+              
               do i=1,40
                 dat2(i)=0.0
               end do
@@ -1008,8 +1033,10 @@ c
 c _________________________________________________________ 
 c        Error Messages
 c
-
-  900 write(6,*)  '  Stopped in outWW; see the log file (*.log)'
+c                                 
+c rrb 2021/04/18; Compiler warning
+cx900 write(6,*)  '  Stopped in outWW; see the log file (*.log)' 
+ 9999 write(6,*)  '  Stopped in outWW; see the log file (*.log)'
       write(nlog,*) '  Stopped in outWW'                        
       write(6,*) 'Stop 1' 
       call flush(6)

@@ -36,8 +36,11 @@ c		  in order to adjust AvTemp, not Avail
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2008/06/25; Revise to not allow upstream returns to be 
 c		   available to the diverting node (idcd)
+c
 c rrb 2008/01/29; Copy RtnSec 
 c		   Remove future returns
 c		   Set variables *(nd) to *X so they
@@ -494,19 +497,19 @@ c _________________________________________________________
 c
 c               Formats
 
- 160  format('     RtnSecX;   l2 iord  mon  idy  imo iend',
-     1                   '    k   im  imx   kk',
-     1                   ' ndlymx mdhday(imx)')
- 170  format('     RtnSecX;   l2 iord  mon  idy  ido iend',
-     1                   '    k   id   kk ndlymx')
- 172  format(12x, 20i5)
-
+cx160  format('     RtnSecX;   l2 iord  mon  idy  imo iend',
+cx    1                   '    k   im  imx   kk',
+cx    1                   ' ndlymx mdhday(imx)')
+cx170  format('     RtnSecX;   l2 iord  mon  idy  ido iend',
+cx    1                   '    k   id   kk ndlymx')
+cx172  format(12x, 20i5)
+cx
  180  format('  RtnSecX; iday   l2  imd ircd divact    retM    retD',/,
      1             9x, 4i5, 10f8.2)
- 190  format('     RtnSecX; Avail = ', i4, 10f12.0,/,(25x10f12.0))
-
- 320  format('  From ', i5, ' To ', i5, 1000f8.2)             
- 
+cx190 format('     RtnSecX; Avail = ', i4, 10f12.0,/,(25x10f12.0))
+cx
+cx320 format('  From ', i5, ' To ', i5, 1000f8.2)             
+cx
 c330  format(/,60('_'),/
  330  format(/,
      1  '  RtnSecX; FYI structure ID ', a12,' nd = ', i5,' iuse = ',i5,/

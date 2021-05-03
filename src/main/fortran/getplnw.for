@@ -30,6 +30,12 @@ c		Called by Execut
 c
 c _________________________________________________________
 c
+c       Update History
+c
+c
+c rrb 2021/04/18; Compiler warning
+c _________________________________________________________
+c
 c	Documentation
 c
 c		iin2 response file number
@@ -47,7 +53,6 @@ c		idum = 0 Plan well is not tied to a well right
 c		idum = 1 Plan well is tied to 1 well right
 c		idum > 1 Plan well is tied more than 1 well right
 c
-c
 c _________________________________________________________
 c	Dimensions
 c
@@ -62,6 +67,10 @@ c
 c _________________________________________________________
 c
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      namedwx=' '
+
 c		iout =  0 no details
 c			1 details
 c			2 summary
@@ -280,8 +289,12 @@ cx          endif
 c
 c rrb 2008/10/07; Begin to calculate weighted well priority
 c		  Note denominator (dumx) is the total decree for this plan
+c
+c rrb 2021/04/18; Compiler warning
+cx        rdvnkwp(iplanP)  = rdvnkwp(iplanP) + 
+cx   1      rdvnkw(iplanWR) * dcrdivw(iplanWR)       
           rdvnkwp(iplanP)  = rdvnkwp(iplanP) + 
-     1      rdvnkw(iplanWR) * dcrdivw(iplanWR)       
+     1      SNGL(rdvnkw(iplanWR)) * dcrdivw(iplanWR)       
           dumx(iplanP) = dumx(iplanP) + dcrdivw(iplanWR)
         endif  
 c
@@ -534,7 +547,7 @@ c               Formats
  290  format(i5, 1x,a12, 1x, a24, 1x,a12,1x, 2i8, 5x,a3, 3(1x,i8))
  
      
- 320  format(i5,1x,a12,1x,a12)    
+cx 320  format(i5,1x,a12,1x,a12)    
    
 c      
 c _________________________________________________________

@@ -32,6 +32,8 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2005/10/06; Reivsed so that demands are calculated in Bomsec.
 c                 This insures demands are known irregardless of when 
 c                 or how the compact demand is operated.
@@ -64,6 +66,12 @@ c
 c
 c _________________________________________________________
 c       Step 1; Initialize & find station code of i.f.r. right
+c
+c rrb 2021/04/18; Compiler warning
+      flowrq1=0.0
+      avindx=0.0
+      avail1=0.0
+      aloifr=0.0
 c
 c		            iout = 0 no details
 c		                   1 details

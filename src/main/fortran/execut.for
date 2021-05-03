@@ -27,6 +27,9 @@ c       Execut; Min subroutine that controls a StateMod simulation
 c_____________________________________________________________
 c
 c       Update History
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+c
 c rrb 2020/07/27; Revised to print execution time in sec, min & hours
 c                   and adjust if the run went past midnight
 c
@@ -169,9 +172,16 @@ c
 c_______________________________________________________________________
 c     Dimensions
       include 'common.inc'
-      real*8 dcallx, cpri
-      character rec12*12, fileOpen*40, ctype*16, rec12b*12,
-     1          nameX*24, cstaid1*12, rec2*2
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx    real*8 dcallx, cpri
+      real*8 dcallx
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx    character rec12*12, fileOpen*40, ctype*16, rec12b*12,
+cx   1          nameX*24, cstaid1*12, rec2*2     
+      character rec12*12, fileOpen*40, rec12b*12,
+     1          nameX*24
       dimension idatx(3), itim1(4), itim2(4), ncall(200)
 c    
 c_______________________________________________________________________
@@ -2848,9 +2858,11 @@ c               Formats
      1   '+', ' Execut; Year ', i5, ' Month ', a4, ' Day ', i3,
      1   ' Reoperation ', i5, ' Annual Maximum ', i5)
      
- 104   format(
-     1   '+', ' Execut; Year ', i5, ' Month ', a4, ' Day ', i3,
-     1   ' Reoperation ', i5, ' Annual Total ', i5)
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx 104   format(
+cx     1   '+', ' Execut; Year ', i5, ' Month ', a4, ' Day ', i3,
+cx     1   ' Reoperation ', i5, ' Annual Total ', i5)
      
      
  106   format(
@@ -2877,26 +2889,29 @@ c               Formats
      1  '  Execut; On Year ', i5, ' Month ', a4, ' Day ', i4,/
      1  '          The maximum number of reoperations  ', i5)
      
-
- 520  format(/,72('_'),/
-     1 ' Execut; ', i5, 1x, a4, i3, 
-     1 ' Reoperation by a ', a12,
-     1 ' Opr Type = ',i2,' Reoperation = ', i4,' Diversion = ', f10.2,
-     1 ' Opr_ID = ', a12)
-     
- 523  format(/,72('_'),/
-     1 '  Execut;  Reoperation Report (ichk=9) for = ',i5,1x, a4,i3,//
-     1 '                                                     ',
-     1 '                               ',
-     1 '   Change Value      Check Sum    Check Value',/
-     1 ' Year Mon Day Reop   l2 Reason       Opr Type Right ID    ',
-     1 ' Right Name               ',
-     1 '     af/mo     af/mo     af/mo',
-     1 '    721239    720645    950003    950006',
-     1 '  ShortGVC    GVC',/     
-     1 ' ____ ___ ___ ____ ____ ____________ ________ ____________',
-     1 ' ________________________ ',
-     1 9(' _________'))
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx
+cx 520  format(/,72('_'),/
+cx     1 ' Execut; ', i5, 1x, a4, i3, 
+cx     1 ' Reoperation by a ', a12,
+cx     1 ' Opr Type = ',i2,' Reoperation = ', i4,' Diversion = ', f10.2,
+cx     1 ' Opr_ID = ', a12)
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings   
+cx 523  format(/,72('_'),/
+cx     1 '  Execut;  Reoperation Report (ichk=9) for = ',i5,1x, a4,i3,//
+cx     1 '                                                     ',
+cx     1 '                               ',
+cx     1 '   Change Value      Check Sum    Check Value',/
+cx     1 ' Year Mon Day Reop   l2 Reason       Opr Type Right ID    ',
+cx     1 ' Right Name               ',
+cx     1 '     af/mo     af/mo     af/mo',
+cx     1 '    721239    720645    950003    950006',
+cx     1 '  ShortGVC    GVC',/     
+cx     1 ' ____ ___ ___ ____ ____ ____________ ________ ____________',
+cx     1 ' ________________________ ',
+cx     1 9(' _________'))
 
  540  format(/, 72('_'),/,'  Execut; Year and month = ',i5, 1x, a4)
  550  format(/,72('_'),/ 

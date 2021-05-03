@@ -30,7 +30,10 @@ c
 c
 c _________________________________________________________
 c	Update History
-c		2018/10/14; Add J_Martin Monthly by increasing dimension 
+c
+c rrb 2021/04/18; Compiler warning
+c
+c	rrb	2018/10/14; Add J_Martin Monthly by increasing dimension 
 c               from 80 to 90
 c
 c _________________________________________________________
@@ -150,6 +153,11 @@ c
      1 ' AF/M', ' ACFT', '   AF', '  CFS', '   FT', '   IN', '    %',
      1 ' ', ' ', ' '/
     
+c
+c rrb 2021/04/18; Compiler warning
+      rec1a=rec1a
+      rec1b=rec1b
+      rec1c=rec1c
 c
       iout=0
       ierror = 0

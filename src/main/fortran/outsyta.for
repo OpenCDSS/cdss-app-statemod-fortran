@@ -27,8 +27,14 @@ c	Program Description
 c
 c       OutsytA; It prints a system report by year
 c                Similar to outsyt but it prints average
+c                                                                    
+c_________________________________________________________________   
+c                                                                    
+c       Update History                                               
+c                                                                    
+c rrb 2021/04/18; Compiler warning                                   
 c _________________________________________________________
-c	Dimensions
+c	      Dimensions
 
       include 'common.inc'
 C
@@ -234,8 +240,10 @@ c         IPAGE(2)=IPAGE(2)+1
 c         ILINE(2)=50
 C
           WRITE(16,160) HEADIN1(1), HEADIN1(2), IPAGE(2)
-c
-  510     continue
+c      
+c                                   
+c rrb 2021/04/18; Compiler warning  
+cx510     continue
           if(idcd.gt.0) then
             write(16,520) resnam1(irsord(1,is)),cstaid(is),
      1                 cstaid(idcd),(xmonam(i),i=1,12)
@@ -272,17 +280,21 @@ c
           DO I=19,23
             WRITE(16,290) TERM2(I),(DATA2(IM,I)/re,IM=1,13)
           end do
-
-  590     ILINE(2)=ILINE(2)-20
+c                                  
+c rrb 2021/04/18; Compiler warning 
+cx590     ILINE(2)=ILINE(2)-20
+          ILINE(2)=ILINE(2)-20
 c
 c               End year loop for reservoirs
-  600   continue
+c                                  
+c rrb 2021/04/18; Compiler warning 
+cx600   continue
 c
 c               End Station Loop
   610 CONTINUE
 
   150 FORMAT(8(/),49X,'***  DETAILED SIMULATION OUTPUT ', a5,' ***')
-  101 format('+', '   Printing Year = ', i5)
+cx101 format('+', '   Printing Year = ', i5)
   160 FORMAT( /,1x, 130('_'),//  '       YEAR ',' Ave',8X,a80,/
      1       24x, a80,15X,'PAGE NO. ',I3)
 c 260 format(/,1x, 130('_'),

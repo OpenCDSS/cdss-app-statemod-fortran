@@ -31,9 +31,13 @@ c
 c _________________________________________________________
 c       Update History
 c
+c                                
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 04/10/96; added special logic for out of priority storage 
 c               right (ityrsr(l2) = -1)
-c               Revised to distribute one water right to many owners
+c               Revised to distribute one water right to many owners 
+c
 c rrb 05/012/01; Revised to allow re storage of previously released
 c                reusable water 
 c
@@ -63,11 +67,13 @@ c
 c _________________________________________________________
 c
 c               Step 1; Initialize
+c                                
+c rrb 2021/04/18; Compiler warning
+      ncallx=ncallx
 c
-c
-c               iout = 0 no details
-c                      1 details
-c                      2 summary      
+c                 iout = 0 no details
+c                        1 details
+c                        2 summary      
       iout=0
       if(ichk.eq.130) iout=2
       
@@ -277,7 +283,7 @@ c               Formats
      1  ' Resrg1P;', 3(' ____'), 1x, '____________', 8(' _______'),
      1  12(' _______'), ' ________________________')
   150   format(9x, 3I5,1x, a12,8i8, 11F8.0, i8, 1x, a45)
-  160   FORMAT(/, 80('-'),/,' Resrg1P; Avail in')
+cx160   FORMAT(/, 80('-'),/,' Resrg1P; Avail in')
   170   FORMAT(/,' Resrg1P; Avail out')
   180   format(10f8.0)
 c

@@ -33,6 +33,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 95/06/26; Revised to handle less diversions than simulated
 c               and in any order
 c rrb 96/06/11; Revised to use a temporary binary file to 
@@ -95,6 +97,16 @@ c
 c
 c _________________________________________________________
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      iskip=0       
+      iprintx=0
+      nd1=0  
+      rec12b=' '
+      rec5=' '
+      rec24=' '
+      rec50=' '
+      rec72=' '
 c
 c          iout=1 print information on every diversion
 c          ioutAdj = 1 print adjustment information
@@ -330,8 +342,12 @@ c
 c rrb 2005/11/29; River and Carrier Loss                     
 c       nd = dat1(ndiv-1) 
 c       na = dat1(ndiv)
-        nd = dat1(ndid) 
-        na = dat1(ndst)
+c
+c rrb 2021/04/18; Compiler warning
+cx      nd = dat1(ndid) 
+cx      na = dat1(ndst)
+        nd = nint(dat1(ndid)) 
+        na = nint(dat1(ndst))
         nd1 = abs(nd)
 c       write(nlog,*) ' Outdivc; is, nd, nd1, na ', is, nd, nd1, na
 c
@@ -494,7 +510,7 @@ c
 c               Step 8b; Process diversions
 c------------------------------------------------------------------- 
           if(nd1.gt.0 .and. nd1.lt.5000) then
-  170       format(' nd = ', i5, ' cdivid = ', a12)
+cx170       format(' nd = ', i5, ' cdivid = ', a12)
 c
 c ---------------------------------------------------------
 c rrb 2008/12/24; Reach Data from OutRch via *.rch
@@ -949,7 +965,10 @@ c
 c               Step 11; Print annual totals for a Reach (Zone)
 c	                 Diversions Only
           ry = (iyend-iystr+1)
-          nyr3=ry
+c
+c rrb 2021/04/18; Compiler warning
+cx        nyr3=ry
+          nyr3=nint(ry)
           write(nlog,*) ' '
           write(nlog,*)
      1     ' OutDivc; Number of Stream Reaches (nreach) = ', nreach
@@ -1139,11 +1158,11 @@ c 250 FORMAT('',/, '    Diversion Summary ',a5,/,3x,20a4,/,
 c 260 FORMAT('',/, '    Gage Summary ',a5,/,3x,a80,/,
   260 FORMAT(    /, '    Gage Summary ',a5,/,3x,a80,/,
      1  3X,a80,33X, 'PAGE NO. ',I3,//)
-  270  format(2a12,i5, 2x, a3, 20f8.0)
-  280  format(2(a12,','),i5,',', 2x, a3, ',', 20(f10.0,','))
-  290  format(a12,i5, 2x, a3, 20f10.0)
-  300  format(a12,',', i5,',', 2x, a3, ',', 20(f10.0,','))
-
+cx  270  format(2a12,i5, 2x, a3, 20f8.0)
+cx  280  format(2(a12,','),i5,',', 2x, a3, ',', 20(f10.0,','))
+cx  290  format(a12,i5, 2x, a3, 20f10.0)
+cx  300  format(a12,',', i5,',', 2x, a3, ',', 20(f10.0,','))
+cx
   310   format(/,
      1  'Structure                      Gauged      Est.',
      1                             '     Delta     Delta',/
@@ -1181,9 +1200,9 @@ c 260 FORMAT('',/, '    Gage Summary ',a5,/,3x,a80,/,
   352  format('Basin Total ',5x,i5, 2x, a3, 4f10.0,1x, 
      1 'Basin Total ',11x, i8, i5)
   
-  360  format(a12,',', 5x,',',i5,',', 2x, a3, ',', 4(f10.0,','),
-     1        1x, a24, ',', 1x, ',', i5, ',')  
-
+cx  360  format(a12,',', 5x,',',i5,',', 2x, a3, ',', 4(f10.0,','),
+cx     1        1x, a24, ',', 1x, ',', i5, ',')  
+cx
   370  format(a12,5x,'  Ave' 2x, a3, 4f10.0,1x,a24,1x,i8, i5)
   371  format(a12,5x,'  Ave' 2x, a3, 4f10.0,1x,a24,1x,i8, i5)
   372  format('Basin Total ',5x,'  Ave' 2x, a3, 4f10.0,1x,24x,1x,i8,i5)
@@ -1234,9 +1253,9 @@ c
      1 4x, 'Total Carrier Type B  equals: ', f12.0, ' af/yr')
      
   379  format(i5, 1x, a50)
-  380  format(a12,',', 5x,',', '  Ave,',2x, a3, ',', 4(f8.0,','),
-     1 1x, a24, 1x, i5)  
-     
+cx  380  format(a12,',', 5x,',', '  Ave,',2x, a3, ',', 4(f8.0,','),
+cx     1 1x, a24, 1x, i5)  
+cx     
   390 format(i4, 1x, a12, 12f8.0)
   392 format(2i5,1x, a12, 12f8.0)
   
@@ -1328,8 +1347,23 @@ c
      1           recadjX, rectypX) 
       character cdividX*12, divnamX*24, recadjX*50, recTypX*16
       character rec12*12, rec50*50, rec24*24
-      
+c                                 
+c_________________________________
+c                                 
+c       Update History            
+c                                 
+c rrb 2021/04/18; Compiler warning
+c      
+c
+c ____________________________________________________
+c
+c		Step 1; Initialize
+c                                 
+c rrb 2021/04/18; Compiler warning
       rec50=' '
+      nd1=nd1
+      nlog=nlog
+      iprintx=iprintx
       
       i1=1
       i2=i1+12-1

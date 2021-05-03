@@ -23,42 +23,38 @@ C     Last change:  C    20 May 97    0:06 am
 c
 c
 c _________________________________________________________
-c	Program Description
+c	              Program Description
 c
 c       Outpltd; It generates a plot file of diversion, instream or
 c              stream gage data
 c
 c _________________________________________________________
-c	Update History
-c
+c	              Update History
+c                                 
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/04/26; Revised 'Stop 2' to 'Stop' to compile
 c                 with Gfortran compiler downloaded on 04/2020
-c
 c _________________________________________________________
-c	Documentation
-c
-
-c
+c               Documentation
+c                 iplot = 0 not plotting
+c                 iplot = n diversion, instream or gage ID to plo
 c _________________________________________________________
-c	Dimensions
-c
-c
-c _________________________________________________________
-c       Documentation
-c              iplot = 0 not plotting
-c              iplot = n diversion, instream or gage ID to plot
-c
-c
-c _________________________________________________________
-c	Dimensions
+c	             Dimensions
 c
       include 'common.inc'
       character  cplot*12            
 c
 c _________________________________________________________
 c		Step 1; Initialize
-c                           
+c
+c                                    
+c rrb 2021/04/18; Compiler warning 
+      istop=istop
+c                                       
+c rrb 2021/04/18; Compiler warning      
+      iexit=0                           
+      if(iexit.gt.0) goto 500                                    
                            
       write(6,*) ' Subroutine Outpltd'
       write(6,*) ' '             
@@ -187,10 +183,15 @@ c        Formats
      1  ' Deplete,',
      1  ' GW Stor,  Inflow,  Divert, by Well, Outflow,    Flow,',/
      1  2('___________ ,'),2(' ____,'), 30(' _______,'))
-  200  format(2(a12,','),i5,',', 2x, a3, ',', 40(f8.0,','))
-  210  return
+  200  format(2(a12,','),i5,',', 2x, a3, ',', 40(f8.0,','))    
+c                                        
+c rrb 2021/04/18; Compiler warning       
+cx210  return
   220  write(6,*)  '   Outdiv; Requested data exceeds binary file size'
        write(99,*) '   Outdiv; Requested data exceeds binary file size'
+c
+c _________________________________________________________          
+  500  return        
 c
 c _________________________________________________________
 c

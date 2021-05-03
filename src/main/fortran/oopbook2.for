@@ -83,6 +83,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2006/07/17; Copy OopBook and revise accordingly
 c
 c _________________________________________________________
@@ -140,6 +142,10 @@ c
 c _________________________________________________________
 c
 c               Step 1 Initialize
+c
+c
+c rrb 2021/04/18; Compiler warning
+      rec12=' '
 c
 c		iout=1 details
 c		iout=2 summary
@@ -660,7 +666,7 @@ c _________________________________________________________
 c
 c               Formats
 c
- 260    format(a12, 1x, i5, f8.0)         
+cx 260    format(a12, 1x, i5, f8.0)         
  270  format(/, 72('_'),/
      1 '  OopBook2; Out-of-Priority Storage (Type 8)',/
      1 '          Operation Right ID = ', a12,

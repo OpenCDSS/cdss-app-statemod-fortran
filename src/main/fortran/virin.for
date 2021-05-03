@@ -44,7 +44,11 @@ c               ityp = 0 called 1x per simulation
 c               ityp = 1 called 1x per year
 c
 c _________________________________________________________
-c	Dimensions
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+c _________________________________________________________
+c	      Dimensions
 c
       include 'common.inc'
       dimension x(12)      
@@ -375,7 +379,9 @@ c
 c ---------------------------------------------------------
 c 
 c              Step 4; Read node data for base flow estimate 
-  120   i = 0
+c rrb 2021/04/18; Compiler warning  
+cx120   i = 0 
+        i = 0
   130   i = i+1
 c
 c rrb 2006/03/07; Allow comments in the file  
@@ -414,7 +420,7 @@ c           write(nlog,*) ' Virin; cgagen ',  cstaid(is)
 cr      write(nlog,152) i, cgagen(i), nbase(i), c, cgageb(i), 
 cr   1            (cnode(j,i), cgagex(j,i), j=1,nbase(i))
   150   format(12x, f8.0, i8, 26(f8.0,1x,a12))
-  152   format(i5,7x, f8.0, i8, 26(f8.0,1x,a12))
+cx152   format(i5,7x, f8.0, i8, 26(f8.0,1x,a12))
 c
 c ---------------------------------------------------------
 c          
@@ -959,9 +965,9 @@ c               Formats
 
   280 FORMAT(a12, a24, a12, 1x, a12)
   281 FORMAT(i5,1x, a12, a24, a12, 1x, a12)
-  283 FORMAT(a12, a24, a12, 1x, a12)
-  284 FORMAT(i5, 1x, a12, a24, a12, 1x, a12)
-  
+cx  283 FORMAT(a12, a24, a12, 1x, a12)
+cx  284 FORMAT(i5, 1x, a12, a24, a12, 1x, a12)
+cx  
   290 format(/,72('_'),/
      1'  Virin;    Warning the following stations in the ',
      1'            ',a48,/
@@ -1000,13 +1006,13 @@ c               Error
      1  ' NOT ENOUGHT DATA IN THE Diversion to Recharge file (*.dre)')
       goto 9999
 
-  350 write(nlog,360) cistat,iyr,cresid(nr)
-      write(6,360) cistat,iyr,cresid(nr)
-  360 FORMAT(
-     1 ' STATION ',a12,' OF EOM. FILE IN ',I5,' IS DIFFERENT than'/,
-     1 ' STATION ',a12,' IN RESERVOIR STATION FILE (*.res)')
-      goto 9999
-
+cx350 write(nlog,360) cistat,iyr,cresid(nr)
+cx    write(6,360) cistat,iyr,cresid(nr)
+cx360 FORMAT(
+cx   1 ' STATION ',a12,' OF EOM. FILE IN ',I5,' IS DIFFERENT than'/,
+cx   1 ' STATION ',a12,' IN RESERVOIR STATION FILE (*.res)')
+cx    goto 9999
+cx
   370 write(6,380)
       write(nlog,380)
   380 format(' not enough data in the historic stream flow file') 
@@ -1020,13 +1026,13 @@ c               Error
      1  '       not found in the network file')
       goto 9999  
       
-  394 write(nlog,396) cistat
-      write(6,396) cistat
-      
-  396 format(
-     1  'Virin; station ',A12,' of river gage file (*.rig)',/
-     1  '       not found in the river station file (*.ris)')
-      goto 9999  
+cx  394 write(nlog,396) cistat
+cx      write(6,396) cistat
+cx      
+cx  396 format(
+cx     1  'Virin; station ',A12,' of river gage file (*.rig)',/
+cx     1  '       not found in the river station file (*.ris)')
+cx      goto 9999  
 c
 c rrb 97/11/02; Error Handling
   926 write(nlog,927) iin2, filena

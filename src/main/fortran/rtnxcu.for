@@ -37,6 +37,8 @@ c		Called by DivCar & DivCarL
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning  
+c
 c rrb; 2006/09/15; Copied RtnSec and revised accordingly
 c _________________________________________________________
 c       Documentation
@@ -424,8 +426,8 @@ c               Formats
  160  format('     RtnXcu;   l2 iord  mon  idy  imo iend',
      1                   '    k   im  imx   kk',
      1                   ' ndlymx mdhday(imx)')
- 170  format('     RtnXcu;   l2 iord  mon  idy  ido iend',
-     1                   '    k   id   kk ndlymx')
+cx 170  format('     RtnXcu;   l2 iord  mon  idy  ido iend',
+cx     1                   '    k   id   kk ndlymx')
  172  format(12x, 20i5)
 
  180  format(/, 72('_'),/
@@ -443,11 +445,11 @@ c
  318  format(/,'  RtnXcu; Return Array (retur(k,iord) for ',
      1 ' month (mon) = ',i5, ' pointer (imo) = ', i5)
  320  format('  From ', i5, ' To ', i5, 1000f8.2)             
-  
- 330  format(
-     1  '  RtnXcu; FYI structure ID ', a12,' nd = ', i5, ' iuse = ',i5,/
-     1  '          is a carrier because irturn(iuse) = ',i5,/
-     1  '          Therefore average efficiency = ', f8.2, ' is used')
+cx  
+cx 330  format(
+cx     1  '  RtnXcu; FYI structure ID ', a12,' nd = ', i5, ' iuse = ',i5,/
+cx     1  '          is a carrier because irturn(iuse) = ',i5,/
+cx     1  '          Therefore average efficiency = ', f8.2, ' is used')
 c
 c
 c _________________________________________________________

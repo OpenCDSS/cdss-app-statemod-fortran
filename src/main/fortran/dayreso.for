@@ -37,6 +37,12 @@ c                      with 2 accounts will have 3 ir values 1=total
 c                      and 2 for each account
 c
 c _________________________________________________________
+c	Update History
+c
+c               Update History
+c
+c rrb 2021/04/18; Compiler warning
+c _________________________________________________________
 c
 c	Dimensions
 c
@@ -50,6 +56,9 @@ c	Initialize
 c           
       write(6,*) ' Subroutine Dayreso'
       write(6,*) ' '
+c
+c rrb 2021/04/18; Compiler warning
+      nacc=0
 c                                 
 c
 c		Set number of output values 1x in StateM.for
@@ -231,15 +240,23 @@ cx              if(id.eq.1) then
 cx                write(nlog,*) ' DayResO; ', ir, ir1, 
 cx     1           iyrmo(im), xmonam(im), id, irecr, cresid(ir)
 cx              endif
+c
+c rrb 2021/04/18; Compiler warning
+cx 100          format(
+cx     1          '  dayreso;   iy   im   id  ir1  ip1 irecr',/,
+cx     1          '  dayreso;',20i5)
 
- 100          format(
-     1          '  dayreso;   iy   im   id  ir1  ip1 irecr',/,
-     1          '  dayreso;',20i5)
               read(50,rec=irecr) (dat2(i),i=1,nres)
                      
-              ida  = dat2(nidr) 
+c
+c rrb 2021/04/18; Compiler warning
+cx              ida  = dat2(nidr) 
+cx              ida0 = ida + 1
+cx              nacc = nint(dat2(naccX))
+cx
+              ida  = nint(dat2(nidr)) 
               ida0 = ida + 1
-              nacc = dat2(naccX)
+              nacc = nint(dat2(naccX))
 c
 c               Annual total, except for initial and ending strorage
               do i=1,nresX
@@ -297,8 +314,10 @@ c               End Reservoir Loop
 c
 c        Formats
 c __________________________________________________________
-  110   format('+', '   Printing Reservoir Summary',i5,' of ', i5,
-     1              '; or ',f8.0, ' % Complete', i5)
+c
+c rrb 2021/04/18; Compiler warning
+cx  110   format('+', '   Printing Reservoir Summary',i5,' of ', i5,
+cx     1              '; or ',f8.0, ' % Complete', i5)
   160   format('___________  ____ ____ ____ ___', 23(' _______'))
   190 FORMAT('',/,'    Reservoir Summary ',a5,/,3x,a80,/,
      1       3X,A80,53X, 'PAGE NO. ',I3,//,

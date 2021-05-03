@@ -29,6 +29,8 @@ c               Similar to ifrrig
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 01/29/95 Simplified logic per R. Bethel & R. Bennett
 c rrb 04/22/96 Added instream reach capabilities by minimum 
 c rrb 08/07/96 Instream Flow reach by reach node
@@ -63,13 +65,20 @@ c	Dimensions
 c
 c _________________________________________________________
 c		Step 0; Initialize
-c		iout = Detailed output based on control data
-c		       0 no details
-c		       1 details
-c                      2 summary      
-c		ioutX = Detailed output based on compiling code
-c		       0 no details
-c		       1 summary
+c
+c rrb 2021/04/18; Compiler warning
+      aloifr=0.0
+      flowrq1=0.0
+      divi1=0.0
+      avail1=0.0
+c      
+c		            iout = Detailed output based on control data
+c		                   0 no details
+c		                   1 details
+c                                  2 summary      
+c		            ioutX = Detailed output based on compiling code
+c		                   0 no details
+c		                   1 summary
       iout=0
       ioutiw=0
       ioutX=0

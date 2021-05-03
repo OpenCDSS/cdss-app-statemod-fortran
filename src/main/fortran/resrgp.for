@@ -35,6 +35,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c     2006/09/29; Copied ResRg1 and revised accordingly
 c
 c _________________________________________________________
@@ -65,6 +67,12 @@ c
 c _________________________________________________________
 c
 c               Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      ircd=0
+      nr=0
+      cidvri=' '
+
 c
 c		iout = 0 no details
 c		       1 details
@@ -419,13 +427,13 @@ c
 c _________________________________________________________
 c
 c               Formats
-  101  format(/,
-     1   '  ResRgP;  iyr  mon  l2 nrown iownx   n   n1 cursa',/
-     1   '  ResRgP;', 7i5, f10.2)
-
-  160   FORMAT(/, 80('-'),/,' ResRgP; Avail in')
-  170   FORMAT(/,' ResRgP; Avail out')
-  180   format(10f8.0)
+cx101  format(/,
+cx   1   '  ResRgP;  iyr  mon  l2 nrown iownx   n   n1 cursa',/
+cx   1   '  ResRgP;', 7i5, f10.2)
+cx
+cx160   FORMAT(/, 80('-'),/,' ResRgP; Avail in')
+cx170   FORMAT(/,' ResRgP; Avail out')
+cx180   format(10f8.0)
   
   270   FORMAT(/, 72('_'),/
      1 '  ResRgP; Standard Reservoir Storage ',/

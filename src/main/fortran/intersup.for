@@ -33,6 +33,12 @@ c                 allowing an instream flow (nf) to divert water that
 c                 would have been diverted by a direct flow right (isr)
 c                 based on the natural flow at a stream station (isx)
 c
+c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c       Documentation
 c
@@ -68,6 +74,11 @@ c
 c _________________________________________________________
 c
 c               Step 1; Initialization - General
+c
+c rrb 2021/04/18; Compiler warning
+       pavail=0.0
+       divalo=0.0
+       aloifr=0.0
 c
 c               a. Convergence 
       small = 0.001

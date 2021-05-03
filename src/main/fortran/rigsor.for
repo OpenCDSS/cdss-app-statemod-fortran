@@ -22,25 +22,38 @@ c_________________________________________________________________NoticeEnd___
 C
 c
 c _________________________________________________________
-c	Program Description
+c	     Program Description
 c
 c       Rigsor; It sorts water rights by priority
 c
-c
+c_________________________________________________________________
+c                                                                 
+c      Update History                                            
+c                                                                 
+c rrb 2021/04/18; Compiler warning                                
 c _________________________________________________________
-c	Dimensions
+c	     Dimensions
 c
       include 'common.inc'
       real*8 rwr
       dimension rwr(maxnwrx)
-      DIMENSION IWR(maxnwrx),KWR(maxnwrx),LWR(maxnwrx)
-      INTEGER*4 I4
+      DIMENSION IWR(maxnwrx),KWR(maxnwrx),LWR(maxnwrx)  
+c                                       
+c rrb 2021/04/18; Compiler warning      
+cx    INTEGER*4 I4
 c
 c _________________________________________________________
 c
-
-      I4(I)=I
-
+c               Step 1a - Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      iprob=0                 
+      if(iprob.gt.0) goto 9999
+c
+C-------------------------------------------------------------------
+c                                
+c rrb 2021/04/18; Compiler warning
+cx    I4(I)=I
 c     ldem=5285
 c                           
 c rrb 06/18/96; Check for local dimensions
@@ -56,7 +69,7 @@ c       write(99,*) '  Rigsor; Local dimension exceeded'
 c       write(99,*) '          local, maxnwr, maxsta*3 = ', 
 c    1                         ldem,  maxnwr, maxsta*3
 c       write(99,*) '  Revise common.for, statem.f & somnmy'
-c       goto 330
+c       goto 9999
 c     endif
 c                           
 c rrb 06/18/96; Check for local dimensions
@@ -64,7 +77,7 @@ c     if(ntorig.gt.ldem) then
 c       write(99,*) '  Rigsor; Local dimension exceeded'
 c       write(99,*) '          local, ntorig = ', ldem, ntorig
 c       write(99,*) '  Revise common.for, statem.f & somnmy'
-c       goto 330
+c       goto 9999
 c     endif
 C
 C-------------------------------------------------------------------
@@ -135,8 +148,10 @@ C
       CALL SOMNMY(Rwr,IWR,NTORIG,maxnwr)
 C
 c     write(6,*) 'OUT FROM SORTING ROUTINE'
-C
-  310 DO 320 IW=1,NTORIG
+C                      
+c rrb 2021/04/18; Compiler warning
+cx310 DO 320 IW=1,NTORIG 
+      DO 320 IW=1,NTORIG  
       M=IWR(IW)
       NWRORD(1,IW)=KWR(M)
       NWRORD(2,IW)=LWR(M)
@@ -146,8 +161,10 @@ c _________________________________________________________
 c
 c
       RETURN
-c
-  330 write(6,*) '  Stopped in Rigsor, see the log file (*.log)'
+c      
+c rrb 2021/04/18; Compiler warning
+c 330 write(6,*) '  Stopped in Rigsor, see the log file (*.log)'
+ 9999 write(6,*) '  Stopped in Rigsor, see the log file (*.log)'
       write(99,*) '  Stopped in Rigsor'
       write(6,*) 'Stop 1'       
       call flush(6)

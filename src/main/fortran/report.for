@@ -57,6 +57,9 @@ c    24   ' Reach Report (*.xrh)                             ',
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 02/05/07; Added call year to get year information
 c
 c _________________________________________________________
@@ -70,6 +73,11 @@ c
 c
 c _________________________________________________________
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      crch=' '
+      filena1=' '
+      ftype=' '
 c
 c      
 c      
@@ -1391,8 +1399,8 @@ c               Formats
      
   152   format(i5, 1x, a12, 1x, a24, 1x, f8.0)
 
-  180 FORMAT(7I2)
-  
+cx  180 FORMAT(7I2)
+cx  
   190 FORMAT(//,
      1 ' Report; The report option provided (if any) cannot be found',/
      1 '         Note StateM.log contains the command provided',/
@@ -1424,11 +1432,12 @@ c               Formats
      1          ' 22 : Well Plan Summary (*.xwp)',/
      1          ' 23 : Aug plan to Well Structures (*.xpw)',/
      1          ' 24 : Reach Report (*.xrh)',/)
-
-  200   FORMAT(//,'  Report; OUTPUT OPTION :',/,
-     1            ' 1 : Monthly',/,
-     1            ' 2 : Average',/,
-     1            ' 3 : Both'/)
+c
+c rrb 2021/04/18; Compiler warning
+cx  200   FORMAT(//,'  Report; OUTPUT OPTION :',/,
+cx     1            ' 1 : Monthly',/,
+cx     1            ' 2 : Average',/,
+cx     1            ' 3 : Both'/)
  1640 format(/,72('-'),/
      1 '  Mdainp; WARNING FILE ', A5,/ 
      1 '          HAS A UNIT CONVERSION FACTOR         = ', F10.4,/

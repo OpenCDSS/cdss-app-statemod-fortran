@@ -23,26 +23,30 @@ c_________________________________________________________________NoticeEnd___
      1  diwrGS1, diwrGF1, ncallX)
 c
 c _________________________________________________________
-c     SetDem; It Sets demand data for a diversion
-c     or well.  Note the well may operate independently (nd2=0)
-c     or as part of a diversion system (nd2>0) 
+c
 c
       include 'common.inc'
       character cstaid1*12
-c
-
-c
 c _________________________________________________________
-c	Program Description
+c	      Program Description
 c
 c     SetDem; it sets well demand depending on the type of
 c     demand specified (idemtyp) and if the well is tied
 c     to a diversion (nd2>0) or not (nd2=0)
 c _________________________________________________________
 c
-c		  Step 1; Initialize
+c       Update History                                            
+c                                                                 
+c rrb 2021/04/18; Compiler warning                                
+c           
+c _________________________________________________________
+c		    Step 1; Initialize
 c
+c rrb 2021/04/18; Compiler warning
 
+      isub=isub
+      ncallx=ncallx
+      
       iout=0
       small=0.001
 c _________________________________________________________

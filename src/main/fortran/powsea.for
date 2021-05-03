@@ -32,6 +32,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
 c             From Storage to River for Exchangec Carried, Other 
 c
@@ -54,6 +56,11 @@ c
 c
 c _________________________________________________________
 c
+c
+c rrb 2021/04/18; Compiler warning
+      floavl=0.0
+      ioutiw=0
+      rec12=rec12
 c
 c		iout=1 details
 c		iout=2 summary if ...

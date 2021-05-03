@@ -35,10 +35,13 @@ c
 c _________________________________________________________
 c
 c       Update History
-c        
-c rrb 00/02/09; Revised checks on return % to mdainp to allow
+c
+c
+c rrb 2021/04/18; Compiler warning
+c       
+c rrb 2000/02/09; Revised checks on return % to mdainp to allow
 c               check on (reutn %) * (sum return table)
-c rrb 01/10/08; Revise dimension 20000 - 10000
+c rrb 2001/10/08; Revise dimension 20000 - 10000
 c
 c
 c _________________________________________________________
@@ -70,6 +73,10 @@ c jhb 2014/06/26 gfortran is more strict about the dummy char arg fortran requir
 c
 c _________________________________________________________
 c
+c
+c rrb 2021/04/18; Compiler warning
+        iloss=iloss
+        pctlosw(1)=pctlosw(1)
 c
 c       write(nlog,*) ' Getrtnw; iprintX ', iprintX
 
@@ -233,13 +240,13 @@ c
      1       '           cannot be the most downstream node in a ',/
      1       '           reach. Add another node to the river ', 
      1                  'network (*.rin) file')
- 1282 FORMAT(/,
-     1       '  Getrtnw; Warning the following wells have a return ',/
-     1       '           location that is available to the diverter:',/
-     1       '           Well ID:                       ',a12,/, 
-     1       '           Well name:                     ',a24,/, 
-     1       '           Located at river ID:           ',a12,/,  
-     1       '           Has a return flow to river ID: ',a12)
+cx 1282 FORMAT(/,
+cx     1       '  Getrtnw; Warning the following wells have a return ',/
+cx     1       '           location that is available to the diverter:',/
+cx     1       '           Well ID:                       ',a12,/, 
+cx     1       '           Well name:                     ',a24,/, 
+cx     1       '           Located at river ID:           ',a12,/,  
+cx     1       '           Has a return flow to river ID: ',a12)
  1281  FORMAT(/,
      1  '  GetRtnW; Warning See *.chk for details regarding: ', a32)
      
@@ -253,20 +260,20 @@ c
      1  ' ____________ ____________ ____________')
  1285 format(i5, 1x,a12, 1x,a24, 1x,a12, 1x,a12, 1x,a12)
 
- 1290 FORMAT(/, '  GetrtnW;',
-     1       ' FYI Well Structues with Loss or Salvage Data ',/
-     1       '          ID            Return    Loss Deplete',
-     1                            ' Salvage   Total',/
-     1       '          ____________ _______ _______ _______',
-     1                            ' _______ _______')
- 1291 format(10x,a12, 2f8.0, 16x,f8.0)
- 1293 format(10x,a12, 16x, 3f8.0)
- 1292 FORMAT('  GetrtnW; Problem station ',a12,
-     1 ' of the Well Station File (*.dds)',/
-     1 10x, ' has the following return data:',/
-     1 10x, ' Total of all returns = ', f8.2)
-
- 1300 FORMAT(' Getrtnw; TOO MANY DIVERSION PROJECTS,     MAXIMUM = ',I5)
+cx 1290 FORMAT(/, '  GetrtnW;',
+cx     1       ' FYI Well Structues with Loss or Salvage Data ',/
+cx     1       '          ID            Return    Loss Deplete',
+cx     1                            ' Salvage   Total',/
+cx     1       '          ____________ _______ _______ _______',
+cx     1                            ' _______ _______')
+cx 1291 format(10x,a12, 2f8.0, 16x,f8.0)
+cx 1293 format(10x,a12, 16x, 3f8.0)
+cx 1292 FORMAT('  GetrtnW; Problem station ',a12,
+cx     1 ' of the Well Station File (*.dds)',/
+cx     1 10x, ' has the following return data:',/
+cx     1 10x, ' Total of all returns = ', f8.2)
+cx
+cx 1300 FORMAT(' Getrtnw; TOO MANY DIVERSION PROJECTS,     MAXIMUM = ',I5)
  1302 FORMAT(' Getrtnw; TOO MANY RETURN FLOW STATIONS,   MAXIMUM = ',I5) 
 
  9999 write(6,1440)

@@ -47,6 +47,8 @@ c
 c _________________________________________________________
 c
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 2006/12/27; Revised to allow carrier losses to be routed
 c		              to a recharge plan
 c rrb 2006/09/25; Revised to allow carrier losses to be routed
@@ -211,6 +213,11 @@ c
 c     
 c _________________________________________________________
 c               Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      divalo=0.0
+      irow=0
+      nsr=0
 c               a. Convergence
       small=0.001
 c
@@ -1042,7 +1049,10 @@ c
 c               Step 11; Set actual diversion (divact)
 c 
 c
-  200 IF(iresw.eq.0) then
+c
+c rrb 2021/04/18; Compiler warning
+cx200 IF(iresw.eq.0) then
+      IF(iresw.eq.0) then
         if(IRI.LE.IRE.AND.IRTURN(IUSE).NE.4) GOTO 210
       endif
 c
@@ -1570,8 +1580,10 @@ c
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' _________ _________ _________ _________ _________ _________',/
      1  i5,1x,a4,1x,a12,1x, 7i8, 20F10.2)
-  400 format(' divcar: avail  ',10f10.2)
-  410 format(' divcar: river  ',10f10.2)
+c
+c rrb 2021/04/18; Compiler warning
+cx  400 format(' divcar: avail  ',10f10.2)
+cx  410 format(' divcar: river  ',10f10.2)
   420 format(' Divcar; ',a12,1x,6i5,20f8.0)
      
   430 FORMAT(/, ' Divcar; Problem the plan type must be an 8',/

@@ -28,6 +28,12 @@ c       Ouflow; It prints selected matrix data
 c _________________________________________________________
 c       Update History
 c
+c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 2000/11/28; Changed file 10 to 13 to correct a problem related 
 c               to adding an annual time series file *.tsp in mdainp.f
 c rrb 2003/07/07; revised treatment of missing data to correct a
@@ -44,6 +50,11 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
 c
+c
+c rrb 2021/04/18; Compiler warning
+        numhis=0
+        iin2=0
+        
         iout=0
         unitc = 1.0
         if(iresop.eq.2)  unitc = factor

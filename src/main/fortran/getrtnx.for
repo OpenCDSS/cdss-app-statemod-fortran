@@ -51,6 +51,9 @@ c _________________________________________________________
 c
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2007/12/26; For a T&C Plan Store the Plan ID in irntsa1 not
 c		  the river ID. This allows return various T&C 
 c		  locations to be tracked separately
@@ -132,6 +135,25 @@ c
 c _________________________________________________________
 c
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning
+        iin2=iin2
+        in1=in1
+        interv=interv
+        iloss=iloss
+        maxdvrw=maxdvrw
+        cgoto=' '
+        cirtndlx=' ' 
+        filena=filena
+        ji=0
+        je=0
+        do i=1,maxrtnw
+          pctlosx(i)=pctlosx(i)
+        end do   
+c
+c ---------------------------------------------------------
+c                 Detailed output    
+c
 c			  iout=1 print return flow details
 c		         2 summary
         iout=0
@@ -293,7 +315,10 @@ c                        even if provided in a random order
       j1=0
       do nw=1,numdivX
         do j=1,numrtnX
-          k=tempX(j)
+c
+c rrb 2021/04/18; Compiler warning
+cx        k=tempX(j)
+          k=nint(tempX(j))
           if(k.eq.nw) then
             j1=j1+1
             pcttotX(j1) = pcttot1(j)
@@ -387,14 +412,13 @@ c _________________________________________________________
 c
 c               Error Handling
 c
-  928 write(nlog,929) in2, filena
-  929 format(/,72('_'),/
-     1' GetRtnX; Problem reading file # ', i4,/,
-     1       '   File name: ', a256,/
-     1       '   Problem record (next line):')
-      goto 9999
-      
-      
+cx928 write(nlog,929) in2, filena
+cx  929 format(/,72('_'),/
+cx     1' GetRtnX; Problem reading file # ', i4,/,
+cx     1       '   File name: ', a256,/
+cx     1       '   Problem record (next line):')
+cx      goto 9999
+cx         
  1400 write(nlog,1402) cistat, cstrtypX(istrtyp), cstridX(istrtyp)
  1402 FORMAT(/,72('_'),/
      1 '  GetRtnX; Problem.'
@@ -450,10 +474,10 @@ c               Formats
      1  9x, 'Exceeds the dimension = ', i5,/
      1  ' Reconmend you revise the common block size')
      
- 1260 format(36x,a12,f8.0,i8)
- 
- 1262 format(36x,a12,f8.0,a12)
- 
+cx 1260 format(36x,a12,f8.0,i8)
+cx 
+cx 1262 format(36x,a12,f8.0,a12)
+cx 
  1272 FORMAT(/,72('_'),/
      1 '  GetRtnX: Problem; Return flow to ',a12,
      1 ' from Structure',a12, /
@@ -474,24 +498,24 @@ c               Formats
      1  ' ____________ ____________ ____________')
  1285 format(i5, 1x,a12, 1x,a24, 1x,a12, 1x,a12, 1x,a12)
  
- 1290 FORMAT(/, 
-     1 '  GetRtnX;',
-     1       ' FYI Well Structues with Loss or Salvage Data ',/
-     1       '          ID            Return    Loss Deplete',
-     1                            ' Salvage   Total',/
-     1       '          ____________ _______ _______ _______',
-     1                            ' _______ _______')
-     
- 1291 format(10x,a12, 2f8.0, 16x,f8.0)
- 
- 1293 format(10x,a12, 16x, 3f8.0)
- 
- 1292 FORMAT(/,72('_'),/
-     1 '  GetRtnX; Problem station ',a12,
-     1 ' of the Well Station File (*.dds)',/
-     1 10x, ' has the following return data:',/
-     1 10x, ' Total of all returns = ', f8.2)
-
+cx 1290 FORMAT(/, 
+cx     1 '  GetRtnX;',
+cx     1       ' FYI Well Structues with Loss or Salvage Data ',/
+cx     1       '          ID            Return    Loss Deplete',
+cx     1                            ' Salvage   Total',/
+cx     1       '          ____________ _______ _______ _______',
+cx     1                            ' _______ _______')
+cx     
+cx 1291 format(10x,a12, 2f8.0, 16x,f8.0)
+cx 
+cx 1293 format(10x,a12, 16x, 3f8.0)
+cx 
+cx1292 FORMAT(/,72('_'),/
+cx    1 '  GetRtnX; Problem station ',a12,
+cx    1 ' of the Well Station File (*.dds)',/
+cx    1 10x, ' has the following return data:',/
+cx    1 10x, ' Total of all returns = ', f8.2)
+cx  
  1300 FORMAT(/,72('_'),/
      1 ' GetRtnX; Problem TOO MANY RETURN FLOW STATIONS, MAXIMUM = ',I5) 
  

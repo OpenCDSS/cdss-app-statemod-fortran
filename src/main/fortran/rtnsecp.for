@@ -45,7 +45,8 @@ c		  retX1     immediate (this time step) return flow
 c		  pdriveX   Total plan driver
 c _________________________________________________________
 c       Update History
-c
+c          
+c rrb 2021/04/18; Compiler warning
 c rrb 2004/11/30; Copy Rtnsec and edit appropriately
 c rrb 2005/01/25; Add ability to use return table specified in the
 c		 plan data if iprf(iplan).gt.0
@@ -161,7 +162,8 @@ c   ioutP = Plan pointer for detailed data
       ireop=0
       iprintr=0
       ipid=0
-      
+      iprob=0                  
+      if(iprob.gt.0) goto 9999      
 
       ret1=0.0
       rett=0.0
@@ -314,7 +316,9 @@ c
 c _________________________________________________________
 c
 c               Step 5 - Calculate future return obligations (pobl1)
-  130   IM=0
+c rrb 2021/04/18; Compiler warning
+cx130   IM=0 
+        IM=0   
         IEND=IMO+ndly(idly)-1
 c
 c _________________________________________________________
@@ -434,8 +438,10 @@ c
 c
 c _________________________________________________________
 c
-c               Error Processing
- 200  write(nlog,210) icx, iplan
+c               Error Processing   
+c rrb 2021/04/18; Compiler warning
+cx 200write(nlog,210) icx, iplan
+ 9999 write(nlog,210) icx, iplan
  210  format('  RtnsecP; Problem when called by routine # ', i5,/
      1       ' iplan = ', i15)
                                       

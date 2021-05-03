@@ -51,7 +51,7 @@ c rrb 2017/10/20; Variables used but not set
 
 c jhb 2014/06/26 temporary fix...
       if(ndns.lt.0 .or. ndns.gt.maxsta) then
-        write(99,*) '  DnmFso; ndns has invalid value. Exiting routine.'
+        write(99,*) '  DnmFso; ndns has invalid value. ndns = ', ndns
         imcd=iscd
         return
       endif

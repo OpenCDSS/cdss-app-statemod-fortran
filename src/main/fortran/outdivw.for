@@ -31,6 +31,7 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/03/20; Compiler Update     
 c
 c rrb 2020-04-03; Redefine column 11 from Carried, Exchang, Bypass to'
 c                 Carried, Exchang, Other'
@@ -73,8 +74,17 @@ c _________________________________________________________
 c		Step 1; Initialize
 c
 c
-c		iout=1 print multiple structure warning     
-     
+c rrb 2021/03/20; Compiler Update 
+      is2=0    
+      iprob=0
+      rec4=' '
+      rec24=' '
+      if(iprob.gt.0) goto 9999
+      iexit=0
+      if(iexit.gt.0) goto 500
+c
+c		              iout=1 print multiple structure warning     
+c     
       write(6,101) 'OutDivW '
       write(nlog,101) 'OutDivW '
  101  format(/,72('_'),/'  Subroutine ', a8)
@@ -208,11 +218,12 @@ cr      nd = dat1(ndiv-1)
 cr      na = dat1(ndiv)
 cr      nd = dat1(ndiv-3) 
 cr      na = dat1(ndiv-2)
-        
-        nd = dat1(nRid)
-        na = dat1(nXstr)
-        
-        
+c
+c rrb 2021/03/20; Compiler Update     
+cx      nd = dat1(nRid)
+cx      na = dat1(nXstr)
+        nd = nint(dat1(nRid))
+        na = nint(dat1(nXstr))
 c
 c _________________________________________________________
 c
@@ -427,7 +438,10 @@ c		Set call location
 c
 c rrb 2006/03/07; Set to a variable based on column location
 c           imcdX=dat1(ndiv-1)
-            imcdX=dat1(nrimcdX)
+c
+c rrb 2008/06/10; Correction            
+cx          imcdX=dat1(nrimcdX)
+            imcdX=nint(dat1(nrimcdX))
             
             if(imcdX.gt.0) then
               ccallID=cstaid(imcdX)
@@ -449,7 +463,10 @@ c		Adjust reporting if it is short but not called out
 c
 c rrb revise for minor roundoff
 c           if(imcdX.le.0 .and. dat1(nshort).gt.small) then
-            ishort=dat1(nshort)
+c
+c rrb 2021/04/18; Compiler warning
+cx          ishort=dat1(nshort)
+            ishort=nint(dat1(nshort))
 c
 c rrb 2008/06/10; Correction            
             if(imcdX.eq.0 .and. ishort.gt.0) then
@@ -577,13 +594,21 @@ c     1  ' Priorty   Other    Loss  Bypass   SoilM  Supply   Short',
   242  format(2a12,i5, 2x, a3, 29f8.2, 1x, a12,f12.3,20f8.2)
   260  format('+', '   Printing Diversion & Stream Summary',
      1        i5,' of ', i5, '; or ',f8.0, ' % Complete')
-  270  return
+c
+c ___________________________________________________________________
+c
+c rrb 2021/03/20; Compiler Update     
+cx270  return
+  500  return
 c
 c               Error messages
   280  write(99,*) '   Outdivw; Requested data exceeds binary file size'
 c
 c               Error Warning
-  290 write(6,300) 
+c
+c rrb 2021/03/20; Compiler Update     
+cx290 write(6,300) 
+ 9999 write(6,300) 
       write(99,310) 
   300 format('    Stopped in Outdivw',/,
      1       '    See the *.log file')

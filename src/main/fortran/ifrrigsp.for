@@ -39,6 +39,9 @@ c _________________________________________________________
 c
 c	Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/07/28; Version 16.00.38
 c                 Correction do not accrue the amount diverted
 c                 by this operating rule to the water right divi(l2)
@@ -197,9 +200,14 @@ c	Dimensions
      1  cwhy2*48, subtypX*8
 c_______________________________________________________________________
 c               Step 1; Common Initialization
-c		  iout=0 no details
-c		     1 details
-c		     2 summary
+c
+c rrb 2021/04/18; Compiler warning
+      cresid1=' '
+      rec12=' '
+c      
+c		            iout=0 no details
+c		                 1 details
+c		                 2 summary
 c     write(nlog,*) ' IfrRigSP; nplan', nplan     
       subtypX='ifrrigsp'
       isub=50
@@ -434,7 +442,11 @@ c     1  cCallBy)
       call flush(6)
       call flush(nlog)
 c rrb 2008/06/20; Allow minor roundoff
-      iavail=avail(imcd)
+c
+c rrb 2021/04/18; Compiler warning
+cx    iavail=avail(imcd)
+      iavail=nint(avail(imcd))
+      
       IF(AVAIL(IMCD).le.(-1.*small) .and. iavail.gt.-1) avail(imcd)=0.0
 c               Print warning if negative available flow      
       IF(AVAIL(IMCD).le.(-1.*small)) then
@@ -526,9 +538,9 @@ c               Step 34; Return
       RETURN
 c_______________________________________________________________________
 c               Formats
-  281   FORMAT(a12, 143x, i8, f8.0, f8.2, 1x, a24)
-  290   FORMAT(/, '  IfrRigSP_0 QDIV ',a12,/,16F7.1)
-  300   FORMAT(/, '  IfrRigSP_0 QRES ',a12,/,16F7.1)
+cx  281   FORMAT(a12, 143x, i8, f8.0, f8.2, 1x, a24)
+cx  290   FORMAT(/, '  IfrRigSP_0 QDIV ',a12,/,16F7.1)
+cx  300   FORMAT(/, '  IfrRigSP_0 QRES ',a12,/,16F7.1)
   310   FORMAT(/, '  IfrRigSP; Problem negative avail',/
      1  '  IfrRigSP    iyr  mon',
      1  '      Iw  nwrord      l2      lr     ND2   iuse2', 
@@ -537,18 +549,18 @@ c               Formats
      1  ' _______ _______ _______ _______ _______ _______', 
      1  ' _______ _______ _______ _______ _______ _______',/
      1 a12, 2i5, 9i8, 20f8.0)
-  320   format(/, '  IfrRigSP_0; avail  ',/,(10f10.2))
-  330   format(/, '  IfrRigSP_0; river  ',/,(10f10.2))
-  332   format(/, '  IfrRigSP_0; qtribu ',/,(10f10.2))
-  334   format(/, '  IfrRigSP_0; qstern ',/,(10f10.2))
-  340   format(/, '  IfrRigSP_0; Pavail, imcd, stanam ',
-     1    f8.2, i8, 1x,a24)
-  350   format(/, '  IfrRigSP; Problem with the bypass reach')   
-c rrb 2007/05/25; Add carrier Loss      
- 400  format('  IfrRigSP;   i ncar',
-     1          '  OprLossC  effmaxTX  effmaxT1',
-     1          '    divcap   divcapX   CapRemX')         
- 410  format(a10, 2i5, 20f10.0)   
+cx  320   format(/, '  IfrRigSP_0; avail  ',/,(10f10.2))
+cx  330   format(/, '  IfrRigSP_0; river  ',/,(10f10.2))
+cx  332   format(/, '  IfrRigSP_0; qtribu ',/,(10f10.2))
+cx  334   format(/, '  IfrRigSP_0; qstern ',/,(10f10.2))
+cx  340   format(/, '  IfrRigSP_0; Pavail, imcd, stanam ',
+cx     1    f8.2, i8, 1x,a24)
+cx  350   format(/, '  IfrRigSP; Problem with the bypass reach')   
+cxc rrb 2007/05/25; Add carrier Loss      
+cx 400  format('  IfrRigSP;   i ncar',
+cx     1          '  OprLossC  effmaxTX  effmaxT1',
+cx     1          '    divcap   divcapX   CapRemX')         
+cx 410  format(a10, 2i5, 20f10.0)   
 c
 c_____________________________________________________________
 c               Error warnings

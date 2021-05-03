@@ -117,8 +117,14 @@ c
 c
 c _________________________________________________________
 c               Step 1;Initialize
+c 
+c                                 
+c rrb 2021/04/18; Compiler warning  
+      iprob=0                     
+      if(iprob.gt.0) goto 9999    
+
 c
-c     iout=3 details for replacement results
+c               iout=3 details for replacement results
       iout=0
       ioutiw=0
 
@@ -510,11 +516,11 @@ c
 c _________________________________________________________
 c               Formats
 
-  120   format(
-     1      '  Replace;  iyr  mon    n   nr irow',
-     1                ' curown ritrem tranlim',/
-     1      '         ',6i5, 20f8.0)
-
+cx120   format(
+cx   1      '  Replace;  iyr  mon    n   nr irow',
+cx   1                ' curown ritrem tranlim',/
+cx   1      '         ',6i5, 20f8.0)
+cx
   122   format(/, 72('_'),/
      1 '  Replace_1; cDest       cDest1       cSour      ',
      1 '     iyr     mon       n      n1   irepn      lr',

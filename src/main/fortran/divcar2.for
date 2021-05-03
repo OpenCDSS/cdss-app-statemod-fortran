@@ -40,7 +40,11 @@ c _________________________________________________________
 c
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 00/02/21; Documented
+c
 c rrb 98/03/03; Daily capability added
 c
 c rrb 01/02/01; Call rtnsec who calls return to calculate CU,
@@ -89,6 +93,12 @@ c
 c _________________________________________________________
 c               Step 1; Initialize
 c
+c
+c rrb 2021/04/18; Compiler warning
+      iri=0
+      irow=0
+      ndr=0
+      
       iout=0
       if(ichk.eq.119) iout=1
 
@@ -353,7 +363,10 @@ c
 c               Step 9; Set actual diversion (divact)
 c _________________________________________________________
 c
-  200 IF(iresw.eq.0.and.IRI.LE.IRE.AND.IRTURN(IUSE).NE.4) GO TO 210
+c
+c rrb 2021/04/18; Compiler warning
+cx200 IF(iresw.eq.0.and.IRI.LE.IRE.AND.IRTURN(IUSE).NE.4) GO TO 210
+      IF(iresw.eq.0.and.IRI.LE.IRE.AND.IRTURN(IUSE).NE.4) GO TO 210
 c
 c               a. Case 1 No return flow asjustemnt
 c                  (irturn=4=transmountain)

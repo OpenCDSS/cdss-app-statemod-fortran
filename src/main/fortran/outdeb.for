@@ -25,6 +25,12 @@ c _________________________________________________________
 c	Program Description
 c
 c       Outdeb; Print data check information
+c                                 
+c_________________________________
+c                                 
+c       Update History            
+c                                 
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
 c	Dimensions
@@ -37,7 +43,10 @@ c
 c
 c _________________________________________________________
 c		Step 1; Initialize
-
+c                                  
+c rrb 2021/04/18; Compiler warning       
+      rec12=' '
+c
       iout=0
       if(iout.eq.1) then
         WRITE(nlog,430) ntorig
@@ -555,13 +564,15 @@ c              Formats
      1 '#',/
      1 '# ID         Name                     Typ OnOff  ',/
      1 '#b----------eb-----------------------eb-exb---e')
- 480  format(
-     1 '#',/
-     1 '# *.xrh (*.rch); Preliminary reach ID',/
-     1 '#',/
-     1 '# ID         Name                     Typ  Zone',/
-     1 '#b----------eb-----------------------eb-exb---e')
- 490  format(' ',/,80('_'),/)
+cx 480  format(
+cx     1 '#',/
+cx     1 '# *.xrh (*.rch); Preliminary reach ID',/
+cx     1 '#',/
+cx     1 '# ID         Name                     Typ  Zone',/
+cx     1 '#b----------eb-----------------------eb-exb---e')    
+cx
+cx 490  format(' ',/,80('_'),/)  
+cx
 c
 c _________________________________________________________
 c

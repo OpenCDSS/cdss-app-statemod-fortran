@@ -21,12 +21,17 @@ c_________________________________________________________________NoticeEnd___
         subroutine year2(nlog, mthday, xmon, xmonam,  cyr1, imstr)
 c
 c _________________________________________________________
-c	Program Description
+c	     Program Description
 c
 c
-c       Year2; It sets selected data associated with a year type 
+c       Year2; It sets selected data associated with a year type  
+c _________________________________________________________ 
+c
+c      Update History
+c
+c rrb 2021/04/18; Compiler warning 
 c _________________________________________________________
-c	Dimensions
+c	     Dimensions
 c
       dimension
      1 xmon(12),   mthd(12), 
@@ -35,6 +40,9 @@ c
 c
 c _________________________________________________________
 c		Step 1; Initialize        
+c 
+c rrb 2021/04/18; Compiler warning
+      nlog=nlog
 c
       xmon(1)  = 'JAN '
       xmon(2)  = 'FEB '

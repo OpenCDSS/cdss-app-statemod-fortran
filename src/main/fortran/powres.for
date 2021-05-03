@@ -28,9 +28,13 @@ c       Powres; It simulates a power or ISF right
 c
 c _________________________________________________________
 c       Update History
-c
+c                              
+c rrb 2021/04/18; Compiler warning
+c                                 
 c rrb 03/13/96; initialize divact, send returns to bottom & set divo
-c rrb 98/03/03; Daily Capability
+c
+c rrb 98/03/03; Daily Capability            
+c
 c rrb 02/10/25; Allow monthly on/off switch
 c
 c _________________________________________________________
@@ -209,7 +213,10 @@ c
 c _________________________________________________________
 c
 c		Step 11; Adjust
-  120 RELAF=DIVACT*fac
+c                                 
+c rrb 2021/04/18; Compiler warning                                
+cx120 RELAF=DIVACT*fac  
+      RELAF=DIVACT*fac 
 c
 c		a. Reservoir
       CURSTO(NR  )=CURSTO(NR  )-RELAF

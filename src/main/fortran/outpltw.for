@@ -22,13 +22,18 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c	    Program Description
 c
 c       Outpltw; It generates a plot file of well data
 c
+c _________________________________________________________
+c     Update History
+c
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c
 c _________________________________________________________
-c	Documentation
+c	     Documentation
 c
 c              iplot = 0 not plotting
 c              iplot = n diversion, instream or gage ID to plot
@@ -42,6 +47,9 @@ c
 c
 c _________________________________________________________
 c		Step 1; Initialize
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+      is=0
                            
       write(6,*) ' Subroutine Outpltw'
       write(6,*) ' '             
@@ -77,7 +85,10 @@ c              Find well ID
       endif
 c
 c              Print title 
-  140 write(9,190) iystr, iyend, cunitm2, cyr1
+c
+c rrb 2021/04/18; Compiler warning
+cx140 write(9,190) iystr, iyend, cunitm2, cyr1
+      write(9,190) iystr, iyend, cunitm2, cyr1
 c
 c               Get Data
 c-------------------------------------------------------------------
@@ -113,6 +124,9 @@ c
 c               End Year Loop      
   180   continue
 c
+c rrb 2021/04/18; Clean up  
+        return
+c
 c
 c _________________________________________________________
 c
@@ -138,7 +152,10 @@ c    1  '________,________,',/
      1  '   River,  GwStor, Salvage,    Soil,  Source,',/
      1   2('___________ ,'), 2(' ____,'), 18(' _______,'))
   200  format(2(a12,','),i5,',', 2x, a3, ',',20(f8.0,','))
-  210  return
+c
+c rrb 2021/04/18; Compiler warning & clean up
+cx210  return
+c
   220  write(6,*)  '   Outpltw; Requested data .gt. binary file size'
        write(99,*) '   Outpltw; Requested data .gt. binary file size'
 c

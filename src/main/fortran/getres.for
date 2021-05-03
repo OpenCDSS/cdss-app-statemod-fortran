@@ -21,13 +21,17 @@ c
       SUBROUTINE GetRes(IIN, inx, numstax)
 c
 c _________________________________________________________
-c	Program Description
+c	      Program Description
 c
 c       GetRes; it reads in reservoir data
-c
 c _________________________________________________________
 c
-c	Documentation
+c       Update History
+c
+c rrb 2021/04/18; Compiler warningc
+c _________________________________________________________
+c
+c	    Documentation
 c
 c               iin  =   response file #
 c               inx  =   switch
@@ -81,16 +85,34 @@ c	Dimensions
 c
       include 'common.inc'
 c
-      DIMENSION ITEMP(numstax)
+cx    DIMENSION ITEMP(numstax)
 
-      dimension mthd(12), xmon(12)
+cx    dimension mthd(12), xmon(12)
+cx      dimension xmon(12)
 C
-      character ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
+c
+c rrb 2021/04/18; Compiler warning
+cx    character ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
+      character ch3*3, ch4*4, blank*12, crtnid*12,
      1          recin*256, cgoto2*12, cx*12, rec4*4, rec24*24,
      1          rec1*1, rec12*12, rec32*32,
      1          filenaR*256
+
 c
 c _________________________________________________________
+c
+c               Step 1 - Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      ix=0
+      inx=inx
+      numstax=numstax
+      crtnid=' '
+      cx=' '
+      rec1=' '
+      rec12=' '
+      rec4=' ' 
+      cgoto2=' '
 c
 c               Read Reservoir Station (*.res) 
 c
@@ -132,7 +154,8 @@ c
 c _________________________________________________________
 c
 c		Open input file
-  280 write(nlog,103)
+cx280 write(nlog,103)
+      write(nlog,103)
       write(6,103)
   103   format(/,
      1  '  GetRes; Reservoir Station File (*.res) ')
@@ -327,7 +350,10 @@ c
 C             
           CURSTO(NR)=CURSTO(NR)+CUROWN(J)
           ctot = ctot+ownmax(j)                       
-          if(ifix(pcteva(j)).ge.0)  sum=sum+amax1(0.,pcteva(j))
+c
+c rrb 2021/04/18; Compiler warningc
+cx        if(ifix(pcteva(j)).ge.0)  sum=sum+amax1(0.,pcteva(j))
+          if(ifix(pcteva(j)).ge.0)  sum=sum+max(0.,pcteva(j))
           if(abs(pcteva(j)).lt.small) iwarnx=1
 c
 c rrb 04/15/96 Check initial contents of an account 
@@ -395,7 +421,8 @@ cr    IF(IRESSW(NR).NE.2) Goto 330
         CUROWN(JE)=CUROWN(JE)-DEADST(NR)
       endif  
 C
-  330 NUMEPT=NUMEPT+NEVAPO(NR+1)
+cx330 NUMEPT=NUMEPT+NEVAPO(NR+1)
+      NUMEPT=NUMEPT+NEVAPO(NR+1)
 C
       IF(NUMEPT.LE.MAXEPT) Goto 340
 C
@@ -442,7 +469,8 @@ cx
       endif  
       
 C
-  360 JI=NUMRAI-NPRECP(NR+1)+1
+cx360 JI=NUMRAI-NPRECP(NR+1)+1
+      JI=NUMRAI-NPRECP(NR+1)+1
       JE=NUMRAI
 c
 c _________________________________________________________
@@ -516,7 +544,10 @@ C
 C------  SET NUMRES TO NUMBER OF RESERVOIRS READ.
 C
 c 430 numres=NR-1
-  430 numres=amax0(NR-1,0)
+c
+c rrb 2021/04/18; Compiler warning
+cx430 numres=amax0(NR-1,0)
+  430 numres=max(NR-1,0)
       write(nlog,432) numres
   432 format(/, '  GetRes; Number of Reservoirs = ', i5)
 c
@@ -764,11 +795,11 @@ c		Formats
   930  FORMAT(A256)
   940  format(4x, a256)
      
- 1021  FORMAT(/,
-     1  ' GetRes; Problem.',
-     1  ' Number of return stations = ',i5, 
-     1  9x, 'Exceeds the dimension = ', i5,/
-     1  ' recommend you revise the common block size')
+cx 1021  FORMAT(/,
+cx     1  ' GetRes; Problem.',
+cx     1  ' Number of return stations = ',i5, 
+cx     1  9x, 'Exceeds the dimension = ', i5,/
+cx     1  ' recommend you revise the common block size')
   
  1050  format(24x,4f8.0,4i8)
  1060  FORMAT(/,72('_'),/
@@ -857,12 +888,12 @@ c		Formats
      1 '          is not supported since it is EOM data.',/
      1 '          To do: set daily ID to type 0 (average) or ', 
      1           'type 3 (daily controls)')
- 1430 format(/,
-     1 '  GetRes; Reservoir Return Flow Details',/
-     1 '      nr      J2   Nrtnx pcttotw',/
-     1 ' _______ _______ _______ _______')
-     
- 1432 format(3i8, f8.0)               
+cx 1430 format(/,
+cx     1 '  GetRes; Reservoir Return Flow Details',/
+cx     1 '      nr      J2   Nrtnx pcttotw',/
+cx     1 ' _______ _______ _______ _______')
+cx     
+cx 1432 format(3i8, f8.0)               
      
      
  1470  format(/,72('_'),/

@@ -75,6 +75,8 @@ c __________________________________________________________
 c
 c               Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 01/04/02; Revised to treat reservoirs special (daily 
 c               data prevails)
 c rrb 01/08/08; Added type 4 (pattern via connecting mid points)
@@ -385,8 +387,12 @@ c               Get beginning and ending days for this month
           end do
 c 
 c               Reset month-1 & month+1 for begining and ending months
-          im=amax0(1, mon-1)
-          ip=amin0(mon+1, 12)
+c
+c rrb 2021/04/18; Compiler warning
+cx        im=amax0(1, mon-1)
+cx        ip=amin0(mon+1, 12)
+          im=max(1, mon-1)
+          ip=min(mon+1, 12)
 
 c                                                    
 c               Set day loop counters
@@ -565,7 +571,11 @@ c
 c rrb 2006/10/23; Handle month previous better
 c               Reset month-1 & month+1 for begining and ending months
             if(im.le.0) then
-              im=amax0(1, mon-1)
+c
+c rrb 2021/04/18; Compiler warning
+cx            im=amax0(1, mon-1)
+              im=max(1, mon-1)
+              
               call getEomX(is, ceom, cid1(is))
               y1=ceom
               y2=qm(i,is)
@@ -745,9 +755,12 @@ c               Formats
      1 2x, 'cfs' 5x, 3f15.2,/
      1 2x, ' af' 5x, 3f15.2)
 c    1 10x, 3f15.2,/10x,3f15.2)  
- 210   format('  Daydist; ityp, id, is, is2, qd(id,is)',
-     1         4i5, f8.2)
- 220   format('  Daydist; is, iday(is)', 2i5)
+c
+c rrb 2021/04/18; Compiler warning
+cx210   format('  Daydist; ityp, id, is, is2, qd(id,is)',
+cx    1         4i5, f8.2)
+cx220   format('  Daydist; is, iday(is)', 2i5) 
+cx
  230   format(/,'  Daydist; ',a12,/
      1  '                                          ',
      1  '  Cum       Ave     Daily     Daily',/

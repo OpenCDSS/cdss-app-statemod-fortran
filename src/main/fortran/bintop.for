@@ -33,7 +33,8 @@ c
 c
 c _________________________________________________________
 c       Update History
-c       NA
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c _________________________________________________________
 c       Documentation
 c
@@ -52,6 +53,10 @@ c
         dimension CunitX(40)
         character CodeName*8, CunitX*4
         CodeName='StateMod'
+        
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+        nx=0
         
         iout=0
         

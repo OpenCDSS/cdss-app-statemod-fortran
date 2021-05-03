@@ -31,6 +31,12 @@ c       Program Description
 c
 c       OprinOut; It prints results of reading data in Oprinp.f
 c
+c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________        
 c       Dimensions
 c
@@ -40,6 +46,13 @@ c
      1             cAssoc,  cAssoc2, cAssoc3
 c
 c _________________________________________________________
+c
+c
+c rrb 2021/04/18; Compiler warning
+      ciopso3=' '
+      ciopso4=' '
+      ciopso5=' '
+c      
 c       Step 1; Print operational rule data
 c
         write(nlog,2020) ityopr1, cidvri, ityopr1,    

@@ -39,6 +39,8 @@ c _________________________________________________________
 c
 c 	Update history
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/11/20; Version 16.00.44
 c                 Revised DivImpr (type 35) to increment qdiv(30',/
 c                   "From River by Other" but is not summed in the
@@ -152,6 +154,10 @@ c _________________________________________________________
 c               Step 1; Initialize
 c
       subtypX='divimpr'
+c
+c rrb 2021/04/18; Compiler warning
+      ireltyp=0
+      relalo=0.0
       
       iout=0
       if(ichk.eq.135) iout=2
@@ -409,7 +415,9 @@ c ---------------------------------------------------------
 c               5-e. Carrier system data 
 c jhb 2014/08 obviously, ityopr(l2) = 35, so...
 c 120  if(ityopr(l2).ne.10) then
- 120   continue
+c
+c rrb 2021/04/18; Compiler warning
+cx20   continue
 cr    if(intern(l2,1).eq.0) go to 130
       if(intern(l2,1).gt.0) then
         ccarry='Yes'
@@ -495,7 +503,11 @@ c               ireltyp = 0 release to meet demand
 c               ireltyp > 0 release only if a CIR (IWR) exists
 c                           and limit release to not exceed IWR/n  
           effmax1=effmax(nd)
-          ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+c
+c rrb 2021/04/18; Compiler warning
+cx        ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
+          ireltyp=min(iopsou(6,l2),ifix(effmax(nd)))
+          
           if(ireltyp.gt.0) then
             diwrreqX=diwrreq(iuse)
             if(diwrreq(iuse).le.small) then
@@ -907,7 +919,10 @@ c
 c
 c               Error warnings
 c _________________________________________________________
- 9999 write(6,1050) 
+c
+c rrb 2021/04/18; Compiler warning
+cx999 write(6,1050) 
+      write(6,1050) 
       write(nlog,1051) 
     
  1050 format('    Stopped in DivImpR',/,

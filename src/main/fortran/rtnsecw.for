@@ -22,9 +22,8 @@ c_________________________________________________________________NoticeEnd___
      1                   L2,IDCD,nw,nd,ieff2,ispr)
 c
 c
-c
 c _________________________________________________________
-c	Program Description
+c	      Program Description
 c
 c       Rtnsecw; Calculate return flows for wells.
 c                Similar to rtnsec but changed the following for wells
@@ -40,11 +39,15 @@ c
 c _________________________________________________________
 c       Update History
 c
-c rrb 95/03/18; removed redundant reference to over 50 tables
-c                saved as old code f031596.zip
-c rrb 98/03/17; Revised to handle daily operation
-c rrb 00/12/26; Added variable efficiency capability by
-c               adding call return and ieff2
+c rrb 2021/04/18; Compiler warning
+c
+c rrb 1095/03/18; Removed redundant reference to over 50 tables
+c                 saved as old code f031596.zip 
+c
+c rrb 1998/03/17; Revised to handle daily operation
+c
+c rrb 2000/12/26; Added variable efficiency capability by
+c                 adding call return and ieff2
 c
 c _________________________________________________________
 c       Documentation
@@ -134,6 +137,9 @@ c
 c __________________________________________________________  
 c
 c               Step 1 - Initialize
+c
+c rrb 2021/04/18; Compiler warning    
+      idcd=idcd
 c
 c     write(6,*)    '  Rtnsecw;'
 c     write(nlog,*) '  Rtnsecw;'

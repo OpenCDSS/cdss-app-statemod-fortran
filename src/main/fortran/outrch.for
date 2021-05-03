@@ -27,20 +27,30 @@ c
 c      OutRch; Print Preliminary River Data (22)
 c		           based on River Reach data (*.rir)
 c
-c	Called by Xdebug.f     
+c	             Called by Xdebug.f     
 c
+c
+c_________________________________________________________________
+c
+c               Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
-c	Documentation
-c	Rchid(is) Reach ID for station is
+c	              Documentation
+c	        Rchid(is) Reach ID for station is
 c _________________________________________________________
-c	Dimensions
+c	              Dimensions
 c
       include 'common.inc'
       
        character rec1*1, rec2*2, rec12*12,  
      1   crch4*4, rchIdX*12, rchIdY*12      
 C
-c _________________________________________________________
+c _________________________________________________________ 
+c                                  
+c rrb 2021/04/18; Compiler warning 
+      rchidy=' '
+
 c		Step 1; Initialize Reach Data
       iout=0
       write(nlog,*) ' OutRch;  numsta, nreach', numsta, nreach
@@ -149,30 +159,30 @@ c 		Formats
      1 '# ____________ __________________________ ________ ',
      1 '______________ ____')
      
- 204  format(
-     1 '#',/
-     1 '#                                         ',
-     1 'Goes To        Goes To                    ',/
-     1 '# Reach ID     Reach Name                 ',
-     1 'Reach ID       Reach Name                 ',
-     1 'At Stream ID',/
-     1 '# ____________ __________________________ ',
-     1 '______________ __________________________ ',
-     1 '______________',/
-     1 'Reach_Data')
-
- 206  format(2('"',a12,'"',1x '"',a24,'"',1x), '"',a12,'"')      
-     
- 210  format(    
-     1 a12, 1x, a12, 1x, a24)
-
- 220  format(
-     1 '#',/  
-     1 '# ID           Name                       Rch ID   ',
-     1 'Reach Name',/
-     1 '#------------exb------------------------exb------ex',
-     1 'b-----------e')
-     
+cx 204  format(
+cx     1 '#',/
+cx     1 '#                                         ',
+cx     1 'Goes To        Goes To                    ',/
+cx     1 '# Reach ID     Reach Name                 ',
+cx     1 'Reach ID       Reach Name                 ',
+cx     1 'At Stream ID',/
+cx     1 '# ____________ __________________________ ',
+cx     1 '______________ __________________________ ',
+cx     1 '______________',/
+cx     1 'Reach_Data')
+cx
+cx 206  format(2('"',a12,'"',1x '"',a24,'"',1x), '"',a12,'"')      
+cx     
+cx 210  format(    
+cx     1 a12, 1x, a12, 1x, a24)
+cx
+cx 220  format(
+cx     1 '#',/  
+cx     1 '# ID           Name                       Rch ID   ',
+cx     1 'Reach Name',/
+cx     1 '#------------exb------------------------exb------ex',
+cx     1 'b-----------e')
+cx     
  230  format(
      1 '"', a12, '"', 1x, '"',a24,'"', 1x,i8, 1x,'"',a12'"',i5)    
 c

@@ -119,9 +119,9 @@ c           if(iout.eq.0) write(99,*) ' '
             iout = 1
 c           write(99,152) iyr, mon, idy, qhistox(iss)*ft, cstaid(iss),
 c    1            (stanam(ix,iss), ix=1,6)
- 152        format('  Virnod; Warning for ', 3i5, 
-     1             ' The Base Flow of ',f10.0,
-     1             ' (af) was set to zero at ',a12,'; ', a24)
+cx152        format('  Virnod; Warning for ', 3i5, 
+cx   1             ' The Base Flow of ',f10.0,
+cx   1             ' (af) was set to zero at ',a12,'; ', a24)
 c
 c rrb 11/22/95 do not allocate negative flows to tribs
             ineg(iss) = ineg(iss) + 1

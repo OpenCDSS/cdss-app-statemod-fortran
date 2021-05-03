@@ -41,6 +41,8 @@ c
 c     Update history
 c
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2020/12/21; Update plan demand pdem(ndP) in Step 20c and include
 c                 both T&C (type 1) and Aug plan (type 2) destinations 
 c                 and add alocfs5 & alocfs6 to detailed output 
@@ -392,6 +394,17 @@ c
 
       loprR=0
       noprS=0
+c
+c rrb 2021/04/18; Compiler warning
+      tranlim=0.0
+      ncar=0
+      nro=0
+      irow=0
+      ib=0
+      ie=0
+      isown=0
+      
+      
       iout31=0
       corid1=corid(l2)
       
@@ -2710,25 +2723,25 @@ c               Formats
  280   format(a12, i5, 1x,a4,i5, 3(1x,a12), 11i6, 20f8.0, i8, 1x,a48,
      1   20f8.0)
      
- 290  format(/,
-     1 '  RivRtn; Adjusting Avail',/
-     1 '     i    l2  ncar nlast internT divact2',/
-     1 ' _____ _____ _____ _____ _______ _______')
-     
- 292  format(5i6, f8.0)   
+cx 290  format(/,
+cx     1 '  RivRtn; Adjusting Avail',/
+cx     1 '     i    l2  ncar nlast internT divact2',/
+cx     1 ' _____ _____ _____ _____ _______ _______')
+cx     
+cx 292  format(5i6, f8.0)   
  
  342   format(
      1     '  DivresP2; Diversion Limit;',
      1     '  pavail  divalo  alocfs  divact',/
      1     '                          ', 20f8.2)
      
-  360   format(/
-     1  'DivResP2;  Divact  Rettot DivLeft  Divact   CuFac    IpTC',
-     1           '     Imo    Pdem   PdemT',/
-     1  '         ', 5f8.0, 2i8, 20f8.0)
- 
-  380  format(
-     1       '  DivResP2; Problem with ', a12, 1x, a24,' Type = ', i5)
+cx360   format(/
+cx   1  'DivResP2;  Divact  Rettot DivLeft  Divact   CuFac    IpTC',
+cx   1           '     Imo    Pdem   PdemT',/
+cx   1  '         ', 5f8.0, 2i8, 20f8.0)
+cx
+cx380  format(
+cx   1       '  DivResP2; Problem with ', a12, 1x, a24,' Type = ', i5)
 
   390  format(
      1       '  DivResP2; Release for Depletion Data;',/

@@ -27,6 +27,12 @@ c
 c       Putpath; It adds a path for an iput file if none provided
 c
 c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
 c _________________________________________________________
 c	Dimensions
 c
@@ -44,6 +50,10 @@ cx      character(len=1), parameter :: path_sep='/'
 cx#endif
 c
 c _________________________________________________________
+c
+c
+c rrb 2021/04/18; Compiler warning
+      ix=0
 c
 c		iout=1 details; 2=summary
 c
@@ -161,7 +171,7 @@ c               Step 5; Return
 c
 c _________________________________________________________
 c               Formats
-  131   format('  Putpath; filrsp ',/, a256)
+cx131   format('  Putpath; filrsp ',/, a256)
         
   132   format('  Putpath;    i   j1    j filrsp(i:i)',/
      1          '          ____ ____ ____ _')

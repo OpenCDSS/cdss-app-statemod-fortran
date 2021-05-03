@@ -30,6 +30,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 99/09/09; Operating rule type 17; Rio Grande for Rio Grande
 c rrb 00/06/09; Revise forecast in Oct is known and maximum surplus
 c               is limited to 150,000 / yr and no accumulated limit
@@ -207,6 +209,11 @@ c
 c _________________________________________________________
 c
 c               Step 1 Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      qnative=0.0
+      qnative1=0.0
+      qpaper=0.0
 c
 c               a. Miscellaneous control data                   
       iout=0

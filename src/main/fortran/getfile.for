@@ -23,8 +23,16 @@ c_________________________________________________________________NoticeEnd___
      1   inX, isufX, numX, fileTypX, fileSufX, fileNamX,
      1   fpathX, filena)
 c
-c	It gets station data using
-c	The old or new Response File format     
+c_________________________________________________________________
+c
+c       Description
+c	        It gets station data using
+c	        The old or new Response File format     
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c	             nlog		log file #
 c	             nchk		check file #
@@ -44,7 +52,12 @@ c	             filena		file opened
       
       character fileNamX*256, filena*256, fpathX*256, ftype*16,
      1  fout*48, fileTypX*40, fileSufX*5
-      
+c
+c rrb 2021/04/18; Compiler warning
+      nchk=nchk
+      maxfile=maxfile
+      ftype = ' '
+            
       iout=0
       isufX=1
       filena='-1'
@@ -100,8 +113,8 @@ c		Formats
   110 FORMAT(A72)  
   120 format(4x, a256)
                                                        
-  201 format(/,72('_'),/
-     1 '  GetFile; FYI file name = ', a256)
+cx  201 format(/,72('_'),/
+cx     1 '  GetFile; FYI file name = ', a256)
       
 c
 c _________________________________________________________      

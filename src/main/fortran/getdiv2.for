@@ -26,21 +26,29 @@ c	Program Description
 c
 c       GetDiv2; it reads in diversion station data
 c
+c
+c _________________________________________________________
+c
+c	Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
+c rrb 2005/10/24; Separated from Datinp
 c _________________________________________________________
 c
 c      Documentation
 c
-c	iin  		response file #
-c	inS		Response file number
-c	inE		Efficiency Fiel number
-c	inR		Return Flow File number
-c	inC		Indicates which file is currently being read
+c	      iin  		response file #
+c	      inS		Response file number
+c	      inE		Efficiency Fiel number
+c	      inR		Return Flow File number
+c	      inC		Indicates which file is currently being read
 c
 c       ireptyp(nd)	0 or -999 = off
 c                       1 = on, with 100% replacment
 c                      -1 = on, depletion replacement
-c	itmpt1		switch used to calculate Mondiv
-c	itmpt2		switch used to calculate Mondiv
+c	      itmpt1		switch used to calculate Mondiv
+c	      itmpt2		switch used to calculate Mondiv
 c
 c       MONDIV 	        0 NO DIVERSION DATA WILL BE READ IN
 c               	1 CONSTANT MONTHLY DIV DEMAND TO BE INPUT 1x/sim
@@ -48,14 +56,8 @@ c               	2 MONTHLY DIV DEMAND TO BE INPUT EVERY YEAR
 c               	3 CASES 1 & 2 EXIST IN THE SYSTEM
 c       NDIVIN          0 No diversion demand TS to read in Mdainp
 c                       >0 Number of diversion TS to read in Mdainp
-c	numdiv	 	Number of diversion stations read
+c	      numdiv	 	Number of diversion stations read
 C
-c
-c _________________________________________________________
-c
-c	Update History
-c
-c rrb 2005/10/24; Separated from Datinp
 c
 c _________________________________________________________
 c	Dimensions
@@ -75,6 +77,19 @@ C
 c
 c__________________________________________________________
 c
+c
+c rrb 2021/04/18; Compiler warning
+      inx=inx
+      crtnid=' '
+      cx=' '
+      filenaS=' '
+      cgoto2=' '
+      ch3=' '
+      ch4=' '
+      rec1=' '
+      rec4=' '
+      rec12=' '
+
 c               Step 1; Initialize
 c		iout =  0 No details
 c		ioutR = 0 No details for return flows
@@ -273,7 +288,7 @@ c
 c		Step 12; Print Diversion information
         if(iout.ne.0) then
 c         write(99,541) nd, cdivid(nd), is
-  541     format('  GetDiv2; nd, cdivid(nd), is', i5, 1x, a12, i5)
+cx 541    format('  GetDiv2; nd, cdivid(nd), is', i5, 1x, a12, i5)
         endif
 c _________________________________________________________
 c
@@ -286,7 +301,10 @@ c       IF(NUMUSE.LE.MAXUSE) Goto 560
           write(6,1220) numuse,maxuse
           Goto 9999
         endif
-  560   NUI=NUMUSE-NDUSER(ND+1)+1
+c
+c rrb 2021/04/18; Compiler warning
+cx560   NUI=NUMUSE-NDUSER(ND+1)+1
+        NUI=NUMUSE-NDUSER(ND+1)+1
         NUE=NUMUSE
 c
 c _________________________________________________________
@@ -362,7 +380,10 @@ c
 c _________________________________________________________
 c
 c		Step 18; Initialize warning variable
-  210 numdiv=amax0(nd-1,0)
+c
+c rrb 2021/04/18; Compiler warning
+cx210 numdiv=amax0(nd-1,0)
+  210 numdiv=max(nd-1,0)
       write(nlog,211) numdiv
   211 format(/,
      1  '  GetDiv2; Number of Diversions       = ', i5)
@@ -558,7 +579,11 @@ c
 c _________________________________________________________
 c
 c		Step 18; Close Files
- 730  if(inE.ne.0) close (inE)
+c
+c rrb 2021/04/18; Compiler warning
+cx730 if(inE.ne.0) close (inE)
+      if(inE.ne.0) close (inE)
+ 
       if(inR.ne.0) close (inR)
       close (inS)
 c      
@@ -596,10 +621,10 @@ c		Error Handling
       goto 9999
       
  1404 write(nlog,1402) cistat
- 1406 FORMAT(/, 72('_'), /,
-     1 '  GetWel2;; Problem.'
-     1 ' Structure ',a12,' of diversion station file (*.dst)',
-     1 ' not found in river station file') 
+cx 1406 FORMAT(/, 72('_'), /,
+cx     1 '  GetWel2;; Problem.'
+cx     1 ' Structure ',a12,' of diversion station file (*.dst)',
+cx     1 ' not found in river station file') 
       goto 9999
      
  1410  write(nlog,1420) filena
@@ -614,7 +639,7 @@ c		Formats
      1          ' type = 4 which indicates transmountain, but',/
      1 '          efficiency is not 100%.',
      1 '          To do; Change type or efficiency data to 100%')
-  930  FORMAT(A256)
+cx  930  FORMAT(A256)
       
   940  format(/, 72('_'), /,
      1 '  GetDiv2; Diversion Station ',a24,/,4x, a256)
@@ -623,9 +648,9 @@ c		Formats
      1  ' GetDiv2; Problem.',
      1  ' Too many return stations, max = ', i5)
 
- 1200  format(a12,a24,a12,i8,f8.0,2i8,1x,a12)
-
- 1202  format(a12,a24,a12,i8,f8.0,1x,a12,1x,f12.5,1x,a12)      
+cx 1200  format(a12,a24,a12,i8,f8.0,2i8,1x,a12)
+cx
+cx 1202  format(a12,a24,a12,i8,f8.0,1x,a12,1x,f12.5,1x,a12)      
  
  1210  FORMAT(
      1  '  GetDiv2; Problem for diversion id = ', a12,/
@@ -639,9 +664,9 @@ c		Formats
      1  '  GetDiv2; Problem. Too MANY DIVERSION USERS      ',I5,
      1  '  MAXIMUM = ',I5)
      
- 1230  FORMAT(12X,a24,12x, 2I8,2F8.0,3I8)
-
- 1232  format(12x,24x,a12, 3i8, 2f8.0, i8, f8.0)
+cx 1230  FORMAT(12X,a24,12x, 2I8,2F8.0,3I8)
+cx
+cx 1232  format(12x,24x,a12, 3i8, 2f8.0, i8, f8.0)
  
  1238  format(/, 72('_'), /,
      1  '  GetDiv2; Warning, for baseflow calculations reset control',/
@@ -660,58 +685,58 @@ c		Formats
      1  '          Set to 1 to avoid having historic diversion', 
      1           ' data weighted by efficiency.')
      
- 1250  FORMAT(/, 72('_'), /,
-     1  ' GetDiv2; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
-     
- 1260  format(36x,a12,f8.0,i8)
- 
- 1262  format(36x,a12,f8.0,a12)
- 
- 1270  FORMAT(/, 72('_'), /,
-     1  '  GetDiv2: Problem.',
-     1  ' Return flow to: ',a12,' from Diversion:',/
-     1  '          ID: ',a12, ' Named: ', a24,/
-     1  '          was not found or is not allowed at the last',/
-     1  '          river station.  For the latter case, add one',/
-     1  '          additional river node to the *.rin file')
-     
- 1280  FORMAT(/, 72('_'), /,
-     1  '  GetDiv2; Problem.'
-     1  ' Station ',a12,' of diversion station file',
-     1  ' has return flows going back to the diverting node',
-     1  ' at ', a12)
-     
- 1282  FORMAT(/, 72('_'), /,
-     1  '  GetDiv2; Warning the following diversion has a return ',/
-     1  '          location that is available to the diverter:',/
-     1  '          Diversion ID:                  ',a12,/, 
-     1  '          Diversion name:                ',a24,/, 
-     1  '          Located at river ID:           ',a12,/,  
-     1  '          Has a return flow to river ID: ',a12)
-     
- 1283  FORMAT(/, 72('_'), /,
-     1  '  GetDiv2; Problem the following structure(s) ',
-     1    'return water upstream',//
-     1  '    # Str ID       Str Name                ', 
-     1  ' Located at   Returns to',/ 
-     1  ' ____ ____________ ________________________', 
-     1  ' ____________ ____________')
-     
- 1284  format(i5,1x, a12, 1x, a24, 1x, a12, 1x a12)
- 
- 1285  FORMAT(/, 72('_'), /,
-     1 '  GetDiv2; Warning the following structure(s) return water',/
-     1 10x,'to at least one non-downstream node. Only the first',/ 
-     1 10x,'non-downstream occurance is printed per structure.',/
-     1 10x,'Note, a non-downstream return is OK but it can cause',/ 
-     1 10x,'the system to reoperate and impact performance if',/
-     1 10x,'the immediate (current month or days) return flow',/
-     1 10x,'exceeds the prescribed tolerance (see Performance Info',/
-     1 10x 'in the *.log file'//
-     1  '    # Str ID       Str Name                ', 
-     1  ' Located at   Returns to',/ 
-     1  ' ____ ____________ ________________________', 
-     1  ' ____________ ____________')
+cx 1250  FORMAT(/, 72('_'), /,
+cx     1  ' GetDiv2; Problem. Too MANY RETURN FLOW STATIONS, MAX = ',I5)
+cx     
+cx 1260  format(36x,a12,f8.0,i8)
+cx 
+cx 1262  format(36x,a12,f8.0,a12)
+cx 
+cx 1270  FORMAT(/, 72('_'), /,
+cx     1  '  GetDiv2: Problem.',
+cx     1  ' Return flow to: ',a12,' from Diversion:',/
+cx     1  '          ID: ',a12, ' Named: ', a24,/
+cx     1  '          was not found or is not allowed at the last',/
+cx     1  '          river station.  For the latter case, add one',/
+cx     1  '          additional river node to the *.rin file')
+cx     
+cx 1280  FORMAT(/, 72('_'), /,
+cx     1  '  GetDiv2; Problem.'
+cx     1  ' Station ',a12,' of diversion station file',
+cx     1  ' has return flows going back to the diverting node',
+cx     1  ' at ', a12)
+cx     
+cx 1282  FORMAT(/, 72('_'), /,
+cx     1  '  GetDiv2; Warning the following diversion has a return ',/
+cx     1  '          location that is available to the diverter:',/
+cx     1  '          Diversion ID:                  ',a12,/, 
+cx     1  '          Diversion name:                ',a24,/, 
+cx     1  '          Located at river ID:           ',a12,/,  
+cx     1  '          Has a return flow to river ID: ',a12)
+cx     
+cx 1283  FORMAT(/, 72('_'), /,
+cx     1  '  GetDiv2; Problem the following structure(s) ',
+cx     1    'return water upstream',//
+cx     1  '    # Str ID       Str Name                ', 
+cx     1  ' Located at   Returns to',/ 
+cx     1  ' ____ ____________ ________________________', 
+cx     1  ' ____________ ____________')
+cx     
+cx 1284  format(i5,1x, a12, 1x, a24, 1x, a12, 1x a12)
+cx 
+cx 1285  FORMAT(/, 72('_'), /,
+cx     1 '  GetDiv2; Warning the following structure(s) return water',/
+cx     1 10x,'to at least one non-downstream node. Only the first',/ 
+cx     1 10x,'non-downstream occurance is printed per structure.',/
+cx     1 10x,'Note, a non-downstream return is OK but it can cause',/ 
+cx     1 10x,'the system to reoperate and impact performance if',/
+cx     1 10x,'the immediate (current month or days) return flow',/
+cx     1 10x,'exceeds the prescribed tolerance (see Performance Info',/
+cx     1 10x 'in the *.log file'//
+cx     1  '    # Str ID       Str Name                ', 
+cx     1  ' Located at   Returns to',/ 
+cx     1  ' ____ ____________ ________________________', 
+cx     1  ' ____________ ____________')
 
  1290  FORMAT(
      1 '  GetDiv2; Problem the Diversion Efficiency file (*.def)',/
@@ -719,23 +744,23 @@ c		Formats
      1 '    Recommend you revise the following to match',/
      1 '    ', a5, 1x, a5)
      
- 1291  format(2x, i5, 1x, a12, 1x, a24, 1x,3f8.0)
- 
- 1292  FORMAT(
-     1 '  GetDiv2; Problem station ',a12,
-     1 ' of the Direct Diversion Station File (*.dds)',/
-     1  10x, ' has the following return data:',/
-     1  10x, ' Total of all returns = ', f8.2)
+cx 1291  format(2x, i5, 1x, a12, 1x, a24, 1x,3f8.0)
+cx 
+cx 1292  FORMAT(
+cx     1 '  GetDiv2; Problem station ',a12,
+cx     1 ' of the Direct Diversion Station File (*.dds)',/
+cx     1  10x, ' has the following return data:',/
+cx     1  10x, ' Total of all returns = ', f8.2)
      
  1300  FORMAT(/, 72('_'), /,
      1 ' GetDiv2; Problem.',
      1 ' Too MANY DIVERSION PROJECTS,     MAXIMUM = ',I5)      
      
- 1500   format(/, 72('_'), /,
-     1  '  GetDiv2; Problem diversion ownership is less than 100%',
-     1           ' for ID: ', a12, /
-     1  20(i5, ' Owner Name = ', a24,
-     1  ' Percent = ', f10.0,/))
+cx 1500   format(/, 72('_'), /,
+cx     1  '  GetDiv2; Problem diversion ownership is less than 100%',
+cx     1           ' for ID: ', a12, /
+cx     1  20(i5, ' Owner Name = ', a24,
+cx     1  ' Percent = ', f10.0,/))
 c
 c _________________________________________________________
 c

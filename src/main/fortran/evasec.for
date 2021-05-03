@@ -74,6 +74,8 @@ c
 c _________________________________________________________
 c      Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 01/01/03; Revised to recognize other baseflow options 
 c               Types 1,& 9
 c rrb 01/08/03; (9.91) Revised to correct problem when more rain 
@@ -107,6 +109,15 @@ c               Step 1; Initialize
       iout = 0
 c     iout = 1
       if(ichk.eq.11) iout=1
+c
+c rrb 2021/04/18; Compiler warning
+      iri=0
+      divmon1=0.0
+      divact1=0.0
+      avail1=0.0
+      avail2=0.0
+      
+      
       nout=0
       small=0.1
       small2=0.1
@@ -614,7 +625,7 @@ c _________________________________________________________
 c
 c               Formats
 c
-   90 format(4i5,20f10.4)
+cx 90 format(4i5,20f10.4)
 
   240 format(/,
      1  '  Evasec;                             ',       

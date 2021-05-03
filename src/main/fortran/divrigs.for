@@ -44,19 +44,21 @@ c		a seasonal limitation then seasonal limits can
 c		often be contained in the demand file.
 c
 c _________________________________________________________
-c	Update History
 c
+c     Update History
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 06/01/18; Copy divrig. Added daily on/off capability
 c
 c_____________________________________________________________
-c	 Documentation
+c	     Documentation
 c
 c        icx            subroutine call # (5)
 c        IW             Global water right ID
 c        L2             Operational right pointer
 c
-c	 ndr            Source water right pointer
-c	 nd1            Source diversion pointer
+c	       ndr            Source water right pointer
+c	       nd1            Source diversion pointer
 c
 c        nd             Destination structure pointer
 c        iuse           Diversion user
@@ -689,8 +691,8 @@ c
      1  ' _______ _______ _______ _______ _______ ', 24('_'))
   280   FORMAT(a14, i5,1x,a4,i5,i8,1x,a12,8i8,
      1    7F8.0, i8, 2f8.0,i8,1x,a24)
-  290   FORMAT(/, '  Divrig; QDIV ',a12,/,16F7.1)
-  300   FORMAT(/, '  Divrig; QRES ',a12,/,16F7.1)
+cx290   FORMAT(/, '  Divrig; QDIV ',a12,/,16F7.1)
+cx300   FORMAT(/, '  Divrig; QRES ',a12,/,16F7.1)
   310   FORMAT(/, '  Divrig Print 5',I10,6x,a4,4i10,
      1               F10.2,3I10,F10.2, f20.10)
   320   format(/, '  Divrig: avail  ',/,(10f10.2))

@@ -26,7 +26,11 @@ c	Program Description
 c
 c       Outwelc; It prints a table of well pumping
 c                Historic Vs Calculated
+c_________________________________________________________________
 c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c       Documentation
 c
@@ -49,13 +53,24 @@ c _________________________________________________________
 c	Dimensions
 c 
       include 'common.inc'
-      dimension nmo(13), ihis(1)
+c                                       
+c rrb 2021/04/18; Compiler warning      
+cx    dimension nmo(13), ihis(1)  
+      dimension nmo(13)      
+      
       character blank*12, cplot*12, cistat*12, recin*256,
      1 rec12*12
 c
 c _________________________________________________________
+
 c	Initialize
 c
+c
+c rrb 2021/04/18; Compiler warning
+      ida=0
+      ryx=0.0
+      rec12=' '
+c     
       iout=1
 c      
 c     write(6,*) ' '
@@ -417,9 +432,12 @@ c-------------------------------------------------------------------
 c _________________________________________________________   
 c 
 c               Step 11; Print annual totals for a Reach Data
-          ry = (iyend-iystr+1)
-          nyr3=ry
 c
+c rrb 2021/04/18; Compiler warning
+cx        ry = (iyend-iystr+1)
+cx        nyr3=ry
+          ry = float(iyend-iystr+1)
+          nyr3=nint(ryc)
 c		Reach Loop
           do iz=1,nreach
 c
@@ -549,12 +567,12 @@ c        Formats
 C-------------------------------------------------------------------
   150   format('+', '   Printing Well Comparison ',a5,
      1              i5,' of ', i5, '; or ',f8.0, ' % Complete')
-  170       format(' is = ', i5, ' cdivid = ', a12)
-  270  format(2a12,i5, 2x, a3, 20f8.0)
-  280  format(2(a12,','),i5,',', 2x, a3, ',', 20(f8.0,','))
-
-  300  format(a12,',', i5,',', 2x, a3, ',', 20(f8.0,','))
-
+cx170       format(' is = ', i5, ' cdivid = ', a12)
+cx270  format(2a12,i5, 2x, a3, 20f8.0)
+cx280  format(2(a12,','),i5,',', 2x, a3, ',', 20(f8.0,','))
+cx
+cx300  format(a12,',', i5,',', 2x, a3, ',', 20(f8.0,','))
+cx
   310   format(/,
      1  'Structure                    Gauged    Est.   Delta   Delta',/
      1  'ID            Acc Year   Mo Pumping Pumping Pumping   Pump%',
@@ -568,11 +586,11 @@ C-------------------------------------------------------------------
   351  format('Reach   ', i3,6x,i5,2x,a3,4f8.0,1x, 24x, 1x, i8, i5)
   
   352  format('Basin Total ',5x,i5,2x,a3,4f8.0,1x, 24x, 1x, i8, i5)
-  360  format(a12,',', 5x,',',i5,',', 2x, a3, ',', 4(f8.0,','),
-     1        1x, a24, ',', 1x, i8, ',' i5, ',')  
-  362  format(12x,',', 5x,',',i5,',', 2x, a3, ',', 4(f8.0,','),
-     1        1x, 24x, ',', 1x, i8, ',' i5, ',')  
-
+cx360  format(a12,',', 5x,',',i5,',', 2x, a3, ',', 4(f8.0,','),
+cx   1        1x, a24, ',', 1x, i8, ',' i5, ',')  
+cx362  format(12x,',', 5x,',',i5,',', 2x, a3, ',', 4(f8.0,','),
+cx   1        1x, 24x, ',', 1x, i8, ',' i5, ',')  
+cx
   370  format(a12,           5x,'  Ave',2x,a3,4f8.0,1x,a24,1x,i8,i5)
   371  format('Reach   ', i3,6x,'  Ave' 2x,a3,4f8.0,1x,24x,1x,i8,i5)  
   372  format('Basin Total ',5x,'  Ave',2x,a3,4f8.0,1x,24x,1x,i8,i5)
@@ -588,8 +606,8 @@ C-------------------------------------------------------------------
      
   375  format(a12,',', 4(f10.0,','), 1x,a24)     
   
-  380  format(a12,',', 5x,',', '  Ave,',2x, a3, ',', 4(f8.0,','),
-     1 1x, a24, ',', 1x, i5, ',')  
+cx  380  format(a12,',', 5x,',', '  Ave,',2x, a3, ',', 4(f8.0,','),
+cx     1 1x, a24, ',', 1x, i5, ',')  
 c
 c _________________________________________________________
 c

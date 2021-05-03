@@ -40,6 +40,14 @@ c
 c _________________________________________________________
 c
 c  Step 1; Initialize
+c
+c rrb 2021/04/18; Compiler warning 
+      do i=1,maxsta
+        qcheck=qcheck 
+      end do
+      iprob=0                 
+      if(iprob.gt.0) goto 9999
+      
       iout=0
       nlog=99
       fac=1.9835 
@@ -88,7 +96,9 @@ c
 c _________________________________________________________
 c
 c	 Error Tracking
- 1000 write(6,1050) 
+c rrb 2021/04/18; Compiler warning
+cx1000write(6,1050)
+ 9999 write(6,1050) 
       write(nlog,1051) isub, iss
       
  1050 format(

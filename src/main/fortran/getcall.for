@@ -25,6 +25,11 @@ c _________________________________________________________
 c	Program Description
 c
 c	GetCall; It estimates the call when a right is shorted
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c	Documentation
 c
@@ -40,7 +45,7 @@ c
 c _________________________________________________________
 c	Dimensions
       include 'common.inc'
-      dimension cname1(4)
+cx    dimension cname1(4)
       character ctype1*12, cid1*12, commentX*24
 c
 c		iout = 0 no details

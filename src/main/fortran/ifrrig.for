@@ -29,6 +29,9 @@ c
 c _________________________________________________________
 c
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
 c       Copied Ifrig.for and made appropriate edits
 c
 c _________________________________________________________
@@ -45,6 +48,10 @@ c
 c _________________________________________________________
 c
 c
+c rrb 2021/04/18; Compiler warning
+      divi1=0.0
+      flowrq1=0.0
+      avail1=0.0
 
 c iout = 0 no details
 c        1 details

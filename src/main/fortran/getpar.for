@@ -26,6 +26,11 @@ c	Program Description
 c
 c       Getpar; It gets a structure type and parameter value 
 c
+c_________________________________________________________________
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c       Documentation               
 c
@@ -58,8 +63,10 @@ c     nres=21
       ndiv = 37         
       nres=26
       ndivw=18
-         
-      nx=amax0(ndiv, nres, ndivw)
+c
+c rrb 2021/04/18; Compiler warning
+cx    nx=amax0(ndiv, nres, ndivw)       
+      nx=max(ndiv, nres, ndivw)
 c
 c               Process diversion or streamGage type
       do 100 i=1,nx

@@ -23,8 +23,11 @@ c ______________________________________________________________________
 c	Program Description
 c       Oprinp; It reads operational right data
 c ______________________________________________________________________
-c       Update History
-cc
+c  
+c     Update History
+c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2021/02/14 (16.00.47)
 c                 Revised to check maximum number of carriers against
 c                 maxcary.
@@ -229,6 +232,10 @@ c ______________________________________________________________________
 c	Dimensions
       include 'common.inc'
       real*8 rtem
+c
+c rrb 2021/04/18; Compiler warning
+      real*8 ropnk1, ropsrc, c8, small8
+      
       character*12 cidvri,  ciopde,  ciopso1, ciopso2, ciopso3,
      1             ciopso4, ciopso5, blank,   czero,  cx, cx2
       character recin*256, creuse*12, rec12*12, rec2*2,
@@ -282,7 +289,18 @@ cx      data ntype/50*0/
      1  'JMartin-Storage',             'JMartin-Flow Partition',
      1  ' ', ' ',' ', ' ', ' ', ' '/
 c ______________________________________________________________________
+c
+c rrb 2021/04/18; Compiler warning
+      ndd=0
+      isa=0
+      ip=0
+      nds=0
+      nx5=0
+      iin2=0
+      small8=0.001
+      
 c		Step 1; Detailed Checks
+
 c		iout = 0 no details
 c		       1 details
 c          2 summary (echo input and opr right type)
@@ -581,7 +599,10 @@ c ______________________________________________________________________
 c               Step 6; Process Eof or End
         if(cidvri.eq.blank .or. cidvri.eq.czero .or. 
      1     cidvri(1:3).eq.'End') then
-           k=amax0(k-1,0)
+c
+c rrb 2021/04/18; Compiler warning
+cx         k=amax0(k-1,0)
+           k=max(k-1,0)
            goto 1210
         endif   
 c ______________________________________________________________________
@@ -756,7 +777,10 @@ c		Read Carrier Data (without loss)
             if(iout.eq.1) write(nchk,*) ' Oprinp; Carrier No Loss ',
      1          ioprloss, idumc
             idumy=idumc
-            idumy=amax0(idumc, iabs(idumc)-12)
+c
+c rrb 2021/04/18; Compiler warning
+cx          idumy=amax0(idumc, iabs(idumc)-12)
+            idumy=max(idumc, iabs(idumc)-12)
 c rrb 2008/06/04; Correction            
             if(idumc.eq.12) idumy=0
 c
@@ -782,7 +806,10 @@ c		Read Carrier Data (with loss)
             if(iout.eq.1) write(nchk,*) ' Oprinp; Carrier with Loss ',
      1          ioprloss, idumc
             idumy=idumc
-            idumy=amax0(idumc, iabs(idumc)-12)
+c
+c rrb 2021/04/18; Compiler warning
+cx          idumy=amax0(idumc, iabs(idumc)-12)
+            idumy=max(idumc, iabs(idumc)-12)
 c rrb 2008/06/04; Correction            
             if(idumc.eq.12) idumy=0
 c
@@ -1783,7 +1810,10 @@ c ---------------------------------------------------------
 c               b. Read the Junior water right and
 c		     associated OOP diversion
         idumc2=iabs(idumc)-12
-        idumc3=amax0(idumc, idumc2)
+c
+c rrb 2021/04/18; Compiler warning
+cx      idumc3=amax0(idumc, idumc2)
+        idumc3=max(idumc, idumc2)
         if(idumc.eq.2 .or. idumc2.eq.2) then
           read(55,'(36x,10a12)',end=2000,err=2000)
      1             (cntern(i),i=1,idumc3)
@@ -7777,7 +7807,10 @@ c
 c ---------------------------------------------------------
 c               b. Read the associated plans 
         idumc2=iabs(idumc)-12
-        idumc3=amax0(idumc, idumc2)
+c
+c rrb 2021/04/18; Compiler warning
+cx      idumc3=amax0(idumc, idumc2)
+        idumc3=max(idumc, idumc2)
         if(idumc.ge.1 .or. idumc2.ge.1) then
           read(55,'(36x,10a12)',end=2000,err=2000)
      1             (cntern(i),i=1,idumc3)
@@ -10384,7 +10417,10 @@ c
 c rrb 2018/12/15; Subtract 1 since ioprlim(k) includes an assocated 
 c                 operating rule
 cxx       ndes=ioprlim(k)
-          ndes=amax0(0, ioprlim(k)-1)   
+c
+c rrb 2021/04/18; Compiler warning
+cx        ndes=amax0(0, ioprlim(k)-1)   
+          ndes=max(0, ioprlim(k)-1)   
           n1=0
           n2=0
 c        
@@ -10457,7 +10493,10 @@ c
         if(iout53.eq.1) then
           n1=0
           n2=0
-          ndes1=amax0(ndes,1)
+c
+c rrb 2021/04/18; Compiler warning
+cx        ndes1=amax0(ndes,1)
+          ndes1=max(ndes,1)
           do n=1,ndes1
             n1=n2+1
             n2=n1+1
@@ -10816,7 +10855,10 @@ c rrb 2014-06-15; Revise to allow a negative value to be used
 c                 to indicate a plan
 cx        ip=iopdes(1,k)
           ip1=iopdes(1,k)
-          ip=amax0(ip1, -1*ip1)
+c
+c rrb 2021/04/18; Compiler warning
+cx        ip=amax0(ip1, -1*ip1)
+          ip=max(ip1, -1*ip1)
           ciopde=ciopdeX(1,k)     
           if(ip.gt.0) then   
 c
@@ -10869,7 +10911,10 @@ c rrb 2015/03/30; Revise to allow a negative value to be used
 c                 to indicate a plan
 cx          ip=iopdes(n1,k)
             ip1=iopdes(n1,k)
-            ip=amax0(ip1, -1*ip1)            
+c
+c rrb 2021/04/18; Compiler warning
+cx          ip=amax0(ip1, -1*ip1)            
+            ip=max(ip1, -1*ip1)            
 cx            write(nlog,*) '  Oprinp;', k, ityopr(k),n, n1, n2, ip, 
 cx     1        iplntyp(ip), ciopde  
             if(ip.gt.0) then       
@@ -11173,8 +11218,12 @@ c                 Check if a type 53 was specified first
             if(ityopr(k2).eq.54) then
               ichkJM=0
               ichk54=k2
-              c=ropnk(k2) - ropnk(k1)
-              if(c.gt.small) iokP=0
+c
+c rrb 2021/04/18; Compiler warning
+cx              c=ropnk(k2) - ropnk(k1)
+cx              if(c.gt.small) iokP=0
+              c8=ropnk(k2) - ropnk(k1)
+              if(c8.gt.small8) iokP=0
             endif
           end do
         endif
@@ -11188,8 +11237,12 @@ c                 Check if a type 54 was specified first
             if(ityopr(k2).eq.53) then
               ichkJM=0         
               ichk53=k2   
-              c=ropnk(k2) - ropnk(k1)
-              if(c.gt.small) iokP=0
+c
+c rrb 2021/04/18; Compiler warning
+cx            c=ropnk(k2) - ropnk(k1)
+cx            if(c.gt.small) iokP=0
+              c8=ropnk(k2) - ropnk(k1)
+              if(c8.gt.small8) iokP=0
             endif
           end do
         endif
@@ -11266,7 +11319,10 @@ c 		          c1b; Loop for number of destinations
             
             ciopde=ciopdeX(n1,k) 
             ip1=iopdes(n1,k)
-            ip=amax0(ip1, -1*ip1) 
+c
+c rrb 2021/04/18; Compiler warning
+cx          ip=amax0(ip1, -1*ip1) 
+            ip=max(ip1, -1*ip1) 
                        
 cx            write(nlog,*) '  Oprinp;', k, ityopr(k),n, n1, n2, ip, 
 cx     1        iplntyp(ip), ciopde  
@@ -11475,7 +11531,8 @@ c               End Operating right loop
       
 c
 c ______________________________________________________________________
- 901  close(55)
+cx901 close(55)
+      close(55)
  500  return
 c ______________________________________________________________________
 c		Warnings
@@ -11486,20 +11543,21 @@ c		Warnings
      1 '          which is not allowed. ',/
      1 '          recommend you revise the operating rule file.',/
      1 '          StateMod is continuing to operate as if it is zero')
-  918 format(/, 72('_'), /,
-     1 '  Oprinp; Warning *.opr rule ID ', a12,/  
-     1 '          has a release type (iopdes(4,k)) = ', i5,/
-     1 '          which means make a reservoir release only if a', /
-     1 '          ditch has a CIR.  Since you have the variable'/
-     1 '          efficiency off in the *.ctl file this has no effect')
-  919 format(/, 72('_'), /,
-     1 '  Oprinp; Warning *.opr rule ID ', a12,  
-     1          ' has a destination account = ', i5,/
-     1 '          which means the opr rule treats the reservoir', 
-     1          ' as a total, not by an account')
-  925 format(/72('_'),/  
-     1 '  Oprinp; Problem with *.opr rule ID = ', a12, / 
-     1 '          destination account = ', i5, ' Reset to 1')
+cx  918 format(/, 72('_'), /,
+cx     1 '  Oprinp; Warning *.opr rule ID ', a12,/  
+cx     1 '          has a release type (iopdes(4,k)) = ', i5,/
+cx     1 '          which means make a reservoir release only if a', /
+cx     1 '          ditch has a CIR.  Since you have the variable'/
+cx     1 '          efficiency off in the *.ctl file this has no effect')
+cx  919 format(/, 72('_'), /,
+cx     1 '  Oprinp; Warning *.opr rule ID ', a12,  
+cx     1          ' has a destination account = ', i5,/
+cx     1 '          which means the opr rule treats the reservoir', 
+cx     1          ' as a total, not by an account')
+cx  925 format(/72('_'),/  
+cx     1 '  Oprinp; Problem with *.opr rule ID = ', a12, / 
+cx     1 '          destination account = ', i5, ' Reset to 1') 
+cx 
 c ______________________________________________________________________
 c               Error Handling         
   926 write(nlog,927) iin2, filena
@@ -11585,64 +11643,70 @@ c ______________________________________________________________________
       stop 
 c ______________________________________________________________________
 c     Formats
-  200 format(/, 72('_'), /,'  Oprinp; Operational File (*.opr) ')
-  201 format(/,
-     1 '  Oprinp; Old operational right (*.opr) file provided',/
-     1 '          That DOES NOT INCLUDE variable OprLoss and OprLimit'/
-     1 '          Start Date and End Date')         
-  202 format(/,72('_'), /,
-     1 '  Oprinp; New operational right (*.opr) file provided',/
-     1 '          That DOES INCLUDE variable OprLoss and OprLimit'/
-     1 '          Start Date and End Date')         
-  203 format(/,72('_'), /,
-     1 '  Oprinp; Warning a possible mixture of new and old ',/
-     1 '          operarating right formats determined',/
-     1 '          This might cause problems with recent updates to ',/
-     1 '          allow carrier losses. Recommend you:',/
-     1 '          1. Revise the operating rule file to include',/
-     1 '             Format=2.00 as the first data entry in the file',/ 
-     1 '          2.Include variables OprLoss, OprLimit, ioBeg',/ 
-     1 '             and ioEnd with your data.',/
-     1 '          Note the *.chk file includes data in the new',/
-     1 '          format including any comments in the original file')
-  104 format(/,72('_'), /,
-     1  '  Oprinp; Warning StateMod Version 11.46 and greater revised',/
-     1  '          the input data used by a Carrier (Type 11) and ',/
-     1  '          Constrained Carrier (Type 14) operating rules.',/
-     1  '          Specifically both allow the user to control when a',/
-     1  '          source water right may be used by both a standard',/
-     1  '          diversion and the carrier (iopsou(2,1)=0) or ',/
-     1  '          by the carrier only (iopsou(2,1)=1). Also this',/
-     1  '          change revised how data is provided to a ',/
-     1  '          Constrained Demand (Type 14). ',/
-     1  '          Recommend you check your operating rule data ',/
-     1  '          (*.opr) and results accordingly.')
-     
+cx  200 format(/, 72('_'), /,'  Oprinp; Operational File (*.opr) ')
+cx  201 format(/,
+cx     1 '  Oprinp; Old operational right (*.opr) file provided',/
+cx     1 '          That DOES NOT INCLUDE variable OprLoss and OprLimit'/
+cx     1 '          Start Date and End Date')  
+cx       
+cx  202 format(/,72('_'), /,
+cx     1 '  Oprinp; New operational right (*.opr) file provided',/
+cx     1 '          That DOES INCLUDE variable OprLoss and OprLimit'/
+cx     1 '          Start Date and End Date')  
+cx       
+cx  203 format(/,72('_'), /,
+cx     1 '  Oprinp; Warning a possible mixture of new and old ',/
+cx     1 '          operarating right formats determined',/
+cx     1 '          This might cause problems with recent updates to ',/
+cx     1 '          allow carrier losses. Recommend you:',/
+cx     1 '          1. Revise the operating rule file to include',/
+cx     1 '             Format=2.00 as the first data entry in the file',/ 
+cx     1 '          2.Include variables OprLoss, OprLimit, ioBeg',/ 
+cx     1 '             and ioEnd with your data.',/
+cx     1 '          Note the *.chk file includes data in the new',/
+cx     1 '          format including any comments in the original file') 
+cx
+cx  104 format(/,72('_'), /,
+cx     1  '  Oprinp; Warning StateMod Version 11.46 and greater revised',/
+cx     1  '          the input data used by a Carrier (Type 11) and ',/
+cx     1  '          Constrained Carrier (Type 14) operating rules.',/
+cx     1  '          Specifically both allow the user to control when a',/
+cx     1  '          source water right may be used by both a standard',/
+cx     1  '          diversion and the carrier (iopsou(2,1)=0) or ',/
+cx     1  '          by the carrier only (iopsou(2,1)=1). Also this',/
+cx     1  '          change revised how data is provided to a ',/
+cx     1  '          Constrained Demand (Type 14). ',/
+cx     1  '          Recommend you check your operating rule data ',/
+cx     1  '          (*.opr) and results accordingly.')
+cx     
   105 format('  Oprinp; Operating Rule dates ',i5, 1x, a12, 1x, 3i5)           
-  110 FORMAT(A256)                                                       
-  120 format(4x, a256)
-  131 format('  Oprinp; k, cidvri, nameo ', i5, 1x, a12, 1x, a24)
-  132 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), i8,
-     1         1x,a12)             
-  140 format(/, 
-     1 '  Oprinp; k, ityopr(k) = ', 2i5)
+cx  110 FORMAT(A256)                                                       
+cx  120 format(4x, a256)
+cx  131 format('  Oprinp; k, cidvri, nameo ', i5, 1x, a12, 1x, a24)
+cx
+cx  132 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), i8,
+cx     1         1x,a12)             
+cx
+cx  140 format(/, 
+cx     1 '  Oprinp; k, ityopr(k) = ', 2i5)
  1321   format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,f8.0), i8,
      1         1x,a12, 1x,a12, 1x, 2f8.0, 2i8)      
  1322   format(        a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,f8.0), i8)
  1324   format(a12,a24,a12,f16.5,f8.0,i8, 3(1x,a12,f8.0), i8,
      1         1x,a12, 1x,a12, 1x, 2f8.0,2i8, i5)             
-  133   format(i5, 1x, a12, 1x, i5)
+cx  133   format(i5, 1x, a12, 1x, i5)
   134   format(12x,24x,12x,16x,  f8.0,f8.0, 3(1x,a12,i8), 20i8)  
   590 format(/, 72('_'),/
      1  '  Oprinp; Problem with Operation right = ', a12,/                 
      1 10x,'Operation type  = ', i5,/
      1 10x,'Allowable range = ', i5)
-  592 format(/, 72('_'),/
-     1 '  Oprinp; Problem with Operation right = ', a12,/                 
-     1 10x,'Do not expect ', f8.0, ' structures or',                 
-     1 10x,' month codes for this type of operating rule.'/
-     1 10x,' Note: a negative value indicates 12 monthly codes will',
-     1 10x,' be provided plus some n-12 intervening structures')             
+cx  592 format(/, 72('_'),/
+cx     1 '  Oprinp; Problem with Operation right = ', a12,/                 
+cx     1 10x,'Do not expect ', f8.0, ' structures or',                 
+cx     1 10x,' month codes for this type of operating rule.'/
+cx     1 10x,' Note: a negative value indicates 12 monthly codes will',
+cx     1 10x,' be provided plus some n-12 intervening structures')     
+cx        
   630 format(/,72('_'),/  
      1  '  Oprinp; Number of ', a12,    ' Rights = ', i5,/
      1  '          Number turned off             = ', i5,/
@@ -11656,52 +11720,52 @@ c     Formats
      1 ' ____ ____ _________________________ _______' ,/
      1 i5,  '   NA Total                    ',i8)
      
-  672  FORMAT(/, 72('_'), /,    
-     1  '  Oprinp; Warning for Operation right = ', a12,/,
-     1 10x,'It is carrying water from source ', a12, 
-     1 10x,'through itself ', a12,/
-     1 10x,'To fix: 1. Delete carrier ', a12, /,
-     1 10x,'        2. Revise # of carriers')
-c
-  720 format(/, 72('_'),/
-     1  '  Oprinp; Problem with Operation right = ', a12,/
-     1 10x,'Cannot find source ID  ',a12, 'at location ', i5,/
-     1 10x,'Note if the source is a operating right',/,
-     1 10x,'that right must be on and occur in the *.opr',/
-     1 10x,'file before this right')
+cx  672  FORMAT(/, 72('_'), /,    
+cx     1  '  Oprinp; Warning for Operation right = ', a12,/,
+cx     1 10x,'It is carrying water from source ', a12, 
+cx     1 10x,'through itself ', a12,/
+cx     1 10x,'To fix: 1. Delete carrier ', a12, /,
+cx     1 10x,'        2. Revise # of carriers')
+cx
+cx  720 format(/, 72('_'),/
+cx     1  '  Oprinp; Problem with Operation right = ', a12,/
+cx     1 10x,'Cannot find source ID  ',a12, 'at location ', i5,/
+cx     1 10x,'Note if the source is a operating right',/,
+cx     1 10x,'that right must be on and occur in the *.opr',/
+cx     1 10x,'file before this right')
 c
   721 format(/, 72('_'),/
      1  '  Oprinp; Problem with Operation right = ', a12,/
      1 10x,'Cannot find source ID  ',a12,' or source account ', i8)
 
-  722 format(/, 72('_'),/
-     1  '  Oprinp; Problem with Operation right = ', a12,/
-     1 10x,'Cannot find destination ID or Account  ',a12) 
-     
-  723 format(/, 72('_'),/
-     1   '  Oprinp; Problem with Operation right = ', a12,/,
-     1 10x,'Destination or Source structure ',a12,/, 
-     1 10x,'is the same as the carrier ',a12,/
-     1 10x,'Probably remove the carrier, since it is implied by the ',/
-     1 10x,'destination or source specification')
-
-  724 format(/, 72('_'),/
-     1  '  Oprinp; Problem with Operation right = ', a12,/, 
-     1 10x,'Destination or Source ',a12,' cannot be found',/, 
-     1 10x,'Note for a (reservoir to carrier by exchange)',/,
-     1 10x,'1) the destination must be a type 11 operating right',/
-     1 10x,'2) the operating right must occur before this right, and'/
-     1 10x,'3) the operating right must be on',/
-     1 10x,'Note for a type 10 (replacement reservoir)',/,
-     1 10x,'1) the second source, if provided, must be a type 8',/
-     1 10x,'   operation right',/
-     1 10x,'2) the operating right must occur before this right, and'/
-     1 10x,'3) the operating right must be on')
-     
-  725   format(/, 72('_'),/
-     1  '  Oprinp; Problem with Operation right = ', a12,/
-     1 10x,'Cannot find intervening ID  ',a12,/)
-
+cx  722 format(/, 72('_'),/
+cx     1  '  Oprinp; Problem with Operation right = ', a12,/
+cx     1 10x,'Cannot find destination ID or Account  ',a12) 
+cx     
+cx  723 format(/, 72('_'),/
+cx     1   '  Oprinp; Problem with Operation right = ', a12,/,
+cx     1 10x,'Destination or Source structure ',a12,/, 
+cx     1 10x,'is the same as the carrier ',a12,/
+cx     1 10x,'Probably remove the carrier, since it is implied by the ',/
+cx     1 10x,'destination or source specification')
+cx
+cx  724 format(/, 72('_'),/
+cx     1  '  Oprinp; Problem with Operation right = ', a12,/, 
+cx     1 10x,'Destination or Source ',a12,' cannot be found',/, 
+cx     1 10x,'Note for a (reservoir to carrier by exchange)',/,
+cx     1 10x,'1) the destination must be a type 11 operating right',/
+cx     1 10x,'2) the operating right must occur before this right, and'/
+cx     1 10x,'3) the operating right must be on',/
+cx     1 10x,'Note for a type 10 (replacement reservoir)',/,
+cx     1 10x,'1) the second source, if provided, must be a type 8',/
+cx     1 10x,'   operation right',/
+cx     1 10x,'2) the operating right must occur before this right, and'/
+cx     1 10x,'3) the operating right must be on')
+cx     
+cx  725   format(/, 72('_'),/
+cx     1  '  Oprinp; Problem with Operation right = ', a12,/
+cx     1 10x,'Cannot find intervening ID  ',a12,/)
+cx
   728 format(/,72('_'),/
      1 '  Oprinp; Warning the following Operation Rights have a ',/
      1 '          source Admin # (*.ddr, *.rer, *.wer, etc) not',/
@@ -11721,11 +11785,10 @@ c
 
   729 format(2x, 2i5, 1x,a12, 1x,a12, 20(1x, f14.5))
   
-  731 format(/, 72('_'),/
-     1  '  Oprinp; Problem with Operation right = ', a12,/,
-     1 '    Cannot find a water right for destination ID  ',a12)
-     
-     
+cx  731 format(/, 72('_'),/
+cx     1  '  Oprinp; Problem with Operation right = ', a12,/,
+cx     1 '    Cannot find a water right for destination ID  ',a12)
+cx       
   732 format(/, 72('_'),/
      1   '  Oprinp; Problem with Operation right = ', a12,/,
      1 10x,'For a type 8 rule the Source ID = ', a12,/
@@ -11767,24 +11830,24 @@ c    1 10x,'   at the source or destination structure',/
      1 10x,'Recommend you revise your data or for a diversion',/
      1 10x,'destination to use a Type 16, 24 or 29 rule')
 
-  737 format(/, 72('_'),/
-     1   '  Oprinp; ',/
-     1 10x,'Problem with Operation Type  = ',i3,' Right = ', a12,/,
-     1 10x,'The Ownership percent (iopsou(4,l) = ', i5,'%',/
-     1 10x,'The ownership percent was added in Version 11.55',/
-     1 10x,'For backward compatiblity a value of 0 is reset to = 100%',/
-     1 10x,'Recommend you revise iopsou(4,l) to be > 0 and </= 100.')
-
-  738 format(/, 72('_'),/
-     1   '  Oprinp; ',/
-     1 10x,'Problem with Operation Type  = ',i3,' Right = ', a12,/,
-     1 10x,'The variable Oprlimit = ', f5.0, ' that indicates water',/
-     1 10x,'is shared with Operating Rule = ', a12,' But the ',/
-     1 10x,'Administration dates do not equal as follows:',/
-     1 10x,'Administration date 1 = ' f16.5,/
-     1 10x,'Administration date 2 = ' f16.5,/
-     1 10x,'Recommend you revise your operating rule data')
-     
+cx  737 format(/, 72('_'),/
+cx     1   '  Oprinp; ',/
+cx     1 10x,'Problem with Operation Type  = ',i3,' Right = ', a12,/,
+cx     1 10x,'The Ownership percent (iopsou(4,l) = ', i5,'%',/
+cx     1 10x,'The ownership percent was added in Version 11.55',/
+cx     1 10x,'For backward compatiblity a value of 0 is reset to = 100%',/
+cx     1 10x,'Recommend you revise iopsou(4,l) to be > 0 and </= 100.')
+cx
+cx  738 format(/, 72('_'),/
+cx     1   '  Oprinp; ',/
+cx     1 10x,'Problem with Operation Type  = ',i3,' Right = ', a12,/,
+cx     1 10x,'The variable Oprlimit = ', f5.0, ' that indicates water',/
+cx     1 10x,'is shared with Operating Rule = ', a12,' But the ',/
+cx     1 10x,'Administration dates do not equal as follows:',/
+cx     1 10x,'Administration date 1 = ' f16.5,/
+cx     1 10x,'Administration date 2 = ' f16.5,/
+cx     1 10x,'Recommend you revise your operating rule data')
+cx     
   739 format(/, 72('_'),/
      1   '  Oprinp; Problem with Operation right = ', a12,/,
      1 10x,'For a Type ', i3, ' rule with a destination = ',a12,/
@@ -11800,13 +11863,13 @@ c    1 10x,'   at the source or destination structure',/
      1 10x,'A value less than 100% is not operatonal',/
      1 10x,'Recommend you revise iopsou(4,l) to be 100.')
 
-  741 format(/, 72('_'),/
-     1   '  Oprinp; ',/
-     1 10x,'Problem with Operation Type  = ',i3,' Right = ', a12,/,
-     1 10x 'Variable iopsou(2,k) = ', i5, ' that allows the source',/
-     1 10x,'right to be left on is not operational'/
-     1 10x,'Recommend you revise iopsou(2,l) to be 1')
-
+cx  741 format(/, 72('_'),/
+cx     1   '  Oprinp; ',/
+cx     1 10x,'Problem with Operation Type  = ',i3,' Right = ', a12,/,
+cx     1 10x 'Variable iopsou(2,k) = ', i5, ' that allows the source',/
+cx     1 10x,'right to be left on is not operational'/
+cx     1 10x,'Recommend you revise iopsou(2,l) to be 1')
+cx
   742 format(/, 72('_'),/
      1   '  Oprinp; ',/
      1 10x,'Problem with Operation Type  = ',i3,' Right = ', a12,/,
@@ -11816,23 +11879,23 @@ c    1 10x,'   at the source or destination structure',/
      1 10x,'Recommend you revise the destination type or variable',/
      1 10x,'  ioprlim.')
      
-  760 FORMAT(/, 72('_'),/
-     1  '  Oprinp; Problem with Operation right = ', a12,/                     
-     1 '   Destination ID ',a12,' from the operation file (*.opr)',              
-     1 '   is not in the instream flow station file (*.ifs)')
-
-  842 format(/, 72('_'),/
-     1  '  Oprinp; Problem with Operation right = ', a12,/,                     
-     1 10x,'water right id ',a12,' in operation file (*.opr)',/
-     1 10x,'is not in the diversion right file (*.ddr)',/
-     1 10x,'Note, type 11 and 14 operation rights must have a water',/
-     1 10x,'right as a source')
-
-  923 format(/, 72('_'),/
-     1 '  Oprinp; Problem with Operating  ID        = ', a12,/
-     1 '          Operation type                     = ', i5,/     
-     1 '          Cannot find a corresponding reservoir type -1')
-     
+cx  760 FORMAT(/, 72('_'),/
+cx     1  '  Oprinp; Problem with Operation right = ', a12,/                     
+cx     1 '   Destination ID ',a12,' from the operation file (*.opr)',              
+cx     1 '   is not in the instream flow station file (*.ifs)')
+cx
+cx  842 format(/, 72('_'),/
+cx     1  '  Oprinp; Problem with Operation right = ', a12,/,                     
+cx     1 10x,'water right id ',a12,' in operation file (*.opr)',/
+cx     1 10x,'is not in the diversion right file (*.ddr)',/
+cx     1 10x,'Note, type 11 and 14 operation rights must have a water',/
+cx     1 10x,'right as a source')
+cx
+cx  923 format(/, 72('_'),/
+cx     1 '  Oprinp; Problem with Operating  ID        = ', a12,/
+cx     1 '          Operation type                     = ', i5,/     
+cx     1 '          Cannot find a corresponding reservoir type -1')
+cx     
   932 format(/,72('_'), /,
      1 '  Oprinp; Problem with *.opr rule ID = ', a12, /
      1 '          Operation type                     = ', i5,/     
@@ -11976,12 +12039,12 @@ c
 c
 c rrb 2015/03/30
      
- 1185 format(/,72('_'),/
-     1 '  Oprinp; Problem with Operation right       = ', a12,/                     
-     1 '          Operation type                     = ', i5,/          
-     1 10x,'   Source Stream id ',a12,' in operations file (*.opr)',/              
-     1 10x,' is not in the steam network file (*.rin)')
-     
+cx 1185 format(/,72('_'),/
+cx     1 '  Oprinp; Problem with Operation right       = ', a12,/                     
+cx     1 '          Operation type                     = ', i5,/          
+cx     1 10x,'   Source Stream id ',a12,' in operations file (*.opr)',/              
+cx     1 10x,' is not in the steam network file (*.rin)')
+cx     
  1186 format(/,72('_'),/
      1 ' Opring; Problem with Operating right        = ', a12,/
      1 '         the number of carriers              = ', i5,/
@@ -12019,22 +12082,22 @@ c rrb 2015/03/30
      1 10x,'   a 2 for month on and a -1 for month off you provided:',/
      1 10x, 12i5)
      
- 1196 format(/, 72('_'), /,
-     1 '  Oprinp; Problem with Operational right = ', a12,/
-     1 10x,' type 15 opr rules can only be on (1) or off (0) ',/
-     1 10x,' for the entire study period.  They cannot begin in ', i5)
-     
+cx 1196 format(/, 72('_'), /,
+cx     1 '  Oprinp; Problem with Operational right = ', a12,/
+cx     1 10x,' type 15 opr rules can only be on (1) or off (0) ',/
+cx     1 10x,' for the entire study period.  They cannot begin in ', i5)
+cx     
  1197 format(/, 72('_'), /,
      1 '  Oprinp; Problem with Operational right = ', a12,/
      1 10x,' The destination instream flow ', a12,/
      1 10x,' is not downstream of the source water right = ', a12)
      
- 1198 format(/, 72('_'),/,
-     1  '  Oprinp; Problem with Operational right = ', a12,/
-     1 10x,'    The destination reservoir ', a12,/
-     1 10x,'    is not upstream of the source (direct flow storage)',/
-     1 10x,'    water right = ', a12)
-     
+cx 1198 format(/, 72('_'),/,
+cx     1  '  Oprinp; Problem with Operational right = ', a12,/
+cx     1 10x,'    The destination reservoir ', a12,/
+cx     1 10x,'    is not upstream of the source (direct flow storage)',/
+cx     1 10x,'    water right = ', a12)
+cx     
  1199 format(/, 72('_'),/,
      1 '  Oprinp; Problem with Operational right = ', a12,/
      1 10x,'    The Rio Grande compact requires the instream flow',/
@@ -12154,21 +12217,21 @@ c rrb 2015/03/30
      1 '          This diversion is not the source right or a carrier',/
      1 '          Recommend you revise the operating rule.')
 
- 1216 format(2x, i5, 1x, a12, 1x, a24)       
- 
- 1217 format(/, 72('_'),/,
-     1 '  Oprinp; Problem with Operational right           = ',a12,/
-     1 '          Operation type                           =',  i3,/     
-     1 10x,      'The source                               = ', a12,/
-     1 10x,      'The destination                          = ',a12,/
-     1 10x,      'The diversion location                   = ',a12,/
-     1 10x,'When the source is a diversion water right',/
-     1 10x,'A type 45 rule requires at least 1 carrier (with loss)',/
-     1 10x,'be provided if a destination is not the same as the',/
-     1 10x,'diversion location. Also if the source is a diversion',/
-     1 10x,'water right the first carrier must be the source',/
-     1 10x,'structure. Recommend you revise the operating rule.')
- 
+cx 1216 format(2x, i5, 1x, a12, 1x, a24)       
+cx 
+cx 1217 format(/, 72('_'),/,
+cx     1 '  Oprinp; Problem with Operational right           = ',a12,/
+cx     1 '          Operation type                           =',  i3,/     
+cx     1 10x,      'The source                               = ', a12,/
+cx     1 10x,      'The destination                          = ',a12,/
+cx     1 10x,      'The diversion location                   = ',a12,/
+cx     1 10x,'When the source is a diversion water right',/
+cx     1 10x,'A type 45 rule requires at least 1 carrier (with loss)',/
+cx     1 10x,'be provided if a destination is not the same as the',/
+cx     1 10x,'diversion location. Also if the source is a diversion',/
+cx     1 10x,'water right the first carrier must be the source',/
+cx     1 10x,'structure. Recommend you revise the operating rule.')
+cx 
  1218 format(/, 72('_'),/,
      1 '  Oprinp; Problem with Operational right           = ',a12,/
      1 '          Operation type                           =',  i3,/
@@ -12205,15 +12268,15 @@ c rrb 2015/03/30
  1250 format(/, 72('_'), /,
      1'  Oprinp;  Stopped in Oprinp, see the log file (*.log)')
      
- 1251 format(/, 72('_'), /,'  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'Source 2 ID          = ', a12,' and the',/
-     1 10x,'The Plan ID          = ', a12,/
-     1 10x,'Note: A Type 10 (General Replacement) rule expects',/
-     1 10x,'      No OOP Plan ID when no source 2 is specified',/
-     1 10x,'      A OOP Plan ID when source 2 is specified',/
-     1 10x,'Recommend you correct the operating rule file (*.opr)')
-
+cx 1251 format(/, 72('_'), /,'  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'Source 2 ID          = ', a12,' and the',/
+cx     1 10x,'The Plan ID          = ', a12,/
+cx     1 10x,'Note: A Type 10 (General Replacement) rule expects',/
+cx     1 10x,'      No OOP Plan ID when no source 2 is specified',/
+cx     1 10x,'      A OOP Plan ID when source 2 is specified',/
+cx     1 10x,'Recommend you correct the operating rule file (*.opr)')
+cx
  1252 FORMAT(/, 72('_'), /,'  Oprinp; ',
      1'Warning for Operating right type = ',i2,' ID = ', a12,/
      1 10x,'It is turned off because the Source ID or',/
@@ -12302,16 +12365,15 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 10x,'Type 11 (administrative) or Type 13 (changed WR)',/ 
      1 10x,'Turning this right off and continuing to simulate')
 
- 1257 format(/, 72('_'), /,'  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'The source 1 (Plan) = ', a12,', the',/
-     1 10x,'Plan Type           = ',i1,11x,', and the',/
-     1 10x,'The source 2 (Res)  = ', a12,' are inconsistent.',/
-     1 10x,'A source 1 Recharge Plan should have a',/
-     1 10x,'a source 2 Reservoir ID',/
-     1 10x,'Revise the plan or operating rule data')
- 
- 
+cx 1257 format(/, 72('_'), /,'  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'The source 1 (Plan) = ', a12,', the',/
+cx     1 10x,'Plan Type           = ',i1,11x,', and the',/
+cx     1 10x,'The source 2 (Res)  = ', a12,' are inconsistent.',/
+cx     1 10x,'A source 1 Recharge Plan should have a',/
+cx     1 10x,'a source 2 Reservoir ID',/
+cx     1 10x,'Revise the plan or operating rule data')
+cx  
  1258 format(/, 72('_'), /
      1 '  Oprinp; ',
      1 'Problem with Operating right type = ',i2,' ID = ', a12,/
@@ -12326,14 +12388,14 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 10x,'Note the file currently requires the variables OprLoss',
      1     ' and OprLimit')         
      
- 1259 format(/, 72('_'),/ '  Oprinp; ',
-     1 'Problem with Operating right type = ',i2,' ID = ',a12,/
-     1 10x,'Destination = ',a12,' a ', a9,/
-     1 10x,'Source 2 = ',a12,/     
-     1 10x,'A destination = Reservoir should have ',/
-     1 'Source 2 = Diversion',/
-     1 10x,'Revise the operating rule data')
-     
+cx 1259 format(/, 72('_'),/ '  Oprinp; ',
+cx     1 'Problem with Operating right type = ',i2,' ID = ',a12,/
+cx     1 10x,'Destination = ',a12,' a ', a9,/
+cx     1 10x,'Source 2 = ',a12,/     
+cx     1 10x,'A destination = Reservoir should have ',/
+cx     1 'Source 2 = Diversion',/
+cx     1 10x,'Revise the operating rule data')
+cx     
  1260 format(/, 72('_'),/
      1 '  Oprinp; Operating right data read (or estimated)',//
      1 '# ID        Name                    NA                  ',
@@ -12492,11 +12554,11 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 10x,'Note if a plan is off the % is not counted',/
      1 10x,'Recommend you revise the plan data.')
 
- 1274 format(/, 72('_'),/, '  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'The return flow fractions equal ', f8.1, ' not 100',/
-     1 10x,'Recommend you revise your return percents.')
-
+cx 1274 format(/, 72('_'),/, '  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'The return flow fractions equal ', f8.1, ' not 100',/
+cx     1 10x,'Recommend you revise your return percents.')
+cx
  1275 format(/, 72('_'),/, '  Oprinp; ',
      1'Problem with Operating right type = ',i2,' ID = ', a12,/
      1 10x,'Source account 2 (iopsou(4,k)) = ', i5,' but it'/
@@ -12517,29 +12579,28 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 10x,'This operating rule type is not defined',/
      1 10x,'Recommend you revise the operating rule file.')
      
- 1278 format(/, 72('_'), /,'  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'The source 1 (Plan) = ', a12,' and the',/
-     1 10x,'Plan Type = ',i2,' (recharge) requires',/
-     1 10x,'Source 2 be a reservoir, not = ', a12,/
-     1 10x,'Recommend you revise the operating rule data.')     
-     
- 1279 format(/, 72('_'), /,'  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'The miscellaneous limit (oprlimit) = ', i5,/
-     1 10x,'When this value is 0 no additional data is expected',/
-     1 10x,'When this value is 2 a diversion ID is read',/
-     1 10x,'When this value is 3 a reservoir ID is read',/
-     1 10x,'Recommend you revise the operating rule data.')     
-
-     
- 1280 format(/, 72('_'),/, '  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'The source plan = ', a12,' a type = ', i3,/
-     1 10x,'For this operating rule the plan type should be a:',/
-     1 10x,'  Type 11 (administrative) for the South Platte Compact',/
-     1 10x,'Recommend you revise the plan type.') 
-    
+cx 1278 format(/, 72('_'), /,'  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'The source 1 (Plan) = ', a12,' and the',/
+cx     1 10x,'Plan Type = ',i2,' (recharge) requires',/
+cx     1 10x,'Source 2 be a reservoir, not = ', a12,/
+cx     1 10x,'Recommend you revise the operating rule data.')     
+cx     
+cx 1279 format(/, 72('_'), /,'  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'The miscellaneous limit (oprlimit) = ', i5,/
+cx     1 10x,'When this value is 0 no additional data is expected',/
+cx     1 10x,'When this value is 2 a diversion ID is read',/
+cx     1 10x,'When this value is 3 a reservoir ID is read',/
+cx     1 10x,'Recommend you revise the operating rule data.')     
+cx   
+cx 1280 format(/, 72('_'),/, '  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'The source plan = ', a12,' a type = ', i3,/
+cx     1 10x,'For this operating rule the plan type should be a:',/
+cx     1 10x,'  Type 11 (administrative) for the South Platte Compact',/
+cx     1 10x,'Recommend you revise the plan type.') 
+cx    
  1281  FORMAT(/,72('_'),/
      1  '  Oprinp; Warning See *.chk for details regarding: ',a32)
 
@@ -12592,15 +12653,14 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 10x,'Recommend you revise variable creuse or add a  type 46',/
      1 10x,'operating rule with the source = ', a12'.')
 
- 1289 format(/, 72('_'),/, '  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'Variable creuse = ', a12,' that is a plan type', i3,/
-     1 10x,'For this operating rule variable creuse must be a ',/
-     1 10x,'Reuse Plan (type 3, 4, 5 or 6) or a ',/
-     1 10x,'WWSP User Plan (type 15)',/
-     1 10x,'Recommend you revise variable creuse')
-                               
-                               
+cx 1289 format(/, 72('_'),/, '  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'Variable creuse = ', a12,' that is a plan type', i3,/
+cx     1 10x,'For this operating rule variable creuse must be a ',/
+cx     1 10x,'Reuse Plan (type 3, 4, 5 or 6) or a ',/
+cx     1 10x,'WWSP User Plan (type 15)',/
+cx     1 10x,'Recommend you revise variable creuse')
+cx                                                           
  1290   format(/, 72('_'),/, '  Oprinp; ',
      1 'Warning the version of the operating rule',/
      1 12x,'file (*.opr) provided is not specified.',/
@@ -12611,15 +12671,15 @@ cx   1 20x,'      A Type 53 expects a WWSP Plan (type 14)',/
      1 12x,'See Section 4.13 of the documentation for more ',/
      1 12x,'additional information.')          
      
- 1291 format(/, 72('_'),/, '  Oprinp; ',
-     1'Problem with Operating right type = ',i2,' ID = ', a12,/
-     1 10x,'This operating right has monthly on-off data provided',/
-     1 10x '(dumx = 12 or less than -12) and the destination',/
-     1 10x,'provided is not Multiple (free format option).',/
-     1 10x,'Recommend you revise to not include monthly data',/
-     1 10x,'or provide the destination data to Multiple (free',/
-     1 10x,'format option).')
-     
+cx 1291 format(/, 72('_'),/, '  Oprinp; ',
+cx     1'Problem with Operating right type = ',i2,' ID = ', a12,/
+cx     1 10x,'This operating right has monthly on-off data provided',/
+cx     1 10x '(dumx = 12 or less than -12) and the destination',/
+cx     1 10x,'provided is not Multiple (free format option).',/
+cx     1 10x,'Recommend you revise to not include monthly data',/
+cx     1 10x,'or provide the destination data to Multiple (free',/
+cx     1 10x,'format option).')
+cx     
  1292 format(/, 72('_'),/,'  Oprinp; ',
      1'Problem with Operating right type = ',i2,' ID = ', a12,/
      1 '          Expect the destination to be Multiple in ',/
@@ -12756,17 +12816,17 @@ c
      1 10x,'The JM Flow  (type 54) ID & source 2   = ', a12, a12,/
      1 10x, 'Recommend you correct your input data.')
         
- 2019   format(/,60('_'),/
-     1  '  Oprinp; Detailed output for type ', i5,/
-     1  10x, 'ID and Type      = ', a12, i5,/
-     1  10x, 'Destination      = ', a12, i5,/        
-     1  10x, 'Source 1         = ', a12, i5,/
-     1  10x, 'Source 2         = ', a12, i5,/
-     1  10x, 'Reuse            = ', a12, i5,/
-     1  10x, 'OprLimit         = ', f12.0,i5,/
-     1  10x, 'Diversion type   = ', a12,/
-     1  10x, 'Destination type = ', i5)  
-        
+cx 2019   format(/,60('_'),/
+cx     1  '  Oprinp; Detailed output for type ', i5,/
+cx     1  10x, 'ID and Type      = ', a12, i5,/
+cx     1  10x, 'Destination      = ', a12, i5,/        
+cx     1  10x, 'Source 1         = ', a12, i5,/
+cx     1  10x, 'Source 2         = ', a12, i5,/
+cx     1  10x, 'Reuse            = ', a12, i5,/
+cx     1  10x, 'OprLimit         = ', f12.0,i5,/
+cx     1  10x, 'Diversion type   = ', a12,/
+cx     1  10x, 'Destination type = ', i5)  
+cx        
  2020   format(/,60('_'),/
      1  '  Oprinp; Detailed output for type ', i5,/
      1  10x, 'ID and Type      = ', a12, i5,/

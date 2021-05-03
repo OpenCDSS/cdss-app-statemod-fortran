@@ -33,6 +33,9 @@ c	      Called by Statem.for
 c
 c _________________________________________________________
 c	Update History
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+c
 c 2018/10/14; Update to include JMartin Monthly inflow (*.jmm)
 c             revise dimension from 80 to 90
 c	2006/01/01; Add Network so it can be inlcuded in *.rsp file
@@ -211,6 +214,13 @@ c		Use -1 if not currently used
 c
 c _______________________________________________________ 
 c
+c
+c rrb 2021/04/18; Compiler not used or initilize
+      j1=0
+      j2=0
+      iexit=0
+      if(iexit.gt.0) goto 510
+      
 c               Step 1; Initialize
 
 c
@@ -337,7 +347,11 @@ c rrb 2009/03/18; Stop and warn if a file is read but not found
              else
                infile=1
              endif
-c            if(i.gt.1 .and. ifound.eq.0) goto 9998
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+             if(iout.eq.1) then             
+               if(i.gt.1 .and. ifound.eq.0) goto 9998
+             endif
            endif
          endif
        end do
@@ -390,11 +404,13 @@ c
 c _______________________________________________________ 
 c
 c               Formats
-
- 200   format(/,
-     1 '  Getfn; File # to open = ', i5, /
-     1 '         Type           = ', a40,/
-     1 '         Name           = ', a256)
+c
+c
+c rrb 2021/04/18; Compiler not used or initilize
+cx 200   format(/,
+cx     1 '  Getfn; File # to open = ', i5, /
+cx     1 '         Type           = ', a40,/
+cx     1 '         Name           = ', a256)
  202   format(/,
      1 '  Getfn;',/
      1 '    #    j Fn_1  FnID  Fn_2',
@@ -501,6 +517,10 @@ c
      1   filena, fileT1, fileN1)
 
        character filena*256, fileN1*256, fileT1*40
+c
+c rrb 2021/04/18; Compiler not used or initilize
+       j1=0    
+       j2=0   
 
        FileT1=' '
        FileN1=' '

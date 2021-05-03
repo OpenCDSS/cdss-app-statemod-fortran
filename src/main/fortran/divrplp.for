@@ -45,6 +45,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 2020/12/21; Update plan demand pdem(ndP) in Step 20c and include
 c                 both T&C (type 1) and Aug plan (type 2) destinations
 c                 and add alocfs5 & alocfs6 to detailed output 
@@ -351,6 +353,19 @@ c _____________________________________________________________
 c
 c               Step 1a - Initialize general variables
 c
+c
+c rrb 2021/04/18; Compiler warning
+c    
+      pavail=0.0
+      ncar=0
+      ndnd=0
+      nro=0
+      irow=0
+      ib=0
+      ie=0
+      isown=0
+      monout=0
+      tranlim=tranlim
 c ---------------------------------------------------------
 c               Control debut printout
 c		            iout=0 none, iout=1 detailed, iout=2 summary
@@ -376,7 +391,8 @@ c
       iout26=0    
       ioutP=0
       iout31=0
-c    
+
+      
       cDest1='NA'
       cImcdR='NA'
       
@@ -2194,7 +2210,7 @@ c                a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
      1       iwx, iw, l2, ndX, iuseX,   iDep, ncarry,
      1       diveff1*100., oprEffT*100, 
      1       divreq1*fac,  alocfs1*fac, alocfs2*fac, alocfs3*fac,
-     1       alocfs4*fac,  alocfs5*fac, alocfs6*fac
+     1       alocfs4*fac,  alocfs5*fac, alocfs6*fac,
      1       alocfs*fac,   divaloX*fac, pavail*fac, OprmaxM1, OprmaxM2, 
      1       divcarry*fac, abs(relact*fac), divact*fac,  iwhy, cwhy
      
@@ -2280,10 +2296,10 @@ cx   1  ' ____ ____ _______ _______ _______ _______ _______ _______')
      1     '  DivrplP; Diversion Limit;',
      1     '  pavail  divalo  alocfs  divact',/
      1     '                          ', 20f8.2)
- 360   format(
-     1  'DivRplP;  Divact  Rettot DivLeft DivactE Culimit    IpTC',
-     1             '     Imo    Pdem   PdemT',/
-     1  '            ', 5f8.0, 2i8, 20f8.0)
+cx 360   format(
+cx     1  'DivRplP;  Divact  Rettot DivLeft DivactE Culimit    IpTC',
+cx     1             '     Imo    Pdem   PdemT',/
+cx     1  '            ', 5f8.0, 2i8, 20f8.0)
      
  390   format(
      1       '  DivrplP; Release for Depletion Data;',/

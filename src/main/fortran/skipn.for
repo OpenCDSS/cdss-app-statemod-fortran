@@ -26,14 +26,21 @@ c	Program Description
 c
 c       Skipn; It skips any number of comment cards identified
 c               as a '# '  from a data file
+c
+c _________________________________________________________
+c       Update History
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+c
+c
+c
 c _________________________________________________________
 c	Dimensions
 c
          character rec1*1, recx*1, recin*256, filena*256, rec132*132
-c
 c _________________________________________________________
 c
-c                 
+c
 c		iout=0 no details
 c			1 details
 c			2 summary
@@ -49,7 +56,10 @@ c
 c              Check first record and store for use on this file
 c
 c100    read(nf,500,end=926,err=928) rec1
- 100    read(nf,'(a132)',end=926,err=928) rec132
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx100   read(nf,'(a132)',end=926,err=928) rec132
+        read(nf,'(a132)',end=926,err=928) rec132
         rec1=rec132(1:1)
         if(iout.eq.1) write(nlog,*) ' Skipn; rec132 = ', rec132
         if(iout.eq.1) write(nlog,*) ' Skipn; rec1 = ', rec1
@@ -78,8 +88,10 @@ c
         else
           backspace(nf)
         endif        
+c
+c rrb 2021/04/18; Compiler not used or initilized    
 
- 500    format(a1)
+cx500   format(a1)
  999    return
 
 c

@@ -29,11 +29,14 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c 2008/09/22;   Store on/off switch read (e.g. idvrsw1 not idvrsw) in 
 c               order to allow more than one operating rule
-c	        to reference a water right
-
+c	              to reference a water right
+c
 c 2003/08/18;   Revise to allow random file read
+c
 c 2003/10/24;   Revise to allow iresco(2,k) = 0 to allow
 c               a reservoir right to be distributed porportional
 c               to the ownership of all accounts in that reservoir.
@@ -52,7 +55,7 @@ c               maxwrx = max # of water rights for any structure
 c                        type + 1 
 c
 c _________________________________________________________
-c	Dimensions
+c	      Dimensions
 c
 
       include 'common.inc'
@@ -67,7 +70,8 @@ cx    dimension iwr(maxwrx), jwr(maxwrx), kwr(maxwrx)
 c
 c _________________________________________________________
 c
-                                                                      
+c               Step 1; Initialize  
+c                                                                     
       write(6,*) ' Subroutine Riginp'
 c
 c		ioutR	= 1 print reservoir read
@@ -431,8 +435,12 @@ c rrb 10/7/94 Comment
         goto 9999
 C                                                                       
 C                                 
-  190   continue                                   
-  200   NO=NOWNER(NR)+IRESCO(2,K)-1     
+  190   continue             
+c                             
+c rrb 2009/06/09; Correction                        
+cx200   NO=NOWNER(NR)+IRESCO(2,K)-1 
+        NO=NOWNER(NR)+IRESCO(2,K)-1  
+            
         NRIGOW(NO+1)=NRIGOW(NO+1)+1
         NRIGRS(NR+1)=NRIGRS(NR+1)+1
 C 
@@ -930,12 +938,12 @@ c 480 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), 20i8)
      1    '          Resrvoir ID = ',a12, ' Right    ID = ',a12,/
      1    ' has Operating rule ID (copid) = ', a12)
 
-  490 format(/,
-     1  72('_'),//     
-     1  '  Riginp; Warning',
-     1  ' Instream right ', a12, ' has a decree of ', f16.5,            
-     1  ' in *.ifr Proceeding on')
-     
+cx  490 format(/,
+cx     1  72('_'),//     
+cx     1  '  Riginp; Warning',
+cx     1  ' Instream right ', a12, ' has a decree of ', f16.5,            
+cx     1  ' in *.ifr Proceeding on')
+cx     
   491 format(/,
      1  72('_'),//     
      1  '  Riginp; Warning. Water right with a zero decree',/
@@ -953,20 +961,20 @@ c 480 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), 20i8)
      1  ' ___exb__________exb______________________exb__e')
   497 format(i5, 1x, a12, 1x, a24, 1x, a4)
 
-  492 format(/,
-     1  72('_'),//       
-     1  '  Riginp; Warning. ',
-     1  ' Direct Diversion right ', a12, ' has a decree of ', f16.5,            
-     1  ' in *.ddr. Proceeding on')
-     
-  493 format(i5, 1x, a12, f8.2)
-     
-  494 format(/,
-     1  72('_'),//       
-     1  '  Riginp; Warning. ',
-     1  ' Reservoir right ', a12, ' has a decree of ', f16.5,            
-     1  ' in *.ddr. Proceeding on')                                      
-
+cx  492 format(/,
+cx     1  72('_'),//       
+cx     1  '  Riginp; Warning. ',
+cx     1  ' Direct Diversion right ', a12, ' has a decree of ', f16.5,            
+cx     1  ' in *.ddr. Proceeding on')
+cx     
+cx  493 format(i5, 1x, a12, f8.2)
+cx     
+cx  494 format(/,
+cx     1  72('_'),//       
+cx     1  '  Riginp; Warning. ',
+cx     1  ' Reservoir right ', a12, ' has a decree of ', f16.5,            
+cx     1  ' in *.ddr. Proceeding on')                                      
+cx
   500 FORMAT(/,
      1  72('_'),//       
      1  '  Riginp; Warning',
@@ -1026,13 +1034,13 @@ c 480 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), 20i8)
      1  '  Riginp; Warning',
      1  '  TOO MANY WELL RIGHTS in *.wer,    MAXIMUM = ',I5)
      
-  590 format(/,
-     1  72('_'),//       
-     1  '  Riginp; Warning',
-     1  ' Structure ', a12,1x,a24,
-     1  ' has NO WATER RIGHT or NO ACTIVE WATER RIGHT',/, 10x,
-     1  ' May be OK if controlled by an operational right')             
-     
+cx  590 format(/,
+cx     1  72('_'),//       
+cx     1  '  Riginp; Warning',
+cx     1  ' Structure ', a12,1x,a24,
+cx     1  ' has NO WATER RIGHT or NO ACTIVE WATER RIGHT',/, 10x,
+cx     1  ' May be OK if controlled by an operational right')             
+cx     
   600 format(/,
      1  72('_'),//       
      1  '  Rininp; Water Right Summary',//

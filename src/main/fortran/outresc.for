@@ -18,17 +18,17 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 
-c	Update History
+c	      Update History
 c
 
 c
 c _________________________________________________________
-c	Documentation
+c	      Documentation
 c
 
 c
 c _________________________________________________________
-c	Dimensions
+c	      Dimensions
 cC     Last change:  C    20 May 97    0:07 am
 C
 c *********************************************************
@@ -45,7 +45,9 @@ c
 c _________________________________________________________
 c      Update history
 c
-c rrb 99/12/27; Revised to handle variable number of missing values
+c
+c rrb 2021/04/18; Compiler warning
+c rrb 1999/12/27; Revised to handle variable number of missing values
 c
 c _________________________________________________________
 c      Documentation
@@ -65,6 +67,9 @@ c _________________________________________________________
 c
 c                                 
 c               Step 1 Initialize
+c
+c rrb 2021/04/18; Compiler warning
+      nacc=0
 c
 
 c     write(6,*) ' '
@@ -204,8 +209,11 @@ c rrb 10/27/94 Additional Output
      1              '; or ',f8.0, ' % Complete', i5)
 c
 c              Print Header
-        ida0 = 0
-  140   ip = ip + 1
+        ida0 = 0  
+c                                        
+c rrb 2021/04/18; Compiler warning       
+cx140   ip = ip + 1          
+        ip = ip + 1
         if(cplot.eq.blank) then
           write(nf,220) headin1(1), headin1(2),ip,
      1                  cresid(ir), resnam1(ir), ida0
@@ -251,10 +259,15 @@ c           if(iresop.ne.1) cx=fac*mthday(im)
 c
             irecr=((iy-iystr0)*12+(im-1))*nrsactx+ir1+numtop
             read(44,rec=irecr) (dat2(i),i=1,nres)
-                     
-            ida  = dat2(nidr) 
+c                                  
+c rrb 2021/04/18; Compiler warning 
+cx          ida  = dat2(nidr)                       
+            ida  = nint(dat2(nidr)) 
             ida0 = ida + 1
-            nacc = dat2(naccX)
+c
+c rrb 2021/04/18; Compiler warning
+cx          nacc = dat2(naccX)
+            nacc = nint(dat2(naccX))
              
 c           write(99,*) ' Outrep2; ida, nacc', ida, nacc
             do i=1,nresX

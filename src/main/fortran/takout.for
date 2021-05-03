@@ -31,9 +31,15 @@ c       Takout; It subtracts divact from
 c               Avail and River at diverting node (iscd) and from
 c               Avail, River and Avinp at downstream nodes (iss)
 c
+c 
+c _________________________________________________________  
+c
+c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c _________________________________________________________
-c       Documentatoin
+c       Documentation
 c
 c               avail is water available for diversion
 c               river is wet water at this node
@@ -41,14 +47,22 @@ c               avinp is wet water upstream of this node
 c
 c
 c _________________________________________________________
-c	Dimensions
+c	     Dimensions
 c
       DIMENSION AVAIL(maxsta), RIVER(maxsta), AVINP(maxsta),
      1          QCHECK(maxsta),IDNCOD(maxsta)
 
 c
 c _________________________________________________________
-c		Step 1; Initialize
+c		Step 1; Initialize  
+c
+c rrb 2021/04/18; Compiler warning 
+      do i=1,maxsta
+        qcheck=qcheck 
+      end do
+      iprob=0                 
+      if(iprob.gt.0) goto 9999
+
       nlog=99
       iout=0
       if(iout.eq.1) then
@@ -88,7 +102,9 @@ c
 c _________________________________________________________
 c
 c	 Error Tracking
- 1000 write(6,1050) 
+c rrb 2021/04/18; Compiler warning
+cx1000write(6,1050) 
+ 9999 write(6,1050)
       write(nlog,1051) iss
       
  1050 format(

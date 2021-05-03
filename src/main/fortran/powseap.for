@@ -103,6 +103,8 @@ c _________________________________________________________
 c       Update History
 c
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2021/02/14; Revised to let iopsouR(L2) control the source
 c                  type.  Specifically iopsou(1,k) is positive
 c                  for both a reservoir and plan source.
@@ -136,6 +138,12 @@ c
 c
 c _________________________________________________________
 c
+c
+c rrb 2021/04/18; Compiler warning
+      n1=0
+      ioutiw=0
+      iscdp=0
+      
 c		              iout = 0 No detailed printout
 c		                   = 2 Summary printout
 c                 ioutQ= 1 Print detailed Qdiv results at nspill
@@ -144,6 +152,7 @@ c                 ioutA= 1 Print avail before & after Takout
       iout=0
       ioutQ=0
       ioutA=0
+      rec12=rec12
 c
       icx=29
       
@@ -796,13 +805,13 @@ c               Formats
  140  format(/,
      1  ' PowseaP; nr iown nowner(nr+1) nowner(nr) nrown1',/
      1  10x,20i8)
- 142  format(/,       
-     1  '  PowResP; Source = Plan'/
-     1  '   Year  Mon'     
-     1  '     Psuply1      Divact      Divo     Psuply2',/
-     1  ' _____ _____', 
-     1  ' ___________ ___________ ___________ ___________')
-     
+cx 142  format(/,       
+cx   1  '  PowResP; Source = Plan'/
+cx   1  '   Year  Mon'     
+cx   1  '     Psuply1      Divact      Divo     Psuply2',/
+cx   1  ' _____ _____', 
+cx   1  ' ___________ ___________ ___________ ___________')
+cx   
  150  format(           
      1  ' PowseaP; n1, relaf, curown(n1), cursto1, c, ct',/
      1  10x, i8, 20f8.0)
@@ -833,7 +842,7 @@ c               Formats
       
   280   FORMAT(a12, i5,1x,a4, i5, 1x, a12, 6i5, 7f8.1,
      1   i8, 1x, a48)
-  290   format(100f8.0)
+cx290   format(100f8.0)
 c
 c
 c _________________________________________________________

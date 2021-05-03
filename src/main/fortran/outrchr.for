@@ -21,14 +21,20 @@ c_________________________________________________________________NoticeEnd___
       SUBROUTINE outRchR(nreach,cplot)
 c
 c	Called by Report
-C
+C   
+c ____________________________________________________  
+c                                                       
+c       Program Description                                  
+c                                                       
 c      outRchR; Print a water balance report by reach (*.xrh)
 c
-c	RchidD		Diversion Reach ID
+c	              RchidD		Diversion Reach ID
 c
 c ____________________________________________________
 c
 c       Update History
+c
+c rrb 2021/04/18; Compiler warning
 c
 c rrb 2008/12/20; Copy OutBal2 and add reach data. Specifically:
 c		1. Add a reach do loop (240)
@@ -729,7 +735,11 @@ c             write(nlog,*) '  outRchR, Res', (dat2(i), i=1,nres)
 c
 c ---------------------------------------------------------
 c              Skip account data
-              ida = dat2(nidR)
+c
+c rrb 2021/04/18; Compiler warning
+cx            ida = dat2(nidR)
+              ida = nint(dat2(nidR))
+              
               if(ida.ne.0) goto 160
 c
 c ---------------------------------------------------------
@@ -1142,12 +1152,12 @@ c               Formats
  2322 format('  AVE', 1x, a4, 30f12.2)
  
   234 format('  AVE', 1x, a4,',', 10(f10.0,','), f10.0)
- 2341 format('  AVE', 1x, a4,',', 10(f10.1,','), f10.1)
- 2342 format('  AVE', 1x, a4,',', 10(f10.2,','), f10.2)
- 
-  236 format('  AVE', 1x, a4, 30f12.0)
- 2361 format('  AVE', 1x, a4, 30f12.1)
- 2362 format('  AVE', 1x, a4, 30f12.2)
+cx 2341 format('  AVE', 1x, a4,',', 10(f10.1,','), f10.1)
+cx 2342 format('  AVE', 1x, a4,',', 10(f10.2,','), f10.2)
+cx 
+cx  236 format('  AVE', 1x, a4, 30f12.0)
+cx 2361 format('  AVE', 1x, a4, 30f12.1)
+cx 2362 format('  AVE', 1x, a4, 30f12.2)
 c
 
 
@@ -1199,22 +1209,22 @@ c
      1 '     ,     ,',
      1 10('        ', i2,','))
 
-  255 FORMAT(/,30x, ' Ground Water Budget ', a5,// 
-     1 '          ',
-     1 '              From River        Well       Other       Total',
-     1 '       Total                               To/Fr       Other',
-     1 '       Total',
-     1 '                        ',/
-     1 ' Year   Mo',
-     1 ' Recharge(1)     by Well   Depletion  Inflows(2)      Inflow',
-     1 '     Pumping      Return        Loss   GwStorage Outflows(3)',
-     1 '     Outflow    Delta(4)  Salvage(5)',/
-     1 '          ',
-     1 '         (+)         (+)         (+)         (+)          NA',
-     1 '         (-)         (-)         (-)         (-)         (-)',
-     1 '          NA          NA         NA',/,
-     1  10x, 13('        (', i2,')'))
-
+cx  255 FORMAT(/,30x, ' Ground Water Budget ', a5,// 
+cx     1 '          ',
+cx     1 '              From River        Well       Other       Total',
+cx     1 '       Total                               To/Fr       Other',
+cx     1 '       Total',
+cx     1 '                        ',/
+cx     1 ' Year   Mo',
+cx     1 ' Recharge(1)     by Well   Depletion  Inflows(2)      Inflow',
+cx     1 '     Pumping      Return        Loss   GwStorage Outflows(3)',
+cx     1 '     Outflow    Delta(4)  Salvage(5)',/
+cx     1 '          ',
+cx     1 '         (+)         (+)         (+)         (+)          NA',
+cx     1 '         (-)         (-)         (-)         (-)         (-)',
+cx     1 '          NA          NA         NA',/,
+cx     1  10x, 13('        (', i2,')'))
+cx
   260 format(
      1 ' ____ ____',
      1 ' ___________ ___________ ___________ ___________ ___________',
@@ -1223,23 +1233,23 @@ c
      1 ' ___________ ___________ ___________ ___________ ___________',
      1 ' ___________ ___________')
 
-  261 format(
-     1 ' ____, ____,',
-     1 ' _________, _________, _________, _________, _________,',
-     1 ' _________, _________, _________, _________, _________,',
-     1 ' _________')
-     
-  262 format(
-     1 ' ____, ____,',
-     1 ' _________, _________, _________, _________, _________,',
-     1 ' _________, _________, _________, _________, _________')
-
-  265 format(
-     1 ' ____ ____ ___________ ___________ ___________ ___________',
-     1           ' ___________ ___________ ___________ ___________',
-     1           ' ___________ ___________ ___________ ___________', 
-     1           ' ___________')
-
+cx  261 format(
+cx     1 ' ____, ____,',
+cx     1 ' _________, _________, _________, _________, _________,',
+cx     1 ' _________, _________, _________, _________, _________,',
+cx     1 ' _________')
+cx     
+cx  262 format(
+cx     1 ' ____, ____,',
+cx     1 ' _________, _________, _________, _________, _________,',
+cx     1 ' _________, _________, _________, _________, _________')
+cx
+cx  265 format(
+cx     1 ' ____ ____ ___________ ___________ ___________ ___________',
+cx     1           ' ___________ ___________ ___________ ___________',
+cx     1           ' ___________ ___________ ___________ ___________', 
+cx     1           ' ___________')
+cx
 c 262 format(70x, f12.0,' (6)',/ 70x, ' ___________',/,70x, f12.0,//,
   280 format(82x, f12.0,' (6)',/ 82x, ' ___________',/,82x, f12.0,/)
  2801 format(82x, f12.1,' (6)',/ 82x, ' ___________',/,82x, f12.1,/)
@@ -1275,28 +1285,29 @@ c 262 format(70x, f12.0,' (6)',/ 70x, ' ___________',/,70x, f12.0,//,
      1               'includes:',/ 
      1  '              1 ', f8.0,' af/yr of Gain-Loss in this reach &',/
      1  '              2 ', f8.0,' af/yr for Carrier to Storage.')
-
-  263 format(/,'  Note: (1) Recharge = Divert + Pumping',
-     1         ' - CU - Soil Moisture Change.',
-     1         ' Recharge and CU are for both surface and ground',
-     1         ' water. CU does not include reservoir evaporation.',/
-     1         '        (2) Other Inflows to ground water not',
-     1         ' modeled include natural stream loss, precipitation ',
-     1         ' recharge, boundary inflow, etc.',/
-     1         '        (3) Other Outflows from ground water not',
-     1         ' modeled include natural stream gain, boundary,',
-     1         ' outflow, CU by native species, etc.',/
-     1         '        (4) Delta is Total Inflow - Total Outflow but', 
-     1         ' remember Other Inflows and Other Outflows are not', 
-     1         ' included. Also it takes some time before return',/
-     1         '            flows & depletions impact the system',/
-     1         '        (5) Salvage is not part of the Ground Water ',
-     1         'Balance because it is a net change from non benefical',
-     1         ' (e.g. Native ET, etc.) to Consumptive Use')
+cx
+cx  263 format(/,'  Note: (1) Recharge = Divert + Pumping',
+cx     1         ' - CU - Soil Moisture Change.',
+cx     1         ' Recharge and CU are for both surface and ground',
+cx     1         ' water. CU does not include reservoir evaporation.',/
+cx     1         '        (2) Other Inflows to ground water not',
+cx     1         ' modeled include natural stream loss, precipitation ',
+cx     1         ' recharge, boundary inflow, etc.',/
+cx     1         '        (3) Other Outflows from ground water not',
+cx     1         ' modeled include natural stream gain, boundary,',
+cx     1         ' outflow, CU by native species, etc.',/
+cx     1         '        (4) Delta is Total Inflow - Total Outflow but', 
+cx     1         ' remember Other Inflows and Other Outflows are not', 
+cx     1         ' included. Also it takes some time before return',/
+cx     1         '            flows & depletions impact the system',/
+cx     1         '        (5) Salvage is not part of the Ground Water ',
+cx     1         'Balance because it is a net change from non benefical',
+cx     1         ' (e.g. Native ET, etc.) to Consumptive Use')       
+cx
  256  format(/72('_'),/
      1 '  OutRchR; Average Inflow - Outflow = ', f8.0,' Reach = ', f8.0)
- 266  format(' outRchR Diversion adjustment;',
-     1          ' #, dat1(30), dat1(31), dat1(32) = ',2i5, 20f8.1)  
+cx 266  format(' outRchR Diversion adjustment;',
+cx     1          ' #, dat1(30), dat1(31), dat1(32) = ',2i5, 20f8.1)  
  268  format(/,' outRchR; Balance adjustment;',/
      1 '    # Year  Mon Type                     River ID       is ',
      1 'ip/ir     AdjXX      AdjT    AdjToT',/

@@ -34,6 +34,9 @@ c _________________________________________________________
 c
 c               Update history
 c
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+c
 c rrb 2019/07/28; For a WWSP-User plan (type 15) (iwwPlan>0)
 c                 Reset plan supply psuply(np) and direct diversion
 c                 supply (psupDD(np)) after a type 46 (multiple split)
@@ -76,6 +79,11 @@ c
 c _________________________________________________________
 c     Dimensions
       include 'common.inc'
+c
+c rrb 2021/04/18; Compiler not used or initilize
+      iexit=0
+      if(iexit.gt.0) goto 500
+      rnextar=0.0
       
       ioutP=0
       ioutP1=0
@@ -410,7 +418,10 @@ c
 c _________________________________________________________
 c               Step 6; Begin Monthly Reservoir Initialization
 c
-  160 IF(NUMRES.EQ.0) GO TO 250
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx160 IF(NUMRES.EQ.0) GO TO 250
+      IF(NUMRES.EQ.0) GO TO 250
       if(ichk.eq.94) write(nlog,*)'  Bomsec; 6 Monthly Reservoirs '
   
       IF(NUMMIN.EQ.0) GO TO 190
@@ -438,24 +449,37 @@ c              Calculate months remaining + 1
           monrem = 1
           do 170 j=mon,12
             if(targetx(j,nm).lt. -0.1) monrem = monrem + 1
-            if(targetx(j,nm).gt. 0.1)  inextar= targetx(j,nm)
+c
+c rrb 2021/04/18; Compiler Warning
+cx          if(targetx(j,nm).gt. 0.1)  inextar= targetx(j,nm)
+            if(targetx(j,nm).gt. 0.1)  rnextar= targetx(j,nm)
             if (targetx(j,nm).gt. 0.1) go to 171
   170     continue
 
           do 172 j=1,12
             if(targetn(j,nm).lt. -0.1) monrem = monrem + 1
-            if(targetn(j,nm).gt. 0.1)  inextar= targetn(j,nm)
+c
+c rrb 2021/04/18; Compiler Warning
+cx          if(targetn(j,nm).gt. 0.1)  inextar= targetn(j,nm)
+cx          if(targetn(j,nm).gt. 0.1)  rnextar= targetn(j,nm)
             if(targetn(j,nm).gt. 0.1) go to 171
   172     continue
 c        
 c grb 3-19-96 Set index to appropriate reservoir id
 c
+c
+c rrb 2021/04/18; Compiler Warning
+cx 171     tarmax(im) = cursto(im)-(cursto(im)+(targetx(mon,nm)*(-1.0))
+cx   1                 - inextar)/float(monrem)
   171     tarmax(im) = cursto(im)-(cursto(im)+(targetx(mon,nm)*(-1.0))
-     1                 - inextar)/float(monrem)
+     1                 - rnextar)/float(monrem)
           tarmax(im) = amax1(tarmax(im), volmin(im))
-  
+c
+c rrb 2021/04/18; Compiler Warning 
+cx        if(ioutT.eq.1) write(nlog,*) ' Bomsec; ', mon,cursto(im),
+cx   1      targetx(mon,nm), inextar
           if(ioutT.eq.1) write(nlog,*) ' Bomsec; ', mon,cursto(im),
-     1      targetx(mon,nm), inextar
+     1      targetx(mon,nm), rnextar
 
           targetx(mon,nm) = tarmax(im)
          endif
@@ -1214,8 +1238,10 @@ c                 has been executed.  Note the WWSP-Supply (type 14)
 c                 is reset in DivMulti
 c
         if(iPtype1.eq.15) then
-        
-          monM1=amax0(1,mon-1)
+c
+c rrb 2021/04/18; Compiler Warning        
+cx        monM1=amax0(1,mon-1)
+          monM1=max0(1,mon-1)
           if(iwwPlan.eq.monM1) then
             psuply2=psuply(np)
             psupDD2=psupDD(np)
@@ -1419,29 +1445,37 @@ c               Formats
  280  format(
      1 '  BomSec', i5, 1x, a4, 7i5, 5f8.0,1x, a24)
 
- 420  format('  Bomsec;  Year ', i5, ' Mon ', i3, /
-     1'                      ',   
-     1'  Tot_Dem      Eff   CU_Dem  Tot_Dem',   
-     1'   Tot_CU      IWR  Tot_Dem   CU_Dem  Spr_Dem',      
-     1'     Area  Area_SP  Area_GW',/
-     1'                      ',     
-     1'    diver   diveff  diverir   divert', 
-     1' diverirt     diwr   divreq  diwrreq   demspr',      
-     1'     area      N/A      N/A   ',/
-     1'ID             Nd   Nw',    
-     1'   diverw  diveffw diverirw   divert', 
-     1' diverirt    diwrw  divreqw diwrreqw   demspr',    
-     1'    areaw   areasp   areawa',/
-     1'____________ ____ ____', 
-     1' ________ ________ ________ ________', 
-     1' ________ ________ ________ ________ ________', 
-     1' ________ ________ ________')
- 430  format(a12, 2i5, 30f9.0)
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx 420  format('  Bomsec;  Year ', i5, ' Mon ', i3, /
+cx     1'                      ',   
+cx     1'  Tot_Dem      Eff   CU_Dem  Tot_Dem',   
+cx     1'   Tot_CU      IWR  Tot_Dem   CU_Dem  Spr_Dem',      
+cx     1'     Area  Area_SP  Area_GW',/
+cx     1'                      ',     
+cx     1'    diver   diveff  diverir   divert', 
+cx     1' diverirt     diwr   divreq  diwrreq   demspr',      
+cx     1'     area      N/A      N/A   ',/
+cx     1'ID             Nd   Nw',    
+cx     1'   diverw  diveffw diverirw   divert', 
+cx     1' diverirt    diwrw  divreqw diwrreqw   demspr',    
+cx     1'    areaw   areasp   areawa',/
+cx     1'____________ ____ ____', 
+cx     1' ________ ________ ________ ________', 
+cx     1' ________ ________ ________ ________ ________', 
+cx     1' ________ ________ ________')
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx 430  format(a12, 2i5, 30f9.0)
 
-  757  format('  Bomsec; Warning canal efficiency is < 0. May ',/
-     1          '          have a problem calculating total demand')
-  770  format('  Bomsec; Warning (one time) maximum efficiency was',
-     1        ' set to average = ', f8.2, ' for well ID ',a12) 
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx  757  format('  Bomsec; Warning canal efficiency is < 0. May ',/
+cx     1          '          have a problem calculating total demand')
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
+cx  770  format('  Bomsec; Warning (one time) maximum efficiency was',
+cx     1        ' set to average = ', f8.2, ' for well ID ',a12) 
   780  format(/
      1  72('_'),//   
      1  '  Bomsec; Soil moisture > AWC.',/

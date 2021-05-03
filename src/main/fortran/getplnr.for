@@ -22,15 +22,19 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
 c
+c	     Program Description
 c
-c		It reads Plan Reservoir relationship      
-c	
-c		Called by Execut
+c		   It reads Plan Reservoir relationship      
+c		     Called by Execut 
+c
+c _________________________________________________________
+c       Update History            
+c                                 
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c
-c	Documentation
+c	     Documentation
 c
 c		iin2 file # (55)
 c
@@ -42,7 +46,7 @@ c			 plan ip
 c
 c
 c _________________________________________________________
-c	Dimensions
+c	     Dimensions
       include 'common.inc'
       
       character 
@@ -51,7 +55,13 @@ c	Dimensions
 c     
 c _________________________________________________________
 c
-c		Step 1; Initialize
+c		Step 1; Initialize   
+c
+c rrb 2021/04/18; Compiler warning
+      cfound=' '
+      rec12=' '
+      rec24=' '
+c     
 c		iout =  0 no details
 c			1 details
 c			2 summary

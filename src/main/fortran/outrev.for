@@ -25,6 +25,12 @@ c _________________________________________________________
 c	Program Description
 c
 c       Outrev; It prints reservoir evaporation (*.xev) for CU anlysis
+c _________________________________________________________
+c
+c       Update History
+c
+c
+c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c
 c _________________________________________________________
 c	Dimensions
@@ -37,6 +43,10 @@ c		Step 1; Initialize
 
       write(6,*) ' Subroutine Outrev'
       write(6,*) ' '
+c
+c rrb 2021/04/18; Compiler warning
+      iexit=0
+      if(iexit.gt.0) goto 300
 c
 c 2019/03/27; Add detailed output for checking
 c             iout=0 no details
@@ -119,8 +129,12 @@ c
 c rrb 2019/03/26; Update for additional rows in reservoir output                    
 cx            ida  = dat2(nres-1) 
 cx            nacc = dat2(nres)
-            ida  = dat2(nres-2) 
-            nacc = dat2(nres-1)
+c
+c rrb 2021/04/18; Compiler warning
+cx          ida  = dat2(nres-2) 
+cx          nacc = dat2(nres-1)
+            ida  = nint(dat2(nres-2)) 
+            nacc = nint(dat2(nres-1))
             
 c           write(99,*) ' Outrep2; ida, nacc', ida, nacc
 c             dat2t(im) = dat2(nev)*cx

@@ -27,13 +27,18 @@ c
 c ______________________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2019/04/20; Revised to recognize a WWSP Supply plan is a plan 
 c                  type 14 and a WWSP User plan is a plan type 15
 c _________________________________________________________
 c	Dimensions
       include 'common.inc'
 c
-      DIMENSION ITEMP(numstax), ntype(25)
+c
+c rrb 2021/04/18; Compiler warning
+cx    DIMENSION ITEMP(numstax), ntype(25)
+      DIMENSION ntype(25)
 C
       character ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
      1          recin*256, cgoto2*12, cx*12, rec4*4, rec24*24,
@@ -50,6 +55,23 @@ c
 c _________________________________________________________
 c
 c		Step 1; Initialize 
+c
+c rrb 2021/04/18; Compiler warning
+      numstax=numstax
+      blank=' '
+      cgoto2=' '
+      ch3=' '
+      ch4=' '
+      crtnid=' '
+      cx=' '
+      rec1=' '
+      rec4=' '
+      rec12=' '
+      rec72=' '
+      recin=' '
+      xmon=' '
+
+      
 c
 c		iout = 0 No details on plan data
 c		       1 Echo input and provide plan data Details
@@ -216,7 +238,11 @@ c		     -1 read with operating rule data
 c		    999 default (set to destination)
 c
 c		Get monthly efficiency data
-          ipEff1=peff1
+c
+c rrb 2021/04/18; Compiler warning
+cx        ipEff1=peff1
+          ipEff1=nint(peff1)
+          
 c         if(peff1.gt.0.0 .and. peff1.le.998.9) then
           if(ipeff1.gt.0 .and. ipeff1.lt.999) then
             write(nlog,*) ' GetPln; Reading efficiency data', 
@@ -541,6 +567,8 @@ c		with a T&C plan
 c
 c		Print non-default return data            
             if(iout.eq.5) then
+c
+c rrb 2021/04/18; Compiler warning
               write(nlog,1432) j2, pid(np), np, jb, je, j, 
      1          cstaid(is), pcttotPP(j), irtndlPP(j), irnPlan(j)            
             endif
@@ -593,36 +621,36 @@ c
 c               Formats
  
     
- 114  format(/,72('_'),/
-     1  '  GetPln; Plan Return File (*.prf) ')      
+cx114  format(/,72('_'),/
+cx    1  '  GetPln; Plan Return File (*.prf) ')      
      
  901  format(/,72('__'),/'  GetPln; Plan Return File (*.prf) ')
      
- 903  format(/,
-     1 '  GetPln; Plan Data:',/
-     1 '    # Plan ID      Plan Name                Location     ',
-     1 '  On/Off    Type     Eff  Return Failure    Sto1',
-     1 ' Source  ',/
-     1 ' ____ ____________ ________________________ ____________',
-     1 '  _______ _______ _______ _______ _______ _______',
-     1 ' _______')  
-     
-     
- 904  format(
-     1 i5, 1x,a12, 1x,a24, 1x,a12,1x, f8.0, i8,
-     1 f8.0, i8, i8, f8.0, 1x,a12, f8.0)
-     
- 905  format(/,72('_'),/,
-     1 '  GetPln; Problem number of plans exceeds the dimension',
-     1 ' of ', i5,/, 10x, ' Revise StateM and Common.')
-     
-
- 907  format(/,
-     1 '  GetPln; Number of Plans        = ', i3)
-     
-
- 908  format(/,
-     1 '  GetPln; Number of Plan Returns = ', i3)
+cx 903  format(/,
+cx     1 '  GetPln; Plan Data:',/
+cx     1 '    # Plan ID      Plan Name                Location     ',
+cx     1 '  On/Off    Type     Eff  Return Failure    Sto1',
+cx     1 ' Source  ',/
+cx     1 ' ____ ____________ ________________________ ____________',
+cx     1 '  _______ _______ _______ _______ _______ _______',
+cx     1 ' _______')  
+cx     
+cx     
+cx 904  format(
+cx     1 i5, 1x,a12, 1x,a24, 1x,a12,1x, f8.0, i8,
+cx     1 f8.0, i8, i8, f8.0, 1x,a12, f8.0)
+cx     
+cx 905  format(/,72('_'),/,
+cx     1 '  GetPln; Problem number of plans exceeds the dimension',
+cx     1 ' of ', i5,/, 10x, ' Revise StateM and Common.')
+cx     
+cx
+cx 907  format(/,
+cx     1 '  GetPln; Number of Plans        = ', i3)
+cx     
+cx
+cx 908  format(/,
+cx     1 '  GetPln; Number of Plan Returns = ', i3)
       
  910  format(/,72('_'),/,
      1 '  GetPln; Problem plan type = ', i5, ' is not defined',/
@@ -639,14 +667,14 @@ c               Formats
      1 ' ____ ____ _________________________ _______' ,/
      1 i5,  '   NA Total                    ',i8) 
 
- 918  format(/,72('_'),//
-     1 '  GetPln;   Warning, the following Recharge Plans',
-     1                ' are not tied reservoir '/
-     1 12x,'This Recharge Plan is being ignored. ',/
-     1 12x,'recommend you revise the plan station file (*.pln)',/
-     1 12x,'or the Reservoir Station file (*.res)',/
-     1 '    # Plan ID      Reservoir ID')
- 919   format(i5, 20(1x,a12))    
+cx 918  format(/,72('_'),//
+cx     1 '  GetPln;   Warning, the following Recharge Plans',
+cx     1                ' are not tied reservoir '/
+cx     1 12x,'This Recharge Plan is being ignored. ',/
+cx     1 12x,'recommend you revise the plan station file (*.pln)',/
+cx     1 12x,'or the Reservoir Station file (*.res)',/
+cx     1 '    # Plan ID      Reservoir ID')
+cx 919   format(i5, 20(1x,a12))    
      
  922  FORMAT(/,72('_'),/
      1  '  GetPln;   Warning. Plan ID = ',a12,' of the Plan Station ',/
@@ -656,16 +684,16 @@ c               Formats
      1  12x,'Recommend you revise the Plan Type or Source in the',/
      1  12x,'Plan Station File (*.pln)')
      
- 924  FORMAT(/,72('_'),/
-     1  '  GetPln;   Warning. Plan ID = ',a12,' of the Plan Station',/
-     1  12x,'(*.pln) file is Recharge Plan (type 8). ',/
-     1  12x,'With a Source = ', a12, ' and a Plan Return Type = ', i5,/
-     1  12x,'When the Source is a Reservoir it should have a',
-     1      ' Return Type = 8',/
-     1  12x,'When the Source is a Diversion it should have a',
-     1      ' Return Type = 999',/
-     1  12x,'Recommend you revise the Plan Type, Source, or',/
-     1  12x,'Plan Return Type in the Plan Station File (*.pln).')
+cx 924  FORMAT(/,72('_'),/
+cx     1  '  GetPln;   Warning. Plan ID = ',a12,' of the Plan Station',/
+cx     1  12x,'(*.pln) file is Recharge Plan (type 8). ',/
+cx     1  12x,'With a Source = ', a12, ' and a Plan Return Type = ', i5,/
+cx     1  12x,'When the Source is a Reservoir it should have a',
+cx     1      ' Return Type = 8',/
+cx     1  12x,'When the Source is a Diversion it should have a',
+cx     1      ' Return Type = 999',/
+cx     1  12x,'Recommend you revise the Plan Type, Source, or',/
+cx     1  12x,'Plan Return Type in the Plan Station File (*.pln).')
      
  930    format(/,72('_'),/
      1  ' GetPln; Problem provided a plan file but number of ',
@@ -681,20 +709,20 @@ c               Formats
      1  '          (*.rin) file',/
      1  '          recommend you add to the river station file')
      
- 960  format(/, 72('_'), /,'  GetPln; ',
-     1     'Problem with Plan ID = ', a12,' Plan Type = ', i5,/
-     1 10x,'Source ID = ', a12, ' and Return Flow ID = ', i12,/
-     1 10x,'are inconsistent. A recharge plan (type 8) requires',/
-     1 10x,'the Source ID be a Reservoir',/            
-     1 10x,'recommend you revise the plan data')
-     
- 970  FORMAT(/,72('_'),/
-     1  '  GetPln; Problem. ',
-     1  'Plan ID ',a12,' of the Plan Station (*.pln) file is a ',/
-     1  '          Reservoir Recharge Plan (type 8 with account > 0)',/
-     1  '          that is tied to the same reservoir ', a12,/
-     1  '          as another recharge plan. This is not allowed',/
-     1  '          recommend you revise your plan data')
+cx 960  format(/, 72('_'), /,'  GetPln; ',
+cx     1     'Problem with Plan ID = ', a12,' Plan Type = ', i5,/
+cx     1 10x,'Source ID = ', a12, ' and Return Flow ID = ', i12,/
+cx     1 10x,'are inconsistent. A recharge plan (type 8) requires',/
+cx     1 10x,'the Source ID be a Reservoir',/            
+cx     1 10x,'recommend you revise the plan data')
+cx     
+cx 970  FORMAT(/,72('_'),/
+cx     1  '  GetPln; Problem. ',
+cx     1  'Plan ID ',a12,' of the Plan Station (*.pln) file is a ',/
+cx     1  '          Reservoir Recharge Plan (type 8 with account > 0)',/
+cx     1  '          that is tied to the same reservoir ', a12,/
+cx     1  '          as another recharge plan. This is not allowed',/
+cx     1  '          recommend you revise your plan data')
    
  980  FORMAT(/,72('_'),/ '  GetPln; ',
      1      'Problem with Plan ID = ', a12,' Plan Type = ', i5,/ 
@@ -716,19 +744,18 @@ c               Formats
      1 '           Recommend you revise the plan (*.pln) or plan ',
      1            'return (*.prf) file') 
      
- 1021  FORMAT(/,72('_'),/
-     1  '  GetPln; Problem.',
-     1  ' Number of return stations = ',i5, 
-     1  9x, 'Exceeds the dimension = ', i5,/
-     1  ' recommend you revise the common block size')
-
-c      
+cx 1021  FORMAT(/,72('_'),/
+cx     1  '  GetPln; Problem.',
+cx     1  ' Number of return stations = ',i5, 
+cx     1  9x, 'Exceeds the dimension = ', i5,/
+cx     1  ' recommend you revise the common block size')
+cx
 c _________________________________________________________
 c
 c               Error Tracking
- 1410 write(nlog,1420) filena
- 1420 format(/,72('_'),/
-     1 '  GetPln; Problem opening file: ', a256)
+cx 1410 write(nlog,1420) filena
+cx 1420 format(/,72('_'),/
+cx   1 '  GetPln; Problem opening file: ', a256)
       goto 9999
       
  1430 format(/,
@@ -737,16 +764,14 @@ c               Error Tracking
      1 ' cstaidX      pcttotX irtndlX  irnPlan',/
      1 ' _______ ____________  _______ _______ _______ _______',
      1 ' ____________ _______ _______ _______')
-      
+c
  1432 format(i8, 1x,a12,1x, 4i8, 1x,a12, f8.0, 2i8)               
-      
-
-      
-  926 write(nlog,927) iin2, filena
-  927 format(/,72('_'),/
-     1 ' GetPln; Problem. End of file # ', i4, ' encountered',/,
-     1 '   File name: ', a256)
-      goto 9999
+c 
+cx  926 write(nlog,927) iin2, filena
+cx  927 format(/,72('_'),/
+cx     1 ' GetPln; Problem. End of file # ', i4, ' encountered',/,
+cx     1 '   File name: ', a256)
+cx      goto 9999
 c
   928 write(nlog,929) iin2, filena
   929 format(/,72('_'),/

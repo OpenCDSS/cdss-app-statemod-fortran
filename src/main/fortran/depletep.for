@@ -39,8 +39,8 @@ c
 c
 c _________________________________________________________
 c	Update History
-c		NA
 c
+c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c	Documentation
 c
@@ -425,19 +425,21 @@ c               Formats
  190  format('    DepleteP; Avail  = ', i4, 10f8.2,(/,25x10f8.2))
  192  format('    DepleteP; River  = ', i4, 10f8.2,(/,25x10f8.2))                                       
  194  format('    DepleteP; Avtemp = ', i4, 10f8.2,(/,25x10f8.2))                                       
- 300  format('  DepleteP; Well depletion check',//
-     1 '  iyr  mon  imo  ido  idy   nd   kk iord',     
-     1 '      Depl      rett     delta',/
-     1 ' ____ ____ ____ ____ ____ ____ ____ ____', 
-     1 ' _________ _________ _________')
- 302  format(8i5, 20f10.2)
- 
- 310  format(/'  RtnsecP; Plan Obligation Summary',/
-     1 '  iyr  mon  imo ipln   kk      pobl      rett',
-     1                          '    rettot     delta',/
-     1 ' ____ ____ ____ ____ ____ _________ _________',
-     1                          ' _________ _________')
- 312  format(5i5, 20f10.2)
+c
+c rrb 2021/04/18; Compiler warning
+cx 300  format('  DepleteP; Well depletion check',//
+cx     1 '  iyr  mon  imo  ido  idy   nd   kk iord',     
+cx     1 '      Depl      rett     delta',/
+cx     1 ' ____ ____ ____ ____ ____ ____ ____ ____', 
+cx     1 ' _________ _________ _________')
+cx 302  format(8i5, 20f10.2)
+cx 
+cx 310  format(/'  RtnsecP; Plan Obligation Summary',/
+cx     1 '  iyr  mon  imo ipln   kk      pobl      rett',
+cx     1                          '    rettot     delta',/
+cx     1 ' ____ ____ ____ ____ ____ _________ _________',
+cx     1                          ' _________ _________')
+cx 312  format(5i5, 20f10.2)
 
       END
 

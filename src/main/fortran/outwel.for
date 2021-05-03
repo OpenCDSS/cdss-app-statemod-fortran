@@ -22,9 +22,15 @@ c_________________________________________________________________NoticeEnd___
 c
 c
 c _________________________________________________________
-c	Program Description
+c	      Program Description
 c
 c       Outwel; It prints a matrix output of wells
+c 
+c_________________________________________________________________
+c                                                                 
+c       Update History                                            
+c                                                                 
+c rrb 2021/04/18; Compiler warning                                
 c
 c _________________________________________________________
 c       Documentation
@@ -41,7 +47,7 @@ c              idallx = 0, print all
 c                      =1, print some provided in *.out
 c
 c _________________________________________________________
-c	Dimensions
+c	      Dimensions
 c
       include 'common.inc'
 c                           
@@ -50,7 +56,14 @@ c     dimension  dat1(40), dat1t(40)
       character  cdx*12,   ida0*12, ftype*24, ptype*24, cname1*24
 c
 c _________________________________________________________
-c		Step 1; Initialize
+c		Step 1; Initialize          
+c                                 
+c rrb 2021/04/18; Compiler warnin
+      iprob=0                 
+      if(iprob.gt.0) goto 9999 
+      iexit=0                      
+      if(iexit.gt.0) goto 500       
+          
       write(6,101) 'OutWel  '
       write(nlog,101) 'OutWel  '
  101  format(/,72('_'),/'  Subroutine ', a8)
@@ -158,8 +171,10 @@ c       call outwr(maxwrx, 6, is, iw, nout)
         call outwr2(maxwrx, 6, is, iw, nout)
 c
 c               Print title card once per structure
-  140   continue
-
+c                                 
+c rrb 2021/04/18; Compiler warning
+cx140   continue
+        continue
 c  
 c               Finally year loop
 c-------------------------------------------------------------------
@@ -289,15 +304,21 @@ c
   241  format(2a12,i5, 2x, a3, 20f8.1)
   242  format(2a12,i5, 2x, a3, 20f8.2)
   260   format('+', '   Printing Diversion & Stream Summary',
-     1        i5,' of ', i5, '; or ',f8.0, ' % Complete')
-  270  return
+     1        i5,' of ', i5, '; or ',f8.0, ' % Complete')  
+c                                      
+c rrb 2021/04/18; Compiler warning     
+cx270  return 
+  500  return  
 c
 c               Error messages
   280  write(nlog,*) '   Outwel;',
      1  ' Requested data exceeds binary file size'
 c
 c               Error Warning
-  290 write(6,300) 
+c                                 
+c rrb 2021/04/18; Compiler warning
+cx290 write(6,300) 
+ 9999 write(6,300)   
       write(nlog,310) 
       call flush(6)
   300 format('    Stopped in Outwel',/,

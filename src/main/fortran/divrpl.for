@@ -34,7 +34,9 @@ c        reservoir (Type 10) for a diversion by exchange
 c _________________________________________________________
 c	Update History
 c
-c rb 1996/02/27; modified by Ross Bethel,
+c
+c rrb 2021/04/18; Compiler warning
+c rrb 1996/02/27; modified by Ross Bethel,
 c               to consider replacement of either headgate diversion
 c               lr (iousop(lr,4)>=0 or depletion (iousop(lr,4)<0
 c               above a predetermined exchange point (in riginp) which
@@ -188,18 +190,23 @@ c               Step 1 - Initialize
 
 c
 c               Step 0; Initialize
-c		ioutX = 0 no details
-c		       1 details
-c                      2 summary      
-c	              99 summary independent of ichk
+c		              ioutX = 0 no details
+c		                      1 details
+c                         2 summary      
+c	                       99 summary independent of ichk
 
 cx      if(ichk.eq.4) write(nlog,*) ' Divrpl; Type 4 Processing ', 
 cx     1  corid(lr)
-
       subtypX='divrpl  '
       iout=0
       ioutiw=0
       ioutX=0
+c
+c rrb 2021/04/18; Compiler warning
+      alocfs=0.0
+      pavail=0.0
+      divmax=0.0
+      
       
       if(ichk.eq.104) iout=2
       if(corid(lr).eq. ccall) ioutiw=iw
@@ -510,7 +517,10 @@ c rrb 01/08/23;
 c               d. If release type code is on
 c                  Limit release to occur only if an IWR exists
 c
-       ireltyp=amin0(iopsou(6,lr),ifix(effmax(nd)))
+c
+c rrb 2021/04/18; Compiler warning
+cx     ireltyp=amin0(iopsou(6,lr),ifix(effmax(nd)))
+       ireltyp=min(iopsou(6,lr),ifix(effmax(nd)))
 c      write(nlog,*) '  Divrpl; ireltyp', ireltyp
 c
        divmax=0.0
@@ -730,7 +740,10 @@ c                Step 7b - Adjust River Type 2 (Full Supply available)
 c
 c rrb 02/05/30; Simplify Logic
 c 120 IF(PAVAIL.LT.DIVALO) GO TO 130
-  120 IF(PAVAIL.ge.DIVALO) then
+c
+c rrb 2021/04/18; Compiler warning
+cx120 IF(PAVAIL.ge.DIVALO) then
+      IF(PAVAIL.ge.DIVALO) then
 
         if(iout.eq.1) then
           write(nlog,*) '  Divrpl; type 2 (full supply)',nd
@@ -769,7 +782,10 @@ c                          maximize Supply)
 c
 c rrb 2006/01/04; Correction to allow variable efficiency      
 c 130 FORET=1.0-DIVEFF(mon,IUSE)/100.
-  130 FORET=1.0-effX/100.
+c
+c rrb 2021/04/18; Compiler warning
+cx130 FORET=1.0-effX/100.
+      FORET=1.0-effX/100.
 
       if(iout.eq.1) then
         write(nlog,*) '  Divrpl; type 3 (Need returns)'
@@ -1075,7 +1091,10 @@ c
 c               Step 10 Update 
 c
 c		Step 10a Update Diversion data
-  230 USEMON(IUSE)=USEMON(IUSE)+DIVACT
+c
+c rrb 2021/04/18; Compiler warning
+cx230 USEMON(IUSE)=USEMON(IUSE)+DIVACT
+      USEMON(IUSE)=USEMON(IUSE)+DIVACT
       DIVREQ(IUSE)=DIVREQ(IUSE)-DIVACT
       DIVMON(ND  )=DIVMON(ND  )+DIVACT
       
@@ -1284,9 +1303,9 @@ c               Formats
      1    ' ____ ', 24('_')) 
 
 
-  301   format(/,60('_'),/,
-     1   '  Divrpl;  iyr  mon iteration ', 3i5,/
-     1   '  Divrpl;   iw iout    ichk99 ', 3i5)
+cx  301   format(/,60('_'),/,
+cx     1   '  Divrpl;  iyr  mon iteration ', 3i5,/
+cx     1   '  Divrpl;   iw iout    ichk99 ', 3i5)
 
 
   310   format(/, '  Divrpl; Print 1',/
@@ -1332,9 +1351,9 @@ c               Formats
      1       6I10,F10.2,4I10,20F10.2)
      
   320   format(/,('  Divrpl: avail  ',10f10.2))
-  322   format(/,('  Divrpl: availx ',10f10.2))
+cx  322   format(/,('  Divrpl: availx ',10f10.2))
   324   format(/,('  Divrpl: avwret ',10f10.2))
-  330   format(/,('  Divrpl: river  ',10f10.2))
+cx  330   format(/,('  Divrpl: river  ',10f10.2))
 
   340    format(
      1     '  Divrpl; Rep limit;',
@@ -1355,15 +1374,15 @@ c               Formats
      1    10x, 'offset a depletion probabaly does not make sense ',/
      1    10x, 'To do; turn off the depletion option')
 
-  360   format(' Divrpl; @ end; iwhy= ', i5,
-     1    ' avail0 = ',f10.2
-     1    ' alocfs = ',f10.2
-     1    ' avail(idcd) = ',f10.2
-     1    ' divacty = ', f10.2
-     1    ' divactx = ', f10.2
-     1    ' delta   = ', f10.2
-     1    ' CU      = ', f10.2
-     1    ' ishort  = ', i5)
+cx  360   format(' Divrpl; @ end; iwhy= ', i5,
+cx     1    ' avail0 = ',f10.2
+cx     1    ' alocfs = ',f10.2
+cx     1    ' avail(idcd) = ',f10.2
+cx     1    ' divacty = ', f10.2
+cx     1    ' divactx = ', f10.2
+cx     1    ' delta   = ', f10.2
+cx     1    ' CU      = ', f10.2
+cx     1    ' ishort  = ', i5)
 
 
  9999  continue

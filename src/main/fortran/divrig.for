@@ -27,6 +27,8 @@ c		It calculates a standard diversion
 c _________________________________________________________
 c      Update History
 c
+c
+c rrb 2021/04/18; Compiler warning
 c rrb 1997/10/15; Added daily model capability (see facdly) &
 c               Miscellaneous clean up
 c rrb 2000/12/02; Miscellaneous clean up (added steps)
@@ -165,6 +167,9 @@ c		        2 yes details from DsaMod
       ioutwr=516
       ioutwr = 380
       iresw=0
+c
+c rrb 2021/04/18; Compiler warning
+      divreqx=0.0
       
       if(crigid(l2).eq. ccall) ioutiw=iw
 c
@@ -472,27 +477,29 @@ c
      1  ' _______ _______ _______ _______ _______ _______ _______',
      1  ' _______ _______ ____ ____________')
   280   FORMAT(a12, i5,1x,a4,2i5,1x, a12,1x,8i8,8F8.0, i5, 1x, a45)
-  290   FORMAT(/, '  Divrig; QDIV ',a12,/,16F7.1)
+cx  290   FORMAT(/, '  Divrig; QDIV ',a12,/,16F7.1)
   300   FORMAT(/, '  Divrig; QRES ',a12,/,16F7.1)
-  310   FORMAT(/, '  Divrig Print 5',I10,6x,a4,4i10,
-     1               F10.2,3I10,F10.2, f20.10)
-  320   format(/, '  Divrig: avail  ',/,(10f10.2))
-  330   format(/, '  Divrig: river  ',/,(10f10.2))
-  340   format(/, '  Divrig; Pavail, imcd, stanam ', f8.2, i8, a24)
-  390 FORMAT(/, '  DivRig; Problem negative avail for Icase = ', i5,/,
-     1  '  IYR  MON ID              IW   L2 IUSE iscd imcd ieff2',
-     1  '   DIVREQ   DivAct1   DivMore    DivAct',
-     1  '  Avail cfs  Avail af',/
-     1  ' ____ ____ _____________ ____ ____ ____ ____ ____ ____',
-     1  ' _________ _________ _________ _________',
-     1  ' _________ _________',/,
-     1  i5,1x,a4,1x,a12,1x, 6i5, 20F10.2)
+cx  310   FORMAT(/, '  Divrig Print 5',I10,6x,a4,4i10,
+cx     1               F10.2,3I10,F10.2, f20.10)
+cx  320   format(/, '  Divrig: avail  ',/,(10f10.2))
+cx  330   format(/, '  Divrig: river  ',/,(10f10.2))
+cx  340   format(/, '  Divrig; Pavail, imcd, stanam ', f8.2, i8, a24)
+cx  390 FORMAT(/, '  DivRig; Problem negative avail for Icase = ', i5,/,
+cx     1  '  IYR  MON ID              IW   L2 IUSE iscd imcd ieff2',
+cx     1  '   DIVREQ   DivAct1   DivMore    DivAct',
+cx     1  '  Avail cfs  Avail af',/
+cx     1  ' ____ ____ _____________ ____ ____ ____ ____ ____ ____',
+cx     1  ' _________ _________ _________ _________',
+cx     1  ' _________ _________',/,
+cx     1  i5,1x,a4,1x,a12,1x, 6i5, 20F10.2)
   
 c
 c_____________________________________________________________
 c               Error warnings
 c
- 9999 continue
+c
+c rrb 2021/04/18; Compiler warning
+cx9999 continue
       write(nlog,270) crigid(l2),cdestyp,ccarry,cpuse,
      1  cRelTyp, Creplace
      

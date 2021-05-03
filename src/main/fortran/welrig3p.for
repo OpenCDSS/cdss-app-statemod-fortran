@@ -31,6 +31,8 @@ c
 c_____________________________________________________________
 c       Update History
 c
+c rrb 2021/04/18; Compiler warning
+c
 c rrb 2007/10/01; Revised to focus on IWR as the indicator for
 c		  a well demand, not total headgate demand.
 c		  Copied Welrig3. Added data related to ipAug
@@ -160,6 +162,15 @@ c
 c _________________________________________________________
 c
 c       Step 1 Common Initialization
+c
+c rrb 2021/04/18; Compiler warning
+      ispruse=0
+      avail0=0.0
+      divrigs1=0.0
+      diwrgf1=0.0
+      diwrgs1=0.0
+      pNetObl=0.0
+      rec12=' '
 c
 c           		iout = 0 no details
 c           		       1 details
@@ -1006,15 +1017,15 @@ c _________________________________________________________
 c
 c                Formats
 c
-  200   format(/, '  WelRig3P; Problem with sprinkler calcs (Total)',/
-     1         10x, i5, 1x, a12,/ 
-     1         10x,'   isprink      effs1      efff1      effa' ,/
-     1         10x, i10, 3f10.2,/
-     1         10x,'   divsprx   divothx   divreqx     small',/   
-     1         10x,  20f20.0) 
-  240   format(/,
-     1         '  WelRig3P; mon, l2, nd,iuse,iscdx,ndnsx',/,10x,20i5)
- 
+cx200   format(/, '  WelRig3P; Problem with sprinkler calcs (Total)',/
+cx   1         10x, i5, 1x, a12,/ 
+cx   1         10x,'   isprink      effs1      efff1      effa' ,/
+cx   1         10x, i10, 3f10.2,/
+cx   1         10x,'   divsprx   divothx   divreqx     small',/   
+cx   1         10x,  20f20.0) 
+cx240   format(/,
+cx   1         '  WelRig3P; mon, l2, nd,iuse,iscdx,ndnsx',/,10x,20i5)
+cx
   250   format(/,'  WelRig3P Demand Data',/
      1  '  WelRig3P: ID            iyr  mon  idy   nd  nd2',
      1  '   diwrGF1   diwrGS1     efff1     effS1', 
@@ -1062,9 +1073,9 @@ c
      1  ' _________ _________ _________ _________',/   
      1  '  WelRig3P:', 8I5,20F10.2)
      
-  320   format(   ' WelRig3P: avail  ',10f10.2)
-  330   format(   ' WelRig3P: river  ',10f10.2)
-  380   format(   '  WelRig3P: Problem with ', a12, 1x, a24)
+cx320   format(   ' WelRig3P: avail  ',10f10.2)
+cx330   format(   ' WelRig3P: river  ',10f10.2)
+cx380   format(   '  WelRig3P: Problem with ', a12, 1x, a24)
 
 c
 c _________________________________________________________

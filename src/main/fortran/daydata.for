@@ -32,7 +32,8 @@ c             Called by dayest
 c
 c _________________________________________________________
 c       Update History
-c             NA
+c
+c rrb 2021/04/18; Compiler warning
 c __________________________________________________________
 c
 c      Documenation
@@ -167,17 +168,22 @@ c               Formats
  160   FORMAT(a12, 3x,3i5, 31f10.2, f10.2, f10.0) 
  410   format('  Daydata; Warning, ran out of daily data for: ',a45,
      1        '  Moving on')
- 420   format('  Daydata;      nf',     
-     1   '     nin       j      iy     iy1      im     im1   igot1',/
-     1   10x, 20i8)
-
- 430  format('  Daydata;', 32('        ',i2),/,10x, 32f10.2)
+c
+c rrb 2021/04/18; Compiler warning
+cx
+cx 420   format('  Daydata;      nf',     
+cx     1   '     nin       j      iy     iy1      im     im1   igot1',/
+cx     1   10x, 20i8)
+cx
+cx 430  format('  Daydata;', 32('        ',i2),/,10x, 32f10.2)
  440  format(/,60('_'),/'  Daydata; for ',a45,//,
      1'ID                 #   YR  MON', 31i10,'   Ave-cfs  Total-af',/
      1'____________   _____ ____ ____', 33(' _________'))
  
- 510  format('  Stopped in Daydata, see the log file (*.log)')
- 520  format('  Stopped in Daydata')
+c
+c rrb 2021/04/18; Compiler warning
+cx 510  format('  Stopped in Daydata, see the log file (*.log)')
+cx 520  format('  Stopped in Daydata')
 
 c
 c __________________________________________________________
