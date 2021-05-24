@@ -47,6 +47,8 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2004/12/28; Revise to allow return flow reuse by not making it 
@@ -85,7 +87,6 @@ c _________________________________________________________
 c		Step 1; Initialize
 c
 c rrb 2021/04/18; Compiler warning
-        ccallby=ccallby
         corid1=corid1
         ieff2=ieff2
                
@@ -226,7 +227,10 @@ c
 c               Step 8; FIND THE MIN return downstream
 c 
 
-        CALL DNMFSO(maxsta,AVWRET,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      CALL DNMFSO(maxsta, AVWRET,IDNCOD,ISCD,NDNS,IMCD)
+        CALL DNMFSO2(maxsta,AVWRET,IDNCOD,ISCD,NDNS,IMCD,cCallby)
 
 c       write(nlog,*)  '  RtnmaxE; imcd = ', imcd
 c

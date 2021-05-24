@@ -36,6 +36,8 @@ c		  in order to adjust AvTemp, not Avail
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2008/06/25; Revise to not allow upstream returns to be 
@@ -143,6 +145,11 @@ c
       character corid1*12
 c
 c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Rtnsecx'
+c
 c _________________________________________________________
 c
 c               Step 1 - Initialize
@@ -191,8 +198,10 @@ c rrb 2015/10/04; Print warning when iout=4
        endif
 c
 cx     CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnn, IMCD)
-       CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnS, IMCD)
-       
+c
+c rrb 2021/05/02; Runtime error tracking
+cx     CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnS, IMCD)
+       CALL DNMFSO2(maxsta,avtemp, IDNCOD, idcd, ndnS, IMCD,cCallBy)       
        
        imcd1=imcd
        avtemp1=avtemp(imcd)
@@ -473,7 +482,10 @@ c rrb 2015/10/04; Print warning when iout=4
        endif
 c
 cx     CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnn, IMCD)
-       CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnS, IMCD)       
+c
+c rrb 2021/05/02; Runtime error tracking
+cx     CALL DNMFSO(maxsta, avtemp, IDNCOD, idcd, ndnS, IMCD)
+       CALL DNMFSO2(maxsta,avtemp, IDNCOD, idcd, ndnS, IMCD,cCallBy)       
        retmin=avtemp(imcd)
        if(iout.ge.3) then
          write(nlog,*) ' '

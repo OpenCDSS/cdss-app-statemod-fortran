@@ -34,7 +34,7 @@ c        reservoir (Type 10) for a diversion by exchange
 c _________________________________________________________
 c	Update History
 c
-c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
 c rrb 1996/02/27; modified by Ross Bethel,
 c               to consider replacement of either headgate diversion
@@ -185,11 +185,14 @@ c	Dimensions
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3,cSource*12, 
      1  cDest*12,  cRelTyp*12, cReplace*3, cDest1*12, subtypX*8
 c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Divrpl'
+c
 c _____________________________________________________________
 c               Step 1 - Initialize
-
 c
-c               Step 0; Initialize
 c		              ioutX = 0 no details
 c		                      1 details
 c                         2 summary      
@@ -432,8 +435,9 @@ c                        from diversion (idcd) down.
 c                        Note this routine is typically called because
 c                        avail is zero from the diversion down.
 c
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD)
-
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD,cCallBy)
       avail0=avail(imcd)
 c
 c               Debug printout (Print 1)
@@ -992,7 +996,10 @@ c               Step 8a - Find minimum avail flow from exchange
 c                         point down
         idce=iExPoint(lr)
         ndne=ndnnod(idce)
-        CALL DNMFSO(maxsta, avail, idncod, idce, ndne, imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      CALL DNMFSO(maxsta, avail, idncod, idce, ndne, imcd)
+        CALL DNMFSO2(maxsta, avail, idncod, idce, ndne, imcd,cCallBy)
 c
 c ---------------------------------------------------------  
 c               Step 8b - Check if the available flow will allow
@@ -1038,14 +1045,20 @@ c
 c               Step 9a - Check for a negative avail value
 c                         from diversion (idcd) down
 c
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD,cCallBy)
       avail2=avail(imcd)
 c
 c ---------------------------------------------------------  
 c               Step 9b - Check for a negative avail value
 c                         from reservoir (ipcd) down
 
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IpCD  ,NDNp  ,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IpCD  ,NDNp  ,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IpCD  ,NDNp  ,IMCD,cCallBy)
       avail3=avail(imcd)
 c
 c ---------------------------------------------------------  

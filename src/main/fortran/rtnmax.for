@@ -49,6 +49,7 @@ c   RtnSecX.for, TAKOU2.FOR
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -99,8 +100,7 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
 c
-c rrb 2021/04/18; Compiler warning
-      ccallby=ccallby    
+c rrb 2021/04/18; Compiler warning   
       ioutz=ioutz 
       
 c		            iout=0 no details
@@ -241,7 +241,10 @@ c
 c
 c ---------------------------------------------------------
 c		Detailed Output
-      call dnmfso(maxsta, AVTEMP, idncod, iscd, ndns, imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    call dnmfso(maxsta, AVTEMP, idncod, iscd, ndns, imcd)
+      call dnmfso2(maxsta,AVTEMP, idncod, iscd, ndns, imcd,cCallBy)
       if(iout.eq.1)
      1  write(nlog,*) '  Rtnmax-1 ; imcd, avail', imcd,avail(imcd)*fac
 c
@@ -338,7 +341,10 @@ c
 c               Step 8; FIND THE MIN flow in dumx
       if(ifound.gt.0) then
         if(iout.eq.1) write(nlog,*) ' RtnMax; iscd, ndns', iscd, ndns
-        CALL DNMFSO(maxsta,dumx,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      CALL DNMFSO(maxsta, dumx,IDNCOD,ISCD,NDNS,IMCD)
+        CALL DNMFSO2(maxsta,dumx,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
         PAVAIL=dumx(IMCD)
         pavail=amax1(0.0,dumx(imcd))
 c        
@@ -377,8 +383,12 @@ c		Detailed Output
 c
 c _________________________________________________________
 c		Step X; Get min flow downstream
-      call dnmFso(maxsta, AVAIL, idncod, iscd, ndns, imcd)  
-      call dnmFso(maxsta, AVTemp, idncod, iscd, ndns, imcdx)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    call dnmFso(maxsta, AVAIL,  idncod, iscd, ndns, imcd)  
+cx    call dnmFso(maxsta, AVTemp, idncod, iscd, ndns, imcdx)
+      call dnmFso2(maxsta,AVAIL,  idncod, iscd, ndns, imcd,cCallBy)  
+      call dnmFso2(maxsta,AVTemp, idncod, iscd, ndns, imcdx,cCallBy)
 c     write(nlog,*) ' RtnMax; xxx', avail(imcd)*fac, avtemp(imcdx)*fac  
       
       avail1=avail(imcd)
@@ -418,7 +428,10 @@ c		Step X; Remove pavail from avtemp
 c
 c _________________________________________________________
 c		Step X; Get min downstream flow in avtemp
-      call dnmFso(maxsta, avtemp, idncod, iscd, ndns, imcd)  
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    call dnmFso(maxsta, avtemp, idncod, iscd, ndns, imcd)
+      call dnmFso2(maxsta, avtemp, idncod, iscd, ndns, imcd,cCallBy)  
       imcd4=imcd
       
       avtemp4=avTemp(imcd)

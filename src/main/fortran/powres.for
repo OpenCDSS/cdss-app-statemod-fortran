@@ -28,7 +28,9 @@ c       Powres; It simulates a power or ISF right
 c
 c _________________________________________________________
 c       Update History
-c                              
+c 
+c
+c rrb 2021/05/14; Runtime Error Tracking                             
 c rrb 2021/04/18; Compiler warning
 c                                 
 c rrb 03/13/96; initialize divact, send returns to bottom & set divo
@@ -79,8 +81,14 @@ c rrb 98/03/03; Daily capability
       availX=-1./fac 
       mon2 = imonsw(l2,mon)      
 c
+c ---------------------------------------------------------
+c rrb 2021/05/15; Runtime Error Tracking.  
+c                 Initilize Source reservoir (nr) if
+c                 routine makes a quick exit          
+      NR  =IOPSOU(1,L2)
 c _________________________________________________________
-c		Step X; On/Off Switch      
+c
+c		Step 2; Check On/Off Switches      
 c
 c rrb 06/01/18; Allow daily on/off switch
       if(imonsw(l2,mon).eq.0) then

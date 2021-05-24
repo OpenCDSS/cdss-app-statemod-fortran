@@ -30,6 +30,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c       Copied Ifrig.for and made appropriate edits
@@ -104,7 +106,10 @@ c               Check flow
 c rrb 04/22/96; Instream Flow reach capability
 c     actwrq=amin1(aloifr,avail(ifcd))
       ndns=ndnifs(nf)
-      call dnmfso(maxsta, avail, idncod, ifcd, ndns, imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    call dnmfso(maxsta, avail, idncod, ifcd, ndns, imcd)
+      call dnmfso2(maxsta, avail, idncod, ifcd, ndns, imcd,cCallBy)
       avail1 = avail(imcd)   
       actwrq=amin1(aloifr,avail(imcd))
 c

@@ -563,7 +563,9 @@ c_____________________________________________________________
 c               Step 9; Begin generic water supply checks
 c		From the destination (isDes) 
 c
-      CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
+      CALL DNMFSO2(maxsta,AVAIL, IDNCOD, isDes, NDNS2, IMCD,cCallBy)
       imcdX=imcd
 c             
 c               Print warning if negative available flow
@@ -663,7 +665,10 @@ c_____________________________________________________________
 c               Step 12; Find mininum downstream available flow
 c                       from destination location (isDes)
       
-      CALL DNMFSO(maxsta,avail,IDNCOD,isDes,NDNS2,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, avail,IDNCOD,isDes,NDNS2,IMCD)
+      CALL DNMFSO2(maxsta,avail,IDNCOD,isDes,NDNS2,IMCD,cCallBy)
       PAVAIL=avail(IMCD)
       pavail=amax1(0.0,pavail)   
       pavail1=pavail   
@@ -747,7 +752,10 @@ c ---------------------------------------------------------
 c              	c. Check if more can be diverted
 c
         if(ieffmax.eq.1) then 
-          call dnmfso(maxsta, avail ,idncod,isDes  ,ndns2, imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx        call dnmfso(maxsta, avail ,idncod,isDes  ,ndns2, imcd)
+          call dnmfso2(maxsta,avail ,idncod,isDes  ,ndns2, imcd,cCallBy)
           if(avail(imcd).gt.small) then
           
 c
@@ -847,7 +855,10 @@ c
 c
 c rrb 2021/04/18; Compiler warning
 cx250 CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
-      CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL, IDNCOD, isDes, NDNS2, IMCD)
+      CALL DNMFSO2(maxsta,AVAIL, IDNCOD, isDes, NDNS2, IMCD,cCallBy)
 c             
 c               Print warning if negative available flow
       IF(AVAIL(IMCD).le.(-1.*small)) then

@@ -28,10 +28,13 @@ c _________________________________________________________
 c
 c       Update History
 c
-c rrb 01/01/02; Added option 10 (baseflows with variable efficiency) &
-c               option 11 (baseflow with variable efficiency and
-c               wells with sprinklers get used first)
-
+c
+c rrb 2021/05/02; Runtime error tracking.  Pass itarx (type of 
+c                 reservoir target file) to & from mdainp
+c
+c rrb 2001/01/02; Added option 10 (baseflows with variable efficiency)
+c                 and option 11 (baseflow with variable efficiency and
+c                 wells with sprinklers get used first)
 c
 c _________________________________________________________
 c
@@ -243,8 +246,13 @@ c
 c     write(6,*) ' virgen; into mdainp'
       I12=0  
       if(ichk.eq.4) write(nlog,*) ' Virgen; Calling Mdainp(0)'
-      
-      CALL MDAINP(IIN,I12)
+c
+c rrb 2021/05/02; Runtime error tracking.  Pass itarx (type of 
+c                 reservoir target file) to & from mdainp  
+cx    CALL MDAINP(IIN,I12)
+      itarx=0    
+      iter=0
+      CALL MDAINP(IIN,I12,itarx,iter)
 c
 c _________________________________________________________
 c
@@ -318,8 +326,11 @@ c
 c               Step 12; Get all monthly data except reservoir
       if(ichk.eq.4) write(nlog,*) ' Virgen; Calling Mdainp(12)'
 cx      write(nlog,*) ' Virgen; Calling Mdainp(12)'
-
-      CALL MDAINP(IIN,I12)
+c
+c rrb 2021/05/02; Runtime error tracking.  Pass itarx (type of 
+c                 reservoir target file) to & from mdainp  
+cx    CALL MDAINP(IIN,I12)
+      CALL MDAINP(IIN,I12,itarx,iter)
 c
 c
 c _________________________________________________________

@@ -64,7 +64,7 @@ c               icx    =      subroutine called by
 c                             1=carrpl, 2=divcar, 3=divcar1, 4=divres
 c                             5=divrig, 6=divrpl, 7=vircom,  8=divcar2,
 c                             9=directEx, 10=directBy, 11=divcarR, 
-c                             33=DivImpR, 38=OOPDiv2, 39=DivAlt, 145=divcarl,
+c                             33=DivImpR, 38=OOPDiv2, 39=DivAlt, 45=divcarl,
 c                             -1 = DsaMod
 c               divact =      diversion
 c               l2     =      water right counter unless called by

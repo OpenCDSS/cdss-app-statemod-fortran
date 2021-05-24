@@ -39,6 +39,8 @@ c
 c       Update History
 c
 c
+c rrb 2021/05/02; Runtime Error Reporting
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2006/08/18; Revised to work with multiple reservoir
@@ -372,7 +374,10 @@ c
 c               Step 13; Set available flow (pavail)
 c
 c               FIND DOWNSTREAM MINIMUM FLOW STATION
-      CALL DNMFSO(maxsta,AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime Error Reporting
+cx    CALL DNMFSO(maxsta, AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(maxsta,AVTEMP,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
       availX=avtemp(imcd)
       imcdX=imcd
 C
@@ -496,7 +501,10 @@ c rrb 00/12/26;
 c              13f. Check if more can be diverted
 c                       if operating at less than max efficiency
       if(ieffmax.eq.1) then 
-        call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
+c
+c rrb 2021/05/02; Runtime Error Reporting
+cx    call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
+      call dnmfso2(maxsta, avail ,idncod,iscd  ,ndns  ,imcd,cCallBy)
 c
 c ---------------------------------------------------------
 c
@@ -585,8 +593,10 @@ c
 c _________________________________________________________
 c
 c               Step X; Check minimum available flow
-  300 CALL DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD)
-      
+c
+c rrb 2021/05/02; Runtime Error Reporting
+cx300 CALL DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD)
+  300 CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD,cCallBy)      
       IF(AVAIL(IMCD).lT.(-1.0*small)) then
         WRITE(6,390) IYR,MON,IW,NWRORD(1,IW),L2,IUSE,DIVREQ(IUSE),
      1               ISCD,ISCD,IMCD,DIVACT

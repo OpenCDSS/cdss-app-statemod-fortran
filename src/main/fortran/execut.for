@@ -28,6 +28,9 @@ c_____________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking.  Pass itarx (type of 
+c                 reservoir target file) to & from mdainp
+c
 c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c
 c rrb 2020/07/27; Revised to print execution time in sec, min & hours
@@ -708,7 +711,12 @@ C
       I12=0
 C
       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling Mdainp; i12=0'
-      CALL MDAINP(IIN,I12)
+c
+c rrb 2021/05/02; Runtime error tracking - Save issue
+cx      CALL MDAINP(IIN,I12)
+        itarx=0
+        iter=0
+        CALL MDAINP(IIN,I12,itarx,iter)
       if(ichk.eq.94) write(nlogx,*) ' Execut; Out of Mdainp i12=0'
 c
 c TEST 
@@ -794,7 +802,11 @@ c_______________________________________________________________________
 c_______________________________________________________________________
 c     Call Mdainp for Time Series Data
       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling Mdainp ', iyr
-      CALL MDAINP(IIN,I12)
+c
+c rrb 2021/05/02; Runtime error tracking - Save issue
+cx      CALL MDAINP(IIN,I12)
+        CALL MDAINP(IIN,I12,itarx,iter)
+cx
       if(ichk.eq.94) write(nlogx,*) ' Execut; Out of Mdainp ', iyr
 c rrb 00/11/11; Set Sjrip (San Juan recovery implementation plan
 c               variable that controls operation for 1x year stuff
@@ -1190,7 +1202,7 @@ c                     Note dcall1 is set in bomsec or dayest
 c_______________________________________________________________________
 c           Call Divrig to divert water
             if(ichk.eq.94) write(nlogx,*)
-     1        ' Execut; Calling Divrig ', ireop
+     1        ' Execut; Calling Divrig ', ireop, crigid(l2)
             CALL DIVRIG(IW,L2,ISHORT,divx,ncall(103))
             if(ichk.eq.94) write(nlogx,*)
      1        ' Execut; Back From Divrig', ireop
@@ -1389,10 +1401,12 @@ c_______________________________________________________________________
 c               Type 1. Reservoir to Instream flow
 c
   190   if(ireach.eq.0) then
-          if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 1-PowRes'   
+          if(ichk.eq.94) write(nlogx,*) 
+     1                 ' Execut; Call 1-PowRes ',corid(l2)   
             call powres(iw,l2,divactx,ncall(1))
           else
-          if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 1-PowRes2'
+          if(ichk.eq.94) write(nlogx,*) 
+     1                 ' Execut; Call 1-PowRes2 ',corid(l2)
           call powres2(iw,l2,divactx,ncall(1))
             endif
             goto 400
@@ -1407,7 +1421,7 @@ c
        dcrdivx=0.0
        divdx=0.0
 c      
-       if(ichk.eq.94) write(nlogx,*) ' Execut; 2,3-DivRes' 
+       if(ichk.eq.94) write(nlogx,*) ' Execut; 2,3-DivRes ',corid(l2) 
        call divres(iw,l2,ishort,irep,tranlim,dcrdivx,divdx,
      1   divactx,divacty,ncall(2))
          goto 400
@@ -1422,7 +1436,7 @@ c
        dcrdivx=0.0
        divdx=0.0
 c      
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 4-DivRpl' 
+       if(ichk.eq.94) write(nlogx,*) ' Execut; Call 4-DivRpl',corid(l2) 
        call divrpl(iw,l2,ishort,irep,tranlim,dcrdivx,divdx,
      1   divactx,divacty,ncall(4))
            goto 400
@@ -1433,7 +1447,7 @@ c
 c              Type 5. Reservoir storage by Exchange with a reservoir
 c
   230 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 5-ResRpl'
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 5-ResRpl',corid(l2)
       call resrpl(iw,l2,divactx,ncall(5))
       goto 400
 c
@@ -1443,7 +1457,7 @@ c
 c              Type 6. Transfer from reservoir to reservoir by carrier
 c               (aka bookover)   Note: No returns !
   240 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 6-RsSpu'  
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 6-RsSpu',corid(l2)  
 c
 c rrb 2015/07/08; Add capability to not call this iteration based 
 c                 on user provided data (See documentation for
@@ -1466,7 +1480,7 @@ c
 c               Type 7. Exchange to a Carrier System
 c
   250 continue 
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 7-Carrpl'   
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 7-Carrpl',corid(l2)   
       call carrpl(iw,l2,divactx, ncall(7))
       goto 400
 c
@@ -1476,7 +1490,7 @@ c               Type 8. Reservoir to reservoir bookover with
 c                       additional constraints (e.g. Blue River Decree)
 c
   252 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 8 OoopBook2'   
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 8-OopBook2',corid(l2)   
       call OopBook2(iw,l2,divactx, ncall(8))            
       goto 400
 c
@@ -1486,7 +1500,7 @@ c
 c              Type 9. Target release (spill) for power or whatever
 c
   300 continue    
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 9-PowSea'   
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 9-PowSea ',corid(l2)   
       call powsea(iw,l2,divactx,ncall(9))
       goto 400
 c
@@ -1505,7 +1519,7 @@ c     write(nlog,*) ' Execut; In divsum ', divactx*fac, divsum
 c
 c rrb 2010/01/25; Revise to reoperate by passing divactx
 c           call divcar(iw,l2,ishort,divx,ncall(11))
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 11-DivCar' 
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 11-DivCar ',corid(l2) 
       call divcar(iw,l2,ishort,divactx,ncall(11))            
 c     write(nlog,*) ' Execut; Out divsum ', divactx*fac, divsum 
       goto 400
@@ -1515,7 +1529,7 @@ c rrb 01/31/95; Code Addition
 c               Type 12. Reoperation
 c
   312 divactx = 0.0
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 12-NA'   
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 12-NA ',corid(l2)   
 c
 c rrb 2008/05/07; Revise to insure reoperation at least once
 c                 per iteration (ireop12=0) and if change is significant
@@ -1561,7 +1575,7 @@ c               Type 13. Index flow constraint (La Plata Compact)
 c                        Note Execute on first reoperation per time
 c                        step (iwx = 1)
   313 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 13-IfrrigX'   
+      if(ichk.eq.94) write(nlogx,*)' Execut; Call 13-IfrrigX',corid(l2)   
       call ifrrigx(iw,l2, ncall(13))
       goto 400
 c    
@@ -1574,7 +1588,7 @@ c
 c
 c rrb 2010/01/25; Revise to reoperate by passing divactx  
 c           call divcar1(iw,l2,ishort,divx,ncall(14))
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 14-DivCar1' 
+      if(ichk.eq.94) write(nlogx,*)' Execut; Call 14-DivCar1',corid(l2) 
       call divcar1(iw,l2,ishort,divactx,ncall(14))            
       goto 400
 c
@@ -1583,7 +1597,7 @@ c
 c rrb 99/06/23; Type 15. Interruptible Supply
 c
   315 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 15-InterSup'   
+      if(ichk.eq.94) write(nlogx,*)' Execut; Call 15-InterSup',corid(l2)   
       call intersup(iw,l2,1)
       goto 400
 c
@@ -1592,7 +1606,7 @@ c
 c rrb 99/06/23; Type 16. Direct Flow Storage
 c
   316 continue   
-      if(ichk.eq.94) write(nlogx,*) ' Execut; 16-Calling DirectFS'   
+      if(ichk.eq.94) write(nlogx,*)' Execut; 16-Call DirectFS',corid(l2)   
       call directfs(iw,l2,ishort,divx,ncall(16))
       goto 400
 c
@@ -1601,7 +1615,7 @@ c
 c rrb 99/06/23; Type 17. Rio Grande Compact for Rio Grande
 c
   317 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 17-RgRg'   
+      if(ichk.eq.94) write(nlogx,*) 'Execut; Call 17-RgRg',corid(l2)   
         call rgrg(iw,l2,1,nrg1,0,0)
         l2rgrg=l2
         goto 400
@@ -1611,7 +1625,7 @@ c
 c rrb 99/06/23; Type 18. Rio Grande Compact for Conejos
 c
   318 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 18-RgRg'   
+      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 18-RgRg',corid(l2)   
         call rgrg(iw,l2,2,nrg2,0,0)
         l2rgco=l2
         goto 400
@@ -1621,7 +1635,7 @@ c
 c rrb 99/06/23; Type 19. Split Channel
 c
   319 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 19-DivCar2'   
+      if(ichk.eq.94) write(nlogx,*)' Execut; Call 19-DivCar2',corid(l2)   
       call divcar2(iw,l2,ishort,divx) 
         goto 400
 c
@@ -1630,7 +1644,7 @@ c_______________________________________________________________________
 c
 c rrb 00/11/05; Type 20. San Juan RIP
   320 continue  
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 20-SjRip'   
+      if(ichk.eq.94) write(nlogx,*)' Execut; Call 20-SjRip',corid(l2)   
       call sjrip(iw,l2,isjon,divactx)
         goto 400
 c
@@ -1640,7 +1654,7 @@ c rrb 00/11/05; Type 21. Sprinkler Use 1x/time step
 c
   321 continue
       if(icallsp.eq.0) then
-        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 21-Spruse'
+        if(ichk.eq.94) write(nlogx,*)' Execut; Call 21-Spruse',corid(l2)
           call spruse(iw,l2,divx,ncall(21))
           icallsp=1
         endif
@@ -1653,7 +1667,7 @@ c
   322       continue
      
       if(icallsm.eq.0) then 
-        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 22 SoilM'
+        if(ichk.eq.94) write(nlogx,*)' Execut; Call 22 SoilM',corid(l2)
         call soilm(iw,l2,divx)
         icallsm=1
       endif
@@ -1678,7 +1692,8 @@ c
         endif
         idcallx=1
         ncloc=5
-        if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 23-IfrDown'
+        if(ichk.eq.94) write(nlogx,*)
+     1               ' Execut; Call 23-IfrDown',corid(l2)
         call ifrDown(iw,l2,l1,fac,ncloc,dcallx)
       endif  
       goto 410
@@ -1687,7 +1702,8 @@ c rrb 99/06/23; Type 24. Direct Flow Exchange (Alt. Point)
   324  continue
 c      write(nlog,*) ' Execut; type 24 In Avail(8) ', avail(8)*fac,
 c    1   avinp(8)*fac         
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 24-DirectEX'
+       if(ichk.eq.94) write(nlogx,*)
+     1               'Execut; Calling 24-DirectEX',corid(l2)
 cx       write(nlog,*)
 cx     1   ' Execut; type 24; iw iwx l2 iOprLim(l2) oprlimit(l2)',
 cx
@@ -1713,7 +1729,8 @@ c 325  write(nlog,*) ' Execut; Calling DirectBY'
   325  continue
 c      write(nlog,*) ' Execut; type 25 In Avail(8) ', avail(8)*fac,
 c    1   avinp(8)*fac       
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 25-DirectBy' 
+       if(ichk.eq.94) write(nlogx,*)
+     1               ' Execut; Calling 25-DirectBy',corid(l2) 
        call DirectBy(iw,l2,ishort,divactX,ncall(25))
             
 c      write(nlog,*) ' Execut; type 25 Out Avail(8)', avail(8)*fac,
@@ -1739,7 +1756,8 @@ c
 c        write(nlogx,*) ' Execut; Calliing directWR, icall26 ', icall26 
 c        write(nlogx,*) ' Execut; type 26 In Avail(8) ', avail(8)*fac,
 c     1                avinp(8)*fac 
-        if(ichk.eq.94) write(nlogx,*) ' Execut; Calliing 26 directWR'
+        if(ichk.eq.94) write(nlogx,*) 
+     1               ' Execut; Calliing 26 directWR',corid(l2)
 c
 c
 C
@@ -1770,7 +1788,8 @@ cx       write(nlog,*) ' Execut; type 27 In Avail(8) ', avail(8)*fac,
 cx     1   avinp(8)*fac
 cx       write(nlog,*)'  Execut; Warning type 27 off'   
 cx
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 27-DivResP2' 
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 27-DivResP2',corid(l2) 
 c
 c rrb 2018/03/09; Test
 cx
@@ -1793,7 +1812,8 @@ c
       dcrdivx=0.0
       divdx=0.0  
 cx      write(nlog,*)'  Execut; Warning type 28 off'    
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 28-DivRplP' 
+      if(ichk.eq.94) write(nlogx,*) 
+     1             ' Execut; Calling 28-DivRplP',corid(l2) 
 c
       call divRplP(iw,l2,ishort,irep,tranlim,dcrdivx,divdx,
      1             divactx,divacty,ncall(28))
@@ -1806,7 +1826,8 @@ c
 c     write(nlog,*) ' Execut; type 29 In Avail(8) ', avail(8)*fac,
 c    1    avinp(8)*fac    
 cx       write(nlog,*)'  Execut; Warning type 29 off'    
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 29-PowSeaP' 
+      if(ichk.eq.94) write(nlogx,*) 
+     1             ' Execut; Calling 29-PowSeaP',corid(l2) 
 c
 c rrb 2018/03/09; test
 cx    
@@ -1820,7 +1841,8 @@ c
 c rrb 05/02/01; type 30 Re store a T&C Plan release
 c
   330  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 30 ResRglP'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 30 ResRglP',corid(l2)   
        call Resrg1P(iw,l2,ncall(30))
        goto 400
 c_______________________________________________________________________
@@ -1828,7 +1850,8 @@ c
 c rrb 05/03/29; type 31 Import with Reuse via a carrier 
 c
   331  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 31-DivCarR'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 31-DivCarR',corid(l2)   
        call divCarR(IW,L2,ISHORT,divactx,ncall(31))
        goto 400
 c_______________________________________________________________________
@@ -1836,7 +1859,8 @@ c
 c rrb 05/03/29; type 32 Res and ReUse Plan to a Div, Res or Carrier
 c               with reuse Direct
   332  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 32-DivResR'  
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 32-DivResR',corid(l2)  
 cx     write(nlog,*)'  Execut; Warning type 32 off'       
        call divResR(iw,l2,ishort,divactx, ncall(32))  
        goto 400
@@ -1845,7 +1869,8 @@ c
 c rrb 05/01/29; Type 33. Res and ReUse Plan to a Div, Res or Carrier
 c               with reuse Exchange
   333  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 33-DivRplR'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 33-DivRplR',corid(l2)   
        call divRplR(iw,l2,ishort,divactx,divacty, ncall(33))
        goto 400
 c
@@ -1854,7 +1879,8 @@ c_______________________________________________________________________
 c
 c              Type 34. Bookover reservoir to reservoir with Reuse
   334  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 43-RsrSpuP'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 43-RsrSpuP',corid(l2)   
        call RsrSpuP(IW,L2,ncall(34))
        goto 410
 c_______________________________________________________________________
@@ -1862,7 +1888,8 @@ c
 c rrb 05/03/29; Type 35 Import with Reuse (NO CARRIER)
 c
   335  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 35-DivIMpR' 
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 35-DivIMpR',corid(l2) 
 c
        call divImpR(iw,l2,ishort,divactx,ncall(35))  
        goto 400
@@ -1871,7 +1898,8 @@ c
 c rrb 06/01/18; Type 36 Diversion with seasonal constraint
 c
   336  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 36-DivRigS'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 36-DivRigS',corid(l2)   
        call divRigS(iw,l2,ishort,ncall(36))
        goto 400
 c_______________________________________________________________________
@@ -1879,7 +1907,8 @@ c
 c rrb 06/01/18; Type 37 Augmentation Well
 c
   337  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 37-WelAugP'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 37-WelAugP',corid(l2)   
        call WelAugP(iw,l2,retx,divx,ncall(37))
        goto 400
 c_______________________________________________________________________
@@ -1887,7 +1916,8 @@ c
 c rrb 06/01/18; Type 38 Out-of-Priority Diversion
 
   338  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 38-OopDiv'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 38-OopDiv',corid(l2)   
        call OopDiv(iw,l2,ishort,divactx, ncall(38)) 
        goto 400
 c_______________________________________________________________________
@@ -1895,7 +1925,8 @@ c
 c rrb 06/01/18; Type 39 Alternate Point
 
   339  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 39-DivAlt'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 39-DivAlt',corid(l2)   
        call DivAlt(iw,l2,ishort,divactx, ncall(39)) 
        goto 400
 c
@@ -1910,6 +1941,8 @@ c rrb 2011/04/04; Correction only call if the destination is
 c                 an ISF (iopDesR(l2)=1)
        if(iopDesR(l2).eq.1) then 
 cx       write(nlogx,*) ' Execut; Calling SPlatte to release'        
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 40-SPlatte',corid(l2)
          CALL SPlatte(IW, l2, l2, ISHORT, nd, divactx,ncall(140)) 
        endif    
        goto 400
@@ -1919,7 +1952,8 @@ c
 c rrb 2006/08/24; Type 41. Reservoir Storage with Limits
 
   341  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 41-DivRgP'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 41-DivRgP',corid(l2)   
        call ResRgP(iw,l2, ncall(41))
        goto 400
 c_______________________________________________________________________
@@ -1927,7 +1961,8 @@ c
 c rrb 05/01/30; Type 42. Plan Reset
 c
   342  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 42-PowSeaR'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 42-PowSeaR',corid(l2)   
        call powseaR(iw,l2,ncall(42))  
        goto 400
 c_______________________________________________________________________
@@ -1935,7 +1970,8 @@ c
 c rrb 05/01/30; Type 43. In-Priority Supply
 c
   343  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 43-WelPrity'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 43-WelPrity',corid(l2)   
        call WelPrity(iw,l2,ncall(43))  
        goto 400
 c_______________________________________________________________________
@@ -1943,7 +1979,8 @@ c
 c rrb 05/01/30; Type 44. Recharge Well to a Reservoir
 c
   344  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 44-WelRech' 
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 44-WelRech',corid(l2) 
 c
 c rrb 2018/03/09; test
          call WelRech(iw,l2,ncall(44))  
@@ -1953,7 +1990,8 @@ c
 c rrb 05/01/30; Type 45. Carrier with Loss
 c
   345  continue  
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 45-DivCarL' 
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 45-DivCarL' ,corid(l2)
 c
 c rrb 2018/07/29; Add reservoir-flow control variable (iflow) where
 c                 iflow = 1 is Project on and =0 is Project off
@@ -1967,7 +2005,8 @@ c
 c rrb 2007/08/20; Type 46. Multiple Ownership
 c
   346 continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 46-DivMulti'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 46-DivMulti',corid(l2)   
 cx     write(nlog,*)'  Execut; Warning type 46 off'       
        call DivMulti(iw,l2,ncall(46))  
       
@@ -1984,7 +2023,8 @@ c
 c rrb 05/01/28; Type 48. Res or Reuse Plan to a T&C or Aug Plan direct
 c
   348  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 48-PowResP'
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 48-PowResP',corid(l2)
 c
 c rrb 2018/03/09; Test
          call PowResP(iw,l2,divactX,ncall(48))
@@ -1994,7 +2034,8 @@ c
 c rrb 05/01/28; Type 49. Res or Reuse Plan to a T&C or Aug Plan by exch
 c
   349  continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 49-DivRplP2'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 49-DivRplP2',corid(l2)   
        call divRplP2(iw,l2,divactX,ncall(49))   
        if(ichk.eq.94) then
          write(nlogx,*) ' Execut; Back From DivRplP2'  
@@ -2008,7 +2049,8 @@ c
 c rrb 2006/08/24; Type 50. South Platte Compact Storage
 c
   350  continue 
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 50-IfrRigSP' 
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 50-IfrRigSP',corid(l2) 
        ispK=l2  
        call IfrRigSP(IW,L2,ISHORT,divactX,ncall(50))  
        goto 400
@@ -2018,7 +2060,8 @@ c
 c rrb 2018/07/13; Type 51. Flow-Reservoir Control
 c
   351  continue 
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 51-IfrRigSP' 
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 51-IfrRigSP',corid(l2) 
        call FlowRes(IW,L2,Iflow,ncall(51))
        goto 400
 c_______________________________________________________________________
@@ -2026,7 +2069,8 @@ c
 c rrb 2007/08/20; Type 52. Multiple Reservoir 
 c
   352 continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 52-DivMultR'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 52-DivMultR',corid(l2)   
        call DivMultR(iw,l2,ncall(52))        
        goto 400
 c_______________________________________________________________________
@@ -2034,7 +2078,8 @@ c
 c rrb 2018/08/20; Type 53. JMStorage
 c
   353 continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 53-JMStore'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 53-JMStore',corid(l2)   
        call JMStore(iw,l2,ncall(53))       
        goto 400
 c_______________________________________________________________________
@@ -2042,7 +2087,8 @@ c
 c rrb 2018/08/20; Type 54. JM Flow
 c
   354 continue
-       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling 54-JMFlow'   
+       if(ichk.eq.94) write(nlogx,*) 
+     1              ' Execut; Calling 54-JMFlow',corid(l2)   
        call JMFlow(iw,l2,ncall(54))       
        goto 400
 c

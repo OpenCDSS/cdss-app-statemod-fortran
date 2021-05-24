@@ -20,7 +20,6 @@ c_________________________________________________________________NoticeEnd___
 c
        subroutine chekres(nlog, maxres, in, isub, iyr, mon, nr,
      1                    nowner,curown,cursto,cresid)
-c
 c _________________________________________________________
 c       Program Description
 c
@@ -31,7 +30,7 @@ c_______________________________________________
 c
 c       Update History
 c
-c
+c rrb 2021/05/14; Runtime Error Tracking
 c rrb 2021/04/18; Compiler warning
 c rrb 1999/05/10; Additional Check
 c rrb 2002/01/15; Dimension clean up
@@ -70,6 +69,8 @@ c
 c _________________________________________________________
 c              Step 1; Initialize
         iout=0
+        iprob=0
+        if(iprob.eq.1) goto 9999
 c
 c rrb 2018/07/29; Check for operating rule limit
 c
@@ -83,23 +84,46 @@ cx      small2=0.1
         small2=10.0
         if(in.eq.0) cin='Into  '
         if(in.eq.1) cin='Out of'
-        
-        if(nr.gt.maxres) then
-          write(nlog,*) '  Chekres; Problem nr < maxres,isub,nr,maxres'
-          write(nlog,*) '  Chekres; isub, nr, maxres',isub,nr,maxres 
-          goto 9999
-        endif 
+c
+c ---------------------------------------------------------
+c rrb 2021/05/14; Runtime Error Tracking        
+cx      if(nr.gt.maxres) then
+        if(nr.le.0 .or. nr.gt.maxres) then 
+            write(nlog,*) ' '
+            write(nlog,*) '  Chekres; Problem nr < maxres'
+            write(nlog,*) '  Chekres; ',
+     1      ' subtyp       isub   nr maxres'
+            write(nlog,'(2a12, 20i5)') '  Chekres; ', 
+     1        subtyp(isub), isub, nr, maxres
+            goto 500
+        endif
 
+                       
+        iri=nowner(nr)
+        ire=nowner(nr+1)-1   
+        if(iri.le.0 .or. iri.gt.maxres .or. 
+     1     ire.le.0 .or. ire.gt.maxres ) then
+          write(nlog,*) ' '
+          write(nlog,*) '  Chekres; Problem with iri or ire'
+          write(nlog,*) '  Chekres; ',
+     1      ' subtyp       isub   nr  iri  ire maxres'
+          write(nlog,'(2a12, 20i5)') '  Chekres; ', 
+     1      subtyp(isub), isub, nr, iri, ire, maxres
+          goto 500
+        endif 
+cx
+c ---------------------------------------------------------
+c
         if(nr.gt.0) then
           iri=nowner(nr)
           ire=nowner(nr+1)-1
 c
 c rrb 2020/07/28; Additional detailed output        
-        if(iout.eq.1) then
-          write(nlog,*) ' '
-          write(nlog,*) ' ChekRes; iyr, mon, nr, cresid(nr),iri,ire'
-          write(nlog,*) ' ChekRes;', iyr, mon, nr, cresid(nr),iri,ire
-        endif
+          if(iout.eq.1) then
+            write(nlog,*) ' '
+            write(nlog,*) ' ChekRes; iyr, mon, nr, cresid(nr),iri,ire'
+            write(nlog,*) ' ChekRes;', iyr, mon, nr, cresid(nr),iri,ire
+          endif
 
           sum=0.0
           do ir=iri,ire
@@ -179,8 +203,10 @@ c
  132   format(' ____ ___________',/
      1        'Delta', f12.2)
      
-
-        return
+c
+c rrb 2021/05/14; Runtime Error Tracking
+cx500  return
+ 500   return 
 c
 c _________________________________________________________
 c

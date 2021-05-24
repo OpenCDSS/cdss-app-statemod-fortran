@@ -35,6 +35,11 @@ c           Called by Execut
 c _________________________________________________________
 c	Update history
 c
+c rrb 2021/05/22; Runtime Error Tracking; 
+c                   Initilize Source reservoir (nr) if
+c                     the routine makes a quick exit
+c
+c rrb 2021/05/02; Runtime error tracking
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -246,6 +251,11 @@ c		Dimensions
       character cwhy*45, cdestyp*12, ccarry*3, cstaid1*12, rec12*12,
      1 cpuse*3, cresid1*12, subtypX*8 
 c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Divresr'
+c
 c _________________________________________________________
 c               
 c               Step 1; Initialize
@@ -352,6 +362,11 @@ cx    if(rec12(1:6).eq.'Direct') ndirect=1
       loprR=0
       noprS=0
 c
+c rrb 2021/05/22; Runtime Error Tracking. Initilize 
+c                 Source reservoir #1 (nr) if
+c                 routine makes a quick exit          
+      NR  =IOPSOU(1,l2)          
+c
 c rrb 00/12/26; Variable efficiency consideration
       ieff2=1     
 c
@@ -425,7 +440,7 @@ c		For a daily model set demand for end of season
 c      
 c ________________________________________________________
 c               Step 2a; Set Plan pointer for destination reuse plan
-c		ipUse = Reuse plan for return flows
+c		                     ipUse = Reuse plan for return flows
       ipUse=ireuse(l2)
       if(ipUse.gt.0) cpuse='Yes'
       
@@ -827,9 +842,11 @@ c			  Set release to be demand*diveff1
         iss=idcd        
         ndndD=ndnnod(idcd)
         
-        if(iout.eq.1) write(nlog,*) ' DivResR  Call DnmFso'  
-              
-        call dnmfso(maxsta, avail, idncod, iss,ndndD, imcd)
+        if(iout.eq.1) write(nlog,*) ' DivResR  Call DnmFso2'  
+c
+c rrb 2021/05/02; Runtime error tracking              
+cx      call dnmfso(maxsta, avail, idncod, iss,ndndD, imcd)
+        call dnmfso2(maxsta, avail, idncod, iss,ndndD, imcd,cCallBy)
         pavail=avail(imcd)
 c
 cr              12b1 Recognize efficiency of use in the supply        

@@ -1019,8 +1019,10 @@ c
 c               Step 10; Set available flow (pavail)
 c
 c               FIND DOWNSTREAM MINIMUM FLOW STATION
-      CALL DNMFSO(maxsta,AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
-      
+c
+c rrb 2021/05/02; Runtime error reporting
+cx    CALL DNMFSO(maxsta, AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(maxsta,AVTEMP,IDNCOD,ISCD,NDNS,IMCD,cCallBy)      
 cx      write(nlog,*)
 cx    1  ' Divcar; iscd, ndns, imcd, iresw, avtemp(imcd)*fac'
 cx      write(nlog,*)
@@ -1191,7 +1193,10 @@ c
 c
 c rrb 2006/10/31; Check avail
       if(ioutZ.eq.1) then
-        call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
+c
+c rrb 2021/05/02; Runtime error reporting
+cx      call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
+        call dnmfso2(maxsta,avail ,idncod,iscd  ,ndns  ,imcd,cCallBy)
         write(nlog,*) ' '
         write(nlog,*) ' DivCar; Before Takout ',
      1  ' iuse, ieff2, imcd, avail  = ', 
@@ -1208,7 +1213,10 @@ c		Calculate return flows
 c
 c rrb 2006/10/31; Check avail
         if(ioutZ.eq.1) then
-          call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
+c
+c rrb 2021/05/02; Runtime error reporting
+cx        call dnmfso(maxsta, avail ,idncod,iscd,ndns,imcd)
+          call dnmfso2(maxsta,avail ,idncod,iscd,ndns,imcd,cCallBy)
           write(nlog,*) ' '
           write(nlog,*) ' DivCar; Before RtnSec, ',
      1      'iuse, ieff2, imcd, avail  = ', 
@@ -1219,7 +1227,10 @@ c rrb 2006/10/31; Check avail
 c
 c rrb 2006/10/31; Check avail
         if(ioutZ.eq.1) then
-          call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
+c
+c rrb 2021/05/02; Runtime error reporting
+cx        call dnmfso(maxsta, avail ,idncod,iscd  ,ndns,imcd)
+          call dnmfso2(maxsta,avail ,idncod,iscd  ,ndns,imcd,cCallBy)
           write(nlog,*) ' '
           write(nlog,*) ' DivCar; After RtnSec,',
      1      'iuse, ieff2, imcd, avail  = ', 
@@ -1234,8 +1245,10 @@ c 		              Check if more can be diverted
 c                   if operating at less than max efficiency
 cr      if(ieffmax.eq.1) then 
         if(iresw.eq.0 .and. ieffmax.eq.1) then 
-          call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
-          
+c
+c rrb 2021/05/02; Runtime error reporting
+cx        call dnmfso(maxsta, avail ,idncod,iscd,ndns,imcd)
+          call dnmfso2(maxsta,avail ,idncod,iscd,ndns,imcd,cCallBy)          
 
 c
 c ---------------------------------------------------------
@@ -1322,7 +1335,10 @@ c
 c _________________________________________________________
 c		Step X; Check Avail  
   
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD)
+c
+c rrb 2021/05/02; Runtime error reporting
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD,cCallBy)
 
       IF(AVAIL(IMCD).lT.(-1.0*small)) then
 c

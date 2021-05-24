@@ -31,7 +31,11 @@ c
 c _________________________________________________________
 c	Update History
 c
-c rrb 2021/04/25; Runtime Error
+c
+c rrb 2021/05/02; Runtime error tracking and
+c                 Call Roundof going into & out of the subroutine
+c
+c rrb 2021/04/25; Runtime Error 
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -155,7 +159,7 @@ c
 c               Documentation
 c            
 c	
-c	cCallBy	= calling routine
+c	     cCallBy	= calling routine or operating rule ID
 c      icx        subroutine call # (45)
 c      IW         : OVERALL WATER RIGHT ORDER
 c      L2         : LOC. OF operation right  in opr RIGHT TABLE
@@ -392,6 +396,9 @@ c rrb 2021/04/18; Compiler warning
       nds=0
       nsr=0
 c
+c rrb 2021/05/02; Runtime error tracking
+      irtn=0
+c
 c                                                          
 c ---------------------------------------------------------
 c               1a. Output Control
@@ -420,6 +427,16 @@ cx    ioutZ=2
 c
 c rrb 2020/02/24; Detailed output for Spill Order
       ioutSO=0
+c
+c ---------------------------------------------------------
+c rrb 2021/05/05; Runtime error tracking
+      iuse=0
+      ioutRo=0
+      if(ioutRo.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) '  Divcarl In; Calling RoundOf ', crigid(l2)
+      endif
+      call roundof(avail, numsta, 10, 1, nbug)
       
       ifirst=0
       
@@ -445,6 +462,7 @@ c
 c ---------------------------------------------------------
 c               1b. Miscellaneous
       cCallBy='DivCarL     '
+cx    cCallBy=corid(l2)
       
       small=0.001
       smalln=-1.0*small
@@ -1970,7 +1988,7 @@ c               Step 14; Set Qdiv for the source and destination only
 c
 c rrb 2021/04/25; Runtime Error
 cx     IF(IRTURN(IUSE).LE.3) ISHORT=1
-       write(nlog,*) '  DivcarL; iuse',  iuse
+cx       write(nlog,*) '  DivcarL; iuse, iwhy ',corid(l2),  iuse, iwhy
        if(iuse.gt.0) then
          IF(IRTURN(IUSE).LE.3) ISHORT=1
        endif
@@ -2024,8 +2042,12 @@ cx       call setQdivC(
 c _________________________________________________________
 c               Step 16a; Check Avail from the source location(iscd)
 c                         downstream 
-  
-       CALL DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD)
+c
+c rrb 2021/05/02; Runtime error reporting  
+cx     if(iout.eq.2) write(nlog,*) ' DivcarL; call dnmfso2 @  2048'
+cx     write(nlog,*) ' DivcarL; call dnmfso2 @  2048 ',corid(l2),iwhy
+cx     CALL DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD)
+       CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD, cCallBy)
        availC1=avail(imcd)
        imcd1=imcd
 c
@@ -2036,7 +2058,12 @@ c               Step 16b; Check avail from the final
 c                         destination (idcd2X)
 c
        ndnsX=ndnnod(idcd2X)
-       CALL DNMFSO(maxsta, AVAIL ,IDNCOD,Idcd2X ,ndnsX  ,IMCD)
+c
+c rrb 2021/05/02; Runtime error reporting  
+cx     if(iout.eq.2) write(nlog,*) ' DivcarL; call dnmfso2 @  2062'
+cx     write(nlog,*) ' DivcarL; call dnmfso2 @  2062 ',corid(l2),iwhy
+cx     CALL DNMFSO(maxsta,  AVAIL ,IDNCOD,Idcd2X ,ndnsX,IMCD)
+       CALL DNMFSO2(maxsta, AVAIL ,IDNCOD,Idcd2X ,ndnsX,IMCD,cCallBy) 
        availC2=avail(imcd)
        imcd2=imcd
        
@@ -2693,9 +2720,20 @@ c                Step 25 - Check Entire Avail array
 c rrb  2006/06/29; Check Avail going out of the routine
 c rrb 2014-07-29 No need to test if not on this month and
 c                idcd2, etc are not set
-       
-       if(iwhy.ne.1) then  
-         CALL DNMFSO(maxsta, avail, IDNCOD, idcd2, ndns2, IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking and no reason to check avail        
+cx     if(iwhy.ne.1) then 
+       if(iwhy.eq.0) then 
+c
+c rrb 2021/05/02; Runtime error reporting  
+cx     if(iout.eq.2) write(nlog,*) ' DivcarL; call dnmfso2 @ 2726',iwhy
+cx     write(nlog,*) ' DivcarL; call dnmfso2 @  2726 ',corid(l2),iwhy
+c
+c rrb 2021/05/02; Runtime error tracking and TEST
+       if(idcd2.gt.0) then
+cx     CALL DNMFSO(maxsta, avail, IDNCOD, idcd2, ndns2,IMCD)
+       CALL DNMFSO2(maxsta,avail, IDNCOD, idcd2, ndns2,IMCD,cCallBy)
+       endif
 c
 c rrb 2008/06/15; Correct to a small negative value       
 c        if(avail(imcd).le.small) then
@@ -2705,6 +2743,13 @@ c        if(avail(imcd).le.small) then
            goto 9999
          endif  
        endif
+c ---------------------------------------------------------
+c rrb 2021/05/05; Runtime error tracking
+      if(ioutRo.eq.1) then
+        write(nlog,*) ' '
+        write(nlog,*) '  Divcarl Out; Calling RoundOf ', crigid(l2)
+      endif
+      call roundof(avail, numsta, 10, 1, nbug)      
 c      
 c _________________________________________________________
 c      

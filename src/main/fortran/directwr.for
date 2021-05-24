@@ -64,6 +64,8 @@ c _________________________________________________________
 c	Update History
 c
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/25; Runtime Error
 c
 c rrb 2021/04/18; Compiler warning
@@ -552,8 +554,10 @@ c
 c
 c ---------------------------------------------------------
 c                 a2. Set Demand at source                      
-c           
-      write(nlog,*) '  directwr; iscd, ndns ', iscd, ndns
+c  
+      if(iout.eq.1) then         
+        write(nlog,*) '  directwr; iscd, ndns ', iscd, ndns
+      endif
 c
       if(idemtyp.le.3) then
         divreqx=divreq(iuse)

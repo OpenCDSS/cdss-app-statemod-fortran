@@ -45,7 +45,7 @@ c _________________________________________________________
 c
 c       Update History
 c
-c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
 c rrb 2020/12/21; Update plan demand pdem(ndP) in Step 20c and include
 c                 both T&C (type 1) and Aug plan (type 2) destinations
@@ -347,7 +347,11 @@ c	Dimensions
      1  cplntyp*12,  cTandC*3, cWWSP*3, csrctyp*12, cReplace*3,
      1  cDest*12,    cSour*12, cDest1*12, cRiver*12,
      1  corid1*12, cImcdR*12, cstaid1*12, subtypX*8, cWWID*12
-
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Divrplp'
 c
 c _____________________________________________________________
 c
@@ -2182,7 +2186,10 @@ c                a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
          if(idcd.gt.0) then
            iss=IDcd
            NDNDS=NDND
-           CALL DNMFSO(maxsta,avail,idncod,iSS,ndndS,imcd)
+c           
+c rrb 2021/05/02; Runtime error tracking
+cx         CALL DNMFSO(maxsta, avail,idncod,iSS,ndndS,imcd)
+           CALL DNMFSO2(maxsta,avail,idncod,iSS,ndndS,imcd,cCallby)
            avail1=avail(imcd)
          endif  
          

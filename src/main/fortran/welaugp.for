@@ -32,8 +32,8 @@ c
 c_____________________________________________________________
 c       Update History
 c 
-c rrb 2006/04/27; Copied WelAugP
-c		  Revised accordingly
+c rrb 2021/05/02; Runtime error tracking
+c rrb 2006/04/27; Copied WelAugP & revised accordingly
 c               
 c _________________________________________________________
 c       Documentation
@@ -96,10 +96,10 @@ c
 c        idivsww        on/off switch (0=off, 1=on)
 c        idivcow2(nw)   SW diversion, if any, associated with well nw 
 c
-c	 ipAug		0=no Well Augmentation Calculations
-c			1 yes Well Augmentation Calculations 
+c	       ipAug	      	0=no Well Augmentation Calculations
+c			                  1 yes Well Augmentation Calculations 
 c
-c        iscd          River location of well (iscd = idvstaw(nwe))
+c        iscd           River location of well (iscd = idvstaw(nwe))
 c
 c        ispr           =0 use flood efficiency in rtnsecw
 c                       =1 use sprinkler efficiency in rtnsecw
@@ -135,6 +135,11 @@ c
      1          cidWR*12, rec12*12, cTandC*3, cidRiv*12, cidBal*12,
      1          subtypX*8
 c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Welaugp'
 c
 c _________________________________________________________
 c       Step 1 Common Initialization
@@ -503,7 +508,10 @@ c                  minimum value in Avtemp that contains the impact
 c                  of this well only on the entire network.
 c                  Note call dnmfso (not dnmfsoW) to get min from the
 c	           well (balance point) downstream
-        call dnmfso(maxsta, avtemp, idncod, iscd, ndns, imcP)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      call dnmfso(maxsta, avtemp, idncod, iscd, ndns, imcP)
+        call dnmfso2(maxsta,avtemp, idncod, iscd, ndns, imcP,cCallBy)
         cidBal=cstaid(imcP)
         pNetObl = -1*avtemp(imcP)
 c

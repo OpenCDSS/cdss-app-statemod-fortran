@@ -32,6 +32,7 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c
 c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c
@@ -116,6 +117,11 @@ c
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cresid1*12,
      1          subtypX*8      
 c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Carrpl'
 c _________________________________________________________
 c               Step 1; Initialize
 c
@@ -737,7 +743,9 @@ c _________________________________________________________
 c
 c               Step 16; CHECK AVAILABLE FLOW, PRINT WARNING IF NEGATIVE
 c
-  290 CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD  )
+c rrb 2021/05/02; Runtime error tracking
+cx290 CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD)
+  290 CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IdCD  ,NDNd  ,IMCD,cCallBy)
 c         
       IF(AVAIL(IMCD).le.(-1.0*small)) then
         WRITE(99,300) corid(l2), nameo(l2)

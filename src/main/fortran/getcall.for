@@ -29,6 +29,7 @@ c_________________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c	Documentation
@@ -47,6 +48,13 @@ c	Dimensions
       include 'common.inc'
 cx    dimension cname1(4)
       character ctype1*12, cid1*12, commentX*24
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Getcall'
+c _________________________________________________________
+c	              Step 1; Initilze
 c
 c		iout = 0 no details
 c		       x details for diversion ID, instream ID,
@@ -70,8 +78,11 @@ c
 c _________________________________________________________
 c		Get min flow downstream      
 c
-      NDNS=NDNNOD(ISCD)      
-      CALL DNMFSO(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD1)
+      NDNS=NDNNOD(ISCD)
+c     
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, avail,IDNCOD,ISCD,NDNS,IMCD1)
+      CALL DNMFSO2(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD1,cCallBy)
 c
 c _________________________________________________________
 c

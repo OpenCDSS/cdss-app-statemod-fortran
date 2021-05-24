@@ -185,6 +185,7 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -246,6 +247,12 @@ C
      1  dep(numstax),     rlossx(numstax),  totothw(numstax),
      1  demx(numstax),    diwrz(numstax),   shortiw(numstax), 
      1  qtosoil(numstax), qfrsoil(numstax), rlossx2(numstax)
+c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Outmon'
 c
 c _________________________________________________________
 c               Step 1; Initialize
@@ -663,7 +670,10 @@ c
       
         IRECS=IREC+IS
         NDNN =NDNNOD(IS)
-        CALL DNMFSO(maxsta, AVT, IDNCOD, IS, NDNN, IM)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      CALL DNMFSO(maxsta, AVT, IDNCOD, IS, NDNN, IM)
+        CALL DNMFSO2(maxsta,AVT, IDNCOD, IS, NDNN, IM,cCallBy)
 c
 c ---------------------------------------------------------
 c rrb 2020/03/03; Test
@@ -1189,7 +1199,10 @@ cr   1            QRES(18,NR))
 C
         AVT(IS)=AVAIL(IS)
         NDNN=NDNNOD(IS)
-        CALL DNMFSO(maxsta, AVT, IDNCOD, IS, NDNN, IM)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx     CALL DNMFSO(maxsta, AVT, IDNCOD, IS, NDNN, IM)
+       CALL DNMFSO2(maxsta,AVT, IDNCOD, IS, NDNN, IM,cCallBy)
 c
 c rrb 2006/10/03; Not used. Replace with carried used by Outbal
 c		Note qres(29,nr) is amount transferred between

@@ -38,6 +38,7 @@ c_________________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c       Documentation
@@ -70,6 +71,11 @@ c
       include 'common.inc'
       character cwhy*48
 c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Intersup'
 c
 c _________________________________________________________
 c
@@ -247,8 +253,10 @@ c                       station (imcd) and amount avtemp(imcd)
       do is=1,numsta
         avtemp(is)=avail(is)
       end do
-
-      call dnmfso(maxsta,avtemp,idncod,iscd,ndns,imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    call dnmfso(maxsta,avtemp,idncod,iscd,ndns,imcd)
+      call dnmfso2(maxsta,avtemp,idncod,iscd,ndns,imcd,cCallBy)
       pavail=avtemp(imcd)
       pavail=amax1(0.0, pavail)
 c

@@ -38,7 +38,7 @@ c
 c_____________________________________________________________
 c       Update History
 c 
-c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
 c rrb 2006/04/27; Copied WelAugP & revised accordingly
 c               
@@ -142,6 +142,11 @@ c
      1          cresid1*12, ctype1*12, subtypX*8
 c
 c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Welrech'
 c _________________________________________________________
 c
 c       Step 1 Common Initialization
@@ -150,11 +155,11 @@ c rrb 2021/04/18; Compiler warning
       irow=0
       rec12=' '
 c
-c		iout = 0 No details
-c		       1 Details
+c		            iout = 0 No details
+c		                   1 Details
 c                      2 Summary      
-c		       3 Well Augmentation details
-c		       4 Sum
+c		                   3 Well Augmentation details
+c		                   4 Sum
 c
 c ---------------------------------------------------------
 c		a. OutPut control
@@ -422,7 +427,12 @@ c		a. Check avail at well location (iscd)
 c
 c ---------------------------------------------------------
 c		b. Check avail downstream
-      CALL DNMFSO(maxsta,Avail,IDNCOD,ISCD,NDNS,IMCD)
+c
+c ---------------------------------------------------------
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, Avail,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(maxsta,Avail,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
 c
       availX=avail(imcd)
       imcdX=imcd
@@ -598,7 +608,10 @@ c                  mininum value in Avtemp that contains the impact
 c                  of this well only on the entire network.
 c                  Note call dnmfso (not dnmfsoW) to get min from the
 c	           well (balance point) downstream
-        call dnmfso(maxsta, avtemp, idncod, iscd, ndns, imcP)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      call dnmfso(maxsta, avtemp, idncod, iscd, ndns, imcP)
+        call dnmfso2(maxsta,avtemp, idncod, iscd, ndns, imcP,cCallBy)
         cidBal=cstaid(imcP)
         pNetObl = -1*avtemp(imcP)
 c
