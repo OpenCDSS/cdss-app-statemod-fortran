@@ -34,7 +34,9 @@ c
 c _____________________________________________________________
 c	Update History
 c
-c rrb  2021/04/18; Compiler warning
+c
+c rrb 2021/05/02; Runtime Error Tracking
+c rrb 2021/04/18; Compiler warning
 c
 c      2015/06/15; Revised edits by jhb to correct a problem
 c                  and revised typo (iretsw = iresw)
@@ -135,8 +137,12 @@ c     option is on for a specified operating rule
       
       icxM=-1
 c     icxM=icx
-      nout=0      
-      cCallBy2='DsaMod      '
+      nout=0  
+c
+c rrb 2021/05/02; Runtime Error Tracking                
+cx    cCallBy2='DsaMod      '
+      cCallBy2='DsaMod-     '
+      cCallBy2(8:12)=cCallBy(1:5)
       icase=0
 c
 c rrb 2009/05/26; Correction
@@ -591,7 +597,10 @@ c
 c _________________________________________________________
 c		
 c rrb 2008/06/24; Step X; Iterate if necessary
-        CALL DNMFSO(maxsta, avail, IDNCOD, ISCD, NDNS, IMCD)
+c
+c rrb 2021/05/02; Runtime Error Tracking
+cx      CALL DNMFSO(maxsta, avail, IDNCOD, ISCD, NDNS, IMCD)
+        CALL DNMFSO2(maxsta,avail, IDNCOD, ISCD, NDNS, IMCD,cCallBy2)
         Short=amax1(0.0, divalo-divact)
         if(Short.gt.small .and. avail(imcd).gt.small .and.
      1     iterD.lt.iterMax) goto 100
@@ -616,8 +625,10 @@ c
 c ---------------------------------------------------------
 c rrb 2007/10/05; TEMPORARY CORRECTION find negative (avail(imcd)
 c		  and add into system 
-        CALL DNMFSO(maxsta, avail, IDNCOD, ISCD, NDNS, IMCD)
-        
+c
+c rrb 2021/05/02; Runtime Error Tracking
+cx      CALL DNMFSO(maxsta, avail, IDNCOD, ISCD, NDNS, IMCD)
+        CALL DNMFSO2(maxsta,avail, IDNCOD, ISCD, NDNS, IMCD, cCallBy2)        
         IF(avail(IMCD).le.smallN) then
 c
 c rrb 2008/12/19; Reset Avail if the negative value is small)

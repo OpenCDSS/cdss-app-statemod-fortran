@@ -39,6 +39,7 @@ c _________________________________________________________
 c	     Update History
 c
 c
+c rrb 2021/05/02; Runtime Error Tracking
 c rrb 2021/04/18; Compiler warning
 c rrb 2010/11/15; More corrections and refinements
 c rrb 2008/09/19; Miscellaneous corrections, primarily related
@@ -127,6 +128,11 @@ c
       include 'common.inc'
       character ctype1*12, corid1*12, subtypX*8
       character cwhy*50, cdestyp*12, ccarry*3, cpuse*3, cidvri*12
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Divalt'
 c
 c_____________________________________________________________
 c               Step 1; Common Initialization
@@ -389,8 +395,11 @@ c       write(nlog,*) ' DivAlt; #4a iscd, iuse ', iscd, iuse
 c
 c ---------------------------------------------------------
 c               b)Find mininum downstream flow from 
-c		              the decreed location      
-        CALL DNMFSO(maxsta,AVTEMP,IDNCOD,iscd,ndns,IMCD)
+c		              the decreed location  
+c
+c rrb 2021/05/02; Runtime Error Tracking    
+cx      CALL DNMFSO(maxsta, AVTEMP,IDNCOD,iscd,ndns,IMCD)
+        CALL DNMFSO2(maxsta,AVTEMP,IDNCOD,iscd,ndns,IMCD,cCallBy)
         PAVAIL=AVTEMP(IMCD)
         pavail=amax1(0.0,pavail)     
 cx      write(nlog,*) '  DivAlt; Source', nd, iscd, pavail*fac       
@@ -442,8 +451,9 @@ c
 c ---------------------------------------------------------
 c               b) Check flow downstream of the diversion Alternate Pt
 
-        CALL DNMFSO(maxsta,AVTEMP,IDNCOD,isAP,ndAP,imcdAP)
-
+c rrb 2021/05/02; Runtime Error Tracking    
+cx      CALL DNMFSO(maxsta, AVTEMP,IDNCOD,isAP,ndAP,imcdAP)
+        CALL DNMFSO2(maxsta,AVTEMP,IDNCOD,isAP,ndAP,imcdAP,cCallBy)
         
         pavail2=AVTEMP(imcdAP)
         Pavail2=amax1(0.0,pavail2)      

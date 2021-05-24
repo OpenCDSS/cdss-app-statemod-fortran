@@ -37,6 +37,15 @@ c
 c               Update history
 c
 c
+c rrb 2021/05/22; Runtime Error Tracking; 
+c                   Separate the following if statement 
+c                     if(iresw.eq.0.and.IRTURN(IUSE).EQ.4)
+c                     where iuse is not defined if iresw=1
+c                   Initilize Source reservoir (nr) if
+c                     the routine makes a quick exit
+c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c      
 c 2020-09-06; Version 16.00.40
@@ -196,19 +205,24 @@ c
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, 
      1 cRelTyp*12, cReplace*3, cidvri*12, cSour*12, cresid1*12,
      1 cDest*12, cDest1*12, subtypX*8
-
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Divres'
 c      
 c _________________________________________________________
 c               
 c		Step 1; 
 c
 c rrb 2021/04/18; Compiler warning
-      divreq1=0.0
-      pavail=0.0
-      nro=0  
+      divreq1 = 0.0
+      pavail = 0.0
+      nro = 0  
 c
 c rrb 2021/04/25; Runtine Error
-      nr=0
+      nr = 0
+      iuse=0
 c                Detailed Output control and header
 c		              iout=0 No details
 c		              iout=1 Details
@@ -217,14 +231,15 @@ c		              iout=99 Summary independent of ichk
 c                 ioutQ=1 Print Qres data  
 c                 ioutR = print data around chekres
 c     
-      subtypX='divres  '
-      if(ichk.eq.94) write(nlog,*) ' DivRes; Type 2 or 3 Processing ',
-     1   corid(lr)
      
       iout=0
       ioutiw=0
       ioutQ=0
       ioutR=0
+c
+      subtypX='divres  '
+      if(iout.eq.1 .or. ichk.eq.94) 
+     1  write(nlog,*) ' DivRes; Type 2 or 3 Processing ', corid(lr)
       
       cDest1='NA'
       cDest1='36_ADC019   '
@@ -246,7 +261,7 @@ cx    if(ichk.eq.202 .or. ichk.eq.203) iout=2
       
       
 c     if(iout.ge.1) write(nlog,*) '  Divres.for;'      
-      if(ichk.eq.94) write(nlog,*) ' Divres; Entering'
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) ' Divres; Entering'
 c
 c               b. Daily capability
       if(iday.eq.0) then
@@ -290,7 +305,6 @@ c     ieff2=0
 c
 c rrb 01/01/17; Call number
       icx=4
-
 c
 c
 c ---------------------------------------------------------
@@ -307,7 +321,12 @@ c		e. Detailed output data
       
       cidvri=corid(lr)                  
       nd  =iopdes(1,lr)
-      cDest='NA'
+      cDest='NA'   
+c
+c rrb 2021/05/22; Runtime Error Tracking. Initilize 
+c                 Source reservoir #1 (nr) if
+c                 routine makes a quick exit          
+      NR = IOPSOU(1,Lr) 
 c
 c ---------------------------------------------------------
       
@@ -349,7 +368,7 @@ c
 c _________________________________________________________
 c               Step 2; Branch if not on this month
 c
-      if(ichk.eq.94) write(nlog,*) ' Divres; 1, lr', lr
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) ' Divres; 1, lr', lr
 
       if(imonsw(lr,mon).eq.0) then
         iwhy=1
@@ -384,19 +403,21 @@ c               Step 3; Set source data
 c
 c               a. Source reservoir #1 (nr), source account (iown),
 c                  river station (ipcd), & # downstream (ndnp)
-      NR  =IOPSOU(1,Lr)           
+      NR = IOPSOU(1,Lr)           
       cSour=cresid(nr)
-      if(ichk.eq.94) write(nlog,*) ' Divres; 1, nr', nr, iopsou(2,lr)
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) 
+     1   ' Divres; 1, nr', nr, iopsou(2,lr)
 
       if(iressw(nr).eq.0) then
         iwhy=2
         cwhy='Source Reservoir is off'
         goto 330
       endif  
-
+c
       IOWN=NOWNER(NR)+IOPSOU(2,Lr)-1
       
-      if(ichk.eq.94) write(nlog,*) ' Divres; 1, iown', iown
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) 
+     1  ' Divres; 1, iown', iown
 c
 c ---------------------------------------------------------
 c rrb 01/05/15; Check reservoir roundoff when entering routine
@@ -405,8 +426,9 @@ c			     isub1 = subroutine calling chekres
       in1=0
       isub1 = 2     
       if(ioutR.eq.1) then
-        write(nlog,*) '  Divres; Step 3 Chekres, Corid(lr) ',
-     1                ' corid(lr),lr, nr, iwhy ',corid(lr),lr,nr,iwhy
+        write(nlog,*) '  Divres; Step 3 Chekres; '
+        write(nlog,*) '  Divres;   Corid(lr), lr, nr, iuse, iwhy '
+        write(nlog,*) '  Divres; ',corid(lr), lr, nr, iuse, iwhy
       endif
       
       call chekres(nlog, maxres, in1, isub1, iyr, mon, nr,
@@ -414,7 +436,8 @@ c			     isub1 = subroutine calling chekres
 
       IPCD=IRSSTA(NR)
       NDNP=NDNNOD(IPCD)
-      if(ichk.eq.94) write(nlog,*) ' Divres; 1, ipcd, ndnp',ipcd, ndnp
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) 
+     1  ' Divres; 1, ipcd, ndnp',ipcd, ndnp
       
 c
 c
@@ -422,7 +445,7 @@ c ---------------------------------------------------------
 c               b. Source reservoir #2 (nra), account (iowna)
       NRA =IOPSOU(3,Lr)
       
-      if(ichk.eq.94) write(nlog,*) ' Divres; 1, nra', nra
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) ' Divres; 1, nra',nra
 c
 c rrb 2006/11/21; Simplify      
 c     if(nra.eq.0) goto 100
@@ -443,11 +466,14 @@ c
 c rrb 2006/11/21; Simplify      
 c 100 nd  =iopdes(1,lr)
       nd  =iopdes(1,lr)
-      if(ichk.eq.94) write(nlog,*) ' Divres; 2, nd', nd
-  
+      if(iout.eq.1 .or. ichk.eq.94) then
+        write(nlog,*) ' Divres; 2, nd = ', nd
+        write(nlog,*) ' Divres; where nd>0 is a diversion and',
+     1      ' nd<0 is a reservoir'
+      endif 
 c     write(nlog,*) '  Divers; lr, ityopr = ', ityopr(lr)    
 c
-c               a. Destination is a diversion (nd>0 & iresw=0)       
+c               a. Initilize iresw=0 where iresw=0 for a diversion       
       iresw=0
 c
 c ---------------------------------------------------------
@@ -467,52 +493,68 @@ c
 c ---------------------------------------------------------
 c rrb 2006/09/25; Allow multiple accounts - Initialize
 cr      irow=nowner(nd)+iopdes(2,lr)-1
-
+c                 Note if iopdes(2,lr)< 0, fill first iopdes(2,lr)
+c                   accounts
         nro=1
         if(iopdes(2,lr).lt.0) then
           nro=-iopdes(2,lr)
           irow=nowner(nd)
         endif
-
+c                 Note if iopdes(2,lr)> 0, fill account iopdes(2,lr)
         if(iopdes(2,lr).gt.0) then
           nro=1
           irow=nowner(nd)+iopdes(2,lr)-1
         endif
-        
-        go to 120      
+c
+c rrb 2021/05/02; Runtime Error simplify logic        
+cx      go to 120      
+
       endif
 c
 c
 c ---------------------------------------------------------
 c               c. Additional data when the destination is a diversion
-c     write(nlog,*) ' Divres; 3'
-      if(ichk.eq.94) write(nlog,*) ' Divres; 3'
 
-      cDest=cdivid(nd)
-      if(idivsw(nd).eq.0) then
-        iwhy=5
-        cwhy='Destination Diversion is off'
-        goto 330
-      endif  
-
-      IUSE=NDUSER(ND)+IOPDES(2,Lr)-1
-      divreq1=divreq(iuse)
+c
+c rrb 2021/05/02; Runtime Error; this logic pertains to a diversion
+      if(iresw.eq.0) then
+cx      iresw=0
+c       
+c       write(nlog,*) ' Divres; 3'
+          if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) ' Divres; 3'
+       
+        cDest=cdivid(nd)
+        if(idivsw(nd).eq.0) then
+          iwhy=5
+          cwhy='Destination Diversion is off'
+          goto 330
+        endif  
+       
+        IUSE=NDUSER(ND)+IOPDES(2,Lr)-1
+cx      write(nlog,*) '  Divres_1; nd, lr, iuse', nd, lr, iuse
+        divreq1=divreq(iuse)
 c
 c rrb 2006/01/04; Correction to allow variable efficiency      
-      if(ieff2.eq.0) then
-        effX=diveff(mon,iuse)
-      else
-        effX=effmax(iuse)
-      endif
+        if(ieff2.eq.0) then
+          effX=diveff(mon,iuse)
+        else
+          effX=effmax(iuse)
+        endif
 c
 c               d. Check
 cx      WRITE(6,360)    lr,IDCD,NR,IPCD,IYR,IMO
-cx      goto 9999
+cx      goto 9999  
+c
+c rrb 2021/05/02; Runtime Errorsimplification
+      endif
 c
 c
 c ---------------------------------------------------------
 c               e. Carrier system data (for types 2 & 3 only)
- 120  if (ityopr(lr).ne.10) then
+c
+c rrb 2021/05/02; Runtime error simplification
+cx120 if (ityopr(lr).ne.10) then
+      if (ityopr(lr).ne.10) then
         if(intern(lr,1).eq.0) go to 130
         ndr=intern(lr,1)
 
@@ -532,10 +574,17 @@ c
 c
 c ---------------------------------------------------------
 c               Exit if not a reservior and no demand
-  140 IF(iresw.eq.0.and.DIVREQ(IUSE).LE.small) then
-        iwhy=6
-        cwhy='Demand is zero'
-        goto 330
+c
+c rrb 2021/05/02; Runtime error since iuse is not defined if 
+c                 not a diversion (iresw=0
+cx140 IF(iresw.eq.0.and.DIVREQ(IUSE).LE.small) then
+  140 IF(iresw.eq.0) then
+cx      write(nlog,*) '  Divres_2; nd, lr, iuse', nd, lr, iuse
+          if(DIVREQ(IUSE).LE.small) then
+          iwhy=6
+          cwhy='Demand is zero'
+          goto 330
+        endif
       endif  
 c
 c _________________________________________________________
@@ -543,7 +592,7 @@ c
 c            **  Step 5; Set demand (DIVALO) when the destination
 c                        is a diversion
 c        
-      if(ichk.eq.94) write(nlog,*) ' Divres; 4'
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) ' Divres; 4'
 
       if(iresw.eq.0) then
 c
@@ -551,6 +600,7 @@ c
 c ---------------------------------------------------------
 c               a. Demand for a standard diversion (not 
 c                  called by replace)
+cx      write(nlog,*) '  Divres_3; nd, lr, iuse', nd, lr, iuse
         if(irep.eq.0) 
      1    DIVALO=AMIN1(DIVREQ(IUSE),DIVCAP(ND)-DIVMON(ND))
 c
@@ -559,6 +609,7 @@ c ---------------------------------------------------------
 c               b. Demand for a diversion called by Replace
 c                  (irep=1). Limit diversion to the remaing 
 c                  decree (dcrdivx-divdx)	
+cx      write(nlog,*) '  Divres_4; nd, lr, iuse', nd, lr, iuse
         if(irep.ne.0)  
      1    divalo=amin1(dcrdivx-divdx,divreq(iuse),
      1                divcap(nd)-divmon(nd))
@@ -612,7 +663,7 @@ c            ** Step 6; Set demand (DIVALO) when the destination
 c                       is a reservoir
 c
 c               a. Set allowable storage
-      if(ichk.eq.94) write(nlog,*) ' Divres; 6'
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) ' Divres; 6'
 
       if (iresw.eq.1) then
 c
@@ -632,7 +683,7 @@ cr      divalo=amin1(ownmax(irow)-curown(irow),
 c
 c
 c ---------------------------------------------------------
-c               b. Check Prinout for reservoirs
+c               b. Check Printout for reservoirs
         if(iout.eq.1) then
           write(nlog,*) '  Divres; nd, irow ',
      1              'ownmax(irow)-curown(irow), ',
@@ -700,7 +751,7 @@ c
 c               Step 9; Limit release (ALOCFS) to reservoir #2
 c                       if reservoir #2 exists (iopsou(3,lr)>0)
 c
-      if(ichk.eq.94) write(nlog,*) ' Divres; 7'
+      if(iout.eq.1 .or. ichk.eq.94) write(nlog,*) ' Divres; 7'
 
       if(iopsou(3,lr).ne.0) then
         idow=nowner(iopsou(3,lr))+abs(iopsou(4,lr))-1
@@ -753,8 +804,10 @@ c ---------------------------------------------------------
 c                a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
         iss=IDcd
         NDNDS=NDND
-        CALL DNMFSO(maxsta,avail,idncod,iSS,ndndS,imcd)
-
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      CALL DNMFSO(maxsta,avail,idncod,iSS,ndndS,imcd)
+        CALL DNMFSO2(maxsta,avail,idncod,iSS,ndndS,imcd,cCallBy)
         pavail = amax1(0.0,avail(imcd))
         DIVACT=amin1(divalo,alocfs)
         divact=amax1(0.0,divact)
@@ -916,7 +969,10 @@ c ---------------------------------------------------------
 c                h. FIND THE UPDATED DOWNSTREAM MIN FLOW NODE
       iss=IDcd
       NDNDS=NDND
-      CALL DNMFSO(maxsta,AVTEMP,idncod,iSS,ndndS,imcd)
+c
+c rrb 2021/05/02; Runtime error tracking      
+cx    CALL DNMFSO(maxsta,AVTEMP,idncod,iSS,ndndS,imcd)
+      CALL DNMFSO2(maxsta,AVTEMP,idncod,iSS,ndndS,imcd,cCallBy)      
 c
 c
 c ---------------------------------------------------------
@@ -1052,6 +1108,7 @@ c
 c
 c ---------------------------------------------------------
 c               b. Destination is a diversion update demand data
+cx    write(nlog,*) '  Divres_5; nd, lr, iuse', nd, lr, iuse
       USEMON(IUSE)=USEMON(IUSE)+DIVACT
       DIVREQ(IUSE)=DIVREQ(IUSE)-DIVACT
       DIVMON(ND  )=DIVMON(ND  )+DIVACT
@@ -1191,12 +1248,15 @@ c             Add qdiv(38,ipcd) to .xdd (column 11) reporting for a
 c             reservoir to include From Storage to River for 
 c             Exchange, Carried, Other 
         qdiv(38,ipcd) = qdiv(38,ipcd) + divact
-     
-        IF (iresw.eq.0.and.IRTURN(IUSE).EQ.4) GO TO 320
+c
+c rrb 2015/05/22; Runtime error tracking; revise if statement
+c                 to remove check for irturn(iuse) since
+c                 it only applies if a diversion (iresw=0)
+cx      IF (iresw.eq.0.and.IRTURN(IUSE).EQ.4) GO TO 320
+        IF (iresw.eq.0) GO TO 320          
         QRES(8,NR)=QRES(8,NR)-ACTACF
         accr(8,iown) = accr(8,iown)-actacf
         goto 330
-c
 c
 c ---------------------------------------------------------
 c               l. Set From reservoir to carrier non transmountain

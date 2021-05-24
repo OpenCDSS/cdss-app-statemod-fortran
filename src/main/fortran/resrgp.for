@@ -29,15 +29,16 @@ c	Program Description
 c
 c	Type 41 Operating Rule
 c       ResRgP; It simulates a standard reservoir storage
+c               where the source is a reservoir water right that is
 c               Limited to the Volume stored by one or 
-c		more plans. Also limits to target contents
+c		            more plans. Also limits to target contents
 c
 c _________________________________________________________
 c       Update History
 c
-c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
-c     2006/09/29; Copied ResRg1 and revised accordingly
+c rrb 2006/09/29; Copied ResRg1 and revised accordingly
 c
 c _________________________________________________________
 c       Documentation
@@ -64,6 +65,11 @@ c
      1          cSouTyp*12, ctype1*12, cresid1*12       
 c
 c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Resrgp'
+c
 c _________________________________________________________
 c
 c               Step 1; Initialize
@@ -74,15 +80,15 @@ c rrb 2021/04/18; Compiler warning
       cidvri=' '
 
 c
-c		iout = 0 no details
-c		       1 details
+c		            iout = 0 no details
+c		                   1 details
 c                      2 summary      
       iout=0
       ioutiw=0
       if(ichk.eq.141) iout=2
       if(corid(l2).eq. ccall) ioutiw=iw
-c     if(iout.ge.1) write(nlog,*) '  Divres.for;'      
-      if(ichk.eq.4) write(nlog,*) ' Divres; Entering'
+c     if(iout.ge.1) write(nlog,*) '  ResrgP.for;'      
+      if(ichk.eq.4) write(nlog,*) ' ResrgP; Entering'
 c
       availx = 0.0
       stoalo = 0.0
@@ -109,7 +115,13 @@ c
       
       iwhy=0
       cwhy='N/A'      
-      
+c
+c rrb 2021/05/22; Runtime Error Tracking. Initilize 
+c                 Source reservoir #1 (nr) if
+c                 routine makes a quick exit          
+      NR  =iopdes(1,l2)  
+c
+c -----------------------------------------------------          
       if(iout.eq.2 .and. iw.eq.ioutiw) then      
         if(ncallx.eq.0) then
 c
@@ -162,8 +174,8 @@ c
 c _________________________________________________________
 c
 c               Step 3; Set Source Reservoir Right Data
-c		        Note Oprinp checks this right is tied
-c			to the destination reservoir
+c		                    Note Oprinp checks this right is tied
+c			                  to the destination reservoir
       nwr=iopsou(1,l2)
       ritrem1=ritrem(nwr)
       IF(ritrem(nwr).le.small) then
@@ -301,7 +313,10 @@ c _________________________________________________________
 c
 c               Step 8; Find MINIMUM FLOW downstream
 C
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD,NDNR,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD,NDNR,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IRCD,NDNR,IMCD,cCallBy)
       imcdx=imcd
       availx = avail(imcdx)
       
@@ -324,8 +339,10 @@ c
 c _________________________________________________________
 c
 c               Step 10; CHECK AVAILABLE FLOW
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD  ,NDNR  ,IMCD  )
-
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD,NDNR,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IRCD,NDNR,IMCD,cCallBy)
       IF(AVAIL(IMCD).lT.(-1.0*small)) then
         write(nlog,390) icase, iyrmo(mon),xmonam(mon),cstaid(ircd), 
      1    IW,L2,irow,IRCD,IMCDx,imcd,

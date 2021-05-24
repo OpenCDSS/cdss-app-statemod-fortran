@@ -20,7 +20,6 @@ c_________________________________________________________________NoticeEnd___
 c
       SUBROUTINE outJM
 c
-c
 c _________________________________________________________
 c	              Program Description
 c
@@ -52,7 +51,6 @@ c
 c 2019/10/28; Revise to include Available Flow in output
 c
 c 2018/11/17  Created outJM.for
-c
 c _________________________________________________________
 c
 c               Documentation

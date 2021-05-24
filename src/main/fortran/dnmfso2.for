@@ -1,45 +1,33 @@
-c dnmfso2 - finds the minimum flow at station iscd and downstream.
-c           Same as DnmFso but it includes cCallBy.
-c_________________________________________________________________NoticeStart_
-c StateMod Water Allocation Model
-c StateMod is a part of Colorado's Decision Support Systems (CDSS)
-c Copyright (C) 1994-2021 Colorado Department of Natural Resources
-c 
-c StateMod is free software:  you can redistribute it and/or modify
-c     it under the terms of the GNU General Public License as published by
-c     the Free Software Foundation, either version 3 of the License, or
-c     (at your option) any later version.
-c 
-c StateMod is distributed in the hope that it will be useful,
-c     but WITHOUT ANY WARRANTY; without even the implied warranty of
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-c     GNU General Public License for more details.
-c 
-c     You should have received a copy of the GNU General Public License
-c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
-c_________________________________________________________________NoticeEnd___
-c
+C
+C-------------------------------------------------------------------
+C
       SUBROUTINE DnmFso2(maxsta, AVAIL ,IDNCOD,ISCD,NDNS,IMCD,
      1  cCallBy)
 c
-c _________________________________________________________
 c
-c       Program Description
+c _________________________________________________________
+c	              Program Description
+c
 c       DnmFso2; It finds the minimum flow at station iscd
-c               and downstream.
+c                and downstream.
 c		    Same as DnmFso but it includes cCallBy
 c
-c ________________________________________________________
-c       Update History
+c _________________________________________________________
 c
-c rrb 2021/04/18; Compiler warning
+c               Update history
 c
-
+c rrb 2021/05/02; Runtime error tracking
+c
+c
+c _________________________________________________________
+c
+c               Dimensions
       DIMENSION AVAIL(maxsta),IDNCOD(maxsta)
       character cCallBy*12
 c
-c ________________________________________________________
-c       Initilize
+c rrb 2021/05/02; Runtime error tracking
+      iprob=0
+      if(iprob.eq.1) goto 9999
 C
 C-------------------------------------------------------------------
 C
@@ -48,29 +36,39 @@ C
 C-------------------------------------------------------------------
 C
       iout=0
-      if(iout.eq.1) write(99,*) '  DnmFso2; In, maxsta, iscd, ndns ', 
+cx    if(cCallBy.eq.'IfrRigSP    ') iout=1
+      if(iout.eq.1) write(99,*) ' DnmFso2; In, maxsta, iscd, ndns ', 
      1  maxsta, iscd, ndns
-
-c jhb 2014/06/26 temporary fix...
-      if(ndns.lt.0 .or. ndns.gt.maxsta) then
-        write(99,*) '  DnmFso2; ndns has invalid value. ndns = ', ndns
-        imcd=iscd
-        return
-      endif
      
       IMCD=ISCD
       ISS=ISCD
       
+      if(iout.eq.1) write(99,*) ' DnmFso2; iscd, imcd, iss, ndns', 
+     1              iscd, imcd, iss, ndns
       DO ND=1,NDNS
-        if(iss.eq.0 .or. imcd.eq.0) goto 9999
+        if(iout.eq.1) then
+          write(99,*) ' DnmFso2;   nd iscd ndns  iss imcd' 
+          write(99,'(a10,1x,20i5)') 
+     1             '  DnmFso2; ',nd, iscd, ndns, iss,imcd
+        endif
+c
+c rrb 2021/05/02; Runtime error tracking        
+cx      if(iss.eq.0 .or. imcd.eq.0) goto 9999
+        if(iss.eq.0 .or. imcd.eq.0) then
+          write(99,*) ' DnmFso2; Problem with iss or imcd ', 
+     1     cCallBy, iss, imcd
+cx        goto 9999
+          goto 500
+        endif
+cx
         IF(AVAIL(IMCD).GT.AVAIL(ISS)) IMCD=ISS
         ISS=IDNCOD(ISS)
       end do
       if(iout.eq.1) write(99,*) '  DnmFso2; Out imcd ', imcd
-C
-      RETURN
-      
-      
+c
+c rrb 2021/05/02; Runtime error tracking        
+cx    RETURN
+ 500  RETURN
 c
 c_____________________________________________________________
 c               Error warnings

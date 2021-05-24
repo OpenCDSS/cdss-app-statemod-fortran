@@ -41,6 +41,8 @@ c
 c       Update History
 c
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 00/02/21; Documented
@@ -89,6 +91,10 @@ c	Dimensions
 c
       include 'common.inc'
       character cresid1*12, cwhy*48
+c
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Divcar2'
 c
 c _________________________________________________________
 c               Step 1; Initialize
@@ -353,7 +359,10 @@ c
 c               Step 8; Set available flow (pavail)
 c _________________________________________________________
 c               FIND DOWNSTREAM MINIMUM FLOW STATION
-      CALL DNMFSO(AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(AVTEMP,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
 C
       PAVAIL=AVTEMP(IMCD)
       IF(iresw.eq.0.and.IRTURN(IUSE).EQ.4) PAVAIL=AMIN1(AVTEMP(IMCD),
@@ -480,7 +489,10 @@ cx  270 ISS=IDNCOD(ISS)
       AVWRET(ISCD)=AVTEMP(ISCD)
 c
 c               FIND THE UPDATED DOWNSTREAM MIN FLOW NODE
-      CALL DNMFSO(AVWRET,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(AVWRET,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(AVWRET,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
 C
       PAVAIL=AVWRET(IMCD)
 C
@@ -527,7 +539,10 @@ c
 c
 c ---------------------------------------------------------        
 c               b. Check minimum
-  300 CALL DNMFSO(AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD  )
+c
+c rrb 2021/05/02; Runtime error tracking
+cx300 CALL DNMFSO(AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD  )
+  300 CALL DNMFSO2(AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD,cCallBy)
 c     IF(AVAIL(IMCD).lT.-.01) then
       IF(AVAIL(IMCD).lT.(-1.0*small)) then
         WRITE(6,390) IYR,MON,IW,NWRORD(1,IW),L2,IUSE,DIVREQ(IUSE),

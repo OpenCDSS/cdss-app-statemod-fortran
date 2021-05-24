@@ -20,16 +20,12 @@ c_________________________________________________________________NoticeEnd___
 
 c	Update History
 c
-
-c
-c _________________________________________________________
-c	Documentation
-c
-
+c rrb 2021/05/02; Runtime error tracking
 c
 c _________________________________________________________
 c	Dimensions
-cC     Last change:  C    20 May 97    0:14 am
+c
+C     Last change:  C    20 May 97    0:14 am
 C
       SUBROUTINE RESRG2(IW,L2)
 c
@@ -43,7 +39,8 @@ c
 c _________________________________________________________
 c	Update History
 c
-c rrb 04/10/96; added special logic for 
+c rrb 2021/05/02; Runtime error tracking
+c rrb 2004/10/96; added special logic for 
 c
 c     Revised to distribute one water right to many owners
 C
@@ -64,6 +61,11 @@ c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Resrg2'
 c
 c _________________________________________________________
 c		Step 1; Initialize
@@ -146,7 +148,10 @@ C------  CHECK DOWNSTREAM MINIMUM FLOW AND ALLOWABLE STORAGE
 C
 C-------------------------------------------------------------------
 C
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD,NDNR,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD,NDNR,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IRCD,NDNR,IMCD,cCallBy)
 C
       STOACT=AMIN1(AVAIL(IMCD),STOCFS)
       availx = avail(imcd)*MTHDAY(MON)*FACTOR
@@ -156,7 +161,10 @@ C
 C
 C------  CHECK AVAILABLE FLOW
 C
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD  ,NDNR  ,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD  ,NDNR  ,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IRCD  ,NDNR  ,IMCD,cCallBy)
       IF(AVAIL(IMCD).lt.-.00001) then
         write(99,150) 0, iyr,mon,cstaid(ircd),iressw(nr),
      1               iw,nwrord(1,iw),l2,nr,

@@ -60,7 +60,7 @@ c rrb 2021/04/18; Compiler warning
       
       if(iout.gt.0 .or. ichk.eq.94) then
         write(nlog,*) ' OutXssMo'
-        write(6,*) ' OutXssMo'
+cx      write(6,*) ' OutXssMo'
       endif      
 c
 c _________________________________________________________

@@ -46,7 +46,7 @@ c
       
       if(iout.gt.0 .or. ichk.eq.94) then
         write(nlog,*) ' SetEff Detailed Output'
-        write(6,*) ' SetEff'
+cx      write(6,*) ' SetEff'
       endif      
 c
 c rrb 2006/10/20; Daily output control

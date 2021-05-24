@@ -32,6 +32,14 @@ c
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/05/22; Runtime Error Tracking
+c                 Correct error on call Chekres (change mon to mon,)
+c
+c rrb 2021/05/15; Runtime Error Tracking and
+c                 Initilize Source reservoir (nr) if
+c                 routine makes a quick exit          
+c                 
 c rrb 2021/04/18; Compiler warning
 c
 c 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
@@ -51,8 +59,7 @@ c	Dimensions
 c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
-     1          rec12*12, cTandC*3
-      
+     1          rec12*12, cTandC*3   
 c
 c _________________________________________________________
 c
@@ -62,9 +69,11 @@ c rrb 2021/04/18; Compiler warning
       ioutiw=0
       rec12=rec12
 c
-c		iout=1 details
-c		iout=2 summary if ...
-c		iout=99 summary independent of ichk
+c                 Detailed output
+c		                iout=1 details
+c		                iout=2 summary if ...
+c		                iout=99 summary independent of ichk
+c
 cx    if(ichk.eq.4) write(nlog,*) ' Powsea; Entering'
       divact = 0.0
       iw = iw
@@ -103,12 +112,16 @@ c rrb 98/03/03; Daily capability
       ccarry='No'
       cpuse='No'
       cTandC='No'
-      
+c
+c rrb 2021/05/15; Runtime Error Tracking.  
+c                 Initilize Source reservoir (nr) if
+c                 routine makes a quick exit          
+      NR  =IOPSOU(1,L2)           
 c
 c rrb 02/10/25; Allow monthly on/off switch
       if(imonsw(l2,mon).eq.0) then
-          iwhy=1
-          cwhy='Monthly switch Off'
+        iwhy=1
+        cwhy='Monthly switch Off'
         goto 120
       endif  
 c
@@ -142,9 +155,9 @@ C
       IOWN=NOWNER(NR)+IOPSOU(2,L2)-1
       ISCD=IRSSTA(NR)
       NDNS=NDNNOD(ISCD)
-      cstaid1=cresid(nr)
-      
+      cstaid1=cresid(nr)   
 C
+c ---------------------------------------------------------
 C              CALCULATE VOLUME AVAILABLE FROM RESERVOIR (resval - af,
 c               ravcfs - cfs)
 C
@@ -262,11 +275,12 @@ C
 c
 c
 c ---------------------------------------------------------
-c rrb 99/05/10; Roundoff check
-      
+c
+c rrb 2021/05/22; Correction; change mon to mon,
+cx    call chekres(io99,maxres, 1, 9, iyr, mon nr,nowner,
+cx   1                    curown,cursto,cresid)
       call chekres(io99,maxres, 1, 9, iyr, mon, nr,nowner,
      1                    curown,cursto,cresid)
-c
 c
 c _________________________________________________________
 c

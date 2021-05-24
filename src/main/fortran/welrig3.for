@@ -30,8 +30,8 @@ c_____________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
-c
 c rrb 2007/09/27; Copied WelRig2.
 c		  Revised to focus on IWR as the indicator for
 c		  a well demand, not total headgate demand.
@@ -140,6 +140,11 @@ c
      1          rec12*12, cTandC*3, cidWR*12, ctype1*12, cStrOut*12,
      1          subtypX*8
 c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Welrig3'
 c
 c _________________________________________________________
 c       Step 1 Common Initialization
@@ -451,7 +456,10 @@ c               Step 17; Find mininum downstream station from
 c		         the well
 c
 c     write(nlog,*) ' Welrig3; Step 17'
-      CALL DNMFSO(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
       avail0=avail(imcd)
       
 c

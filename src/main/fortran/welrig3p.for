@@ -31,6 +31,8 @@ c
 c_____________________________________________________________
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2007/10/01; Revised to focus on IWR as the indicator for
@@ -158,6 +160,11 @@ c
      1          cidWR*12, rec12*12, cTandC*3, cidRiv*12, cidBal*12,
      1          ctype1*12,cStrOut*12, pid1*12, subtypX*8
 c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Welrig3p'
 c
 c _________________________________________________________
 c
@@ -545,7 +552,10 @@ c_____________________________________________________________
 c               Step 17; Find mininum downstream station from
 c		         the well
 c
-      CALL DNMFSO(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, avail,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(maxsta,avail,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
       avail0=avail(imcd)
       
 c
@@ -567,8 +577,11 @@ c
       else  
         iscdp=ipsta(ipAug)
         ndnsP=Ndnnod(IscdP)
-       
-        CALL DNMFSO(maxsta,avail,IDNCOD,IscdP,NndsP,ImcdP)
+c
+c rrb 2021/05/02; Runtime error tracking 
+c                 and typo error      
+cx      CALL DNMFSO(maxsta, avail,IDNCOD,IscdP,NndsP,ImcdP)
+        CALL DNMFSO2(maxsta,avail,IDNCOD,IscdP,NdnsP,ImcdP,cCallBy)
         availP1=avail(imcdP)
         call depleteP(DIVACT,depx,nwr,nwe,ipAug)
       endif  
@@ -768,8 +781,11 @@ c		a. Set the net plan obligation (PNetObl) to the
 c                  mininum value in Avtemp that contains the impact 
 c                  of this well only on the entire network.
 c                  Note call dnmfso (not dnmfsoW) to get min from the
-c	           well (balance point) downstream
-        call dnmfso(maxsta, avtemp, idncod, iscd, ndns, imcP)
+c	                 well (balance point) downstream
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      call dnmfso(maxsta, avtemp, idncod, iscd, ndns, imcP)
+        call dnmfso2(maxsta,avtemp, idncod, iscd, ndns, imcP,cCallBy)
         cidBal=cstaid(imcP)
 c
 c rrb 2008/03/31; Correction (minimum may not be a depletion)        

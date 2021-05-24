@@ -40,6 +40,9 @@ c
 c	Update History
 c
 c
+c rrb 2021/05/22; Runtime Error Tracking; ndns2 is not defined
+c                 in call Dnmfso2( )
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/07/28; Version 16.00.38
@@ -127,7 +130,7 @@ c
 c
 c        divactB        diversion by the destination (by bypass) structure
 c	       divact1        diversion at source structure
-cc
+c
 c	       divreq1        Demand at source 
 c
 c        dcrdivS        Fraction of water right available to the source
@@ -244,7 +247,7 @@ c_______________________________________________________________________
       np2=0      
       ISHORT=0
       ieff2=1
-      icx=25
+      icx=50
       small = 0.001
       iscd=-1      
       imcdX=1 
@@ -332,6 +335,10 @@ c		2c; For a daily model set demand for end of season
       endif  
 c_______________________________________________________________________
 c		Step 3; Set Source Data (an instream flow right)
+c
+c rrb 2021/05/22; Runtime Error Tracking
+cx    write(nlog,*) '  Ifrrigsp; Step 3', l2, corid(l2), iopsouR(l2)
+      
       if(iopSouR(l2).ne.11) then
         goto 9999
       else
@@ -375,14 +382,15 @@ c_______________________________________________________________________
 c    b; Set the diversion location equal to the destination location
         iscd=idcd
         NDNS=NDNNOD(ISCD)  
-c       write(nlog,*) '  IfrRigSP_3; iscd, ndns ', iscd, ndns
+cx      write(nlog,*) '  IfrRigSP_3; iscd, ndns ', iscd, ndns
 c_______________________________________________________________________
 c    b; Set demand & Exit if zero
         divreq1=amax1(0.0,flowrq(nd))
         if(iout.eq.1) then
           write(Nlog,*)' IfrRigSP; nd, np2, flowrq', 
      1      nd, np2, flowrq(nd)
-        endif        
+        endif   
+             
         if(divreq1.lt.small) then
           iwhy=4
           cwhy='Demand at destination (divreq1) = 0'
@@ -398,7 +406,7 @@ c		c. Exit if destination structure (np2) is off
       endif             
 c_______________________________________________________________________
 c               Step 5; Check available flow
-c			                  from the source down (iscd)
+c			                  from the source down (iscd)    
       CALL DNMFSO2(maxsta, AVAIL, IDNCOD, iscd, NDNS, IMCD,
      1  cCallBy)
       imcdX=imcd
@@ -409,6 +417,7 @@ c               Print warning if negative available flow
      1    IYR,MON,IW,NWRORD(1,IW),L2,lr, nd2, iuse2,
      1    idcd2,IMCD,icase, divreq1*fac, divact*fac, avail(imcd)*fac
       endif
+      
       if(pavail.le.small) then
         iwhy=6
         cwhy='Available flow below destination (AvailX) = 0'
@@ -433,12 +442,18 @@ c                       which adjusts avail and river
      1              DIVACTX, NDNS,  ISCD     )
 c_______________________________________________________________________
 c               Step 20; Double Check available flow 
+c
 c jhb try to prevent array out of bounds error on avail(imcd)
 c     turns out idcd2 is undefined.  probably should be iscd as before
 c      CALL DNMFSO2(maxsta, AVAIL, IDNCOD, idcd2, NDNS2, IMCD,
 c     1  cCallBy)
-      CALL DNMFSO2(maxsta, AVAIL, IDNCOD, iscd, NDNS2, IMCD,
-     1  cCallBy)
+c
+c ---------------------------------------------------------
+c rrb 2021/05/22; Runtime Error Tracking; ndns2 is not defined    
+cx      CALL DNMFSO2(maxsta, AVAIL, IDNCOD, iscd, NDNS2, IMCD,
+cx     1  cCallBy)
+      CALL DNMFSO2(maxsta, AVAIL, IDNCOD, iscd, NDNS, IMCD,
+     1  cCallBy)     
       call flush(6)
       call flush(nlog)
 c rrb 2008/06/20; Allow minor roundoff

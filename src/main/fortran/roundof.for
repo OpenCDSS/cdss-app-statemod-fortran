@@ -44,7 +44,7 @@ c
        character ccall*8 
        data ccall/
      1   'Bomsec  ', 'Execut  ', 'Divres  ', 'Welrig  ', 'DivresP', 
-     1   'Divrpl  ', 'DivrplP ', 'JMStore ', 'JMFlow  ', '        '/
+     1   'Divrpl  ', 'DivrplP ', 'JMStore ', 'JMFlow  ', 'DivRig '/
 c
 c _________________________________________________________
 c		Step 1; Initialize

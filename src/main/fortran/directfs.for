@@ -17,11 +17,9 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-
+c
 c _________________________________________________________
 c	Documentation
-c
-
 c
 c _________________________________________________________
 c	Dimensions
@@ -52,6 +50,9 @@ c
 c _________________________________________________________
 c
 c	     Update History
+c
+c
+c rrb 2021/05/02; Runtime Error tracking
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -91,6 +92,11 @@ c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
      1          rec12*12, cTandC*3, cdivtyp1*12, cresid1*12
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Directfs'
 c
 c _________________________________________________________
 c
@@ -246,7 +252,7 @@ c
 c ---------------------------------------------------------
 c               b. Check Prinout for reservoirs
         if(iout.eq.1) then
-          write(nlog,*) '  Divres; nd, iown ',
+          write(nlog,*) '  Divresfs; nd, iown ',
      1              'ownmax(iown)-curown(iown), ',
      1              'volmax(nd2)-cursto(nd2),  ',
      1              'tarmax(nd2)-cursto(nd2), divalo*fac'
@@ -390,8 +396,10 @@ c
       do is=1,numsta
         avtemp(is)=avail(is)
       end do
-
-      CALL DNMFSO(maxsta,AVTEMP,IDNCOD,ISCD2,NDNS2,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVTEMP,IDNCOD,ISCD2,NDNS2,IMCD)
+      CALL DNMFSO2(maxsta,AVTEMP,IDNCOD,ISCD2,NDNS2,IMCD,cCallBy)
       pavail=avtemp(imcd)
 c
 c _________________________________________________________
@@ -457,7 +465,10 @@ c
 c               Step 10.  Check and Update
 c
 c               a. Check minimum
-      CALL DNMFSO(maxsta, AVAIL, IDNCOD, ISCD2, NDNS2, IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL, IDNCOD, ISCD2, NDNS2, IMCD)
+      CALL DNMFSO2(maxsta,AVAIL, IDNCOD, ISCD2, NDNS2, IMCD, cCallBy)
       IF(AVAIL(IMCD).lT.(-1.0*small)) then
         write(nlog,100)
         write(nlog,110) (avail(iss),iss=1,numsta)

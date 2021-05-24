@@ -18,12 +18,15 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 C
-      SUBROUTINE MDAINP(IIN,I12)
+c
+c rrb 2021/05/02; Runtime error tracking - Save issue
+cx    SUBROUTINE MDAINP(IIN,I12)
+      SUBROUTINE MDAINP(IIN,I12,itarx,iter)   
 c _________________________________________________________
 c	Program Description
 c
 c       Mdainp; It reads in time series data (streamflow, etc.)
-c		Called by Execut and Virgen:
+c		    Called by Execut, Virgen and Xdebug:
 c		  - Once to open files and read 1x/year data
 c		    (I12=0)
 c		  - Once every year thereafter
@@ -37,7 +40,8 @@ c               iin     response file number (20)
 c               i12     read option
 c                       = 1 open files first time        
 c                       =12 read data one year at a time.
-c
+c               itarx   = 0 min and max targets provided
+c                       = 1 only max target providedc
 c		idvcomw = Well Demand Type 
 c			  1 Monthly demand provided
 c			  2 Not used
@@ -49,6 +53,8 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking - Save issue
+c 
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/07/27; Ver = 16.00.36
@@ -102,6 +108,8 @@ c               Reservoir Target data
 c
 c               itarx = 0 = min and max targets provided
 c                       1 = only max target provided
+c                           Note read once then used for all subsequent 
+c                           years
 c               targetx( )= target for this year (note if a forecast it
 c                           gets adjusted to reflect # of months, etc.
 c               targetn( )= target for next year (required for running 
@@ -145,7 +153,6 @@ c
 c              Step 1; Initialize
 c
 c rrb 2021/04/18; Compiler warning
-      itarx=0
       monppt=0 
       iuse=0
       rec12b=' '
@@ -180,12 +187,24 @@ c             ioutEv = 1 print evaporation data
 c            ioutPpt = 1 print evaporation data
 c            ioutRgS = 1 print Rio Grande Spill data
 c            ioutRgF = 1 print Rio Grande Spill Forecast data
-c             ioutSM = 1 print soil moisture
+c            ioutSM =  1 print soil moisture
 c                      2 soil moisture summary from station file
 c                      3 soil moisture summary from *.ipy file
 c            ioutPrf = 1 print Plan return flow data
 c            ioutURM = 1 print *.urm details
 c                      1 print *.urm summary
+cx      ioutS=1
+cx      ioutGx=1
+cx      ioutX=1
+cx      ioutW=1
+cx      ioutI=1
+cx      ioutD=1
+cx      ioutR=1
+cx      ioutEv=1
+cx      ioutPPt=1
+cx      ioutURM=1
+      
+      
       ioutS=0
       ioutGx=0
       ioutX=0
@@ -197,13 +216,22 @@ c                      1 print *.urm summary
       ioutPPt=0
       ioutURM=0
       
+      
+      
       if(ichk.eq.11) ioutEv=1
       ioutRgS=0
       ioutRgF=0
       ioutSM=0
       ioutPrf=0
-
-      
+c
+c rrb 2021/05/02; Runtime error tracking      
+      ioutTar=0
+      if(ioutTar.eq.1) then
+        write(nlog,*) '  Mdainp;  iyr iin  i12 itarx' 
+        write(nlog,'(a10,20i5)') '  Mdainp; ',iyr, iin, i12, itarx
+      endif         
+c
+c
       cCallBy='MdaInp      '
 
       
@@ -2725,8 +2753,8 @@ c rrb 2006/03/20; Adjust character string to left
           endif
 
           if(iter.eq.2.and.ityr.ne.(iyr+1)) then
-                write(nlog,*) '  Mdainp; Problem. ',
-     1        'Reservoir target data is out of sequence'
+              write(nlog,*) '  Mdainp; Problem. ',
+     1        'Res target data is out of sequence_2 ',cista2,ityr,iyr
             goto 9999
           endif
 
@@ -2773,6 +2801,13 @@ c                 Read min target (itarx=0) or set to 0 (itarx.ne.1)
           read (24,952,end=1570,err=928)
      1        ityr, cistat, (conminn(i,nm),i=1,12)
 c
+c rrb 2021/05/02; Runtime error tracking
+          if(ioutTar.eq.1) then
+            write(nlog,*)'  Mdainp_1 ', nm, numres,
+     1        ityr, cistat, (conminn(i,nm),i=1,12)
+          endif
+
+c
 c rrb 2006/03/20; Adjust character string to left     
           cistat=adjustl(cistat)
         else
@@ -2785,14 +2820,20 @@ c ---------------------------------------------------------
 c
         read (24,952,end=1570,err=928)
      1      ityr, cista2, (targetn(i,nm),i=1,12)
-c
+cc
+c rrb 2021/05/02; Runtime error tracking
+        if(ioutTar.eq.1) then
+          write(nlog,*)'  Mdainp_2 ',nm, numres, 
+     1        ityr, cistat, (conminn(i,nm),i=1,12)
+        endif
+     
 c rrb 2006/03/20; Adjust character string to left     
         cista2=adjustl(cista2)
              
         if(ityr.ne.(iyr+1)) then
           write(nlog,*) ' '
           write(nlog,*) '  Mdainp; Problem. ',
-     1        'Reservoir target data is out of sequence',ityr,iyr
+     1        'Res target data is out of sequence_1 ',cista2,ityr,iyr
           goto 9999
         endif
         if(cfacto.ge.small) then
@@ -4096,7 +4137,7 @@ cx     1   ' total return for table ', i5,' =',f10.2, ' Continuing on')
  953  format(2i4, 1x, a12, 12f8.4)
 cx 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
  
- 955  format(i4, 1x, i4, 1x, i4, 1x, a12)
+ 955  format(a12,1x, i4, 1x, i4, 1x, i4, 1x, a12)
 
 
  

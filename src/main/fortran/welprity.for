@@ -26,14 +26,15 @@ c _________________________________________________________
 c	Program Description
 c
 c       WelPrity; Type 43
-c		 It simulates in-priority supply for delayed
-c		 delpletions associated with pumping. 
-c                Note current time step depletions
-c		 are accounted as they occur in WelRigP.f
+c		      It simulates in-priority supply for delayed
+c		      delpletions associated with pumping. 
+c         Note current time step depletions
+c		      are accounted as they occur in WelRigP.f
 c
 c_____________________________________________________________
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2006/11/16; Copied WelRigP and revised to include a T&C plan
 c               
 c _________________________________________________________
@@ -72,13 +73,18 @@ c
      1 cRelTyp*12, cReplace*3, 
      1 cStaId1*12, cRivId*12, cMinId*12, cDesId*12, subtypX*8
 c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Welprity'
+c
 c _________________________________________________________
 c       Step 1 Common Initialization
 c
-c		iout = 0 No details
-c		       1 Details
+c		            iout = 0 No details
+c		                   1 Details
 c                      2 Summary      
-c		      99 Summary independent of ccall
+c		                  99 Summary independent of ccall
       subtypX='welprity'
       iout=0
       ioutiw=0
@@ -166,7 +172,10 @@ c
 c _________________________________________________________
 c
 c		Check available flow downstream of the source
-      call dnmfso(maxsta, avail, idncod, iscd, ndns, imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    call dnmfso(maxsta, avail, idncod, iscd, ndns, imcd)
+      call dnmfso2(maxsta,avail, idncod, iscd, ndns, imcd,cCallBy)
       cMinId=cstaid(imcd)
       avail1=avail(imcd)
       IF(AVAIL1.le.small) then

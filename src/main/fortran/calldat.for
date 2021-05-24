@@ -42,13 +42,18 @@ c
 c _________________________________________________________
 c	Update History
 c
-c		NA
+c rrb 2021/05/02; Runtime error tracking
 c
 c _________________________________________________________
 c	Dimensions
 c
       include 'common.inc'
-      
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Calldat'
+            
       nchkx=nlog
       iout=0
 c      
@@ -75,7 +80,10 @@ c               Print call data for a direct diversion
         ND  =IDIVCO(1,L2)
         ISCD=IDVSTA(ND)
         NDNS=NDNNOD(ISCD)
-        call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      call dnmfso(maxsta, avail,idncod,iscd,ndns,imcd)
+        call dnmfso2(maxsta,avail,idncod,iscd,ndns,imcd,cCallBy)
         bypass=amax1(river(iscd)-avail(imcd), 0.0)
 
         if(iout.eq.1) then
@@ -133,7 +141,10 @@ c jhb 2014/07/07 array index checking
             nf  = iifrco(L2)
             ISCD=ifrsta(nf)
             NDNS=NDNNOD(ISCD)
-            call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx          call dnmfso(maxsta, avail,idncod,iscd,ndns,imcd)
+            call dnmfso2(maxsta,avail,idncod,iscd,ndns,imcd,cCallBy)
             bypass=amax1(avail(imcd)-river(iscd), 0.0)
 
             if(ifrrsw(nf).eq.0 .or. iifrsw(l2).eq.0) then
@@ -190,7 +201,10 @@ c           write(nchkx,*) '  Execut; l1, ccall', l1, ccall
             nr  =iresco(1,L2)
             ISCD=irssta(nr)
             NDNS=NDNNOD(ISCD)
-            call dnmfso(maxsta,avail,idncod,iscd,ndns,imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx          call dnmfso(maxsta, avail,idncod,iscd,ndns,imcd)
+            call dnmfso2(maxsta,avail,idncod,iscd,ndns,imcd,cCallBy)
             bypass=amax1(avail(imcd)-river(iscd), 0.0)
 
             if(iressw(nr).eq.0) goto 500

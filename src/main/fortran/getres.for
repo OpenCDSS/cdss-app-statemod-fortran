@@ -28,7 +28,24 @@ c _________________________________________________________
 c
 c       Update History
 c
-c rrb 2021/04/18; Compiler warningc
+c
+c rrb 2021/05/12; Runtime Error Tracking.
+c                 Add ioutR to print reservoir owner data
+c rrb 2021/04/18; Compiler warning
+c rrb 2006/04/04; Add ability to read Reservoir Return flow file for
+c                 seepage fate
+c rrb 2004/09/07; Revise diversions to allow multiple owners
+c		              ndown. Note multiple users are still not allowed
+c rrb 2003/08/18; Revise to allow random file read
+c
+c rrb 1999/09/15; Revised instream flows to allow monthly data
+c rrb 2000/05/30; Revised to allow Irrigation Water Req. data for
+c                 demand information
+c rrb 2000/11/10; Revised to read itsfile; annual time series code
+c rrb 2000/12/04; Revised to add ieffmax; variable efficiency code
+c                 (0=no, 1=yes)
+c
+c
 c _________________________________________________________
 c
 c	    Documentation
@@ -61,25 +78,6 @@ c                           water right info (welrig)
 c                      92 Print detailed soil moisture data (soilm)
 c                      99 Enter water right id for call information
 c                     100+n Print water right n (see *.xwr for a number)  
-c
-c _________________________________________________________
-c
-c	Update History
-c
-c rrb 2006/04/04; Add ability to read Reservoir Return flow file for
-c                 seepage fate
-c rrb 04/09/07; Revise diversions to allow multiple owners
-c		ndown. Note multiple users are still not
-c		allowed.
-c rrb 03/08/18; Revise to allow random file read
-c
-c rrb 99/09/15; Revised instream flows to allow monthly data
-c rrb 00/05/30; Revised to allow Irrigation Water Req. data for
-c               demand information
-c rrb 00/11/10; Revised to read itsfile; annual time series code
-c rrb 00/12/04; Revised to add ieffmax; variable efficiency code
-c               (0=no, 1=yes)
-c
 c _________________________________________________________
 c	Dimensions
 c
@@ -116,9 +114,12 @@ c rrb 2021/04/18; Compiler warning
 c
 c               Read Reservoir Station (*.res) 
 c
-c		iout=1 print reservoir details
-c		    =2 print reservoir return flow details
+c		              iout =1 print reservoir details
+c		                   =2 print reservoir return flow details
+c                 ioutR=1 print reservoir owner data (nowner)
       iout=0
+      ioutR=0
+      
       write(6,*) ' Subroutine GetRes'
 
       NUMRES=0
@@ -615,7 +616,16 @@ C
       NOWNER(1)=1
       DO NR=1,NUMRES
         NOWNER(NR+1)=NOWNER(NR+1)+NOWNER(NR)     
-cr      if(iout.eq.1) write(nlog,*) '  GerRes; ', nr+1, nowner(nr+1)
+cr      if(iout.eq.1) write(nlog,*) '  GetRes; ', nr+1, nowner(nr+1)
+c
+c rrb 2021/05/14; Runtime Error Tracking     
+        if(ioutR.eq.1) then
+          if(nr.eq.1) 
+     1    write(nlog,*) ' GetRes; nr, cresid, nowner, nowner+1'
+          write(nlog,'(2a12,20i5)') ' GetRes; ',  
+     1      cresid(nr), nr, nowner(nr), nowner(nr+1)
+        endif
+cx
       end do
 c
 c		

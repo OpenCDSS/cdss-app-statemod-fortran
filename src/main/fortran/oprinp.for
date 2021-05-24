@@ -910,7 +910,7 @@ c               For type 1, Reservoir to a ISF
         if (ityopr(k).eq.1) goto 1001
 c               For type 2, Reservoir to diversion or reservior or Carrier
         if (ityopr(k).eq.2) goto 1002
-c               For type 2, Reservoir to a carrier
+c               For type 3, Reservoir to a carrier
         if (ityopr(k).eq.3) goto 1003
 c               For type 4, Reservoir to a dversion by Exchange
         if (ityopr(k).eq.4) goto 1004
@@ -8690,7 +8690,7 @@ c
 c ------------------------------------------------------------------
 c               f. Find destination reuse plan named Creuse, if any, 
 c rrb 2006/12/27; Allow creuse to be used to store carrier losses 
-c                 that go to a plan
+c                 that goto a plan
       if(iout45X.eq.1) write(nlog,*) ' Oprinp; Reading creuse ',creuse
       iacc=0
       ion=-1
@@ -10603,7 +10603,7 @@ c                    1 = Storage Season (11/1 - 3/31)
 c                    2 = Period to calculate ave baseflow (11/8 - 1/14)
 c                    3 = Period to use Ave Baseflow and Enhanced
 c                        Baseflow (11/22 - 11/28)
-c                    4 = Period at end to go to conservation (3/16 - 3/31)
+c                    4 = Period at end to goto conservation (3/16 - 3/31)
 c        
 c ---------------------------------------------------------
 c 		c1b; Loop for number of time periods

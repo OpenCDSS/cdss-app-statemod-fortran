@@ -37,6 +37,8 @@ c	Update History
 c
 c               Update History
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 99/12/28; New Id convention as follows:
@@ -103,6 +105,11 @@ c
      1  totothw(maxstax),  shortiw(maxstax), demx(maxstax),
      1  diwrz(maxstax),    qtosoil(maxstax), qfrsoil(maxstax)
 c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Dayoutr'
 c 
 c _________________________________________________________
 c               Step 1; Initialize
@@ -370,7 +377,10 @@ c               Finally Daily printout
       
         irecs=irec+is
         ndnn =ndnnod(is)
-        call dnmfso(maxsta,avt,idncod,is,ndnn,im)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      call dnmfso(maxsta, avt,idncod,is,ndnn,im)
+        call dnmfso2(maxsta,avt,idncod,is,ndnn,im,cCallBy)
 c
         RivPri  = qdiv(8,is)  + qdiv(14,is) + qdiv(5,is) - qdiv(16,is)
         
@@ -737,7 +747,10 @@ c
         avt(is)=avail(is)
 
         ndnn=ndnnod(is)
-        call dnmfso(maxsta,avt,idncod,is,ndnn,im)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx      call dnmfso(maxsta, avt,idncod,is,ndnn,im)
+        call dnmfso2(maxsta,avt,idncod,is,ndnn,im,cCallBy)
 c
 c rrb 2009/05/01; Simplify        
 cx      carry(nr)=carry(nr)-avt(im)

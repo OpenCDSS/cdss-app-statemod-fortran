@@ -30,6 +30,7 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -76,7 +77,11 @@ c
       include 'common.inc'
       character cresid1*12, cwrid*12
       character cwhy*50, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12
-      
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Resrpl'      
 c
 c _________________________________________________________
 c		Step 1; Initialize
@@ -275,8 +280,10 @@ cx  110 ISS=IDNCOD(ISS)
   110 continue
 C
 C------  Find minimum flow available to the destination
-C
-      CALL DNMFSO(maxsta, avtemp, idncod, ircd, ndnr, imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, avtemp, idncod, ircd, ndnr, imcd)
+      CALL DNMFSO2(maxsta,avtemp, idncod, ircd, ndnr, imcd,cCallBy)
       imcdX=imcd
 C                                      
 c

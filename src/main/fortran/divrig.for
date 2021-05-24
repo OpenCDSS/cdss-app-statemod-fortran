@@ -27,6 +27,8 @@ c		It calculates a standard diversion
 c _________________________________________________________
 c      Update History
 c
+c rrb 2021/05/02; Runtime error tracking and
+c                 Call Roundof going into & out of the subroutine
 c
 c rrb 2021/04/18; Compiler warning
 c rrb 1997/10/15; Added daily model capability (see facdly) &
@@ -73,7 +75,7 @@ c        idvsta(l2)     STATION WHERE DIV. RIGHT L2 LOCATES
 c
 c        ieff2          =0 always use average efficiency
 c                       =1 let ieffmax control variable efficiency 
-c	  idemtyp	   Switch for demand data type 
+c	       idemtyp	   Switch for demand data type 
 c                       (See Section 7.10 of Doc)
 c			   1 Historic Demand Approach
 c				demands for structures with both SW 
@@ -166,11 +168,21 @@ c		        2 yes details from DsaMod
       ioutwr=0
       ioutwr=516
       ioutwr = 380
+
       iresw=0
 c
 c rrb 2021/04/18; Compiler warning
       divreqx=0.0
+c ---------------------------------------------------------
+c rrb 2021/05/05; Runtime error tracking
+      ioutRo=0
+      if(ioutRo.eq.1) then
+        write(nlog,*) ' '
+          write(nlog,*) '  Divrig In; Calling RoundOf ', crigid(l2)
+      endif
+      call roundof(avail, numsta, 10, 1, nbug)  
       
+                 
       if(crigid(l2).eq. ccall) ioutiw=iw
 c
 c rrb 2009/05/31; Detailed output for structure pointer 4     
@@ -189,8 +201,8 @@ cx    write(nlog,*) ' Divrig; ichk, ioutiw, iw', ichk, ioutiw, iw
 c
 c rrb 2015/06/15; Additional detailed output        
         if(ncallx.eq.0) then
-          write(nlog,*) ' DivRig_1; ccall iw, ioutiw', ccall, iw, ioutiw
-          write(nlog,*) ' DivRig_1; nd, idivsw(nd)', nd, idivsw(nd)   
+          write(nlog,*) '  DivRig_1; ccall iw, ioutiw',ccall,iw,ioutiw
+          write(nlog,*) '  DivRig_1; nd, idivsw(nd)', nd, idivsw(nd)   
         endif     
       endif        
       
@@ -260,8 +272,8 @@ c
 c rrb 2015/06/15; Additional detailed output  
       if(ichk.eq.203 .and. ioutiw.eq.iw) then      
         if(ncallx.eq.0) then
-          write(nlog,*) ' DivRig_2; ' 
-          write(nlog,*) ' DivRig_2; nd, idivsw(nd)', nd, idivsw(nd)   
+          write(nlog,*) '  DivRig_2; ' 
+          write(nlog,*) '  DivRig_2; nd, idivsw(nd)', nd, idivsw(nd)   
         endif   
       endif  
       
@@ -454,7 +466,13 @@ c
       endif  
 
 cx    if(ichk.eq.4) write(nlog,*) ' DivRig; Exiting'
-
+c
+c ---------------------------------------------------------
+c rrb 2021/05/05; Runtime error tracking
+      if(ioutRo.eq.1) then
+        write(nlog,*) '  Divrig Out; Calling RoundOf ', crigid(l2)
+      endif
+      call roundof(avail, numsta, 10, 2, nbug)
 c
 c_____________________________________________________________
 c               Step 16; Return

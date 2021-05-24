@@ -126,7 +126,7 @@ c          endif
       write(6,310) 
       write(99,320) 
       
- 310  format('    Stopped in DnmFso',/,
+ 310  format('    Stopped in DnmFso on 2021/05/02',/,
      1       '    See the *.log file')
  320  format('    Stopped in DnmFso')
       write (6,*) 'Stop 1'

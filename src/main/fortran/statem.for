@@ -197,7 +197,7 @@ c jhb 2014/07/21 initialize this variable passed to xdebug and report
       integer, dimension(4) :: timeparts
       integer(kind=8) :: ms, dattim_ms
       character formatted_string*32
-
+c
 c _________________________________________________________
 c       Step 1; Initialize
 c
@@ -214,8 +214,8 @@ c                8 includes daily capability
 c                7 includes new binary output format
 
         ver = '16.00.48'
-        vdate = '2021/04/19'
-
+        vdate = '2021/05/22'
+c
         igui = 0
         istop = 0
         io99=99     ! unit number for error file
@@ -644,11 +644,50 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
+     1 '    - 2021/05/22 (16.00.48):',/ 
+     1 '     Runtime Error Tracking',/
+     1 '     Revised Ifrrigsp to fix an error on call Dnmfso2',/
+     1 '     Revised Divresr to set nr ',/
+     1 '       before a exit that is before call chekres',/
+     1 '     Revised Powsea to fix an error on call Checkres',/
+     1 '       missing a comma',/
+     1 '     Revised DivRes and ResRgP to initilize variable nr',/
+     1 '       before a exit that is before chekres',/ 
+     1 '     Revised DivRes to separate an if statement',/
+     1 '       to remove check for irturn(iuse) since',/
+     1 '      it only applies if a diversion (iresw=0)',/     
+c         
+     1 '    - 2021/05/15 (16.00.48):',/ 
+     1 '     Runtime Error Tracking',/
+     1 '     Revise Checkres to warn but keep running.',/
+     1 '     Revise Powsea and Powres to set nr ',/
+     1 '       before a exit that is before call chekres',/
 c
-     1 '    - 2021-03-24 (16.00.48):',/
-     1 '     Updated code based on gfortran 10.2 warnings.',/
+     1 '    - 2021/05/12 (16.00.48):',/ 
+     1 '     Runtime Error Tracking',/
+cx
+     1 '    - 2021/05/05 (16.00.48):',/
+     1 '     Updated code based on gfortran runtime errors.',/     
+     1 '     Revised mdainp, execut, virgen and xdebug to ',/
+     1 '       include new arguments to call mdainp',/
+     1 '     Revised divres and dnmfso2 to warn if a',/
+     1 '       variable is 0 or too big',/
+     1 '     Revised welrig3p to correct a typo when ',/
+     1 '       dnmfso2 is called',/
 c
-     1 '    - 2021-02-14 (16.00.47):',/
+     1 '    - 2021/05/02 (16.00.48):',/ 
+     1 '     Updated code based on gfortran runtime errors.',/ 
+     1 '     Replaced call dnmfso with call dnmfso2 in 60+',/
+     1 '       routines.',/ 
+     1 '     Revised mdainp, execut, virgen and xdebut to', 
+     1 '       include new arguments to call mdainp',/ 
+     1 '     Revised divcarl and divrig to call roundof to',/ 
+     1 '       help with runtime errors',/ 
+c
+     1 '    - 2021/04/18 (16.00.48):',/ 
+     1 '     Updated code based on gfortran 10.2 warnings.',/ 
+c
+     1 '    - 2021/02/14 (16.00.47):',/
      1 '     Revised common.inc & StateM.f to include maxcary',/
      1 '       (max # of carriers',/
      1 '     Revised Oprinp.f to check for if maxcary is exceeded',/
@@ -798,7 +837,7 @@ c
      1 '         revises Divert = To_Conduit',/
      1 '    - 2020/08/31 (16.00.39)',/ 
      1 '       Revised DivResR.f (type 32) to correct ',/
-     1 '         qdiv(22,inode)=qdiv(22,inode)+divact such that:',/
+     1 '         qdiv(22,inode)=qdiv(22,inode)+divact such that:',/                     
      1 '         if ndtype 2 (reservoir) inode = irusta(nrD)',/
      1 '         not idvsta(nrD).  Note this revises a fix included',/
      1 '         in version 16.00.38',/
@@ -806,7 +845,7 @@ c
      1 '       Perforfmed the following based on the results of ',/
      1 '        compiling with Gfortran:',/
      1 '       1. Revised DivResR.f (type 32) to correct ',/
-     1 '          qdiv(22,inode)=qdiv(22,inode)+divact such that:',/
+     1 '          qdiv(22,inode)=qdiv(22,inode)+divact such that:',/                     
      1 '          if ndtype 2 (reservoir) inode = idvsta(nrD) &',/
      1 '          if ndtype 3 (diversi0n) inode = idvsta(ndD)',/     
      1 '       2. Revised Ifrrigsp.f (type 50) to not accrue the',/
@@ -816,7 +855,7 @@ c
      1 '          South Platte application.  Specifically',/ 
      1 '          Replaced diwrreqw(nw)=diwrwx(nd)* ca with',/
      1 '                   diwrreqw(nw)=diwrreqw(nw)* ca',/
-     1 '       4. Revise Oprinp.f for a type 46 opr rule to include a',/
+     1 '       4. Revise Oprinp.f for a type 46 opr rule to include a',/ 
      1 '          do loop when checking if the rule has data that',/
      1 '          indicates it should operate less than a full',/
      1 '          month that is not supported',/     
@@ -855,7 +894,7 @@ c
      1 '         the Purgatoire only goes to Conservation (1)',/
      1 '    - 2020/05/22 (16.00.33)',/
      1 '        Revised JMStore (type 53) to store Purgatoire in',/
-     1 '        JMartins Conservation pool, not the Other pool',/
+     1 '        JMartins Conservation pool, not the Other pool',/           
      1 '    - 2020/04/26 (16.00.32)',/
      1 '        Revise JMFlow.f to all the Winter Storage season to',/ 
      1 '        go from 3/15 to 3/31.  Therefore:',/
@@ -865,7 +904,7 @@ c
      1 '        Revised JMStore (type 53) to handle a check that',/
      1 '          there is a losing reach when the min downstream',/
      1 '          flow is exactly equal to the follow at of the',/
-     1 '          Arkansas @ Las Animas gage.  Specifically:',/
+     1 '          Arkansas @ Las Animas gage.  Specifically:',/              
      1 '          Change: if(AvailX .gt. avail(ns)) then',/
      1 '          To:     if((AvailX + small) .gt. avail(ns)) then',/
      1 '    - 2020/04/14 (16.00.30)',/
@@ -900,7 +939,7 @@ c
      1 '          from RStoUse',/ 
      1 '        Revised DivrplP.f (28) DivresP.f (27) & Divcar.f(45)',/
      1 '          increment carried (qdiv(38,xx) for a reservoir',/
-     1 '          source in *.xdd)',/
+     1 '          source in *.xdd',/
      1 '        Revised DivrplP to increment',/
      1 '          From Storage to river for exchange qdiv(21, not',/
      1 '          From Storage to River for other qdiv(12',/
@@ -919,8 +958,7 @@ c
      1 '        Revised Divresp2.f to recognize a reservoir',/    
      1 '          to a carrier by default gets released from the',/
      1 '          reservoir to the river then a carrier.  Therefore',/
-     1 '          update qres(12 in order to report correctly',/
-     1 '          in *.xre',/
+     1 '          update qres(12 in order for reporting in *.xre',/
      1 '    - 2020/01/24 (16.00.23)',/
      1 '        Revise Oprinp.f & Divcarl.f (type 45) to allow a',/
      1 '          spill order by setting oprimit = 7.  Specifically',/
@@ -977,7 +1015,7 @@ c
      1 '        accounting when water is release from the plan',/
      1 '    - 2019/07/28 (16.00.13)',/
      1 '      Revised Bomsec.f & Oprinp.f to simplify WWSP plan',/
-     1 '        initialization by removing 16.00.12 edits',/
+     1 '        initilization by removing 16.00.12 edits',/
      1 '      Revised common.inc, DaySet.f and DayMon.f to include',/
      1 '         diversion to both a WWSP-Supply and direct diversion',/
      1 '      Revised Oprinp.f to check that only one DivMulti (opr',/
@@ -988,7 +1026,7 @@ c
      1 '        indicator a type 45 (divert with carrier) operating',/
      1 '        rule has been provided with a WWSP plan with a direct',/
      1 '        diversion to a WWSP for use in Bomsec.',/
-     1 '      Revised BomSec to initialize WWSP variables associated',/
+     1 '      Revised BomSec to initilize WWSP variables associated',/
      1 '        with a direct diversion (psuply and psupDD)',/
      1 '        after a multi-split type 46 operating rule fires',/
      1 '      Revised common.inc, DivcarL and Bomsec to include',/
@@ -998,7 +1036,7 @@ c
      1 '        direct diversion that is part of a WWSP Plan',/
      1 '    - 2019/07/14 (16.00.11)',/
      1 '      Revised DivMulti (type 46) to:',/
-     1 '       1. Move initialization from step 3 to step 1.5',/
+     1 '       1. Move initilization from step 3 to step 1.5',/
      1 '          to facilitate detaied output',/
      1 '       2. Correction for type 14 and 15 (again) in step 4',/
      1 '          (nr 364)',/
@@ -1020,7 +1058,7 @@ c
      1 '        to be Baseflow % only (no Enhanced %)',/
      1 '      Revised JMFlow.f (type 54) monthly model to calculate',/
      1 '        the Enhanced Baseflow % as 100 - Baseflow % and',/
-     1 '        check the ID in *.jmm equals the type 54 sourc 1 ID',/
+     1 '        check the ID in *.jmm equals the type 54 sourc 1 ID',/   
      1 '      Revised Oprinp.f to check type 53 and 54 data for:',/
      1 '       1) Type 54 is senior to type 53',/ 
      1 '       2) If a type 53 or 54 is provided then the other',/
@@ -1096,7 +1134,7 @@ c
      1 '      Increased dimension for ArkDss in Statem.f and',/
      1 '        common.inc.  Specifically:',/
      1 '        Daily delay values (maxdld) from 3660 to 7320',/
-     1 '        # of reservoir accounts (maxown) from 251 to 1001')
+     1 '        # of reservoir accounts (maxown) from 251 to 1001')    
      
  217     format(           
      1 '    - 2019/01/15 (15.00.35)',/

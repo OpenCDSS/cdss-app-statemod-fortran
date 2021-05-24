@@ -50,6 +50,8 @@ c _________________________________________________________
 c
 c               Update History
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2008/10/23; Revised to readjust when a shortage
@@ -124,7 +126,11 @@ c
      1  cwhy*48, cdestyp*12, ccarry*8, cpuse*3, csour*12,
      1  rec12*12, cTandC*3, cresid1*12, criver*12, 
      1  corid1*12, cimcd*12, subtypX*8
-
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Rivrtn'
 c _________________________________________________________      
 c
 c	              Step 1; Initialize
@@ -376,7 +382,10 @@ c		            Step 6; Find minimum flow downstream of the demand
           
       if(iout.eq.1) write(nlog,*) '  RivRtn_1; ndndX, idcdX',
      1   ndndX, idcdX 
-      CALL DNMFSO(maxsta, AVTEMP, IDNCOD, idcdX, ndndX, IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVTEMP, IDNCOD, idcdX, ndndX, IMCD)
+      CALL DNMFSO2(maxsta,AVTEMP, IDNCOD, idcdX, ndndX, IMCD,cCallBy)
       adj=avtemp(imcd)      
       adj0=adj
 c      
@@ -394,7 +403,10 @@ c
           idcd1=idvsta(ncar)
           ndnd1=NDNNOD(idcd1) 
           
-          CALL DNMFSO(maxsta, AVTEMP, IDNCOD, idcd1, ndnd1, IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx        CALL DNMFSO(maxsta, AVTEMP, IDNCOD,idcd1,ndnd1,IMCD)
+          CALL DNMFSO2(maxsta,AVTEMP, IDNCOD,idcd1,ndnd1,IMCD,cCallBy)
 c
           if(AVTEMP(imcd).lt. Adj) then
             Adj=AVTEMP(imcd)

@@ -38,6 +38,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c
+c rrb 2021/05/02; Runtime error tracking
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/12/12; Corrected a problem related to using variable
@@ -218,6 +220,12 @@ c	Dimensions
       include 'common.inc'
       character cwhy*45, cdestyp*12, cstaid1*12,
      1          rec12*12, ccarry*3, cpuse*3, cresid1*12, subtypX*8 
+c
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Divrplr'
 c
 c _____________________________________________________________
 c
@@ -1101,7 +1109,10 @@ c                21a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
          if(idcd.gt.0) then
            iss=IDcd
            NDNDS=NDND
-           CALL DNMFSO(maxsta,avail,idncod,iSS,ndndS,imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx         CALL DNMFSO(maxsta, avail,idncod,iSS,ndndS,imcd)
+           CALL DNMFSO2(maxsta,avail,idncod,iSS,ndndS,imcd,cCallBy)
            avail1=avail(imcd)
            qdiv29=qdiv(29,idcd)
 c 

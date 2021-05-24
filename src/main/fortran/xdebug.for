@@ -162,7 +162,13 @@ c               FIND THE STARTING POINT AT ALL MONTHLY INPUT DATA FILES
       I12=0
 C
       if(iout.eq.1) write(nlog,*) ' Xdebug; Calling Mdainp - 1'
-      CALL MDAINP(IIN,I12)
+c
+c rrb 2021/05/02; Runtime error tracking - Save issue
+cx      CALL MDAINP(IIN,I12)
+        itarx=0
+        iter=0
+        CALL MDAINP(IIN,I12,itarx,iter)
+cx
         if(infile.eq.0) then
           call skip(iin,2)
         endif
@@ -205,7 +211,10 @@ c 140 format('  Xdebug; Data check for Year = ', i5)
 c
 c     write(6,*) '  Xdebug; Calling mdainp'
       if(iout.eq.1) write(nlog,*) ' Xdebug; Calling mdainp - 2'
-      CALL MDAINP(IIN,I12)
+c
+c rrb 2021/05/02; Runtime error tracking - Save issue
+cx      CALL MDAINP(IIN,I12)
+        CALL MDAINP(IIN,I12,itarx,iter)
 c
 c rrb 00/02/23; Check Demand Vs Decrees Vs Capacity
       call demcons(1)

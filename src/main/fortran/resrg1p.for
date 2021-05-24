@@ -31,6 +31,7 @@ c
 c _________________________________________________________
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
 c                                
 c rrb 2021/04/18; Compiler warning
 c
@@ -63,6 +64,11 @@ c     Dimensions
 c
       include 'common.inc'
       character cwhy*45
+c
+c ---------------------------------------------------------
+c rrb 2021/05/02; Runtime error tracking
+      character cCallBy*12
+      cCallBy = 'Resrg1p'
 c
 c _________________________________________________________
 c
@@ -181,8 +187,10 @@ c       write(nlog,140)
 c _________________________________________________________
 c
 c               Step 9; Find MINIMUM FLOW AND ALLOWABLE STORAGE
-C
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD,NDNR,IMCD)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD,NDNR,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IRCD,NDNR,IMCD,cCallBy)
 C
       STOACT=AMIN1(AVAIL(IMCD),STOCFS)
       availx = avail(imcd)*fac
@@ -201,8 +209,11 @@ c _________________________________________________________
 c
 c               Step 10; CHECK AVAILABLE FLOW
 C
-      CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD  ,NDNR  ,IMCD  )
-
+c
+c rrb 2021/05/02; Runtime error tracking
+cx    CALL DNMFSO(maxsta, AVAIL ,IDNCOD,IRCD  ,NDNR  ,IMCD)
+      CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,IRCD  ,NDNR  ,IMCD,cCallBy)
+      
       IF(AVAIL(IMCD).lt.(-1.0*small)) then
         write(nlog,150) -1, iyr,mon,cstaid(ircd),iressw(nr),
      1               iw,nwrord(1,iw),l2,nr,

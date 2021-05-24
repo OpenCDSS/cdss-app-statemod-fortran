@@ -47,6 +47,8 @@ c _________________________________________________________
 c
 c     Update History
 c
+c
+c rrb 2021/05/02; Runtime Error Tracking
 c rrb 2021/04/18; Compiler warning
 c rrb 06/01/18; Copy divrig. Added daily on/off capability
 c
@@ -346,8 +348,10 @@ c
 c_____________________________________________________________
 c               Step 5; Find mininum downstream station
 c
-
-      CALL DNMFSO(maxsta,AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
+c
+c rrb 2021/05/02; Runtime Error Tracking
+cx    CALL DNMFSO(maxsta, AVTEMP,IDNCOD,ISCD,NDNS,IMCD)
+      CALL DNMFSO2(maxsta,AVTEMP,IDNCOD,ISCD,NDNS,IMCD,cCallBy)
 c
       PAVAIL=AVTEMP(IMCD)
 
@@ -478,7 +482,10 @@ c ---------------------------------------------------------
 c              Step 6f; Check if more can be diverted
 c
         if(ieffmax.eq.1) then 
-          call dnmfso(maxsta, avail ,idncod,iscd  ,ndns  ,imcd)
+c
+c rrb 2021/05/02; Runtime Error Tracking
+cx        call dnmfso(maxsta, avail ,idncod,iscd  ,ndns,imcd)
+          call dnmfso2(maxsta,avail ,idncod,iscd  ,ndns,imcd,cCallBy)
           if(avail(imcd).gt.small) then
 
             IF(-IOPOUT.eq.ISCD .or. iout.eq.1) then
@@ -540,8 +547,10 @@ c_____________________________________________________________
 c               Step 8; Double Check available flow
 c
   230 continue
-      CALL DNMFSO(maxsta, AVAIL, IDNCOD, ISCD, NDNS, IMCD)
-
+c
+c rrb 2021/05/02; Runtime Error Tracking
+cx    CALL DNMFSO(maxsta, AVAIL, IDNCOD, ISCD, NDNS, IMCD)
+      CALL DNMFSO2(maxsta,AVAIL, IDNCOD, ISCD, NDNS, IMCD,cCallBy)
       IF(-IOPOUT.eq.ISCD .or. iout.eq.1) then
         write(nlog,*) ' Divrig; Step 8 avail = ', avail(imcd)*f
       endif

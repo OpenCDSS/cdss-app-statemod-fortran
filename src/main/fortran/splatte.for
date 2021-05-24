@@ -40,6 +40,8 @@ c _________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/05/02; Runtime error tracking
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2020/07/28; Revise check if more can be diverted to not include 
@@ -982,7 +984,10 @@ c                a. FIND THE MIN AVAIL FLOW DOWNSTREAM (avail(imcd))
         if(idcd.gt.0) then
           iss=IDcd
           NDNDS=NDND
-          CALL DNMFSO(maxsta,avail,idncod,iSS,ndndS,imcd)
+c
+c rrb 2021/05/02; Runtime error tracking
+cx        CALL DNMFSO(maxsta, avail,idncod,iSS,ndndS,imcd)
+          CALL DNMFSO2(maxsta,avail,idncod,iSS,ndndS,imcd,cCallBy)
           avail1=avail(imcd)
         endif  
       
