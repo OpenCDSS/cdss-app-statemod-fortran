@@ -1341,7 +1341,7 @@ cx
   282 format(
      1  '  Note: (1) Consumptive Use (CU) = Diversion ',
      1              '(Divert) * Efficiency + From Well * Efficiency ',/
-     1  '           + max (Resevoir Evaporation (Evap), 0.0).'/,
+     1  '           + max (Reservoir Evaporation (Evap), 0.0).'/,
      1  '        (2) Loss is not part of the Stream Water Balance. ',/
      1  '            It is the portion of a diversion, well pumping ',
      1              'and reservoir seepage that does not return to ',
@@ -1372,9 +1372,9 @@ cx
      1                   f8.0,' af/yr',/
      1  '              Diversion to Carrier                      '
      1                   f8.0,' af/yr',/
-     1  '              Reservior to Carrier                      '
+     1  '              Reservoir to Carrier                      '
      1                   f8.0,' af/yr',/     
-     1  '              Reservior Release when storage change = 0 '
+     1  '              Reservoir Release when storage change = 0 '
      1                   f8.0,' af/yr',/     
      1  '              Plan Carrier                              '
      1                   f8.0,' af/yr',/     
@@ -1383,7 +1383,7 @@ cx
      1  '        (7) Divert does include diversions by a '
      1                 'administration plan.  This may be tracked ',/
      1  '            at a later date but it will require the ',
-     1                 'TsTool, a time series processor, be updated') 
+     1                 'TSTool, a time series processor, be updated') 
 
   263 format(/,'  Note: (1) Recharge = Divert + Pumping',
      1         ' - CU - Soil Moisture Change.',
@@ -1452,9 +1452,3 @@ c
 c ____________________________________________________
 c
       end
-
-
-
-
-
-

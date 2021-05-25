@@ -60,7 +60,7 @@ c               Step 1; Initialize
 
         iout = 0                                    
         if(iout.ge.1) write(io99,*)
-     1     '  Getrep; Replacement reservior provided', n,k
+     1     '  Getrep; Replacement reservoir provided', n,k
 
         irepk(n)   = k
         irepnr(n)  = iopsou(1,k)

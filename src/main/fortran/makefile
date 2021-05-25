@@ -152,9 +152,11 @@ BAD_OBJ_COUNT := $(shell file *.o | grep $(OBJ_WRONG_FILE_TYPE) | wc -l)
 #FFLAGS = -g -fbounds-check -fno-align-commons
 # use -static especially for windows compiling 
 #FFLAGS = -g -cpp -fbounds-check -fno-align-commons -static
+
 # Extra checks that can be added for deep check of code logic
 # - Steve Malers added to track down remaining issues
 FFLAGS_EXTRA_CHECKS = -fcheck=do,mem,pointer
+
 # Use -O1 -Wall to check for common warnings.
 # This generally works but has some issues at runtime that cause different results and are still being resolved
 #FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
@@ -163,11 +165,16 @@ FFLAGS_EXTRA_CHECKS = -fcheck=do,mem,pointer
 # Try removing -fno-automatic and -finit-local-zero and print warnings for code review
 # - use this periodically to improve code
 FFLAGS = -g -O1 -Wall -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
+
 #FFLAGS = -O2
-# The flags for all cases (e.g. look for system .mod files, required in gfortran)
+
+# Compiler flags for all cases (e.g. look for system .mod files, required in gfortran)
 FFLAGS += -I/usr/include
-# The libraries needed for linking
+
+# The libraries needed for linking:
+# - currently do not need because only core Fortran is used
 #LDFLAGS = -li_need_this_lib
+
 # The list of executables to be built within the package.
 PROGRAMS = statemod
 
@@ -227,7 +234,7 @@ help:
 	@echo "StateMod makefile targets:"
 	@echo ""
 	@echo "all           Default target that prints this help message."
-	@echo "checkarch     Check that object files are consistent with shell 32 or 64 bits."
+	@echo "checkarch     Check that object files are consistent with shell (32 or 64 bit)."
 	@echo "clean         Remove dynamically created files (but not final executable)."
 	@echo "help          Print this message."
 	@echo "printenv      Helper to print which operating system is used, controls configuration."
@@ -296,7 +303,7 @@ divcarr.o: common.inc
 divimpr.o: common.inc
 divimpr2.o: common.inc
 divmulti.o: common.inc
-divmultR.o: common.inc
+divmultr.o: common.inc
 divres.o: common.inc
 divresp.o: common.inc
 divresp2.o: common.inc
@@ -310,7 +317,7 @@ divrplr.o: common.inc
 dsamod.o: common.inc
 evasec.o: common.inc
 execut.o: common.inc
-FlowRes.o: common.inc
+flowres.o: common.inc
 getcall.o: common.inc
 getdiv.o: common.inc
 getdiv2.o: common.inc
@@ -337,8 +344,8 @@ ifrrig2.o: common.inc
 ifrrigsp.o: common.inc
 ifrrigx.o: common.inc
 intersup.o: common.inc
-JMFlow.o: common.inc
-JMStore.o: common.inc
+jmflow.o: common.inc
+jmstore.o: common.inc
 mdainp.o: common.inc
 oopbook.o: common.inc
 oopbook2.o: common.inc
@@ -357,7 +364,7 @@ outdivw.o: common.inc
 outgvc.o: common.inc
 outichk.o: common.inc
 outifr.o: common.inc
-OutJM.o: common.inc
+outjm.o: common.inc
 outmon.o: common.inc
 outopr.o: common.inc
 outpln.o: common.inc
@@ -386,7 +393,7 @@ outwelc.o: common.inc
 outwelp.o: common.inc
 outwr.o: common.inc
 outwr2.o: common.inc
-outWW.o: common.inc
+outww.o: common.inc
 outxss.o: common.inc
 outxssmo.o: common.inc
 planeva.o: common.inc
@@ -529,7 +536,7 @@ statemod_compile: \
 			divimpr.o \
 			divimpr2.o \
 			divmulti.o \
-			divmultR.o \
+			divmultr.o \
 			divres.o \
 			divresp2.o \
 			divresr.o \
@@ -544,7 +551,7 @@ statemod_compile: \
 			dnmfso2.o \
 			dsamod.o \
 			evasec.o \
-			FlowRes.o \
+			flowres.o \
 			getcall.o \
 			getctlc.o \
 			getdiv.o \
@@ -581,8 +588,8 @@ statemod_compile: \
 			interp.o \
 			intersup.o \
 			isleapyear.o \
-			JMFlow.o \
-			JMStore.o \
+			jmflow.o \
+			jmstore.o \
 			mdainp.o \
 			oopbook2.o \
 			oopdiv.o \
@@ -602,7 +609,7 @@ statemod_compile: \
 			outgvc.o \
 			outichk.o \
 			outifr.o \
-			OutJM.o \
+			outjm.o \
 			outmon.o \
 			outopr.o \
 			outpln.o \
@@ -628,7 +635,7 @@ statemod_compile: \
 			outwelc.o \
 			outwelp.o \
 			outwr2.o \
-			outWW.o \
+			outww.o \
 			outxss.o \
 			outxssmo.o \
 			planeva.o \

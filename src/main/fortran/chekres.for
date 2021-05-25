@@ -90,7 +90,7 @@ c rrb 2021/05/14; Runtime Error Tracking
 cx      if(nr.gt.maxres) then
         if(nr.le.0 .or. nr.gt.maxres) then 
             write(nlog,*) ' '
-            write(nlog,*) '  Chekres; Problem nr < maxres'
+            write(nlog,*) '  Chekres; Problem nr > maxres'
             write(nlog,*) '  Chekres; ',
      1      ' subtyp       isub   nr maxres'
             write(nlog,'(2a12, 20i5)') '  Chekres; ', 
@@ -155,13 +155,6 @@ c               sum of accounts
 c
 c               Problem
           if(x.gt.small2) then     
-            ! TODO smalers 2021-04-07 print out specific message during troubleshooting
-            ! - use 5-digit label starting with 99 for troubleshooting
-            if(iout.eq.1) then
-              write(nlog,99001) x, small2
-99001           format(/,' Checkres; Problem x (',f12.2,
-     +          ') > small2(',f12.2,')')
-            endif
             write(nlog,100) 'Problem ', cin, subtyp(isub), 
      1        x, iyr, mon, nr, cresid(nr), sum, cursto(nr), x
 

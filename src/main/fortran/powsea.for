@@ -23,7 +23,7 @@ c
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Powsea; It simulates a type 9 operating rule that
 c               makes a reservoir releases if contents are greater
@@ -37,13 +37,13 @@ c rrb 2021/05/22; Runtime Error Tracking
 c                 Correct error on call Chekres (change mon to mon,)
 c
 c rrb 2021/05/15; Runtime Error Tracking and
-c                 Initilize Source reservoir (nr) if
+c                 Initialize Source reservoir (nr) if
 c                 routine makes a quick exit          
 c                 
 c rrb 2021/04/18; Compiler warning
 c
 c 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
-c             From Storage to River for Exchangec Carried, Other 
+c             From Storage to River for Exchange Carried, Other 
 c
 c 2003/13/96; initialize divact, send returns to bottom & set divo
 c
@@ -55,7 +55,7 @@ c
 c 2002/10/25; Allow monthly on/off switch
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3, cstaid1*12,
@@ -70,9 +70,9 @@ c rrb 2021/04/18; Compiler warning
       rec12=rec12
 c
 c                 Detailed output
-c		                iout=1 details
-c		                iout=2 summary if ...
-c		                iout=99 summary independent of ichk
+c                   iout=1 details
+c                   iout=2 summary if ...
+c                   iout=99 summary independent of ichk
 c
 cx    if(ichk.eq.4) write(nlog,*) ' Powsea; Entering'
       divact = 0.0
@@ -114,7 +114,7 @@ c rrb 98/03/03; Daily capability
       cTandC='No'
 c
 c rrb 2021/05/15; Runtime Error Tracking.  
-c                 Initilize Source reservoir (nr) if
+c                 Initialize Source reservoir (nr) if
 c                 routine makes a quick exit          
       NR  =IOPSOU(1,L2)           
 c
@@ -126,7 +126,7 @@ c rrb 02/10/25; Allow monthly on/off switch
       endif  
 c
 c ---------------------------------------------------------
-c		For a daily model set demand for beginning of season
+c     For a daily model set demand for beginning of season
       if(iday.eq.1 .and. imonsw(l2,mon).gt.0) then
         if (idy.lt.imonsw(l2,mon)) then
           iwhy=1
@@ -136,7 +136,7 @@ c		For a daily model set demand for beginning of season
       endif  
 c
 c ---------------------------------------------------------
-c		For a daily model set demand for end of season
+c     For a daily model set demand for end of season
       if(iday.eq.1 .and. imonsw(l2,mon).lt.0) then
         if (idy.gt.iabs(imonsw(l2,mon))) then
           iwhy=1
@@ -214,7 +214,7 @@ C
       POWREL(NR) = POWREL(NR)+DIVACT
 c
 c rrb 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
-c                 From Storage to River for Exchangec, Carried, Other 
+c                 From Storage to River for Exchange, Carried, Other 
       qdiv(38,iscd) = qdiv(38,iscd) + divact  
 C
 c rrb 02/05/97; Distribute to account assigned (iopsou>0) or
@@ -284,7 +284,7 @@ cx   1                    curown,cursto,cresid)
 c
 c _________________________________________________________
 c
-c		Detailed output     
+c     Detailed output     
       if(iout.eq.99 .and. divact.lt.small) iout=98
 c     if(iout.eq.99 .and. cDest.ne.cDest1) iout=98
       if((iout.eq.2 .and. iw.eq.ioutiw) .or. iout.ge.99) then      
@@ -341,4 +341,3 @@ c               Print warning
 
       stop 
       end
-     

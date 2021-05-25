@@ -1,11 +1,13 @@
 #!/bin/sh
 
 # Create a zip file containing code, used to transfer files to Ray Bennett.
+# - only *.for, *.inc, *.bash, *.sh, and *.md files are included
+# - output filename is similar to:  statemod-16.00.48-2021-05-25-code.zip 
 
 # Main entry point for script
 
 # Get the location where this script is located since it may have been run from any folder
-scriptFolder=`cd $(dirname "$0") && pwd`
+scriptFolder=$(cd $(dirname "$0") && pwd)
 repoFolder=$(dirname "$scriptFolder")
 srcFolder="$repoFolder/src"
 srcMainFolder="${srcFolder}/main"
@@ -31,10 +33,10 @@ listFile="/tmp/statemod-code-list.txt"
 # - ignore specific files that are used in development but should not be included (can't seem to use ls -I for this so use grep)
 ls -1 fortran/*.inc fortran/*.for fortran/makefile fortran/*.bash fortran/*.sh fortran/*.md | grep -v junk-statem.for > ${listFile}
 
-zipFile="statemod-${statemodVersion}-code.zip"
+datestring=$(date +%Y-%m-%d)
 
 # Remove the file first so there is no weird merging.
-zipFile="statemod-${statemodVersion}-code.zip"
+zipFile="statemod-${statemodVersion}-${datestring}-code.zip"
 if [ -f "${zipFile}" ]; then
   echo "Removing old zip file:  ${zipFile}"
   rm "${zipFile}"

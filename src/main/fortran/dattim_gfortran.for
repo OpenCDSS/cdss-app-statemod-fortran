@@ -41,7 +41,9 @@ c
 c      Documentation
 c
 c              idat = integer array of date values
-c                     (1) = 4-digit year
+c                     (1) = 2-digit year
+c                           TODO smalers 2021-05-25 2-digit year is consistent with Lahey code
+c                           and other code will need to be implemented if 4-digit year is required
 c                     (2) = 2-digit month 1-12
 c                     (3) = 2-digit day 1-31
 c
@@ -76,7 +78,8 @@ c     Initialize
       !print '(a,2x,a,2x,a)', date, time, zone
       !print '(8i5)', values
 
-      idat(1) = values(1)
+      ! Convert 4-digit year to 2-digit
+      idat(1) = values(1)/100
       idat(2) = values(2)
       idat(3) = values(3)
 

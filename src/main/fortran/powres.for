@@ -22,7 +22,7 @@ c
 c
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Powres; It simulates a power or ISF right
 c
@@ -40,13 +40,13 @@ c
 c rrb 02/10/25; Allow monthly on/off switch
 c
 c _________________________________________________________
-c	Dimensions
+c     Dimensions
 c
       include 'common.inc'
       character cwhy*48, cdestyp*12, ccarry*3, cpuse*3 
 c
 c _________________________________________________________
-c		Step 1; Initialize
+c     Step 1; Initialize
       iw = iw
       
       iout=0
@@ -83,12 +83,12 @@ c rrb 98/03/03; Daily capability
 c
 c ---------------------------------------------------------
 c rrb 2021/05/15; Runtime Error Tracking.  
-c                 Initilize Source reservoir (nr) if
+c                 Initialize Source reservoir (nr) if
 c                 routine makes a quick exit          
       NR  =IOPSOU(1,L2)
 c _________________________________________________________
 c
-c		Step 2; Check On/Off Switches      
+c     Step 2; Check On/Off Switches      
 c
 c rrb 06/01/18; Allow daily on/off switch
       if(imonsw(l2,mon).eq.0) then
@@ -98,7 +98,7 @@ c rrb 06/01/18; Allow daily on/off switch
       endif  
 c
 c ---------------------------------------------------------
-c		For a daily model set demand for beginning of season
+c     For a daily model set demand for beginning of season
       if(iday.eq.1 .and. imonsw(l2,mon).gt.0) then
         if (idy.lt.imonsw(l2,mon)) then
           iwhy=1
@@ -108,7 +108,7 @@ c		For a daily model set demand for beginning of season
       endif  
 c
 c ---------------------------------------------------------
-c		For a daily model set demand for end of season
+c     For a daily model set demand for end of season
       if(iday.eq.1 .and. imonsw(l2,mon).lt.0) then
         if (idy.gt.iabs(imonsw(l2,mon))) then
           iwhy=1
@@ -120,7 +120,7 @@ c		For a daily model set demand for end of season
 C
 c _________________________________________________________
 c
-c		Step 3; Set SOURCE (RESERVOIR) data
+c     Step 3; Set SOURCE (RESERVOIR) data
 C
       NR  =IOPSOU(1,L2)
       IF(IRESSW(NR).EQ.0) then
@@ -135,8 +135,8 @@ C
 c
 c ---------------------------------------------------------
 c rrb 2006/08/19; Check reservoir data going in
-c		Not in1=1 intosubroutine      
-c		isub1=subroutine calling
+c     Not in1=1 into subroutine      
+c       isub1=subroutine calling
       in1=0
       isub1=1
       call chekres(nlog, maxres, in1, isub1, iyr, mon, nr,nowner,
@@ -145,7 +145,7 @@ c		isub1=subroutine calling
 C
 c _________________________________________________________
 c
-c		Step 4; Set DESTINATION (Isf) data
+c     Step 4; Set DESTINATION (Isf) data
       NF  =IOPDES(1,L2)
       IFCD=IFRSTA(NF)
 c
@@ -164,12 +164,12 @@ c
 c
 c _________________________________________________________      
 c
-c		Step 5; Set demand
+c     Step 5; Set demand
       DIVALO=FLOWRQ(NF)
 C
 c _________________________________________________________
 c
-c		Step 6; CALCULATE VOLUME AVAILABLE FROM RESERVOIR
+c     Step 6; CALCULATE VOLUME AVAILABLE FROM RESERVOIR
 C
       RESAVL=AMIN1(CURSTO(NR)-VOLMIN(NR),CUROWN(IOWN))
       RESAVL=AMAX1(0.,RESAVL)
@@ -177,14 +177,14 @@ C
 C
 c _________________________________________________________
 c
-c		Step 7; CALCULATE River CAPACITY 
+c     Step 7; CALCULATE River CAPACITY 
 C
       FLOAVL=AMAX1(FLOMAX(NR)-RIVER(IFCD),0.)
       IF(FLOAVL.LE.small) Goto 130
 C
 c _________________________________________________________
 c
-c		Step 8; CHECK AVAILABLE WATER AT RESERVOIR
+c     Step 8; CHECK AVAILABLE WATER AT RESERVOIR
 C
 c     IF(RAVCFS.LE.0.00001) Goto 130
       IF(RAVCFS.LE.small) Goto 130
@@ -192,7 +192,7 @@ C
 C
 c _________________________________________________________
 c
-c		Step 9; Set release
+c     Step 9; Set release
       IF(FLOAVL.LE.RAVCFS) GO TO 100
 C
 C------  MIN VOL IS LIMITING 
@@ -206,9 +206,9 @@ C
 C
 c _________________________________________________________
 c
-c		Step 10; Adjust River and Avail. Note
-c			Avail at RES avail(iscd) is not adjusted
-c			Avail at ISF avail(ifcd) is not adjusted
+c     Step 10; Adjust River and Avail. Note
+c       Avail at RES avail(iscd) is not adjusted
+c       Avail at ISF avail(ifcd) is not adjusted
 c rrb 05/03/29; Key avail at the ISF (avail(ifcd) has not increased. 
 C
   110 TEMP=-DIVACT
@@ -220,35 +220,35 @@ C
 c      
 c _________________________________________________________
 c
-c		Step 11; Adjust
+c     Step 11; Adjust
 c                                 
 c rrb 2021/04/18; Compiler warning                                
 cx120 RELAF=DIVACT*fac  
       RELAF=DIVACT*fac 
 c
-c		a. Reservoir
+c     a. Reservoir
       CURSTO(NR  )=CURSTO(NR  )-RELAF
       PROJTF(NR  )=PROJTF(NR  )+DIVACT
       CUROWN(IOWN)=CUROWN(IOWN)-RELAF
 c     IF(IOWNA.NE.IOWN) QMAINS(2,IOWNA)=QMAINS(2,IOWNA)-RELAF
 C
-c		b. Demand
+c     b. Demand
       FLOWRQ(NF  )=FLOWRQ(NF  )-DIVACT
 c
-c		c. Stream
+c     c. Stream
       QRES(12,NR)=QRES(12,NR)+RELAF
       QDIV(15,IFCD)=QDIV(15,IFCD)+DIVACT
 c
-c		d. Accounts
+c     d. Accounts
       accr(12,iown) = accr(12,iown)+relaf
 c
-c		e. Operating rule
+c     e. Operating rule
  130  divo(l2)=divo(l2)+divact
       divactx=divact
 c
 c _________________________________________________________
 c
-c               Step 15.  Detailed output
+c     Step 15.  Detailed output
       if(iout.eq.1 .and. iw.eq.ioutiw) then
         ncallX=ncallX+1
         if(ncallX.eq.1)then
@@ -266,8 +266,8 @@ c          write(nlog,*) ' '
 c
 c ---------------------------------------------------------
 c rrb 2006/08/19; Check reservoir data going in
-c		Not in1=1 out of a subroutine      
-c		isub1=subroutine calling
+c                 Not in1=1 out of a subroutine      
+c                   isub1=subroutine calling
       in1=1
       isub1=1
       call chekres(nlog, maxres, in1, isub1, iyr, mon, nr,nowner,
@@ -295,6 +295,3 @@ c _________________________________________________________
 c
       RETURN
       END
-
-
-

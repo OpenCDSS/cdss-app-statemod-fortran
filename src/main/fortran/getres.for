@@ -21,7 +21,7 @@ c
       SUBROUTINE GetRes(IIN, inx, numstax)
 c
 c _________________________________________________________
-c	      Program Description
+c       Program Description
 c
 c       GetRes; it reads in reservoir data
 c _________________________________________________________
@@ -35,11 +35,11 @@ c rrb 2021/04/18; Compiler warning
 c rrb 2006/04/04; Add ability to read Reservoir Return flow file for
 c                 seepage fate
 c rrb 2004/09/07; Revise diversions to allow multiple owners
-c		              ndown. Note multiple users are still not allowed
+c                 ndown. Note multiple users are still not allowed
 c rrb 2003/08/18; Revise to allow random file read
 c
 c rrb 1999/09/15; Revised instream flows to allow monthly data
-c rrb 2000/05/30; Revised to allow Irrigation Water Req. data for
+c rrb 2000/05/30; Revised to allow Irrigation Water Requirement data for
 c                 demand information
 c rrb 2000/11/10; Revised to read itsfile; annual time series code
 c rrb 2000/12/04; Revised to add ieffmax; variable efficiency code
@@ -48,7 +48,7 @@ c
 c
 c _________________________________________________________
 c
-c	    Documentation
+c           Documentation
 c
 c               iin  =   response file #
 c               inx  =   switch
@@ -64,7 +64,7 @@ c                       6 Daily data (daydist)
 c                       7 Return flow data (closs via mdainp or datest)
 c                       8 Print detailed daily baseflow data to *.xtp
 c                       9 Reoperation information from Execut
-c		       10 Details on reading operating right data 
+c                      10 Details on reading operating right data 
 c                      20 Override daily ID data for testing (GetRes)
 c                      24 Detailed results of opr rule 24 (downstream
 c                         call)
@@ -79,7 +79,7 @@ c                      92 Print detailed soil moisture data (soilm)
 c                      99 Enter water right id for call information
 c                     100+n Print water right n (see *.xwr for a number)  
 c _________________________________________________________
-c	Dimensions
+c     Dimensions
 c
       include 'common.inc'
 c
@@ -114,8 +114,8 @@ c rrb 2021/04/18; Compiler warning
 c
 c               Read Reservoir Station (*.res) 
 c
-c		              iout =1 print reservoir details
-c		                   =2 print reservoir return flow details
+c                 iout =1 print reservoir details
+c                      =2 print reservoir return flow details
 c                 ioutR=1 print reservoir owner data (nowner)
       iout=0
       ioutR=0
@@ -154,7 +154,7 @@ C
 c
 c _________________________________________________________
 c
-c		Open input file
+c     Open input file
 cx280 write(nlog,103)
       write(nlog,103)
       write(6,103)
@@ -173,7 +173,7 @@ c       write(nlog,*) ' GetRes; filena   = ', filena
         READ(IIN,930,end=926,err=928) FILENA
       endif
 c
-c		Allow no file to be provided
+c     Allow no file to be provided
       if(filena(1:2).eq.'-1') then
         write(nlog,*) ' GetRes; FYI no reservoir data provided'
         numres=0
@@ -182,7 +182,7 @@ c		Allow no file to be provided
 c
 c _________________________________________________________
 c
-c		Add path to input file
+c     Add path to input file
       
       call putpath(maxfn, filena, fpath1)
       open(3, file=filena,status='old',err=1410)
@@ -224,7 +224,7 @@ cx          read(rec4,'(a4)') resnam(j,nr)
 cx        end do  
         
 c
-c		Exit if blank
+c       Exit if blank
         if(cresid(nr).eq.blank) goto 430
 c
 c rrb 04/25/97; Daily model 0 implies daily = monthly
@@ -260,7 +260,7 @@ c               Therefore stop if sample gage is provided.
           endif
         endif
 c
-c rrb 12/12/94; Code Enhansement;     
+c rrb 12/12/94; Code Enhancement;     
 c               Set default administration date to Nov 1
         if(rdate(nr).eq.0) rdate(nr)=11
  
@@ -286,7 +286,7 @@ c _________________________________________________________
      2    flomax(nr),deadst(nr),nowner(nr+1),
      3    nevapo(nr+1),nprecp(nr+1),nrange(nr)
 c
-c		Echo input        
+c       Echo input        
         if(iout.eq.1) then
           write(nlog,1050)
      1    volmin(nr),volmax(nr),
@@ -352,7 +352,7 @@ C
           CURSTO(NR)=CURSTO(NR)+CUROWN(J)
           ctot = ctot+ownmax(j)                       
 c
-c rrb 2021/04/18; Compiler warningc
+c rrb 2021/04/18; Compiler warnings
 cx        if(ifix(pcteva(j)).ge.0)  sum=sum+amax1(0.,pcteva(j))
           if(ifix(pcteva(j)).ge.0)  sum=sum+max(0.,pcteva(j))
           if(abs(pcteva(j)).lt.small) iwarnx=1
@@ -404,7 +404,7 @@ c rrb 2006/05/30; Additional check
       
 c
 c rrb 01/08/21; Check than there is not a mix of % data and 
-c               porportinal (pcteva()=0)
+c               proportional (pcteva()=0)
       if(sum.gt.small .and. iwarnx.eq.1) then
         write(6,1110) cresid(nr), sum
         write(nlog,1110) cresid(nr), sum
@@ -412,7 +412,7 @@ c               porportinal (pcteva()=0)
       endif
 
 C
-c		Remove dead storage from the reservoir and
+c               Remove dead storage from the reservoir and
 c               last account
 c
 cr    IF(IRESSW(NR).NE.2) Goto 330
@@ -441,7 +441,7 @@ C
 c
 c _________________________________________________________
 c
-c		Read evap or net evap data
+c     Read evap or net evap data
       read(3,'(a256)') recin
       if(iout.eq.1) write(nlog,*) ' GetRes; Evap Data Read = ', recin
       backspace 3
@@ -476,7 +476,7 @@ cx360 JI=NUMRAI-NPRECP(NR+1)+1
 c
 c _________________________________________________________
 C
-c		Read Precipitation data
+c     Read Precipitation data
       if(iout.eq.1) write(nlog,*) 
      1  '  GetRes; Res Precipitation read; ', ji,je
       DO 370 J=JI,JE
@@ -486,7 +486,7 @@ c		Read Precipitation data
 c
 c _________________________________________________________
 c
-c		READ RESERVOIR AREA/CAPACITY CURVE
+c     READ RESERVOIR AREA/CAPACITY CURVE
       NRA=NRANGE(NR)
       
       do 380 irg=1,nra
@@ -577,12 +577,12 @@ c rrb 2021/03/20; Compiler Update
 c
 c _________________________________________________________
 c
-c		Close input file
+c     Close input file
       close (3)
 c
 c _________________________________________________________
 C
-C		CHECK IF THERE IS ANY ACTIVE RESERVOIR
+C     CHECK IF THERE IS ANY ACTIVE RESERVOIR
 C
       NRSACT=0
 C
@@ -591,7 +591,7 @@ C
 c
 c _________________________________________________________
 c
-c		Initialize selected variables
+c     Initialize selected variables
       DO 450 NR=1,NUMRES
       IF(IRESSW(NR).NE.0) NRSACT=NRSACT+1
   450 CONTINUE
@@ -628,7 +628,7 @@ c rrb 2021/05/14; Runtime Error Tracking
 cx
       end do
 c
-c		
+c
       NEVAPO(1)=1
       DO NR=1,NUMRES
         NEVAPO(NR+1)=NEVAPO(NR+1)+NEVAPO(NR)
@@ -649,7 +649,7 @@ c
 c _________________________________________________________
 c
 c               Step X; Get Reservoir return flow data (*.rrf)
-c               NOte: Originally developed for Recharge Plans
+c               Note: Originally developed for Recharge Plans
 c               but works generically to route seepage
 c               to the stream as a return flow 
 c
@@ -739,7 +739,7 @@ cx        endif
 cx      end do
 cxc
 cxc rrb01/10/08; Check dimension all return flow data, where all
-cxc		includes diversions, wells and reservoirs
+cxc              includes diversions, wells and reservoirs
 cx      if(nstrtn.gt.maxrtnA) then
 cx        write(nlog,1021) nstrtn, maxrtnA
 cx        goto 9999
@@ -800,7 +800,7 @@ c
       goto 9999
 c
 c _________________________________________________________
-c		Formats
+c      Formats
 
   930  FORMAT(A256)
   940  format(4x, a256)
@@ -831,7 +831,7 @@ cx     1  ' recommend you revise the common block size')
      1  '    but initial content of           ', f12.0)
      
  1110  FORMAT(/,
-     1   '  GetRes; Warning Reservor ID ',a12,/
+     1   '  GetRes; Warning Reservoir ID ',a12,/
      1   '          Has a precip type total = ', f12.2,/,
      1   '          Note: Total of non negatives should be 0 for',/
      1   '          proration or 100% for percentage approach.',/
@@ -909,7 +909,7 @@ cx 1432 format(3i8, f8.0)
  1470  format(/,72('_'),/
      1   ' GetRes; Problem',
      1   ' two reservoirs at the same river node',/
-     1   '         Reservor IDs = ', a12, 1x, a12)
+     1   '         Reservoir IDs = ', a12, 1x, a12)
 c
 c               Error Tracking
 c _________________________________________________________

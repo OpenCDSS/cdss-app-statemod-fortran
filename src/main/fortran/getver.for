@@ -20,14 +20,13 @@ c_________________________________________________________________NoticeEnd___
 c
       subroutine GetVer(nlog, iin2, nfmt, filena)
 c
-c		nlog = log file
-c		iin2 = input file #
-c		nfmt = format #
-c		filena = filename
+c        nlog = log file
+c        iin2 = input file #
+c        nfmt = format #
+c        filena = filename
 c      
       
       character rec132*132, filena*256, rec1*1, rec18*18
-      
       
       iout=0  
 c
@@ -68,12 +67,12 @@ c     nfmt=1
       
 c
 c _________________________________________________________      
-c		Error Processing
+c     Error Processing
   400 write(nlog,410) 
   410 format(/,
      1 72('_'),/
      1 '  GetVer; Problem reading version number',/ 
-     1 '    Reconmend you check the format looks like the',
+     1 '    Recommend you check the format looks like the',
      1    ' following (note no =)',/,
      1 '    #FileFormatVersion 2 or # FileFormatVersion')
       goto 9999      

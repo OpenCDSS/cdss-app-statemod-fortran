@@ -1259,7 +1259,7 @@ c 262 format(70x, f12.0,' (6)',/ 70x, ' ___________',/,70x, f12.0,//,
   282 format(
      1  '  Note: (1) Consumptive Use (CU) = Diversion ',
      1              '(Divert) * Efficiency + From Well * Efficiency ',/
-     1  '           + max (Resevoir Evaporation (Evap), 0.0).'/,
+     1  '           + max (Reservoir Evaporation (Evap), 0.0).'/,
      1  '        (2) Loss is not part of the Stream Water Balance.',/
      1  '            It is the portion of a diversion, well pumping',/
      1  '            and reservoir seepage that does not return to',/
@@ -1278,7 +1278,7 @@ c 262 format(70x, f12.0,' (6)',/ 70x, ' ___________',/,70x, f12.0,//,
      1  '            accounting with reservoir storage as follows:',/
      1  '              1 ', f8.0,' af/yr for Diverted to Storage.',/
      1  '              2 ', f8.0,' af/yr for a Diversion Carrier.',/
-     1  '              3 ', f8.0,' af/yr for a Reservior Carrier.',/
+     1  '              3 ', f8.0,' af/yr for a Reservoir Carrier.',/
      1  '              4 ', f8.0,' af/yr for a Plan Carrier.',/
      1  '                ', f8.0,' af/yr Total',/
      1  '        (7) For Reach processing only, Stream Inflow ',
