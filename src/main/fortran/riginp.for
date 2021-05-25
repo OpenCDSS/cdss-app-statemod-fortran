@@ -75,7 +75,7 @@ c
       write(6,*) ' Subroutine Riginp'
 c
 c		ioutR	= 1 print reservoir read
-c		ioutR   = 2 print reservior right distribution data
+c		ioutR   = 2 print reservoir right distribution data
 c               ioutD = 1 print *.ddr read      
       ioutR=0
       ioutD=0
@@ -397,7 +397,7 @@ c               a right is on (irsrsw(k) = 1) &
 c               a right is a first fill (n2fill(k) =1) &
 c               a right goes to 1 account (ichk1.eq.0).gt.0) &
 c               it is not an OOP right (ityrsr.eq.1) &
-c               a resevoir has multiple accounts (nowner(nr+1) - (nr)),
+c               a reservoir has multiple accounts (nowner(nr+1) - (nr)),
 c                          Print warning
         if(ioutR.eq.2) write(nchk,*) ' Riginp; ',
      1    irsrsw(k), n2fill(k), ione, ityrsr(k),nowner(nr+1)-nowner(nr)
@@ -934,7 +934,7 @@ c 480 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), 20i8)
   486 format(/,
      1  72('_'),//       
      1    '  Riginp; Problem; an OOP reservoir right must have',/
-     1    ' the variable copid tied to an opeating rule ID',/
+     1    ' the variable copid tied to an operating rule ID',/
      1    '          Resrvoir ID = ',a12, ' Right    ID = ',a12,/
      1    ' has Operating rule ID (copid) = ', a12)
 

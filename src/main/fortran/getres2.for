@@ -819,7 +819,7 @@ cx
      1  '    but initial content of           ', f12.0)
      
  1110  FORMAT(/,
-     1   '  GetRes2; Warning Reservor ID ',a12,/
+     1   '  GetRes2; Warning Reservoir ID ',a12,/
      1   '          Has a precip type total = ', f12.2,/,
      1   '          Note: Total of non negatives should be 0 for',/
      1   '          proration or 100% for percentage approach.',/
@@ -897,7 +897,7 @@ cx 1432 format(3i8, f8.0)
  1470  format(/,72('_'),/
      1   ' GetRes2; Problem',
      1   ' two reservoirs at the same river node',/
-     1   '         Reservor IDs = ', a12, 1x, a12)
+     1   '         Reservoir IDs = ', a12, 1x, a12)
 c
 c               Error Tracking
 c _________________________________________________________

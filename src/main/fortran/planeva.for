@@ -267,7 +267,7 @@ c               Formats
      1 ' PlanEva;',/
      1 'Problem with Operating right ID = ', a12, ' Type = ',i2,/      
      1 '          Reservoir plan ',a12,
-     1 '          it is not tied to a reservor, nr = ', i5,/
+     1 '          it is not tied to a reservoir, nr = ', i5,/
      1 '          Reconmend you revise the plan type or ',/
      1 '          turn the plan off if not used')
  

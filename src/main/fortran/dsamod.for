@@ -27,7 +27,7 @@ c
 c
 c _____________________________________________________________
 c	Program Description
-c	    It calculates the Modified Direct Solution Algorythm  
+c	    It calculates the Modified Direct Solution Algorithm  
 c	    Specifically it esitmates the diversion (divact) and
 c	    minimum available flow (pavail) given the demand (divalo)	
 c

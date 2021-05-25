@@ -89,7 +89,7 @@ c
           backspace(nf)
         endif        
 c
-c rrb 2021/04/18; Compiler not used or initilized    
+c rrb 2021/04/18; Compiler not used or initialized    
 
 cx500   format(a1)
  999    return

@@ -106,7 +106,7 @@ c
 c                                                                    
 c_________________________________________________________________   
 c                                                                    
-c       Initilize
+c       Initialize
 c
 c       Update History                                               
 c                                                                    
