@@ -192,25 +192,6 @@ c rrb 2009/05/31; Detailed output for structure pointer 4
 cx        ichk=203
 cx        ioutiw=iw
       endif    
-      
-cx    write(nlog,*) ' Divrig; ichk, ioutiw, iw', ichk, ioutiw, iw  
-      
-      if(ichk.eq.203 .and. ioutiw.eq.iw) then
-        iout=2
-        ioutIN=2
-c
-c rrb 2015/06/15; Additional detailed output        
-        if(ncallx.eq.0) then
-          write(nlog,*) '  DivRig_1; ccall iw, ioutiw',ccall,iw,ioutiw
-          write(nlog,*) '  DivRig_1; nd, idivsw(nd)', nd, idivsw(nd)   
-        endif     
-      endif        
-      
-      cCallBy='DivRig      '
-      corid1=crigid(l2)
-
-cx    if(ichk.eq.94) write(nlog,*) ' DivRig; Entering'
-c
 c
 c ---------------------------------------------------------
 c rrb 2006/10/31; Daily capability
@@ -219,7 +200,32 @@ c     f = mthday(mon) * factor
         fac=mthday(mon)*factor
       else
         fac=factor
-      endif   
+      endif 
+c ---------------------------------------------------------
+c      
+cx    write(nlog,*) ' Divrig; ichk, ioutiw, iw', ichk, ioutiw, iw  
+      
+      if(ichk.eq.203 .and. ioutiw.eq.iw) then
+        iout=2
+        ioutIN=2
+c
+c rrb 2015/06/15; Additional detailed output        
+        if(ncallx.eq.0) then
+          write(nlog,*) ' DivRig_1; ccall iw, ioutiw ',ccall,iw,ioutiw
+          write(nlog,*) ' DivRig_1; nd, idivsw(nd) ', nd, idivsw(nd)  
+c
+c rrb 2021/05/30; Runtime Error  
+          write(nlog,*) ' DivRig_1; l2, dcrdiv(l2), divd(l2), delta' 
+          write(nlog,*) ' DivRig_1;',l2, dcrdiv(l2)*fac, divd(l2)*fac, 
+     1                     (dcrdiv(l2)-divd(l2))*fac
+        endif     
+      endif        
+      
+      cCallBy='DivRig      '
+      corid1=crigid(l2)
+
+cx    if(ichk.eq.94) write(nlog,*) ' DivRig; Entering'
+c
 c
 c ---------------------------------------------------------
 c		Miscellaneous Initialization

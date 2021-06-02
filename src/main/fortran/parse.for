@@ -378,7 +378,7 @@ c               Step 10;  Print help data
 c
 c
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx190   if(ioptio.eq.6) then
         if(ioptio.eq.6) then
 c         open(99,file='statem.log', status='unknown')
@@ -464,7 +464,7 @@ c               Formats
 c
   100   format('  Parse; Command line argument: ',/, 2x, a127)
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx101   format(i1)
   
   192  format(2x, a10, ' or ', a10)

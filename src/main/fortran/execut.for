@@ -824,6 +824,12 @@ c     Step X; Month Loop
 c     write(6,*) ' '
       DO 1100 MON=1,12
 c
+c rrb 2021/05/30; Runtime Check       
+        if(ichk.eq.4 .and. mon.ge.3) then
+          write(nlog,*) '  Execut; Stoppin in month 2'
+          stop
+        endif
+c
 c rrb 2019/07/21; Print to log beginning of every month
         if(ichk.ge.90) write(nlogx,540) iyrmo(mon), xmonam(mon)
 cx      write(nlogx,540) iyrmo(mon), xmonam(mon)
@@ -1092,7 +1098,7 @@ c           Instream Flow Operation with or without reach option
               call ifrrig2(iw,l2,ncall(101))
             endif
 c_______________________________________________________________________
-c rrb 2011/05/07; Detailed output        
+c rrb 2011/05/07; Detailed output for an ISF right       
             if(ichk.eq.94 .or. ichk.eq.4) then
 c
 c rrb 2021/03/20; Correction            
@@ -1145,7 +1151,7 @@ c           Note dcall1 is set in bomsec or dayest
 c_______________________________________________________________________
             CALL RESRG1(IW,L2,divx,short,ncall(102))
 c_______________________________________________________________________
-c rrb 2011/05/07; Detailed output        
+c rrb 2011/05/07; Detailed output for a reservoir right        
             if(ichk.eq.94 .or. ichk.eq.4) then
               udem=short/fac
 c
@@ -1207,7 +1213,7 @@ c           Call Divrig to divert water
             if(ichk.eq.94) write(nlogx,*)
      1        ' Execut; Back From Divrig', ireop
 c_______________________________________________________________________
-c rrb 2011/05/07; Detailed output        
+c rrb 2011/05/07; Detailed output for a diversion right       
             if(ichk.eq.94 .or. ichk.eq.4) then
 c
 c rrb 2021/03/20; Correction            
@@ -1235,7 +1241,7 @@ cx              write(nlogx,*) ' Execut; Calling SPlatte ',nd, iuse,
 cx   1          divreq1*fac, l2, rdvnk(l2),  isp1, ropnk(isp1)           
                 CALL SPlatte(IW,isp1,l2,ISHORT,nd,divactx,ncall(140))  
 c_______________________________________________________________________
-c rrb 2011/05/07; Detailed output  
+c rrb 2011/05/07; Detailed output for South Platte 
                 if(ichk.eq.94 .or. ichk.eq.4) then 
                   divsum1=divsum+divactx*fac
 c
@@ -1457,22 +1463,30 @@ c
 c              Type 6. Transfer from reservoir to reservoir by carrier
 c               (aka bookover)   Note: No returns !
   240 continue
-      if(ichk.eq.94) write(nlogx,*) ' Execut; Call 6-RsSpu',corid(l2)  
+c
+c rrb 2021/05/30; Runtime Check 
+cx    if(ichk.eq.94) write(nlogx,*) ' Execut; Call 6-RsSpu',corid(l2)
+cx    if(ichk.eq.94 .or. ichk.eq.4) then
+cx      write(nlogx,*) ' Execut; Call 6-RsSpu',corid(l2)
+cx    endif  
 c
 c rrb 2015/07/08; Add capability to not call this iteration based 
 c                 on user provided data (See documentation for
 c                 Type 6 operating rule)
         CALL RSRSPU(IW,L2,ncall(6))
 c
-c rrb 2015/07/30; Add detailed output
-      if(ichk.eq.94 .or. ichk.eq.4) then  
-        rec12b='Opr Rule    '
-        call outIchk(
-     1    ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac, 
-     1    uDem, divact2, divx, divsum, 4, divact2, rec12b) 
-      endif       
-        
-      goto 410
+c rrb 2015/07/30; Add detailed output for a type 6 operating rule
+c rrb 2015/05/30; This was revised and is now reported with other
+c                 operating rules below if sent to 400
+cx     if(ichk.eq.94 .or. ichk.eq.4) then  
+cx        rec12b='Opr Rule    '
+cx        call outIchk(
+cx     1    ichkX, ichk4n, l1, l2, iw, ityopr(l2), ishort, fac, 
+cx     1    uDem, divact2, divx, divsum, 4, divact2, rec12b) 
+cx      endif 
+cx             
+cx    goto 410
+      goto 400
 c
 c_______________________________________________________________________
                       
@@ -2149,7 +2163,7 @@ c               Call Welrig
         endif  
 c
 c ---------------------------------------------------------
-c rrb 2011/05/07; Detailed output        
+c rrb 2011/05/07; Detailed output for a well water right      
       if(ichk.eq.94 .or. ichk.eq.4) then
 c
 c rrb 2021/03/20; Correction            
@@ -2190,7 +2204,7 @@ c                       Note divsum is in af
 c
 c_______________________________________________________________________
 c
-c      Step X; Detailed Operating Data (ichk=4 or 94)
+c      Step X; Detailed Output for an Operating Rule (ichk=4 or 94)
 c rrb 2011/04/25; Limit output for ichk=4  
       if(l1.eq.5 .and. (ichk.eq.94 .or. ichk.eq.4)) then   
 c

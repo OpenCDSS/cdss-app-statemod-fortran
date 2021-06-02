@@ -107,7 +107,7 @@ c
 c _________________________________________________________
  100  format(/
      1  ' Call Summary',/
-     1  ' Note: The calling right is estimated to be the most senior ',/
+     1  ' Note: The calling right is estiamted to be the most senior ',/
      1  '       water right at the calling location that is shorted.',/
      1  '       If none is reported (NA) it typically occurs when a',/
      1  '       structure is diverting at a carrier location, not its',/

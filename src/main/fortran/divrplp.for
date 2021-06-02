@@ -73,7 +73,7 @@ c                 DivImpR (type 35) to avoid error in *.xwb
 c
 c rrb 2020/11/22; Increment qdiv(38 to show water to a
 c                 diversion, reservoir, plan or ISF as
-c                 Carried, exchanged or other but not used to
+c                 Carried, exchaged or other but not used to
 c                 calculate divert from stream in outmon
 c
 c rrb 2020/11/08 StateMod 16.00.44ab
@@ -1668,7 +1668,7 @@ c       DIVREQ(IUSE)=DIVREQ(IUSE)-divact
 c
 c ----------------------------------------------------------------
 c rrb 2020/11/22; Increment qdiv(38 to show water to a plan as
-c                 Carried, exchanged or other but not used to
+c                 Carried, exchaged or other but not used to
 c                 calculate River Divert
         if(ncarry.eq.0) then
           qdiv(38,idcd) = qdiv(38,idcd)+DIVACT
@@ -1752,7 +1752,7 @@ c
 c ----------------------------------------------------------------
 c rrb 2020/11/22; 
 c               20b2. Increment qdiv(38 to show water to a plan as
-c                 Carried, exchanged or other but not used to
+c                 Carried, exchaged or other but not used to
 c                 calculate divert in outmon
         qdiv(38,idcd) = qdiv(38,idcd)+DIVACT
             
@@ -1789,7 +1789,7 @@ c
 c ---------------------------------------------------------
 c rrb 2020/11/22; 
 c               20c2. Increment qdiv(38 to show water to a plan as
-c                 Carried, exchanged or other but not used to
+c                 Carried, exchaged or other but not used to
 c                 calculate divert in outmon
         qdiv(38,idcd) = qdiv(38,idcd)+DIVACT
 c
@@ -1830,7 +1830,7 @@ c
 c ----------------------------------------------------------------
 c rrb 2020/11/22; 
 c               20d2. Increment qdiv(38 to show water to a plan as
-c                 Carried, exchanged or other but not used to
+c                 Carried, exchaged or other but not used to
 c                 calculate divert in outmon
         qdiv(38,idcd) = qdiv(38,idcd)+DIVACT
 cx      endif    
@@ -1939,7 +1939,7 @@ c
 
 c
 c ---------------------------------------------------------
-c rrb 2020/03/01; Revise reservoir reporting in *.xdd at the
+c rrb 2020/03/01; Revise reservior reporting in *.xdd at the
 c                 source qres(xx,nsr).  
 c                 By Default; reservoir to carrier goes 
 c                 to the river first. 

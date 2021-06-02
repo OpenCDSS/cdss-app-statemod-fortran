@@ -22,10 +22,20 @@ c_________________________________________________________________NoticeEnd___
      1           ichkX, ichk4n, l1, l2, iw, itypeX, ishort, fac,
      1           uDem, divactx, divX, divsum, ichk9, div9, rec12b)  
 c
+c
+c _________________________________________________________
+c	     Program Description
+c
 c	OutIchk; It prints detailed data for various values of Ichk
-c      
-c         Called by Execut.
-
+c          Called by Execut.
+c _________________________________________________________
+c      Update History
+c
+c rrb 2021/05/02; Runtime Error Tracking
+c 
+c_____________________________________________________________
+c	    Documentation
+c
 c     uDem = unmet demand (cfs)  
 c     Divactx = diversion by an operating rule
 c     DivX    = diversion by a non operating rule
@@ -46,7 +56,8 @@ c
 c rrb 2021/04/18; Compiler warning
       real*8 cpri
       ishort=ishort
-      udem=udem      
+      udem=udem  
+      div1=0.0    
 c
 c
 c rrb 2015/06/25; Add code to limit the volume of output when
@@ -83,11 +94,18 @@ cx        if(iw.eq.1 .and. iwx.eq.1) write(nlog,200) ichk
               ctype='Operating Rule'              
               rec12=corid(l2)
               cpri=ropnk(l2)
+c
+c rrb 2021/05/30; Runtime Error Tracking
+              div1=divo(l2)
+                            
               write(nlog,210) ichk4n, iyrmo(mon),xmonam(mon),
      1          idy,iwx,iw, 
      1          ctype, itypeX, rec12, cpri, -1., -1.,
      1          dem1*fac, divactx*fac, divreqx*fac, divchk*fac,
-     1          divsum, ireop, ichkX, 18, divo(18)*fac
+c
+c rrb 2021/05/02; Runtime error tracking
+cx   1          divsum, ireop, ichkX, 18, divo(18)*fac
+     1          divsum, ireop, ichkX, l2, div1*fac
            else
               rec12='NA'
               cwr=-1.0
@@ -100,6 +118,9 @@ cx        if(iw.eq.1 .and. iwx.eq.1) write(nlog,200) ichk
                 cpri=rfrnk(l2)
                 divreqx=flowr(mon,nf) 
                 dem1=flowrq(nf)
+c
+c rrb 2021/05/30; Runtime Error Tracking
+               div1=divd(l2)                
               endif
 c              
 c ---------------------------------------------------------              
@@ -113,7 +134,10 @@ c		Reservoir
 cx              divreqx=udem
                 divreqx=-1./fac
                 dem1=(VOLMAX(NR)-CURSTO(NR))/fac
-              endif  
+c
+c rrb 2021/05/30; Runtime Error Tracking
+               div1=divr(l2)
+             endif  
 c              
 c ---------------------------------------------------------              
 c		Diversion
@@ -126,6 +150,9 @@ c		Diversion
                 IUSE=NDUSER(ND)+IDIVCO(2,L2)-1              
                 divreqx=divreq(iuse)
                 dem1=divert(mon,iuse)
+c
+c rrb 2021/05/30; Runtime Error Tracking
+               div1=divd(l2)                
               endif
 c              
 c ---------------------------------------------------------              
@@ -138,7 +165,10 @@ c		Well
                 cpri=rdvnkw(l2)                
                 nwe =idivcow(1,L2)
                 divreqx=divreqw(nwe)     
-                dem1=diverw(mon,nwe)           
+                dem1=diverw(mon,nwe) 
+c
+c rrb 2021/05/30; Runtime Error Tracking
+               div1=divdw(l2)                          
               endif
 c              
 c ---------------------------------------------------------              
@@ -148,7 +178,12 @@ c
      1          idy,iwx, iw,
      1          ctype, itypeX, rec12, cpri, cwr, cwr*fac, 
      1          dem1*fac,  divx*fac, divreqx*fac, divchk*fac, 
-     1          divsum, ireop, ichkx, 18, divo(18)*fac   
+c
+c rrb 2021/05/02; Runtime error tracking
+cx   1          divsum, ireop, ichkx, 18, divo(18)*fac
+     1          divsum, ireop, ichkx, l2, div1*fac
+
+
             endif
           goto 100
         endif
@@ -313,10 +348,11 @@ c
  202  format(/  ' OutIchk ;',
      1   '    # Year Mon   Day Iter   iw Type             OprType',
      1   ' Right ID         Priority Dec-cfs  Dec-af  Demand  Divert',
-     1   '   Short  DivChk  DivSum   Ireop   ichkX      l2 divo(l2)',/
+     1   '   Short  DivChk  DivSum   Ireop   ichkX      l2  divo(l2)',/
+     1   ' _________',
      1   ' ____ ____ ____ ____ ____ ____ ________________ _______',
      1   ' ____________ ____________ _______ _______ _______ _______',
-     1   ' _______ _______ _______ _______ _______ _______ _______')
+     1   ' _______ _______ _______ _______ _______ _______ _________')
     
  210  format(' OutIchk ;', 
      1   i5, i5, 1x, a4, i5,i5, i5, 1x, a16, i8, 1x,a12, 1x,f12.5, 

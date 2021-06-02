@@ -116,7 +116,7 @@ c
       iwhy=0
       cwhy='N/A'      
 c
-c rrb 2021/05/22; Runtime Error Tracking. Initialize 
+c rrb 2021/05/22; Runtime Error Tracking. Initilize 
 c                 Source reservoir #1 (nr) if
 c                 routine makes a quick exit          
       NR  =iopdes(1,l2)  

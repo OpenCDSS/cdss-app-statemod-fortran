@@ -64,6 +64,10 @@ c _________________________________________________________
 c	Update History
 c
 c
+c rrb 2021/05/30; Runtime Error Tracking
+c                 Fix typo to initilized the SCALAR dcrdiv1, not 
+c                 the ARRAY dcrdiv
+c
 c rrb 2021/05/02; Runtime error tracking
 c
 c rrb 2021/04/25; Runtime Error
@@ -248,7 +252,12 @@ c
 c rrb 2021/04/18; Compiler warning
       cresid1=' '
       divaloe=0.0
-      dcrdiv=0.0
+c
+c rrb 2021/05/30; Runtime Error Tracking - Fix typo 
+c                 to initilized the SCALAR dcrdiv1, 
+c                 not the ARRAY dcrdiv
+cx    dcrdiv=0.0
+      dcrdiv1=0.0
       dcrdiv2=0.0
       divreqx2=0.0
       dcrdiv1=0.0

@@ -80,7 +80,7 @@ c _________________________________________________________
 c     Dimensions
       include 'common.inc'
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
       iexit=0
       if(iexit.gt.0) goto 500
       rnextar=0.0

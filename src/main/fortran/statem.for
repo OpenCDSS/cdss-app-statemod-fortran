@@ -214,7 +214,7 @@ c                8 includes daily capability
 c                7 includes new binary output format
 
         ver = '16.00.48'
-        vdate = '2021/05/22'
+        vdate = '2021/05/30'
 c
         igui = 0
         istop = 0
@@ -644,6 +644,18 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
+     1 '    - 2021/05/30 (16.00.48):',/    
+     1 '     Runtime Error Tracking',/
+     1 '     Revised DirectWR (type 26) to fix a typo to ',/
+     1 '       initilize a SCALAR dcrdiv1 not the ARRAY dcrdiv',/
+     1 '     Revised Outichk to correct an error for detailed',/
+     1 '       reporting when ichk=4',/
+     1 '     Revised Rsrspu to not print to the log file when ichk=4',/
+     1 '     Revised Execut to limit output when ichk=4 that',/
+     1 '       was later commented out',/
+     1 '     Revised Divrig to include additional detailed output',/
+     1 '     Revised Divcarl to simplify a check of variable avail',/
+c
      1 '    - 2021/05/22 (16.00.48):',/ 
      1 '     Runtime Error Tracking',/
      1 '     Revised Ifrrigsp to fix an error on call Dnmfso2',/
@@ -651,7 +663,7 @@ c     Formats
      1 '       before a exit that is before call chekres',/
      1 '     Revised Powsea to fix an error on call Checkres',/
      1 '       missing a comma',/
-     1 '     Revised DivRes and ResRgP to initialize variable nr',/
+     1 '     Revised DivRes and ResRgP to initilize variable nr',/
      1 '       before a exit that is before chekres',/ 
      1 '     Revised DivRes to separate an if statement',/
      1 '       to remove check for irturn(iuse) since',/
@@ -780,7 +792,7 @@ c
      1 '       Revised DivResp2.f (type 27) and DivRplP (type 28)',/
      1 '         to increment qdiv(38 to show water to a',/
      1 '         diversion, reservoir, plan or ISF as Carried',/
-     1 '         Exchanged or Other but not used to calculate',/
+     1 '         Exchaged or Other but not used to calculate',/
      1 '         divert from stream in outmon',/
      1 ' ',/          
      1 '       Revised Outbal2.f footnote 5 in water budget report',/ 
@@ -1015,7 +1027,7 @@ c
      1 '        accounting when water is release from the plan',/
      1 '    - 2019/07/28 (16.00.13)',/
      1 '      Revised Bomsec.f & Oprinp.f to simplify WWSP plan',/
-     1 '        initialization by removing 16.00.12 edits',/
+     1 '        initilization by removing 16.00.12 edits',/
      1 '      Revised common.inc, DaySet.f and DayMon.f to include',/
      1 '         diversion to both a WWSP-Supply and direct diversion',/
      1 '      Revised Oprinp.f to check that only one DivMulti (opr',/
@@ -1026,7 +1038,7 @@ c
      1 '        indicator a type 45 (divert with carrier) operating',/
      1 '        rule has been provided with a WWSP plan with a direct',/
      1 '        diversion to a WWSP for use in Bomsec.',/
-     1 '      Revised BomSec to initialize WWSP variables associated',/
+     1 '      Revised BomSec to initilize WWSP variables associated',/
      1 '        with a direct diversion (psuply and psupDD)',/
      1 '        after a multi-split type 46 operating rule fires',/
      1 '      Revised common.inc, DivcarL and Bomsec to include',/
@@ -2041,7 +2053,7 @@ c
      1 '        Revised WelRig3P approach to calculate demand to',/
      1 '          be similar to WelRig3',/
      1 '        Added DsaMod a generic Modified Direct Solution',/
-     1 '          Algorithm and revised Divrig, DirectEx (type 24)',/
+     1 '          Algorythm and revised Divrig, DirectEx (type 24)',/
      1 '          and DirectBy (type 25) to call DsaMod',/
      1 '        TEMPORARILY Revised DirectBy diversion logic',/
      1 '    - 2008/03/13 (12.21)',/
@@ -2585,7 +2597,7 @@ c
      1 '          for reservoir returns',/
      1 '        Added GetRtnX.f to read reservoir return data',/
      1 '          with a future goal to use it for all return flow',/
-     1 '          data reads (currently only used for reservoirs)',/
+     1 '          data reads (currently only used for resevoirs)',/
      1 '    - 2006/10/16 (11.38)',/ 
      1 '        Revised type 38, OOpDiv.f (OOP diversion) to correct',/
      1 '          a unit problem when the destination is a diversion',/
@@ -2858,7 +2870,7 @@ c
      1 '        Revised Outbal2 to include reservoir seepage loss in ',/
      1 '          the water balance report',/
      1 '        Revised Outmon to include reservoir seepage loss in',/
-     1 '          the binary reservoir file',/
+     1 '          the binary reservior file',/
      1 '    - 2006/04/07 (11.11)',/     
      1 '        Began enhancements to allow reservoir seepage to be',/
      1 '          a source of augmentaion water. Note seepage can',/

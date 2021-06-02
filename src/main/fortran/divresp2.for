@@ -63,7 +63,7 @@ c                 DivImpR (type 35) to avoid error in *.xwb
 c
 c rrb 2020/11/22; Increment qdiv(38 to show water to a
 c                 diversion, reservoir, plan or ISF as
-c                 Carried, exchanged or other but not used to
+c                 Carried, exchaged or other but not used to
 c                 calculate divert from stream in outmon
 c
 c rrb 2020/10/27 StateMod 16.00.44a
@@ -233,7 +233,7 @@ c
 c	       ipUse          = Associated Reuse plan
 c                         Note ipUse=ireuse(l2)
 c	       if(iplnTyp(ipUse) .ne. 9) a diversion or
-c                         reservoir resue plan
+c                         reservior resue plan
 c	  		 if(iplnTyp(ipUse) .eq. 9) a OOP Plan
 c
 c        iout           = switch for detailed printout 
@@ -1918,7 +1918,7 @@ c       DIVREQ(IUSE)=DIVREQ(IUSE)-DIVACT
 c
 c ----------------------------------------------------------------
 cc rrb 2020/11/22; Increment qdiv(38 to show water to a diversion as
-c                 Carried, exchanged or other but not used to calculate
+c                 Carried, exchaged or other but not used to calculate
 c                 divert in outmon unless there is a carrier.
 c                 if a carrier, qdiv(18 gets set in SetQdivC in 
 c                 step 26
@@ -2094,7 +2094,7 @@ c rrb 2018/04/30 End
 c
 c ----------------------------------------------------------------
 c rrb 2020/11/22; Increment qdiv(38 to show water to a reservoir as
-c                 Carried, exchanged or other but not used to calculate
+c                 Carried, exchaged or other but not used to calculate
 c                 divert in outmon
         qdiv(38,idcd) = qdiv(38,idcd)+DIVACT
        
@@ -2143,7 +2143,7 @@ c
 c
 c ----------------------------------------------------------------
 c rrb 2020/11/22; Increment qdiv(38 to show water to a plan as
-c                 Carried, exchanged or other but not used to calculate
+c                 Carried, exchaged or other but not used to calculate
 c                 divert in outmon
           qdiv(38,idcd) = qdiv(38,idcd)+DIVACT
         endif 
@@ -2178,7 +2178,7 @@ cx      endif
 c
 c ----------------------------------------------------------------
 c rrb 2020/11/22; Increment qdiv(38 to show water to a plan as
-c                 Carried, exchanged or other but not used to calculate
+c                 Carried, exchaged or other but not used to calculate
 c                 divert in outmon
         qdiv(38,idcd) = qdiv(38,idcd)+DIVACT
       endif
@@ -2292,7 +2292,7 @@ c
 c
 c
 c ---------------------------------------------------------
-c rrb 2020/02/09; Revise reservoir reporting in *.xdd at the
+c rrb 2020/02/09; Revise reservior reporting in *.xdd at the
 c                 source qres(xx,nsr).  
 c                 By Default; reservoir to carrier goes 
 c                 to the river first 
@@ -2551,7 +2551,7 @@ c                Note return patterns may be the default
 c                structure (iuse1) or from plan data
 c                see RtnsecP
 c                iDep = 0 release to meet diversion demand
-c rrb 2007/07/09; Allow T&C return flow obligations to be assigned 
+c rrb 2007/07/09; Allow T&C return flow obligations to be assinged 
 c                 at the destination (herein)
 
 c

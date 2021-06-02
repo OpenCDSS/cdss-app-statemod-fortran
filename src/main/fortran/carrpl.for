@@ -126,7 +126,7 @@ c _________________________________________________________
 c               Step 1; Initialize
 c
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
       iexit=0
       if(iexit.gt.0) goto 500
       iusec=0
@@ -398,7 +398,7 @@ c        cwhy='Demand is Zero'
 c        goto 420
 c      endif
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx140 IF(iresw.eq.0) then
       IF(iresw.eq.0) then
         if(DIVREQ(IUSE).LE.small) then
@@ -430,7 +430,7 @@ c                  Limit release to occur only if an IWR exists
 c                  Note still releasing to meet 100% of demand
 c
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx      ireltyp=amin0(iopsou(6,l2),ifix(effmax(nd)))
         ireltyp=min(iopsou(6,l2),ifix(effmax(nd)))
 c
@@ -767,7 +767,7 @@ c _________________________________________________________
 c               Step 17a; Destination is a Reservoir. Update 
 c                        reservoir data
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx330 if (iresw.eq.1) then
       if (iresw.eq.1) then
 c
@@ -917,7 +917,7 @@ c _________________________________________________________
 c               Step 19; UPDATE Supply Reservoir
 c
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx400 ACTACF=REPACT*fac
       ACTACF=REPACT*fac
       CURSTO(NR  )=CURSTO(NR  )+ACTACF
@@ -960,7 +960,7 @@ c               annual total adjusted 1x/year in bomsec.for
 c
 c               UPDATE OPERATING RIGHT DIVERSION
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx500 divo(l2) = divo(l2)+divact
       divo(l2) = divo(l2)+divact
 
@@ -983,7 +983,7 @@ cx500 divo(l2) = divo(l2)+divact
      1    divactx*fac, repact*fac,      
      1    qres(4,nd), qres(29,nd), 
 c
-c rrb 2021/04/18; Compiler not used or initialized or
+c rrb 2021/04/18; Compiler not used or initilized or
 cx   1    qres(8,nr), qres(9,nr), qres(18,ir) 
      1    qres(8,nr), qres(9,nr), qres(18,nr) 
      
@@ -1022,7 +1022,7 @@ c _________________________________________________________
 c               Step 20; Return
 c
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx    return
  500  return
 c
@@ -1067,7 +1067,7 @@ c               Formats
   304   format(112x, 20f16.4)
   310   format(' carrpl: avail  ',10f10.2)
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx320   format(' carrpl: river  ',10f10.2)
 
 c

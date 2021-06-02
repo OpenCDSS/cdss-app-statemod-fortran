@@ -104,7 +104,7 @@ c _________________________________________________________
 c
 c               Error Processing
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx 9999 write(6,*)  '  Stopped in AccDiv, see the log file (*.log)'
 cx      write(99,*) '  Stopped in AccDiv'
 cx      write(6,*) 'Stop 1'
@@ -112,3 +112,6 @@ cx      call flush(6)
 cx      call exit(1)
       stop 
       end
+
+
+
