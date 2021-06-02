@@ -41,7 +41,7 @@ c rrb 2021/05/22; Runtime Error Tracking;
 c                   Separate the following if statement 
 c                     if(iresw.eq.0.and.IRTURN(IUSE).EQ.4)
 c                     where iuse is not defined if iresw=1
-c                   Initialize Source reservoir (nr) if
+c                   Initilize Source reservoir (nr) if
 c                     the routine makes a quick exit
 c
 c rrb 2021/05/02; Runtime error tracking
@@ -323,7 +323,7 @@ c		e. Detailed output data
       nd  =iopdes(1,lr)
       cDest='NA'   
 c
-c rrb 2021/05/22; Runtime Error Tracking. Initialize 
+c rrb 2021/05/22; Runtime Error Tracking. Initilize 
 c                 Source reservoir #1 (nr) if
 c                 routine makes a quick exit          
       NR = IOPSOU(1,Lr) 
@@ -473,7 +473,7 @@ c 100 nd  =iopdes(1,lr)
       endif 
 c     write(nlog,*) '  Divers; lr, ityopr = ', ityopr(lr)    
 c
-c               a. Initialize iresw=0 where iresw=0 for a diversion       
+c               a. Initilize iresw=0 where iresw=0 for a diversion       
       iresw=0
 c
 c ---------------------------------------------------------
@@ -573,7 +573,7 @@ c               f. Additional non carrier data
 c
 c
 c ---------------------------------------------------------
-c               Exit if not a reservoir and no demand
+c               Exit if not a reservior and no demand
 c
 c rrb 2021/05/02; Runtime error since iuse is not defined if 
 c                 not a diversion (iresw=0
@@ -607,8 +607,8 @@ c
 c
 c ---------------------------------------------------------
 c               b. Demand for a diversion called by Replace
-c                  (irep=1). Limit diversion to the remaining 
-c                  decree (dcrdivx-divdx)
+c                  (irep=1). Limit diversion to the remaing 
+c                  decree (dcrdivx-divdx)	
 cx      write(nlog,*) '  Divres_4; nd, lr, iuse', nd, lr, iuse
         if(irep.ne.0)  
      1    divalo=amin1(dcrdivx-divdx,divreq(iuse),

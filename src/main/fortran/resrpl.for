@@ -25,7 +25,7 @@ c _________________________________________________________
 c	Program Description
 c
 c       Resrpl; It performs a reservoir to reservoir exchange
-c       Type 5. Reservoir storage by Exchange with a reservoir
+c       Type 5. Reservior storage by Exchange with a reservoir
 c
 c _________________________________________________________
 c       Update History
@@ -94,8 +94,8 @@ c		           iout=0 No details
 c		           iout=1 Details
 c		           iout=2 Summary
 c		           iout=99 Summary independent of ichk
-      if(ichk.eq.4) write(nlog,*) ' Resrpl; Type 5 Processing ', 
-     1  corid(l2)
+cx      if(ichk.eq.4) write(nlog,*) ' Resrpl; Type 5 Processing ', 
+cx     1  corid(l2)
       iout=0
       ioutiw=0
       ioutZ=0

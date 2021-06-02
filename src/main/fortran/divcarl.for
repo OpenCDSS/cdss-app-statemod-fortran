@@ -31,6 +31,8 @@ c
 c _________________________________________________________
 c	Update History
 c
+c rrb 2021/05/30; Runtime Error Reporting - simplify a check of
+c                 variable avail',/
 c
 c rrb 2021/05/02; Runtime error tracking and
 c                 Call Roundof going into & out of the subroutine
@@ -382,7 +384,7 @@ c
       character cwhy*51, cdestyp*12, ccarry*3, cpuse*3, 
      1          cSouTyp*12, cstaidX*12, cresid1*12, cplntyp*12,
      1          ctype1*12, cshare*3, cCallBy*12, criver*12, corid1*12,
-     1          cDest*12, cImcdR*12, cIflow*3, cWwsp*3     
+     1          cDest*12, cImcdR*12, cIflow*3, cWwsp*3, subtypX*8    
        
 c
 c _________________________________________________________
@@ -395,9 +397,8 @@ c rrb 2021/04/18; Compiler warning
       irow=0
       nds=0
       nsr=0
-c
-c rrb 2021/05/02; Runtime error tracking
-      irtn=0
+c     
+      subtypX='divcarl '      
 c
 c                                                          
 c ---------------------------------------------------------
@@ -413,6 +414,7 @@ c                  ioutZ = 2 details on subroutine logic
 c                  ioutF = 1 details on type 51 flow control (iflow)
 c                  ioutP = 1 details on WWSP plan accounting
 c                  ioutSO= 1 details on Spill Order (ioprlim=7)
+c                  ioutD = 1 details on call Dnmfso2
 c
       iout=0
       ioutiw=0
@@ -429,9 +431,11 @@ c rrb 2020/02/24; Detailed output for Spill Order
       ioutSO=0
 c
 c ---------------------------------------------------------
-c rrb 2021/05/05; Runtime error tracking
+c rrb 2021/05/02; Runtime error tracking
+      irtn=0
       iuse=0
       ioutRo=0
+      ioutD=0      
       if(ioutRo.eq.1) then
         write(nlog,*) ' '
         write(nlog,*) '  Divcarl In; Calling RoundOf ', crigid(l2)
@@ -456,8 +460,7 @@ c     if(iout.eq.2 .and. iw.eq.ioutiw .and. ncallX.eq.0) then
         write(nlog,102) corid(l2), iout, ioutiw, iw
  102    format(/, 72('_'),/ 
      1  '  DivCarL; ID = ', a12, 5i5)
-      endif   
-      
+      endif     
 c              
 c ---------------------------------------------------------
 c               1b. Miscellaneous
@@ -837,8 +840,8 @@ c               Endif 3a Source is a Div Structure
 c
 c _________________________________________________________
 c
-c		            Step 3b; Source is a diversion (iopSouR1=13) water 
-c                        right (NS1<0)
+c		            Step 3b; Source is a diversion water 
+c                        right (NS1<0 & (iopSouR1=13))
 c
 c rrb 2008/09/26; Correction, iopDesR is the destination type
 cx    if(NS1.lt.0 .and. iOpDesR1.ge.0) then      
@@ -930,8 +933,8 @@ c                Endif 3b. source is a Diversion Water Right
 c
 c _________________________________________________________
 c
-c		            Step 3c; Source is a reservoir (iOpSouR1=12) water
-c                        right (NS1<0)
+c		            Step 3c; Source is a reservoir water
+c                        right (NS1<0 & iOpSouR1=12)
 c			                   Note must have a carrier (else no reason
 c			                   for a type 11 rule)
 c
@@ -943,12 +946,11 @@ cx    if(NS1.lt.0 .and. iOpDesR1.lt.0) then
         IRIT=-1
         NSR=-NS1
         cSouTyp='Reservoir_WR'
-
 c
 c		Set NS1 based on 
 c                 ndLoc=0  Reservoir right location
 c                       1  Reservoir location        
-c			                 -1 Diversion location 
+c			                 -1  Diversion location 
 c
 c rrb 2007/03/27; Adjust admin location if it is the same as the source
         if(ndLoc.eq.nsR) ndLoc=0     
@@ -998,6 +1000,11 @@ c
 c ---------------------------------------------------------
 c               Endif 3c Source is a Reservoir Water Right
       endif 
+c
+c rrb 2021/05/30; Runtime Error Check
+cx     write(nlog,*) ' '
+cx      write(nlog,*) '    Divcarl;  ndloc     ns1   iscd    ndns'
+cx      write(nlog,'(a12, 20i8)')'  Divcarl; ',ndloc, ns1, iscd, ndns
       
 c
 c _________________________________________________________
@@ -1165,10 +1172,10 @@ c
 c _________________________________________________________
 c
 c               Step 7a. Destination is a reservoir (iresw=1)
-c			 Source is a diversion (irit=0) or a 
-c                        diversion right (irit =1)
-c			 Set Demand based on carrier loss
-c                        Limit to remaining capacity (volmax-cursto)
+c			                   Source is a diversion (irit=0) or a 
+c                          diversion right (irit =1)
+c			                   Set Demand based on carrier loss
+c                          Limit to remaining capacity (volmax-cursto)
 c
 c rrb 2006/09/25; Allow multiple accounts - Demand
        if (iresw.eq.1 .and. irit.ge.0) then
@@ -1604,8 +1611,9 @@ cx           if(iout.eq.2 .and. iw.eq.ioutiw) then
      1           oprmaxA(lopr), divalo5*fac, divcapY*fac, divalo*fac 
              endif
            endif
-c
 c ---------------------------------------------------------
+c   Step 8d. Limit based on a two monthly and annual limits
+c
 c	rrb 2018/08/24; Allow two type 4 limits when ioprlim = 14	
            if(ioprlim(l2).eq.14 .and. iopsou(6,l2).gt.0) then
              lopr6=iopsou(6,l2)
@@ -1637,16 +1645,14 @@ cx         if(iout.eq.2 .and. iw.eq.ioutiw) then
              GOTO 380
            endif
                       
-         endif  
-         
-         
+         endif        
 c        
 c ---------------------------------------------------------
 c rrb 2020/02/24; Add Spill Order limitation (
-c		            8d. Spill Order Limit (ioprlim(l2)=7)
-c                   Note limit to account storage, not
-c                   Total reservoir since anyhing stored will
-c                   ultimately be spilled
+c		8e. Spill Order Limit (ioprlim(l2)=7)
+c       Note limit to account storage, not
+c       Total reservoir since anyhing stored will
+c       ultimately be spilled
          if(ioprlim(l2).eq.7) then    
 cx           irow=nowner(nd2)+iopdes(2,l2)-1         
 cx           nSO = irow+iopsou(6,l2)-1
@@ -2044,8 +2050,10 @@ c               Step 16a; Check Avail from the source location(iscd)
 c                         downstream 
 c
 c rrb 2021/05/02; Runtime error reporting  
-cx     if(iout.eq.2) write(nlog,*) ' DivcarL; call dnmfso2 @  2048'
-cx     write(nlog,*) ' DivcarL; call dnmfso2 @  2048 ',corid(l2),iwhy
+       if(ioutD.eq.1) then
+         write(nlog,*) ' DivcarL; dnmfso2 @  step 16a: ',
+     1                 corid(l2),iscd, ndns, iwhy
+       endif
 cx     CALL DNMFSO(maxsta, AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD)
        CALL DNMFSO2(maxsta,AVAIL ,IDNCOD,ISCD  ,NDNS  ,IMCD, cCallBy)
        availC1=avail(imcd)
@@ -2060,8 +2068,10 @@ c
        ndnsX=ndnnod(idcd2X)
 c
 c rrb 2021/05/02; Runtime error reporting  
-cx     if(iout.eq.2) write(nlog,*) ' DivcarL; call dnmfso2 @  2062'
-cx     write(nlog,*) ' DivcarL; call dnmfso2 @  2062 ',corid(l2),iwhy
+       if(ioutD.eq.1) then
+         write(nlog,*) ' DivcarL; dnmfso2 @ step 16b: ',
+     1                 corid(l2),idcd2x, ndnsX, iwhy 
+       endif      
 cx     CALL DNMFSO(maxsta,  AVAIL ,IDNCOD,Idcd2X ,ndnsX,IMCD)
        CALL DNMFSO2(maxsta, AVAIL ,IDNCOD,Idcd2X ,ndnsX,IMCD,cCallBy) 
        availC2=avail(imcd)
@@ -2536,10 +2546,8 @@ c
        endif  
 c      
 c ---------------------------------------------------------
-c rrb 2018/08/19; 
-c   Step 20: WWSP Add adiversion to WWSP Source
-c
-c	 	             20a. Update amount diverted to a WWSP Supply
+c rrb 2018/08/19;
+c                Step 21d.Update amount diverted to a WWSP Supply
        if(iwwP1.gt.0) then
          psuply1 = psuply(iwwP1)
          psuplyT1= psuplyT(iwwP1)
@@ -2591,7 +2599,7 @@ c        Endif for IWWP1>0
        endif
 c
 c ---------------------------------------------------------
-c               20b. Update amount diverted to WWSP User (15)
+c               21e. Update amount diverted to WWSP User (15)
 c rrb 2018/09/23;        
        if(iwwP2.gt.0) then
          psuply2 = psuply(iwwP2)
@@ -2627,7 +2635,7 @@ c         Endif for IWWP2>0
         endif       
 c
 c ---------------------------------------------------------
-c               20c. Detailed output for plans             
+c               21f. Detailed output for plans             
         if(ioutP.eq.1) then
           write(nlog,*) ' '
           write(nlog,*)
@@ -2652,7 +2660,7 @@ c               20c. Detailed output for plans
 c      
 c __________________________________________________________
 c      
-c                Step 21.  Detailed Standard output  
+c                21g.  Detailed Standard output  
 cx       write(nlog,*) ' DivCarl; cdest, iwx, iout, iw, ioutiw'
 cx       write(nlog,*) ' DivCarl; ', cdest, iwx, iout, iw, ioutiw
          if(iout.eq.2 .and. iw.eq.ioutiw) then
@@ -2704,11 +2712,7 @@ c
            call GetCall(iscd, imcdL(iscd), nr2, ctype1)                
          endif    
        endif
-c      
-c _________________________________________________________
-c      
-c                Step 24.  Return
-       
+c       
        if(iout.eq.4 .and. divactx.gt.small) then
          iouty=iouty+1
          write(nlog,420) corid1,iouty, mon,iw,iwx,l2,nd2,divactx*fac
@@ -2716,44 +2720,55 @@ c                Step 24.  Return
 c      
 c _____________________________________________________________
 c                
-c                Step 25 - Check Entire Avail array
-c rrb  2006/06/29; Check Avail going out of the routine
-c rrb 2014-07-29 No need to test if not on this month and
-c                idcd2, etc are not set
+c                Step 24 - Check Entire Avail array
 c
-c rrb 2021/05/02; Runtime error tracking and no reason to check avail        
-cx     if(iwhy.ne.1) then 
-       if(iwhy.eq.0) then 
-c
-c rrb 2021/05/02; Runtime error reporting  
-cx     if(iout.eq.2) write(nlog,*) ' DivcarL; call dnmfso2 @ 2726',iwhy
-cx     write(nlog,*) ' DivcarL; call dnmfso2 @  2726 ',corid(l2),iwhy
-c
-c rrb 2021/05/02; Runtime error tracking and TEST
-       if(idcd2.gt.0) then
-cx     CALL DNMFSO(maxsta, avail, IDNCOD, idcd2, ndns2,IMCD)
-       CALL DNMFSO2(maxsta,avail, IDNCOD, idcd2, ndns2,IMCD,cCallBy)
-       endif
-c
-c rrb 2008/06/15; Correct to a small negative value       
-c        if(avail(imcd).le.small) then
-         if(avail(imcd).le.smalln) then
-           write(nlog,*) ' DivCarL; Problem imcd, avail', 
-     1      imcd, avail(imcd)*fac
-           goto 9999
-         endif  
-       endif
+c ----------------------------------------------------------
+c rrb 2021/05/30; Runtime Error Reporting - Simplify Avail Check
+c                 Note chekava will stop and warn if avail(imcd) < 0
+      call chekava(45, maxsta, numsta, avail, subtypX)
+cx
+cx
+cx
+cxc rrb 2006/06/29; Check Avail going out of the routine
+cxc rrb 2014-07-29 No need to test if not on this month and
+cxc                idcd2, etc are not set
+cxc
+cxc rrb 2021/05/02; Runtime error tracking and no reason to check avail        
+cxcx     if(iwhy.ne.1) then 
+cx       if(iwhy.eq.0) then 
+cxc
+cxc rrb 2021/05/02; Runtime error tracking and TEST
+cx         if(idcd2.gt.0) then
+cxc
+cxc rrb 2021/05/02; Runtime error reporting  
+cx           if(ioutD.eq.1) then
+cx             write(nlog,*) ' '
+cx             write(nlog,*) ' DivcarL; dnmfso2 @  Step 24: ',
+cx     1                   corid(l2),idcd2, ndns, iwhy  
+cx           endif    
+cxcx         CALL DNMFSO(maxsta, avail, IDNCOD, idcd2, ndns2,IMCD) 
+cx           CALL DNMFSO2(maxsta,avail, IDNCOD, idcd2, ndns2,IMCD,cCallBy)
+cx         endif
+cxc
+cxc rrb 2008/06/15; Correct to a small negative value       
+cxc        if(avail(imcd).le.small) then
+cx         if(avail(imcd).le.smalln) then
+cx           write(nlog,*) ' DivCarL; Problem imcd, avail', 
+cx     1      imcd, avail(imcd)*fac
+cx           goto 9999
+cx         endif  
+cx       endif
 c ---------------------------------------------------------
-c rrb 2021/05/05; Runtime error tracking
-      if(ioutRo.eq.1) then
-        write(nlog,*) ' '
-        write(nlog,*) '  Divcarl Out; Calling RoundOf ', crigid(l2)
-      endif
-      call roundof(avail, numsta, 10, 1, nbug)      
+c rrb 2021/05/02; Runtime error tracking
+       if(ioutRo.eq.1) then
+         write(nlog,*) ' '
+         write(nlog,*) '  Divcarl Out; Calling RoundOf ', crigid(l2)
+       endif
+       call roundof(avail, numsta, 10, 1, nbug)      
 c      
 c _________________________________________________________
 c      
-c                Step 26.  Return       
+c                Step 25.  Return       
        RETURN
 c
 c _________________________________________________________

@@ -31,7 +31,7 @@ c _________________________________________________________
 c	Program Description
 c
 c       Type 16. Direct Flow Storage
-c       Directfs; Direct flow storage operating rule
+c       Directfs; Direct flow storage opeating rule
 c              Operating rule type 16
 c                Source is a water right (iopsou(1,l2)
 c                Destination is a reservoir (iopdes(1,l2), 
@@ -189,7 +189,7 @@ c     ndns=ndnnod(iscd)
 c
 c rrb 2007/03/20; Variable iopsou(2,l2) is used to turn
 c		  the source right on/off in Oprinp
-c		  Therefore Estimate the user is account 1
+c		  Therefore Estiamte the user is account 1
 c		  
 c     iuse=nduser(nd1)+iopsou(2,l2)-1
       iuse=nduser(nd1)
@@ -250,9 +250,9 @@ c         nro=-iopdes(2,lr)
 c
 c
 c ---------------------------------------------------------
-c               b. Check Printout for reservoirs
+c               b. Check Prinout for reservoirs
         if(iout.eq.1) then
-          write(nlog,*) '  Directfs; nd, iown ',
+          write(nlog,*) '  Divresfs; nd, iown ',
      1              'ownmax(iown)-curown(iown), ',
      1              'volmax(nd2)-cursto(nd2),  ',
      1              'tarmax(nd2)-cursto(nd2), divalo*fac'

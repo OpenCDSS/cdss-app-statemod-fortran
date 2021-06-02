@@ -659,7 +659,7 @@ c
 c		            8b; Adjust Plan storage 
 c
 c          3 = reuse to a reservoir
-c          5 = reuse to a reservoir by tmtn.
+c          5 = reuse to a reservor by tmtn.
 c          14= WWSP plan
 c 
 c rrb 2018/10/11; Add WWSP Plan type

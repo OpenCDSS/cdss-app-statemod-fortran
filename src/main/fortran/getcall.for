@@ -54,7 +54,7 @@ c rrb 2021/05/02; Runtime error tracking
       character cCallBy*12
       cCallBy = 'Getcall'
 c _________________________________________________________
-c	              Step 1; Initialize
+c	              Step 1; Initilze
 c
 c		iout = 0 no details
 c		       x details for diversion ID, instream ID,

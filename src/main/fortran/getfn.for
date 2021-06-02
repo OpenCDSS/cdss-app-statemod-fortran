@@ -215,7 +215,7 @@ c
 c _______________________________________________________ 
 c
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
       j1=0
       j2=0
       iexit=0
@@ -406,7 +406,7 @@ c
 c               Formats
 c
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
 cx 200   format(/,
 cx     1 '  Getfn; File # to open = ', i5, /
 cx     1 '         Type           = ', a40,/
@@ -449,7 +449,7 @@ c
      1    'Diversion_Station_2',
      1 4, 'Well_Station',      'Well_Station_1',     
      1    'Well_Station_2',
-     1 5, 'Reservoir_Station', 'Reservoir_Station_1',
+     1 5, 'Reservoir_Station', 'Reservior_Station_1',
      1    'Reservoir_Station_2'
  
       write(6,1440)
@@ -518,7 +518,7 @@ c
 
        character filena*256, fileN1*256, fileT1*40
 c
-c rrb 2021/04/18; Compiler not used or initialize
+c rrb 2021/04/18; Compiler not used or initilize
        j1=0    
        j2=0   
 
@@ -607,3 +607,4 @@ c _______________________________________________________
      1 '           Name        = ', a256)
       stop 
       END
+

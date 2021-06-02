@@ -22,7 +22,7 @@ c
 c
 c
 c _________________________________________________________
-c       Program Description
+c	Program Description
 c
 c       Outtop; It prints the header to a file
 c
@@ -49,7 +49,7 @@ c                 the GUI need to process daily (*.xds via outspd.f)
 c
 c
 c _________________________________________________________
-c      Dimensions
+c	Dimensions
 c
        include 'common.inc'
 c
@@ -117,7 +117,7 @@ c rrb 7/29/94 Additional Output
      8   ' CU Summary by Water District                     ',
      9   ' Base Flow at Stream Gages                        ',
      3   ' Daily Diversion Summary                          ',
-     1   ' Daily Reservoir Summary                          ',
+     1   ' Daily Reservior Summary                          ',
      2   ' Replacement Reservoir Detail                     ',
      3   ' Well Structure Summary                           ',
      4   ' Ground Water Budget                              ',
@@ -157,7 +157,7 @@ cx     1    ' ', ' ', ' ', ' ', ' ', ' '/
      1   ' ', ' ', ' ', ' '/
 c
 c _________________________________________________________
-c     Step 1; Initialize
+c		Step 1; Initialize
 c      
 c                                  
 c rrb 2021/04/18; Compiler warning 
@@ -320,3 +320,5 @@ c _________________________________________________________
 c
         return
         end
+
+

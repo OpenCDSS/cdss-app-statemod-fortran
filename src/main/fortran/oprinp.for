@@ -908,7 +908,7 @@ c ______________________________________________________________________
 c		Step 17; Branch for operating rule specific processing
 c               For type 1, Reservoir to a ISF 
         if (ityopr(k).eq.1) goto 1001
-c               For type 2, Reservoir to diversion or reservoir or Carrier
+c               For type 2, Reservoir to diversion or reservior or Carrier
         if (ityopr(k).eq.2) goto 1002
 c               For type 3, Reservoir to a carrier
         if (ityopr(k).eq.3) goto 1003
@@ -4743,7 +4743,7 @@ c
 c               Type 27 Reservoir or Reuse Plan (4 or 6) or
 c                 Accounting plan (11) to a Diversion or Reservoir 
 c			            or Plan or Instream Flow
-c			          If the source is a Reservoir the destination
+c			          If the source is a Resevoir the destination
 c			            Plan should be a type 9 (OOP Plan)
 c			          If the source is a Plan the 
 c			            Plan should be a Reuse plan (type 4 or 6) or
@@ -6261,7 +6261,7 @@ c                 with or without a Carrier,with or without
 c                 Reuse
 c                destination = a diversion or a reservoir or instream 
 c                   flow
-c                source 1 (iopsou(1,k) = a reservoir
+c                source 1 (iopsou(1,k) = a reservior
 c                source 2 (iopsou(3,k) = a reuse plan
 c                  ion=1 means turn off opr right if right is off
         ion=1
@@ -7486,7 +7486,7 @@ c		        iacc =0 Allow account to be 0
         iopsou(3,k)=nR
 c
 c ---------------------------------------------------------
-c               c3. Find source 2 a reservoir water right (type 12)
+c               c3. Find source 2 a reservior water right (type 12)
 c		    Note ion  =1 Turn original water right OFF
 c			ion  =0 Leave original water right ON
 c		   Note istop=0 Stop if not found
@@ -7855,7 +7855,7 @@ c		Check the plan specified is an OOP Plan
 c
 c ---------------------------------------------------------
 c               c1. Find destination Reservoir
-c                  Note itype=12 for a reservoir ID
+c                  Note itype=12 for a reservor ID
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
         itype=2
@@ -7869,7 +7869,7 @@ c
 c
 c ---------------------------------------------------------
 c               d1. Find source 1 a reservoir right
-c                   Note itype=12 for a reservoir right ID
+c                   Note itype=12 for a reservor right ID
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
 c		        iacc=0 allows account to be 0
@@ -12174,7 +12174,7 @@ cx
  1211 format(/, 72('_'),/,
      1 '  Oprinp; Problem with Operational right           = ', a12,/
      1 '          Operation type                           = ', i5,/     
-     1 10x,'The source is a reservoir right          = ',a12,/
+     1 10x,'The source is a reservor right           = ',a12,/
      1 10x,'Therefore the destination should be a reservoir and ',/
      1 10x,'there should be a carrier structure',/
      1 10x,'Recommend you adjust accordingly')
