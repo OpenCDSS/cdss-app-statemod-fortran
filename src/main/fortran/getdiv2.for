@@ -727,7 +727,7 @@ cx
 cx 1285  FORMAT(/, 72('_'), /,
 cx     1 '  GetDiv2; Warning the following structure(s) return water',/
 cx     1 10x,'to at least one non-downstream node. Only the first',/ 
-cx     1 10x,'non-downstream occurance is printed per structure.',/
+cx     1 10x,'non-downstream occurrence is printed per structure.',/
 cx     1 10x,'Note, a non-downstream return is OK but it can cause',/ 
 cx     1 10x,'the system to reoperate and impact performance if',/
 cx     1 10x,'the immediate (current month or days) return flow',/

@@ -593,7 +593,7 @@ c			Note array Avtemp has the current impact
 c			(depletion is a - and return flow is a +) of 
 c                       this well. Therefore the current Augmentation
 c                       obligation (Pobl( )) is the maximum impact
-c                       downstream of the well (Balace Point)
+c                       downstream of the well (balance point)
 c			Note Avtemp includes net - depletion + returns
 c rrb; 2006/03/26; 
       if(ipAug.gt.0) then   
@@ -604,7 +604,7 @@ c
 c
 c ---------------------------------------------------------
 c		a. Set the net plan obligation (PNetObl) to the
-c                  mininum value in Avtemp that contains the impact 
+c                  minimum value in Avtemp that contains the impact 
 c                  of this well only on the entire network.
 c                  Note call dnmfso (not dnmfsoW) to get min from the
 c	           well (balance point) downstream

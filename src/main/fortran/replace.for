@@ -594,7 +594,7 @@ c               Error warnings
 cr510 write(nlog,*)
 cr   1 '  ResRgP; Problem a Type 41 Operating Rule requires',/
 cr   1 '          Out-of-Priority Plan data',/
-cr   1 '          Reconmend you revise the operating rule (*.opr) file')
+cr   1 '          Recommend you revise the operating rule (*.opr) file')
 cr    goto 9999
 
  9999 write(6,1050) 

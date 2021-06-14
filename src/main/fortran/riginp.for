@@ -38,14 +38,14 @@ c
 c 2003/08/18;   Revise to allow random file read
 c
 c 2003/10/24;   Revise to allow iresco(2,k) = 0 to allow
-c               a reservoir right to be distributed porportional
+c               a reservoir right to be distributed proportional
 c               to the ownership of all accounts in that reservoir.
 c               Therefor:
 c               if iresco(2,k) = +n only account n gets filled.
 c               if iresco(2,k) = -n, accounts 1-n get filled
-c                 porportional to the available storage in each account
+c                 proportional to the available storage in each account
 c               if iresco(2,k) = 0, all accounts in this reservoir get
-c                 filled porportional to the ownership in each account
+c                 filled proportional to the ownership in each account
 c
 c _________________________________________________________
 c       Documentation
@@ -75,7 +75,7 @@ c
       write(6,*) ' Subroutine Riginp'
 c
 c		ioutR	= 1 print reservoir read
-c		ioutR   = 2 print reservior right distribution data
+c		ioutR   = 2 print reservoir right distribution data
 c               ioutD = 1 print *.ddr read      
       ioutR=0
       ioutD=0
@@ -362,7 +362,7 @@ c rrb 20066/05/24; Check an OOP right has a operating right ID
          
 c ---------------------------------------------------------
 c rrb 01/05/95; Multiple owners for 1 reservoir right
-c              if iresco(2,k) < 0, then distribute porportional
+c              if iresco(2,k) < 0, then distribute proportional
 c              to available space.
 c              nrown(k) = # of owners beginning with owner 1
         ichk1=0
@@ -378,7 +378,7 @@ c         if(ichk1.eq.1) write(nlog,*) '  Riginp; nrown(k) = ', nrown(k)
 c
 c ---------------------------------------------------------
 c rrb 2003/10/24; Multiple owners for 1 reservoir right
-c              if iresco(2,k) = 0, then distribute porportional
+c              if iresco(2,k) = 0, then distribute proportional
 c              to ownership 
 c              nrown(k) = # of owners beginning with owner 1
         ichk1=0
@@ -397,7 +397,7 @@ c               a right is on (irsrsw(k) = 1) &
 c               a right is a first fill (n2fill(k) =1) &
 c               a right goes to 1 account (ichk1.eq.0).gt.0) &
 c               it is not an OOP right (ityrsr.eq.1) &
-c               a resevoir has multiple accounts (nowner(nr+1) - (nr)),
+c               a reservoir has multiple accounts (nowner(nr+1) - (nr)),
 c                          Print warning
         if(ioutR.eq.2) write(nchk,*) ' Riginp; ',
      1    irsrsw(k), n2fill(k), ione, ityrsr(k),nowner(nr+1)-nowner(nr)
@@ -934,7 +934,7 @@ c 480 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), 20i8)
   486 format(/,
      1  72('_'),//       
      1    '  Riginp; Problem; an OOP reservoir right must have',/
-     1    ' the variable copid tied to an opeating rule ID',/
+     1    ' the variable copid tied to an operating rule ID',/
      1    '          Resrvoir ID = ',a12, ' Right    ID = ',a12,/
      1    ' has Operating rule ID (copid) = ', a12)
 

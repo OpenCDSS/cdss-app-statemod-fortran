@@ -216,7 +216,7 @@ c               Formats
  1281  FORMAT(/,72('_'),/
      1  '  SetEff;  Warning See *.chk for details in year', i5,
      1  ' regarding: ',a32,/
-     1  '           Note only first occurance (year) is printed')
+     1  '           Note only first occurrence (year) is printed')
 
 c
 c _________________________________________________________

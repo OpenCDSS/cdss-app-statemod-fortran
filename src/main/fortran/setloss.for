@@ -226,7 +226,7 @@ c
  910  format(
      1 '  SetLoss; Problem with operating rule ', a12,/
      1 '           The net carrier efficiency = ', f10.3,/
-     1 '           Reconmend you revise losses or turn off',/
+     1 '           Recommend you revise losses or turn off',/
      1 '           the operating rule (delivery will be zero')     
  920  format('    Stopped in SetLoss',/,
      1       '    See the *.log file')

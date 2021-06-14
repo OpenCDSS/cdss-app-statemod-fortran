@@ -264,7 +264,7 @@ cx 1262 format(36x,a12,f8.0,a12)
      1  '  GetRtn:  Problem the ', a12, ' station return flow to ',a12,
      1  '           from structure ',a12, ' cannot be the most down',/
      1  '           stream node in the network ',/
-     1  '           Reconmend you add another node to the river ', 
+     1  '           Recommend you add another node to the river ', 
      1             'network (*.rin) file')
 
  1280 FORMAT(/,72('_'),/

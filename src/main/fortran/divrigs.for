@@ -346,7 +346,7 @@ c      divalo=amin1(dcrdiv(l2)-divd(l2),divreqx,
       endif
 c
 c_____________________________________________________________
-c               Step 5; Find mininum downstream station
+c               Step 5; Find minimum downstream station
 c
 c
 c rrb 2021/05/02; Runtime Error Tracking

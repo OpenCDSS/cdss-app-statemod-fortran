@@ -25,7 +25,7 @@ c _________________________________________________________
 c	Program Description
 c
 c       Resrpl; It performs a reservoir to reservoir exchange
-c       Type 5. Reservior storage by Exchange with a reservoir
+c       Type 5. Reservoir storage by Exchange with a reservoir
 c
 c _________________________________________________________
 c       Update History

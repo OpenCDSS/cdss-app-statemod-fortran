@@ -611,7 +611,7 @@ cr529 IF(NUMpre.EQ.0 .OR. MONEVA.EQ.0 .or. numres.eq.0) GO TO 530
   529 IF(NUMpre.EQ.0 .OR. monppt.EQ.0 .or. numres.eq.0) GO TO 530
       iin2=2
       filena='*.pra'
-c     write(nlog,*) ' Mdainp; Getting constant precipitaion data'
+c     write(nlog,*) ' Mdainp; Getting constant precipitation data'
 c ---------------------------------------------------------
 c
       do ipr=1,numpre
@@ -3920,7 +3920,7 @@ c
  1290 FORMAT(/,
      1 '  Mdainp; Problem.',
      1 ' NOT ENOUGH DATA IN DIVERSION FILE (*.ddm)',/
-     1 10x,'Reconmend you check the file opened correctly in *.log',/
+     1 10x,'Recommend you check the file opened correctly in *.log',/
      1 10x,'and that the file has a demand for every diversion',/
      1 10x,'in the diversion station file')
       goto 9999
@@ -3928,7 +3928,7 @@ c
  1281  FORMAT(/,72('_'),/
      1  '  Mdainp; Warning See *.chk for details in year',i5,/
      1  '          Regarding file: ',a40,/
-     1  '          Note only first occurance (year) is printed')
+     1  '          Note only first occurrence (year) is printed')
 
  1282 write(nlog,1283) filena
  
@@ -4061,7 +4061,7 @@ c                 but no annual time series file is provided.
      1      'file (*.ctl) = ', i5,'.' /
      1 10x, 'This value is not supported or no annual irrigation',/
      1 10x, '  practice file (*.ipy) has been provided.',/
-     1 10x, 'Reconmend you revise variable itsfile or provide an',/
+     1 10x, 'Recommend you revise variable itsfile or provide an',/
      1 10x, '  annual time series file (*.ipy).')
       goto 9999
 c
@@ -4071,7 +4071,7 @@ cx     1  72('_'),//
 cx     1 '  Mdainp;  Warning when reading *.iwr',/
 cx     1 '           the number of data points read = ', i8,/
 cx     1 '           that is too small.  ',/
-cx     1 '           Reconmend you revise Mdainp.for')
+cx     1 '           Recommend you revise Mdainp.for')
       
 C
  

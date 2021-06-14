@@ -117,7 +117,7 @@ c rrb 7/29/94 Additional Output
      8   ' CU Summary by Water District                     ',
      9   ' Base Flow at Stream Gages                        ',
      3   ' Daily Diversion Summary                          ',
-     1   ' Daily Reservior Summary                          ',
+     1   ' Daily Reservoir Summary                          ',
      2   ' Replacement Reservoir Detail                     ',
      3   ' Well Structure Summary                           ',
      4   ' Ground Water Budget                              ',

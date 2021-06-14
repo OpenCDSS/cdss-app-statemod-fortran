@@ -215,7 +215,7 @@ c
 c _______________________________________________________ 
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
       j1=0
       j2=0
       iexit=0
@@ -406,7 +406,7 @@ c
 c               Formats
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 200   format(/,
 cx     1 '  Getfn; File # to open = ', i5, /
 cx     1 '         Type           = ', a40,/
@@ -427,7 +427,7 @@ cx     1 '         Name           = ', a256)
  300   format(/,72('_'),/'  Getfn; Sequential input from *.ctl #1')
  302   format(/,72('_'),/'  Getfn; Sequential input from *.ctl #2')
  310   format(/,72('_'),/'  Getfn; Random input from *.ctl' )
- 312   format(/,72('_'),/'  Getfn; Recognized file types for *.ctl' )        
+ 312   format(/,72('_'),/'  Getfn; Recognized file types for *.ctl' )
  
  510   return
 
@@ -449,7 +449,7 @@ c
      1    'Diversion_Station_2',
      1 4, 'Well_Station',      'Well_Station_1',     
      1    'Well_Station_2',
-     1 5, 'Reservoir_Station', 'Reservior_Station_1',
+     1 5, 'Reservoir_Station', 'Reservoir_Station_1',
      1    'Reservoir_Station_2'
  
       write(6,1440)
@@ -485,13 +485,13 @@ c
      1 '  Stopped in Getfn; Problem cannot provide both',/
      1 '  a standard station file = ', a40,/
      1 '  and a new station file  = ', a40,/
-     1 '  Reconmend you pick one and remove the other')
+     1 '  Recommend you pick one and remove the other')
      
  1480 format(/,
      1 72('_'),/
      1 '  Stopped in Getfn;',/
      1 '  Problem cannot find file = ', a40,/
-     1 '  Reconmend you revise the response file (*.rsp)')
+     1 '  Recommend you revise the response file (*.rsp)')
 
 c
 c _________________________________________________________
@@ -518,7 +518,7 @@ c
 
        character filena*256, fileN1*256, fileT1*40
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
        j1=0    
        j2=0   
 

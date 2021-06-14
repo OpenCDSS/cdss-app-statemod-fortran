@@ -865,7 +865,7 @@ c
      1  '      Over allotment     = ', f8.0, /
      1  '    Simulation is continuing by removing the over allotment',/
      1  '    from other users based on their percent allotment.'/
-     1  '    Reconmend you verify the over allocation is correct.')
+     1  '    Recommend you verify the over allocation is correct.')
 c
 c _________________________________________________________
 c

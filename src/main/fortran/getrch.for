@@ -259,14 +259,14 @@ c               Error Tracking
  512  format(
      1 ' GetRch; Problem the number of reaches = ', i5,/
      1 '         Exceeds the maximum = ', i5,/
-     1 '         Reconmend you revise the reach data (*.rch)')
+     1 '         Recommend you revise the reach data (*.rch)')
       goto 900
  
  520  write(nlog,522) staid
  522  format(
      1 ' GetRch; Problem reach ID    = ', a12,/
      1 '         Cannot be found in the river network file (*.rin)',/
-     1 '         Reconmend you revise the reach data (*.rch) or',/
+     1 '         Recommend you revise the reach data (*.rch) or',/
      1 '         the river network (*.rin) file')
       goto 900
  900  write(6,910) 

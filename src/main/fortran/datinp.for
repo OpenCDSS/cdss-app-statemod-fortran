@@ -113,7 +113,7 @@ c
 c               Update History
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 c rrb 2005/08/22; Remove reservoir read to getres.for
 c rrb 2004/09/07; Revise diversions to allow multiple owners
 c		ndown. Note multiple users are still not
@@ -148,7 +148,7 @@ c
 c__________________________________________________________
 c               Initialize
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
       rec1=rec1
       rec132=rec132
       mthd(1) = mthd(1)
@@ -245,7 +245,7 @@ c
 c               Read Control Data (*.ctl)
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx110 write(nlog,101)
       write(nlog,101)
       write(6,101)
@@ -561,7 +561,7 @@ cr      cunitd='(cfs)'
       endif
 c 
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx    idemtyp = amax0(1,icondem)
       idemtyp = max(1,icondem)
 c
@@ -575,7 +575,7 @@ c     write(nlog,*) ' '
      1  write(nlog,*)'  ** Datinp; Warning reoperation off'
 
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx160 write(nlog,159)
       write(nlog,159)
  159  format(/,72('_'),/ '  Datinp; ',/)
@@ -608,7 +608,7 @@ c _________________________________________________________
 c               Well Swicth
 
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx162 if(iwell.le.0)  then  
       if(iwell.le.0)  then                 
                 
@@ -717,7 +717,7 @@ c               *.ifm is opened
 c
 c _________________________________________________________
 c               SJRIP Sediment File Switch               
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 166  if(isjrip.eq.0) then
       if(isjrip.eq.0) then
         write(nlog,*)'  ** SJRIP Sediment file (*.sjr)          Off **'
@@ -733,7 +733,7 @@ c _________________________________________________________
 c               Annual Time series Switch               
 
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx164 if(itsfile.eq.0) then
       if(itsfile.eq.0) then
         write(nlog,*)'  ** Annual time series (*.tsp) file      Off **'
@@ -749,7 +749,7 @@ c _________________________________________________________
 c               Variable efficiency switch
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx165 if(ieffmax.eq.0) then
       if(ieffmax.eq.0) then
         write(nlog,*)'  ** Variable efficiency                  Off **'
@@ -770,7 +770,7 @@ c               0=No, 1=Yes Max Supply, 2=Mutual Supply
 c               Note the above work in conjunction with gwmode
 c               in *.tsp
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 167  if(isprink.le.0) then
       if(isprink.le.0) then
         write(nlog,*)'  ** Sprinklers                           Off **'
@@ -793,7 +793,7 @@ c
      1  write(nlog,*) '  Datinp; soild, small = ', soild, small
 
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 168  isoil=int(soild)
       isoil=int(soild)
       if(ioutC.eq.1)
@@ -1052,7 +1052,7 @@ C
   
 c
 c               Check that last station is blank to avoid a 
-c               problem in the return flow algorythm
+c               problem in the return flow algorithm
       if(cstadn(numsta).ne.blank) then
         write(6,1460)
         write(nlog,1460)
@@ -1181,7 +1181,7 @@ c
 c _________________________________________________________
 c		INITIALIZE RETURN FLOW ARRAY
 C
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx  730   continue
       if(ichk.eq.4) write(nlog,*) 
      1  'Datinp initialize monthly return flow arrays'
@@ -1386,7 +1386,7 @@ c
 c               Read Instream Flow Station (*.ifs) 
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx830 write(6,107)
       write(6,107)
       write(nlog,107)
@@ -1596,7 +1596,7 @@ c               monisf = 1 annual only, 2=monthly only; 3=both
       monisf=itmpi1+itmpi2
 cr    write(nlog,*) '  Datinp; monisf = ', monisf
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 902 close(55)
        close(55)
 c
@@ -1632,7 +1632,7 @@ c		  nf = file #
 c
 c _________________________________________________________
 c               Step X; Read Plan data (*.pln)
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx  901 iprintdp=0
       iprintdp=0
 
@@ -1709,7 +1709,7 @@ c rrb 10/02/95; check for more than one final outlet
 
         if(iout.eq.1) write(nlog,*) ' Datinp; network checks'     
 c                                                       
-c rrb 2021/04/18; Compiler not used or initilize  
+c rrb 2021/04/18; Compiler not used or initialize  
 cx909   ix = 0      
         ix = 0
         do 910 is=1,numsta
@@ -1881,7 +1881,7 @@ cx  546  format(/,72('_'),/
 cx     1 '  Datinp; Problem in *.wes well id ', a12,
 cx     1          ' has idvcomw = ', i4, /
 cx     1 '          But in *.ctl the variable icondem (idemtyp) = ',i4,
-cx     1          ' which is inconsitant.')
+cx     1          ' which is inconsistent.')
 cx     
 cx  547  format(/,72('_'),/
 cx     1 '  Datinp; Problem for Div or Well station = ', a12,
@@ -2069,7 +2069,7 @@ cx 1255 format(/,72('_'),/
 cx     1 '  Datinp; Problem with Well Station ', a12,/
 cx     1 10x,'The augmentation plan code (planw) = ', a12,/
 cx     1 10x,'But this plan is type ', i4,/
-cx     1 10x,'(Note a well agumentation plan should be a type 2)')
+cx     1 10x,'(Note a well augmentation plan should be a type 2)')
 cx     
 cx 1256 format(/,72('_'),/
 cx     1 '  Datinp; FYI at least one Well Station (e.g.) ', a12,/
@@ -2110,7 +2110,7 @@ cx     1  ' ____________ ____________')
  1285  FORMAT(/,72('_'),/
      1 '  Datinp; Warning the following structure(s) return water',/
      1 10x,'to at least one non-downstream node. Only the first',/ 
-     1 10x,'non-downstream occurance is printed per structure.',/
+     1 10x,'non-downstream occurrence is printed per structure.',/
      1 10x,'Note, a non-downstream return is OK but it can cause',/ 
      1 10x,'the system to reoperate and impact performance if',/
      1 10x,'the immediate (current month or days) return flow',/
@@ -2210,7 +2210,7 @@ cx     1'  Datinp; Problem opening file: ', a256)
 cx 1470  format(/,72('_'),/
 cx     1   ' Datinp; Problem',
 cx     1   ' two reservoirs at the same river node',/
-cx     1   '         Reservor IDs = ', a12, 1x, a12)
+cx     1   '         Reservoir IDs = ', a12, 1x, a12)
 cx     
 cx 1490   format(/,72('_'),/
 cx     1  '  Datinp; Problem sprinkler option (isprink) = 2',/
@@ -2311,7 +2311,7 @@ c
 c _________________________________________________________
 c               Check if eof is OK    
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 110  if(iout.eq.1) write(99,*) ' GetCtl; iok = ',iok
  110  continue
       if(iout.eq.1) write(99,*) ' GetCtl; iok = ',iok

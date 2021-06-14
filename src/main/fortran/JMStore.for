@@ -462,7 +462,7 @@ cx    if(ioutX.eq.1)
 c --------------------------------------------------=------
 c               Step 7.3; Determine if there is a loosing reach
 c                         If it is, reduce flow available at 
-c                         each gage porportionally
+c                         each gage proportionally
 c                         Note small = 0.001 and
 c                         rlossX is > 0 for a loosing reach
 c

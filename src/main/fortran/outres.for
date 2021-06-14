@@ -391,7 +391,7 @@ c    1  '   Limit   Limit  Inflow Release  Supply by Well Outflow',/
      1 ' OutRes;  Problem key output variables for ', a10, 
      1 ' were developed',/
      1 10x,'Based on ', i5, ' output variables but ndivO = ', i4,/
-     1 10x,'Reconmend you revise OutBal2 appropriately')
+     1 10x,'Recommend you revise OutBal2 appropriately')
   
 c
 c _________________________________________________________

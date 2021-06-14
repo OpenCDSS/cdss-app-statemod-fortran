@@ -237,7 +237,7 @@ c rrb 01/02/10; Close dummy file
      1  '           But the number of stations in the control file ', 
      1              '     = ', i5,/
      1  '           Therefore no data is read',/
-     1  '           Reconmend you correct the control file or the ',
+     1  '           Recommend you correct the control file or the ',
      1              'response file')
 c
 c rrb 00/04/13; Correction

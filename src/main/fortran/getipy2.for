@@ -592,7 +592,7 @@ c               Formats
  1281  FORMAT(/,72('_'),/
      1  '  GetIpy2; Warning See *.chk for details in year',i5,/
      1  '          Regarding file: ',a40,/
-     1  '          Note only first occurance (year) is printed')
+     1  '          Note only first occurrence (year) is printed')
 
  1315 FORMAT(/,
      1  72('_'),//  

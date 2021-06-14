@@ -31,11 +31,15 @@ c
 c       Update History                                               
 c                                                                                                       
 c_________________________________________________________________                                      
-c                                                                    c
-c       Update History                                               c _________________________________________________________
-c                                                                    c	      Dimensions
-c rrb 2021/04/18; Compiler warning                                   c
+c                                                                 
+c       Update History                                               
+c                                                                    
+c rrb 2021/04/18; Compiler warning
+c
+c _________________________________________________________
       include 'common.inc'
+
+c      Dimensions
        dimension
 cx   1 oprtyp(50),   cdem(5)
      1 oprtyp(60),   cdem(5)
@@ -106,7 +110,7 @@ c
 c                                                                    
 c_________________________________________________________________   
 c                                                                    
-c       Initilize
+c       Initialize
 c
 c       Update History                                               
 c                                                                    

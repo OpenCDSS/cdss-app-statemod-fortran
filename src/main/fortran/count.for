@@ -31,7 +31,7 @@ c
 c _________________________________________________________
 c     Update History
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 c      
 c
 c _________________________________________________________
@@ -87,7 +87,7 @@ c
 c     Return
  500  return
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 112  format(
 cx     1  '  Count; FYI, A dummy (blank) file determined for ',/
 cx     1  '         file: ', a256)

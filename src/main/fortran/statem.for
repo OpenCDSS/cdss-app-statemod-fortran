@@ -214,7 +214,7 @@ c                8 includes daily capability
 c                7 includes new binary output format
 
         ver = '16.00.48'
-        vdate = '2021/05/30'
+        vdate = '2021/06/02'
 c
         igui = 0
         istop = 0
@@ -647,7 +647,7 @@ c     Formats
      1 '    - 2021/05/30 (16.00.48):',/    
      1 '     Runtime Error Tracking',/
      1 '     Revised DirectWR (type 26) to fix a typo to ',/
-     1 '       initilize a SCALAR dcrdiv1 not the ARRAY dcrdiv',/
+     1 '       initialize a SCALAR dcrdiv1 not the ARRAY dcrdiv',/
      1 '     Revised Outichk to correct an error for detailed',/
      1 '       reporting when ichk=4',/
      1 '     Revised Rsrspu to not print to the log file when ichk=4',/
@@ -663,7 +663,7 @@ c
      1 '       before a exit that is before call chekres',/
      1 '     Revised Powsea to fix an error on call Checkres',/
      1 '       missing a comma',/
-     1 '     Revised DivRes and ResRgP to initilize variable nr',/
+     1 '     Revised DivRes and ResRgP to initialize variable nr',/
      1 '       before a exit that is before chekres',/ 
      1 '     Revised DivRes to separate an if statement',/
      1 '       to remove check for irturn(iuse) since',/
@@ -792,7 +792,7 @@ c
      1 '       Revised DivResp2.f (type 27) and DivRplP (type 28)',/
      1 '         to increment qdiv(38 to show water to a',/
      1 '         diversion, reservoir, plan or ISF as Carried',/
-     1 '         Exchaged or Other but not used to calculate',/
+     1 '         Exchanged or Other but not used to calculate',/
      1 '         divert from stream in outmon',/
      1 ' ',/          
      1 '       Revised Outbal2.f footnote 5 in water budget report',/ 
@@ -820,7 +820,7 @@ c
      1 '    - 2020/09/30 (16.00.42)',/ 
      1 '       Revised PowResp.f (type 48) to resolve a mass',/
      1 '         balance issue when the source is an admin',/
-     1 '         plan (type 11) and the destinaion is a well',/
+     1 '         plan (type 11) and the destination is a well',/
      1 '         aug plan (type 2)',/ 
      1 '       Removed edit in version 41 then put it back that ',/
      1 '         Revised OutBal2.f to not adjust for From River',/
@@ -906,7 +906,7 @@ c
      1 '         the Purgatoire only goes to Conservation (1)',/
      1 '    - 2020/05/22 (16.00.33)',/
      1 '        Revised JMStore (type 53) to store Purgatoire in',/
-     1 '        JMartins Conservation pool, not the Other pool',/           
+     1 '        JMartins Conservation pool, not the Other pool',/
      1 '    - 2020/04/26 (16.00.32)',/
      1 '        Revise JMFlow.f to all the Winter Storage season to',/ 
      1 '        go from 3/15 to 3/31.  Therefore:',/
@@ -916,7 +916,7 @@ c
      1 '        Revised JMStore (type 53) to handle a check that',/
      1 '          there is a losing reach when the min downstream',/
      1 '          flow is exactly equal to the follow at of the',/
-     1 '          Arkansas @ Las Animas gage.  Specifically:',/              
+     1 '          Arkansas @ Las Animas gage.  Specifically:',/
      1 '          Change: if(AvailX .gt. avail(ns)) then',/
      1 '          To:     if((AvailX + small) .gt. avail(ns)) then',/
      1 '    - 2020/04/14 (16.00.30)',/
@@ -1027,7 +1027,7 @@ c
      1 '        accounting when water is release from the plan',/
      1 '    - 2019/07/28 (16.00.13)',/
      1 '      Revised Bomsec.f & Oprinp.f to simplify WWSP plan',/
-     1 '        initilization by removing 16.00.12 edits',/
+     1 '        initialization by removing 16.00.12 edits',/
      1 '      Revised common.inc, DaySet.f and DayMon.f to include',/
      1 '         diversion to both a WWSP-Supply and direct diversion',/
      1 '      Revised Oprinp.f to check that only one DivMulti (opr',/
@@ -1038,7 +1038,7 @@ c
      1 '        indicator a type 45 (divert with carrier) operating',/
      1 '        rule has been provided with a WWSP plan with a direct',/
      1 '        diversion to a WWSP for use in Bomsec.',/
-     1 '      Revised BomSec to initilize WWSP variables associated',/
+     1 '      Revised BomSec to initialize WWSP variables associated',/
      1 '        with a direct diversion (psuply and psupDD)',/
      1 '        after a multi-split type 46 operating rule fires',/
      1 '      Revised common.inc, DivcarL and Bomsec to include',/
@@ -1048,7 +1048,7 @@ c
      1 '        direct diversion that is part of a WWSP Plan',/
      1 '    - 2019/07/14 (16.00.11)',/
      1 '      Revised DivMulti (type 46) to:',/
-     1 '       1. Move initilization from step 3 to step 1.5',/
+     1 '       1. Move initialization from step 3 to step 1.5',/
      1 '          to facilitate detaied output',/
      1 '       2. Correction for type 14 and 15 (again) in step 4',/
      1 '          (nr 364)',/
@@ -2053,7 +2053,7 @@ c
      1 '        Revised WelRig3P approach to calculate demand to',/
      1 '          be similar to WelRig3',/
      1 '        Added DsaMod a generic Modified Direct Solution',/
-     1 '          Algorythm and revised Divrig, DirectEx (type 24)',/
+     1 '          Algorithm and revised Divrig, DirectEx (type 24)',/
      1 '          and DirectBy (type 25) to call DsaMod',/
      1 '        TEMPORARILY Revised DirectBy diversion logic',/
      1 '    - 2008/03/13 (12.21)',/
@@ -2337,7 +2337,7 @@ c
      1 '    - 2007/04/16 (11.57)',/ 
      1 '        Revised DivCarl.f and Oprinp.f to allow a type 45',/
      1 '          rule to allow multiple owners to share in water',/
-     1 '          supplies and carrier capacity porportionally',/
+     1 '          supplies and carrier capacity proportionally',/
      1 '    - 2007/04/10 (11.561)',/ 
      1 '        Revised Oprinp.f, type 39, input to allow the',/
      1 '          destination and alternate point to be different',/
@@ -2597,7 +2597,7 @@ c
      1 '          for reservoir returns',/
      1 '        Added GetRtnX.f to read reservoir return data',/
      1 '          with a future goal to use it for all return flow',/
-     1 '          data reads (currently only used for resevoirs)',/
+     1 '          data reads (currently only used for reservoirs)',/
      1 '    - 2006/10/16 (11.38)',/ 
      1 '        Revised type 38, OOpDiv.f (OOP diversion) to correct',/
      1 '          a unit problem when the destination is a diversion',/
@@ -2660,7 +2660,7 @@ c
      1 '          from one account to another occurred within the',/
      1 '          the same reservoir. This revision included:',/
      1 '          - Revising RsrSpu, RsrSpuP, and OopBook2 to include',/
-     1 '            qres(29 that tracks the above occurance and ',/
+     1 '            qres(29 that tracks the above occurrence and ',/
      1 '          - Revising OutMon to redefine the variable Carry',/
      1 '            to include the above adjustment',/
      1 '    - 2006/09/15 (11.30)',/ 
@@ -2870,10 +2870,10 @@ c
      1 '        Revised Outbal2 to include reservoir seepage loss in ',/
      1 '          the water balance report',/
      1 '        Revised Outmon to include reservoir seepage loss in',/
-     1 '          the binary reservior file',/
+     1 '          the binary reservoir file',/
      1 '    - 2006/04/07 (11.11)',/     
      1 '        Began enhancements to allow reservoir seepage to be',/
-     1 '          a source of augmentaion water. Note seepage can',/
+     1 '          a source of augmentation water. Note seepage can',/
      1 '          now be routed to any number of river nodes using',/
      1 '          any delay pattern. Previously seepage was routed',/
      1 '          downstream of the reservoir at the time it occurred',/
@@ -3781,7 +3781,7 @@ c
      1 '        Revised datinp.f, mdainp.f, getrtnw.f & common.inc',/
      1 '        to allow a character ID for return tables in the',/
      1 '        delay file (*.dly), the diversion station file',/
-     1 '        (*.dds) and the well staion file (*.wes)',/
+     1 '        (*.dds) and the well station file (*.wes)',/
      1 '    - 1999/08/20 (9.16)',/
      1 '        Revised chekpor call in xdebug.f, dayest.f, datinp.f',/
      1 '        mdainp.f, virgen.f, report.f & common.inc to',/

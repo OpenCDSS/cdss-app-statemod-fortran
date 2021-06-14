@@ -458,7 +458,7 @@ c               Formats
      1 '  GetPlnW;  ',
      1     'Warning data in Plan Well file (*.plw)',/
      1 12x,'not found in Well Right File (*.wer)',/
-     1 12x,'See *.chk for a listing of all occurances',/
+     1 12x,'See *.chk for a listing of all occurrences',/
      1 12x,'Note: OK if this wells pumping is not simulated')
           
      
@@ -466,15 +466,15 @@ c               Formats
      1 '  GetPlnW;  ',
      1     'Warning well rights tied to more than one Augmentation ',
      1     'Plan in the',/
-     1 12x,'Plan Well file (*.plw) = ',i5,' of ',i5,' or ',f5.0,'%',/     
-     1 12x,'See *.chk for a listing of all occurances')
+     1 12x,'Plan Well file (*.plw) = ',i5,' of ',i5,' or ',f5.0,'%',/
+     1 12x,'See *.chk for a listing of all occurrences')
      
  230  format(/,72('_'),/
      1 '  GetPlnW;  ',
      1     'Warning data in Plan Well file (*.plw)',/
      1 12x,'not found in Well Right File (*.wer) or',/
      1 12x,'the Structure ID in *.wer and *.plw are not equal',/
-     1 12x,'See *.chk for a listing of all occurances',/
+     1 12x,'See *.chk for a listing of all occurrences',/
      1 12x,'Note: OK if this wells pumping is not simulated',//
      1 '    # W.Right ID   W.Right Name             Plan ID     ',
      1 ' Structure ID',/
@@ -501,7 +501,7 @@ c               Formats
      1 '  GetPlnW;  ',
      1     'Warning well rights not assigned to a plan in the ',/
      1 12x,'Plan Well file (*.plw) = ',i5,' of ',i5,' or ',f5.0,'%',/
-     1 12x,'See *.chk for a listing of all occurances')
+     1 12x,'See *.chk for a listing of all occurrences')
      
  235  format(/,72('_'),/
      1 '  GetPlnW;  ',

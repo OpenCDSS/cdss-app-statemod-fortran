@@ -292,12 +292,12 @@ cx     1        ' ---- ---- ---- ----', 3(' -------'))
      1     '    Demand   Rights Capacity Type',/
      1     ' ___eb___exxb__exb__________exb_____________________e',
      1     'xb_______exb______exb______exb__e')
-  240 format(i5, i5, 2x, a4,1x, a12, 1x,a24, 3(1x,f8.0),1x,a4)            
+  240 format(i5, i5, 2x, a4,1x, a12, 1x,a24, 3(1x,f8.0),1x,a4)
      
  1281  FORMAT(/,72('_'),/
      1  '  DemCons; Warning See *.chk for details in year',i5,/
      1  '           Regarding: ', a32,/
-     1  '           Note only first occurance (year) is printed')
+     1  '           Note only first occurrence (year) is printed')
 
 
   500 return

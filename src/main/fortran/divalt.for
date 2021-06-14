@@ -394,7 +394,7 @@ c       write(nlog,*) ' DivAlt; #4a iscd, iuse ', iscd, iuse
         Avail1=avtemp(iscd)
 c
 c ---------------------------------------------------------
-c               b)Find mininum downstream flow from 
+c               b)Find minimum downstream flow from 
 c		              the decreed location  
 c
 c rrb 2021/05/02; Runtime Error Tracking    

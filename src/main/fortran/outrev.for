@@ -180,7 +180,7 @@ c
      1 ' OutRev; Problem key output variables for ', a10, 
      1 ' were developed',/
      1 10x,'Based on ', i5, ' output variables but ndivO = ', i4,/
-     1 10x,'Reconmend you revise OutRev appropriately')
+     1 10x,'Recommend you revise OutRev appropriately')
 c
  9999 write(6,*) 'Stop 1' 
       call flush(6)

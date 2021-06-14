@@ -184,7 +184,7 @@ c rrb 2021/04/18; Compiler warning
       rec12=' '
       
 c
-c		iout=0 no detials
+c		iout=0 no details
 c		     1 details
 c		     2 summary
 c		    99 summary without limit to ccall
@@ -662,7 +662,7 @@ cr      if((ritrem(lrRes)/fac).le.small) then
       
 c
 c_____________________________________________________________
-c               Step 12; Find mininum downstream available flow
+c               Step 12; Find minimum downstream available flow
 c                       from destination location (isDes)
       
 c

@@ -908,11 +908,11 @@ c ______________________________________________________________________
 c		Step 17; Branch for operating rule specific processing
 c               For type 1, Reservoir to a ISF 
         if (ityopr(k).eq.1) goto 1001
-c               For type 2, Reservoir to diversion or reservior or Carrier
+c               For type 2, Reservoir to diversion or reservoir or Carrier
         if (ityopr(k).eq.2) goto 1002
 c               For type 3, Reservoir to a carrier
         if (ityopr(k).eq.3) goto 1003
-c               For type 4, Reservoir to a dversion by Exchange
+c               For type 4, Reservoir to a diversion by Exchange
         if (ityopr(k).eq.4) goto 1004
 c               For type 5, Reservoir storage by Exchange
         if (ityopr(k).eq.5) goto 1005
@@ -2094,7 +2094,7 @@ c
 c ---------------------------------------------------------
 c               b. Find source 1 a reservoir (type 2)
 c			itype=2 reservoir
-c			iacc=0 account may be 0 (treat porportionally)
+c			iacc=0 account may be 0 (treat proportionally)
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
         itype=2
@@ -3021,7 +3021,7 @@ c               of the source water rights location on stream
         iscd=idvsta(isd)
         ndns=ndnnod(iscd)
 c
-c               Search every river node downstram of the source
+c               Search every river node downstream of the source
 c               water rights structure (isd)
 c               to see if it can be serve the instream flow directly
         ifound=0
@@ -4743,7 +4743,7 @@ c
 c               Type 27 Reservoir or Reuse Plan (4 or 6) or
 c                 Accounting plan (11) to a Diversion or Reservoir 
 c			            or Plan or Instream Flow
-c			          If the source is a Resevoir the destination
+c			          If the source is a Reservoir the destination
 c			            Plan should be a type 9 (OOP Plan)
 c			          If the source is a Plan the 
 c			            Plan should be a Reuse plan (type 4 or 6) or
@@ -6261,7 +6261,7 @@ c                 with or without a Carrier,with or without
 c                 Reuse
 c                destination = a diversion or a reservoir or instream 
 c                   flow
-c                source 1 (iopsou(1,k) = a reservior
+c                source 1 (iopsou(1,k) = a reservoir
 c                source 2 (iopsou(3,k) = a reuse plan
 c                  ion=1 means turn off opr right if right is off
         ion=1
@@ -7486,7 +7486,7 @@ c		        iacc =0 Allow account to be 0
         iopsou(3,k)=nR
 c
 c ---------------------------------------------------------
-c               c3. Find source 2 a reservior water right (type 12)
+c               c3. Find source 2 a reservoir water right (type 12)
 c		    Note ion  =1 Turn original water right OFF
 c			ion  =0 Leave original water right ON
 c		   Note istop=0 Stop if not found
@@ -7855,7 +7855,7 @@ c		Check the plan specified is an OOP Plan
 c
 c ---------------------------------------------------------
 c               c1. Find destination Reservoir
-c                  Note itype=12 for a reservor ID
+c                  Note itype=12 for a reservoir ID
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
         itype=2
@@ -7869,7 +7869,7 @@ c
 c
 c ---------------------------------------------------------
 c               d1. Find source 1 a reservoir right
-c                   Note itype=12 for a reservor right ID
+c                   Note itype=12 for a reservoir right ID
 c		   Note istop=0 Stop if not found
 c		        istop=1 Do not Stop if not found
 c		        iacc=0 allows account to be 0
@@ -11629,7 +11629,7 @@ c ______________________________________________________________________
      1 '  Oprinp; Problem with *.opr rule ID = ', a12,' type ', i5,/  
      1 10x, 'The capability to read carrier data without a loss',/
      1 10x, '  factor is not operational.',/
-     1 10x, 'Reconmend you set variable OprLoss to a non zero',/
+     1 10x, 'Recommend you set variable OprLoss to a non zero',/
      1 10x, '  value to indicate carrier with loss data is provided',/
      1 10x, '  and provide carrier with loss data. Note if there',/
      1 10x, '  is no loss, set variable OprLoss = 0')
@@ -11941,7 +11941,7 @@ c
      1           'consistent with the above unless you are ',/
      1   '          simulating an unusual condition.',// 
      1   '    # Opr Id       OprType Source       PlnType ',
-     1   'Destination  Reconmended Destination',/
+     1   'Destination  Recommended Destination',/
      1   ' ____ ___________  _______ ___________  _______',
      1   ' ____________ _________________________')
      
@@ -12049,7 +12049,7 @@ cx
      1 ' Opring; Problem with Operating right        = ', a12,/
      1 '         the number of carriers              = ', i5,/
      1 '         exceeds the maximum (maxcary)       = ', i5,/
-     1 '         Reconmend you reduce the number or enhance',/
+     1 '         Recommend you reduce the number or enhance',/
      1 '         the StateMod dimension.')
  1191 format(/, 72('_'),/
      1 '  Oprinp; Problem with Operational right     = ', a12,/
@@ -12117,7 +12117,7 @@ cx
      1 10x,' The control file sprinkler switch (isprink) = ',i5,/
      1 10x,' but a type 21 (Sprinkler Use) operating rule',/
      1 10x,' is not provided or it is turned off.',/ 
-     1 10x,'Reconmend you revise the control file',/
+     1 10x,'Recommend you revise the control file',/
      1 10x,'or add a Type 21 operating rule')
      
  1202 FORMAT(/, 72('_'),/,
@@ -12173,15 +12173,15 @@ cx
      
  1211 format(/, 72('_'),/,
      1 '  Oprinp; Problem with Operational right           = ', a12,/
-     1 '          Operation type                           = ', i5,/     
-     1 10x,'The source is a reservor right           = ',a12,/
+     1 '          Operation type                           = ', i5,/
+     1 10x,'The source is a reservoir right           = ',a12,/
      1 10x,'Therefore the destination should be a reservoir and ',/
      1 10x,'there should be a carrier structure',/
      1 10x,'Recommend you adjust accordingly')
 
  1212 format(/, 72('_'),/,
      1 '  Oprinp; Problem with Operational right           = ',a12,/
-     1 '          Operation type                           = ', i5,/     
+     1 '          Operation type                           = ', i5,/
      1 10x,'The source is a diversion right          = ',a12,/
      1 10x,'that is located at diversion structure   = ',a12,/     
      1 10x,'that is located at the carrier structure = ',a12,/
@@ -12191,7 +12191,7 @@ cx
      
  1213 format(/, 72('_'),/,
      1 '  Oprinp; Problem with Operatingal right           = ', a12,/
-     1 '          Operation type                           = ', i5,/     
+     1 '          Operation type                           = ', i5,/
      1 10x,'This rule requires idum = 1 or -13 so that at least one',/
      1 10x,'(intern(i)) value is read. Note:',/
      1 10x,'For a type 40 rule intern(1) is an associated instream ',

@@ -521,7 +521,7 @@ cx   1              ' outJM (8a); np, pID,  ifound, k, ityopr iop',
 cx   1              ' i46, p46',/, a14, 1x,a12, 1x, 6i5,20f8.0)
 
   330  format(/,'  OutJM; Problem array size maxopr2 = 40 exceeded'/
-     1          '  Reconmend you revise Statem and common.inc')
+     1          '  Recommend you revise Statem and common.inc')
  
  340  format(/'  OutJM;',/
      1  '    Warning the *.xjm output file was designed',/

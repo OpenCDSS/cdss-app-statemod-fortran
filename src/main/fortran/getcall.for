@@ -40,7 +40,7 @@ c	imcdX= indicator from a previous iteration
 c	         0 calling right has never been set
 c		>0 calling right has been set previously
 c	cid1 = calling structure ID
-c	ctype1=calling type (Diversion, Instream, Reervoir, etc.)
+c	ctype1=calling type (Diversion, Instream, Reservoir, etc.)
 c	cname1=calling structure name
 c
 c _________________________________________________________
@@ -54,7 +54,7 @@ c rrb 2021/05/02; Runtime error tracking
       character cCallBy*12
       cCallBy = 'Getcall'
 c _________________________________________________________
-c	              Step 1; Initilze
+c	              Step 1; Initialize
 c
 c		iout = 0 no details
 c		       x details for diversion ID, instream ID,
@@ -140,7 +140,7 @@ c
      1  '  GetCall     yr  mon    day  Iter    nx Imcd0 ImcdX Imcd1',
      1  ' Str ID      Type        Call ID        Avail ',
      1  'Comment',/
-     1  ' ___________ ____ ____ _____ _____ _____ _____ _____ _____ ',      
+     1  ' ___________ ____ ____ _____ _____ _____ _____ _____ _____ ',
      1  '___________ ___________ ___________ ________ ',
      1  '_______________________')
  110  format('  GetCall   ',i5,1x,a4, 6i6, 1x,

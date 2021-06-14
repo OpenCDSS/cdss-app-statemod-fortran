@@ -1244,7 +1244,7 @@ cx
      1 4x, '  A type B Carrier to a reservoir IS NOT INCLUDED as a',/
      1 4x, '    diversion in a water budget report to avoid double',/
      1 4x, '    accounting with reservoir storage change',/
-     1 4x, '  A type B Carrier is identified when its demand is zero',/  
+     1 4x, '  A type B Carrier is identified when its demand is zero',/
      1 4x  '    and the Carried by Exchange or Bypass is non zero',//
 c     
 
@@ -1265,7 +1265,7 @@ cx
   900  format(
      1 ' OutDivC; Problem key output variables were developed',/
      1 10x,'Based on ', i5, ' output variables but ndivO = ', i4,/
-     1 10x,'Reconmend you revise OutBal2 appropriately')
+     1 10x,'Recommend you revise OutBal2 appropriately')
 
   930  FORMAT(/,72('_'), /,
      1  ' Outdivc; The following structure(s) were adjusted',/

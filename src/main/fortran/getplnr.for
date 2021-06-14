@@ -239,7 +239,7 @@ c    1 /,72('_'),
      1     'Warning the Plan Recharge file (*.plr)',/
      1 12x,'has a Reservoir ID = ', a12, /
      1 12x,'that is not in the Reservoir Station File (*.res)',/
-     1 12x,'Reconmend you revise the Plan Recharge File (*.plr)',/
+     1 12x,'Recommend you revise the Plan Recharge File (*.plr)',/
      1 12x,'or the Reservoir Station File (*.res)')
      
  228  format(/,72('_'),/
@@ -247,7 +247,7 @@ c    1 /,72('_'),
      1     'Warning the Plan Recharge file (*.plr)',/
      1 12x,'has a Plan ID = ', a12, 
      1 12x' that is not in the plan Plan File (*.pln)',/
-     1 12x,'Reconmend you revise the Plan Recharge File (*.plr)',/
+     1 12x,'Recommend you revise the Plan Recharge File (*.plr)',/
      1 12x,'or the Plan Station File (*.pln)')
      
  270  format(4x, a256)     
@@ -262,7 +262,7 @@ c               Error Tracking
      1 10x,' and Reservoir Station ID  = ', a12,/
      1 10x,' The Plan Type             = ', i3,/
      1 10x,' It should be  type =   8 (recharge)',/
-     1 10x,' Reconmend you revise the Plan res file (*.plR) or',/
+     1 10x,' Recommend you revise the Plan res file (*.plR) or',/
      1 10x,' the Plan Station file (*.pln)')
       goto 9999
 
@@ -296,7 +296,7 @@ c
      1 10x,' and Reservoir Station ID  = ', a12,/
      1 10x,' The account               = ', i3,/
      1 10x,' It should be > 0',/
-     1 10x,' Reconmend you revise the Plan res file (*.plR)')
+     1 10x,' Recommend you revise the Plan res file (*.plR)')
       goto 9999
       
  9999 write(6,1440) 

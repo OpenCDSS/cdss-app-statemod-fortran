@@ -26,7 +26,7 @@ c
 c       Outifr; It prints instream flow reach information
 c
 c _________________________________________________________
-c	Documentaion
+c	Documentation
 c               ndiv    number of columns of data in *.b43
 c               it      total supply from *.b43
 c
@@ -47,7 +47,7 @@ c
 
       ichk1=0
 c
-c rrb 00/06/22; Correction output file size incresed (it=total supply)
+c rrb 00/06/22; Correction output file size increased (it=total supply)
 c     it=8   
 c     ndiv = 23
       it=13

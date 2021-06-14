@@ -65,7 +65,7 @@ c
         
         issS=idcdS
 c
-c		Loop for every staion below the Source (idcdS)        
+c		Loop for every station below the Source (idcdS)        
         DO 110 NDr=1,NDNdR-1
           issD=idcdD
 c
@@ -105,7 +105,7 @@ c		Formats
      1 '  OprExp; Problem with Operating Rule ', a12,/
      1 '          The exchange point cannot be found',/ 
      1 '          Source = ', i5, ' Destination = ',i5,/
-     1 '          Reconmend you check:',/
+     1 '          Recommend you check:',/
      1 '            1. Can the destination can be served directly',/
      1 '            2. Is your network connected properly')
 c
