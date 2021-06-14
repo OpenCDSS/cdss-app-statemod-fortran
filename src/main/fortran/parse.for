@@ -18,7 +18,8 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
-        subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)   
+        ! subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)  ! smalers, 2021-06-14, maxfn not used
+        subroutine parse(nlog, ioptio, ioptio2, filenc, getid)
 c        
 c
 c _________________________________________________________
@@ -122,7 +123,7 @@ c rrb 2021/04/18; Compiler warning
       iexit=0
       if(iexit.gt.0) goto 500
 c
-      maxfn=maxfn
+      ! maxfn = maxfn  ! smalers, 2021-06-14, maxfn not used
       j1=0
  
 c               Step 1; Initialize

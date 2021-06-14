@@ -2797,7 +2797,7 @@ c rrb 2018/11/18; JMartin output
         endif
                                                               
         if(irepn.ge.1) then                           
-          write(nf,*) ' Replacement Reesrvoir Output: *.xrp'
+          write(nf,*) ' Replacement Reservoir Output: *.xrp'
         endif                                         
                                                       
         if(irg1+irg2.ge.1)                            
