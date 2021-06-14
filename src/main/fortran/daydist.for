@@ -644,7 +644,7 @@ c               Prorate daily to monthly total
           qd(32,is)=qd(32,is)/float(imd)
 c
 c              Print annual total (acft)
-c              Note type 4 and 14 are resevoirs, so in ac-ft
+c              Note type 4 and 14 are reservoirs, so in ac-ft
           if(ichk5.eq.1 .and. (ityp.eq.4 .or. ityp.eq.14)) then
               write(nlog,250) cid1(is), iyr, 13, -1, -1,
      1          qm(mon,is),qp(32),qd(32,is)

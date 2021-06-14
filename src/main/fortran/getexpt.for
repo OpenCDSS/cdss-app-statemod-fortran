@@ -112,7 +112,7 @@ c               Error with network
           goto 9999
         endif
 c
-c               Search every river node downstram of the reservoir
+c               Search every river node downstream of the reservoir
 c               to see if it can be served directly
 cr       do ndS=1,ndndS-1
 cr         if(issS.eq.idcdD) then

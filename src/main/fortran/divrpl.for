@@ -942,7 +942,7 @@ c
 c ---------------------------------------------------------  
 c		      
 c
-c grb 97/10/17; Efficiency reconmendation 
+c grb 97/10/17; Efficiency recommendation 
       if(divact.le.small) goto 290
 c
 c

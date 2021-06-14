@@ -29,7 +29,7 @@ c      Randfn; It reads in files in any order
 c              and parses thru them to get actual file name
 c              and store results in variable fileran
 c              Note files are ordered the same as the StateMod
-c              documentaion
+c              documentation
 c
 c              Tyical input is: '*.rsp = FileName.rsp'
 c              or               'Response: Filename.rsp'

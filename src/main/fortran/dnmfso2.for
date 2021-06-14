@@ -1,16 +1,33 @@
-C
-C-------------------------------------------------------------------
+c dnmfso2 - finds minimum flow at station and downstream, with calling routine
+c_________________________________________________________________NoticeStart_
+c StateMod Water Allocation Model
+c StateMod is a part of Colorado's Decision Support Systems (CDSS)
+c Copyright (C) 1994-2021 Colorado Department of Natural Resources
+c 
+c StateMod is free software:  you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
+c     the Free Software Foundation, either version 3 of the License, or
+c     (at your option) any later version.
+c 
+c StateMod is distributed in the hope that it will be useful,
+c     but WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+c     GNU General Public License for more details.
+c 
+c     You should have received a copy of the GNU General Public License
+c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
+c_________________________________________________________________NoticeEnd___
 C
       SUBROUTINE DnmFso2(maxsta, AVAIL ,IDNCOD,ISCD,NDNS,IMCD,
      1  cCallBy)
 c
 c
 c _________________________________________________________
-c	              Program Description
+c               Program Description
 c
 c       DnmFso2; It finds the minimum flow at station iscd
 c                and downstream.
-c		    Same as DnmFso but it includes cCallBy
+c                Same as DnmFso but it includes cCallBy
 c
 c _________________________________________________________
 c
@@ -31,7 +48,7 @@ c rrb 2021/05/02; Runtime error tracking
 C
 C-------------------------------------------------------------------
 C
-C------  FIND THE DOWNSTEAM MINMUM FLOW NODE OF STATION ISCD
+C------  FIND THE DOWNSTREAM MINIMUM FLOW NODE OF STATION ISCD
 C
 C-------------------------------------------------------------------
 C
@@ -89,4 +106,4 @@ c               Error warnings
 
 
       stop 
-      END      
+      END 

@@ -703,13 +703,13 @@ c
  310   format('  JMFlow; Monthly mode with code (ijm)= ',i5,/
      1        10x, 'The John Martin Flow (*.jmm) ID        = ', a12,/
      1        10x, 'does not equal the type 54 source 1 ID = ', a12,/
-     1        10x, 'Reconmend you revise the input data')
+     1        10x, 'Recommend you revise the input data')
 
  320   format('  JMFlow; Monthly mode with code (ijm)= ',i5,/
      1        10x, 'The Baseflow percent specified must be '
      1             ' greater than zero',/
      1        10x, 'But the value provided      = ',f8.2,/
-     1        10x, 'Reconmend you confirm the Monthly JMartin',
+     1        10x, 'Recommend you confirm the Monthly JMartin',
      1             'file (*.jmm) has been provided or if the baseflow',/
      1        10x, '% is less than or equal to zero in a month',
      1             'when the operating rule monthly switch is on')
@@ -728,7 +728,7 @@ c
      1        10x, 'Period of operation     = ',2i3,' - ', 2i3,/
      1        10x, 'Baseflow Average Period = ',2i3,' - ', 2i3,/
      1        10x, 'Enhanced Average Period = ',2i3,' - ', 2i3,/     
-     1        10x, 'Reconmend you revise operating rule type 54 input')
+     1        10x, 'Recommend you revise operating rule type 54 input')
      
 cx     
 cx        write(nlog,280) csour1, 

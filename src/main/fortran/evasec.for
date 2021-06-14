@@ -284,7 +284,7 @@ c
           dumx(ir) = curown(ir)
 c        
 c rrb 01/08/21; Note >= since 0 means distribute to all accounts
-c               porportional to their current storage
+c               proportional to their current storage
 c         if(ifix(pcteva(ir)).ge.0)  sum=sum+amax1(0.,curown(ir))
           if(ifix(pcteva(ir)).ge.0) then 
             curown(ir) = amax1(0.0, curown(ir))
@@ -397,12 +397,12 @@ c
         do 150 ir=iri,ire
           accr(24,ir) = 0.0
 c
-c               Note < since 0 implies distribute porportinally
+c               Note < since 0 implies distribute proportionally
           if(ifix(pcteva(ir)).lt.0) goto 150
 c
 c               Calculate percent to this account.
 c               Note if percent is 0; evap is distributed
-c               porportional to ownership
+c               proportional to ownership
           if(pcteva(ir).gt.small) then
             c=tev*pcteva(ir)/100.0 
           else

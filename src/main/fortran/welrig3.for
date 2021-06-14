@@ -452,7 +452,7 @@ c
       DIVACT=DIVALO
 c
 c_____________________________________________________________
-c               Step 17; Find mininum downstream station from
+c               Step 17; Find minimum downstream station from
 c		         the well
 c
 c     write(nlog,*) ' Welrig3; Step 17'

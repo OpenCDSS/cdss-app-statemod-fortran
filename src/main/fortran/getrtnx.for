@@ -449,7 +449,7 @@ cx
      1 11x '  where 1=isf, 2=res, 3=div, 4=power, 6=well and 7=plan',/
      1 11x,'The structure dimension (maxDivX)           = ', i5,/
      1 11x,'Exceeds the return flow dimension (maxRtnX) = ', i5,/
-     1 11x,'Reconmend you revise Statem.F & the common block',/
+     1 11x,'Recommend you revise Statem.F & the common block',/
      1 11x,'  (common.inc)')
  
       
@@ -472,7 +472,7 @@ c               Formats
      1  ' GetRtnX; Problem.',
      1  ' Number of return stations = ',i5, 
      1  9x, 'Exceeds the dimension = ', i5,/
-     1  ' Reconmend you revise the common block size')
+     1  ' Recommend you revise the common block size')
      
 cx 1260 format(36x,a12,f8.0,i8)
 cx 

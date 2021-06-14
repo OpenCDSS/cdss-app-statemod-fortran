@@ -65,7 +65,7 @@ c	Update History
 c
 c
 c rrb 2021/05/30; Runtime Error Tracking
-c                 Fix typo to initilized the SCALAR dcrdiv1, not 
+c                 Fix typo to initialized the SCALAR dcrdiv1, not 
 c                 the ARRAY dcrdiv
 c
 c rrb 2021/05/02; Runtime error tracking
@@ -254,7 +254,7 @@ c rrb 2021/04/18; Compiler warning
       divaloe=0.0
 c
 c rrb 2021/05/30; Runtime Error Tracking - Fix typo 
-c                 to initilized the SCALAR dcrdiv1, 
+c                 to initialized the SCALAR dcrdiv1, 
 c                 not the ARRAY dcrdiv
 cx    dcrdiv=0.0
       dcrdiv1=0.0
@@ -269,7 +269,7 @@ c rrb 2021/04/18; Runtime Error
       corid1=corid(l2)
       cCallBy='directwr    '
 c
-c		       iout=0 no detials
+c		       iout=0 no details
 c		            1 details
 c		            2 summary 
 c          ioutp=1 details of plan operation

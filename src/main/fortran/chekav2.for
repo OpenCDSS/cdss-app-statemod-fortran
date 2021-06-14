@@ -32,7 +32,7 @@ c	Program Description
 c
 c       Chekav2; Similar to Chekava.
 c                It checks the entire Avail array by finding the
-c                mininum value and warning if < 0.
+c                minimum value and warning if < 0.
 c		             But instead of stopping, it returns the most 
 c                negative value. 
 c
@@ -46,7 +46,7 @@ c   Divalt, Reodep, RivRtn
 c
 c _________________________________________________________
 c
-c	Documentaion
+c	Documentation
 c		icall	calling routine
 c		maxsta	dimension for maximum number of stations
 c

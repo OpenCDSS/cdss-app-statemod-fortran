@@ -83,7 +83,7 @@ c rrb 98/03/03; Daily capability
 c
 c ---------------------------------------------------------
 c rrb 2021/05/15; Runtime Error Tracking.  
-c                 Initilize Source reservoir (nr) if
+c                 Initialize Source reservoir (nr) if
 c                 routine makes a quick exit          
       NR  =IOPSOU(1,L2)
 c _________________________________________________________

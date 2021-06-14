@@ -189,7 +189,7 @@ cx   1          divsum, ireop, ichkx, 18, divo(18)*fac
         endif
 c
 c _________________________________________________________
-c          Step X; Printout for Ichk=9, Reopeation details
+c          Step X; Printout for Ichk=9, Reoperation details
         if(ichk.eq.9 .or. ichk.eq.109) then
           if(iwx.eq.2) write(nlog,522) ichk
 c

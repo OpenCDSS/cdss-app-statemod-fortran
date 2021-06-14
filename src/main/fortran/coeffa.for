@@ -51,7 +51,7 @@ c
 c _________________________________________________________
 c               Step 1; Initialize
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
       iexit=0
       if(iexit.gt.0) goto 500
       
@@ -91,11 +91,11 @@ c     write(99,210)
      1         ' with area = ', f8.2, ' Set ca = ', f8.2)
     
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx 200  format('    Stopped in Coeffa (Bomsec)',/,
 cx     1       '    See the *.log file')
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx210  format('    Stopped in Coeffa (Bomsec)')
 c     write (6,*) 'Stop 1'
 c     call flush(6)

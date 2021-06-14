@@ -116,7 +116,7 @@ c
       iwhy=0
       cwhy='N/A'      
 c
-c rrb 2021/05/22; Runtime Error Tracking. Initilize 
+c rrb 2021/05/22; Runtime Error Tracking. Initialize 
 c                 Source reservoir #1 (nr) if
 c                 routine makes a quick exit          
       NR  =iopdes(1,l2)  
@@ -482,7 +482,7 @@ c               Error warnings
  512  format(
      1 '  ResRgP; Problem a Type 41 Operating Rule requires',/
      1 '          Out-of-Priority Plan data',/
-     1 '          Reconmend you revise the operating rule (*.opr) file')
+     1 '          Recommend you revise the operating rule (*.opr) file')
       goto 9999
       
  9999 write(6,1050) 

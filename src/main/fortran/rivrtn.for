@@ -339,7 +339,7 @@ c                       (ndtype=3)
 c
       if(ndtype.eq.3) then
 c
-c		Initialize Dumx to Avatemp before return adjustments      
+c		Initialize Dumx to AVTEMP before return adjustments      
 c		so they can be removed if the diversion gets adjusted
         do is=1,numsta
           dumx(is)=avtemp(is)
@@ -360,7 +360,7 @@ cx      CALL RtnSecX(icx,divactL,L2,iuse,idcdX,nd,ieff2,
         endif
 
 c
-c		Store currrent returns in dumx 
+c		Store current returns in dumx 
 c		so they can be removed if the diversion gets adjusted
         do is=1,numsta
           dumx(is)=avtemp(is)- dumx(is)
@@ -423,7 +423,7 @@ c
 c _________________________________________________________      
 c
 c		            Step 8a; If the system is negative; reduce the
-c		                     diverson and release accordingly
+c		                     diversion and release accordingly
 c 
 c     adjChk=adj-smallN
       adjChk=adj
@@ -438,7 +438,7 @@ c		Note effX is the actual efficiency with carrier loss
           adj3=adj/(1.0-(1.0-effX))
 c
 c rrb 2008/12/17; Limit the adjustment to 80% 
-c		    Necessary to converge; especailly when the calling
+c		    Necessary to converge; especially when the calling
 c		    right amy change between iterations
 c
 c rrb 2011/10/15;
@@ -448,7 +448,7 @@ cx        adj3=amax1(adj3, -1.0*divactL*0.8)
         endif
 c
 c ---------------------------------------------------------
-c rrb 2008/10/20; Rejust if adjustment is too large
+c rrb 2008/10/20; Readjust if adjustment is too large
         if(divactL+adj3.lt.small) then
           adj=adj2
         endif  
@@ -516,7 +516,7 @@ c
           divactL0=divactL
 c          
 c rrb 2008/12/17; Limit the adjustment to 80% 
-c		    Necessary to converge; especailly when the calling
+c		    Necessary to converge; especially when the calling
 c		    right may change between iterations
 c
 c rrb 2011/10/15;

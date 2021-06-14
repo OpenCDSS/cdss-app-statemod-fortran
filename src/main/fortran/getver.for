@@ -73,7 +73,7 @@ c		Error Processing
   410 format(/,
      1 72('_'),/
      1 '  GetVer; Problem reading version number',/ 
-     1 '    Reconmend you check the format looks like the',
+     1 '    Recommend you check the format looks like the',
      1    ' following (note no =)',/,
      1 '    #FileFormatVersion 2 or # FileFormatVersion')
       goto 9999      

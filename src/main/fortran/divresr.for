@@ -36,7 +36,7 @@ c _________________________________________________________
 c	Update history
 c
 c rrb 2021/05/22; Runtime Error Tracking; 
-c                   Initilize Source reservoir (nr) if
+c                   Initialize Source reservoir (nr) if
 c                     the routine makes a quick exit
 c
 c rrb 2021/05/02; Runtime error tracking
@@ -266,7 +266,7 @@ c          2 summary
 c          3 details of plan storage   
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
       iexit=0
       if(iexit.gt.0) goto 500
 
@@ -362,7 +362,7 @@ cx    if(rec12(1:6).eq.'Direct') ndirect=1
       loprR=0
       noprS=0
 c
-c rrb 2021/05/22; Runtime Error Tracking. Initilize 
+c rrb 2021/05/22; Runtime Error Tracking. Initialize 
 c                 Source reservoir #1 (nr) if
 c                 routine makes a quick exit          
       NR  =IOPSOU(1,l2)          
@@ -624,7 +624,7 @@ c
 c ---------------------------------------------------------
 c               4e. Carrier system data 
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
 cx120 if(ityopr(l2).ne.10) then
       if(ityopr(l2).ne.10) then
         if(intern(l2,1).gt.0) then
@@ -1375,7 +1375,7 @@ cx00  write(nlog,910) corid(l2), diveff1*100.
      1 ' DivResR (Type 32); Problem with Operation Right ID = ', a12,/
      1 '         The destination efficiency = ', f8.2,/
      1 '         when operating the reservoir release as a Depletion.',/
-     1 '          Reconmend you revise efficiency or operate as a ',
+     1 '          Recommend you revise efficiency or operate as a ',
      1 'Diversion')
       goto 9999
       

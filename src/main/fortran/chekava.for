@@ -25,7 +25,7 @@ c _________________________________________________________
 c	Program Description
 c
 c       Chekava; it checks array Avail by finding the
-c                mininum value and warning if < 0.
+c                minimum value and warning if < 0.
 c
 c
 c _________________________________________________________
@@ -43,7 +43,7 @@ c   Splatte,  WelAugP,  WelPrity, FlowRes
 
 c _________________________________________________________
 c
-c	Documentaion
+c	Documentation
 c		icall	calling routine
 c		maxsta	dimension for maximum number of stations
 c               numsta  number of downstream stations

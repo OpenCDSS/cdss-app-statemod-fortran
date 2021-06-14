@@ -638,7 +638,7 @@ c 954  format(i4, 1x, a12, 3f6.0, 2f8.0, f12.0, f3.0, f8.0)
  1281  FORMAT(/,72('_'),/
      1  '  GetIpy4; Warning See *.chk for details in year',i5,/
      1  '          Regarding file: ',a40,/
-     1  '          Note only first occurance (year) is printed')
+     1  '          Note only first occurrence (year) is printed')
 
  1315 FORMAT(/,
      1  72('_'),//  
@@ -679,7 +679,7 @@ cx    1  72('_'),//
 cx    1 '  GetIpy4; Warning in *.ipy or *.tsp',/
 cx    1 '           the number of data points read = ', i8,/
 cx    1 '           that is too small.  ',/
-cx    1 '           Reconmend you revise GetIpy4.for')
+cx    1 '           Recommend you revise GetIpy4.for')
      
  1322 format(i5, i5, 1x, a12,1x 20f10.2)
  

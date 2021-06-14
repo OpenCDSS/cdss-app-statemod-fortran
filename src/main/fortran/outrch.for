@@ -194,14 +194,14 @@ c910  write(nlog,911) cdivid(nd)
 c911  format(/, 72('_'),/,
 c    1 ' OutRch; Problem cannot locate Ditch ID ',a12,/
 c    1 '         in a reach',/
-c    1 '         Reconmend you review the Reach data in *.rch')
+c    1 '         Recommend you review the Reach data in *.rch')
 c     goto 9990
       
  920  write(nlog,921) maxrch, nreach
  921  format(/, 72('_'),/,
      1 ' OutRch; Problem the # of reaches             = ', i5,/
      1 '         is less than the number of gages + 1 = ', i5,/
-     1 '         Reconmend you revise the reach dimension')
+     1 '         Recommend you revise the reach dimension')
       goto 9990
       
  9990 write(6,9991) 

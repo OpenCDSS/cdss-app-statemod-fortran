@@ -796,7 +796,7 @@ cx     1  '          Has a return flow to river ID: ',a12)
 cx 1285  FORMAT(/,
 cx     1 '  GetDiv; Warning the following structure(s) return water',/
 cx     1 10x,'to at least one non-downstream node. Only the first',/ 
-cx     1 10x,'non-downstream occurance is printed per structure.',/
+cx     1 10x,'non-downstream occurrence is printed per structure.',/
 cx     1 10x,'Note, a non-downstream return is OK but it can cause',/ 
 cx     1 10x,'the system to reoperate and impact performance if',/
 cx     1 10x,'the immediate (current month or days) return flow',/

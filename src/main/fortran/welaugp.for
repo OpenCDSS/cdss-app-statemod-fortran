@@ -493,7 +493,7 @@ c			Note array Avtemp has the current impact
 c			(depletion is a - and return flow is a +) of 
 c                       this well. Therefore the current Augmentation
 c                       obligation (Pobl( )) is the maximum impact
-c                       downstream of the well (Balace Point)
+c                       downstream of the well (balance point)
 c			Note Avtemp includes net - depletion + returns
 c rrb; 2006/03/26; 
       if(ipAug.gt.0) then   

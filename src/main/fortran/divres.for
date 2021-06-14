@@ -41,7 +41,7 @@ c rrb 2021/05/22; Runtime Error Tracking;
 c                   Separate the following if statement 
 c                     if(iresw.eq.0.and.IRTURN(IUSE).EQ.4)
 c                     where iuse is not defined if iresw=1
-c                   Initilize Source reservoir (nr) if
+c                   Initialize Source reservoir (nr) if
 c                     the routine makes a quick exit
 c
 c rrb 2021/05/02; Runtime error tracking
@@ -323,7 +323,7 @@ c		e. Detailed output data
       nd  =iopdes(1,lr)
       cDest='NA'   
 c
-c rrb 2021/05/22; Runtime Error Tracking. Initilize 
+c rrb 2021/05/22; Runtime Error Tracking. Initialize 
 c                 Source reservoir #1 (nr) if
 c                 routine makes a quick exit          
       NR = IOPSOU(1,Lr) 
@@ -473,7 +473,7 @@ c 100 nd  =iopdes(1,lr)
       endif 
 c     write(nlog,*) '  Divers; lr, ityopr = ', ityopr(lr)    
 c
-c               a. Initilize iresw=0 where iresw=0 for a diversion       
+c               a. Initialize iresw=0 where iresw=0 for a diversion       
       iresw=0
 c
 c ---------------------------------------------------------
@@ -545,7 +545,7 @@ c               d. Check
 cx      WRITE(6,360)    lr,IDCD,NR,IPCD,IYR,IMO
 cx      goto 9999  
 c
-c rrb 2021/05/02; Runtime Errorsimplification
+c rrb 2021/05/02; Runtime Error simplification
       endif
 c
 c
@@ -573,7 +573,7 @@ c               f. Additional non carrier data
 c
 c
 c ---------------------------------------------------------
-c               Exit if not a reservior and no demand
+c               Exit if not a reservoir and no demand
 c
 c rrb 2021/05/02; Runtime error since iuse is not defined if 
 c                 not a diversion (iresw=0
@@ -607,8 +607,8 @@ c
 c
 c ---------------------------------------------------------
 c               b. Demand for a diversion called by Replace
-c                  (irep=1). Limit diversion to the remaing 
-c                  decree (dcrdivx-divdx)	
+c                  (irep=1). Limit diversion to the remaining 
+c                  decree (dcrdivx-divdx)
 cx      write(nlog,*) '  Divres_4; nd, lr, iuse', nd, lr, iuse
         if(irep.ne.0)  
      1    divalo=amin1(dcrdivx-divdx,divreq(iuse),
@@ -978,7 +978,7 @@ c
 c ---------------------------------------------------------
 c                i. Adjust release (RELACT) to be old release
 c                   plus the lesser of return
-c                   flows (RETOT) and water availablity
+c                   flows (RETOT) and water availability
 c                   W/RETURN FLOWS(AVTEMP)
       retot= avwret(imcd)*divact
       relact=relact+AMIN1(avtemp(imcd),retot)
@@ -992,7 +992,7 @@ c                       flow adjustments) and from a goto statements
 c                       that allow return flows to be ignored when
 c                       1. the destination is a diversion with no
 c                          returns (irturn()=4), or
-c                       2. releaseing for diversion iopsou(4,lr>0) or
+c                       2. releasing for diversion iopsou(4,lr>0) or
 c                       3. the destination is a reservoir (iresw=1) or
 c                       4. no return flow locations (iri>ire)
 c
@@ -1065,7 +1065,7 @@ c		  Note:
 c		   iResT1=0 distributes based on ownership ratio
 c		   nrown1=number of accounts in this reservoir
 c		   iown = first account associated with this reservoir  
-c		   icx  = subrouine calling accou.for       
+c		   icx  = subroutine calling accou.for       
 c		   ia   = account to adjust
       
         nrX=nd
@@ -1291,7 +1291,7 @@ c               Note set to reservoir release (relact)
 c               not diversion (divact) since may have released
 c               for depletion
 c
-c rrb 04/18/97; Change reconmended by R. Bethel
+c rrb 04/18/97; Change recommended by R. Bethel
 c 342 divo(lr)=divo(lr)+divact
 
       divo(lr)=divo(lr)-relact

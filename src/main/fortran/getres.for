@@ -260,7 +260,7 @@ c               Therefore stop if sample gage is provided.
           endif
         endif
 c
-c rrb 12/12/94; Code Enhansement;     
+c rrb 12/12/94; Code Enhancement;     
 c               Set default administration date to Nov 1
         if(rdate(nr).eq.0) rdate(nr)=11
  
@@ -352,7 +352,7 @@ C
           CURSTO(NR)=CURSTO(NR)+CUROWN(J)
           ctot = ctot+ownmax(j)                       
 c
-c rrb 2021/04/18; Compiler warningc
+c rrb 2021/04/18; Compiler warning
 cx        if(ifix(pcteva(j)).ge.0)  sum=sum+amax1(0.,pcteva(j))
           if(ifix(pcteva(j)).ge.0)  sum=sum+max(0.,pcteva(j))
           if(abs(pcteva(j)).lt.small) iwarnx=1
@@ -388,7 +388,7 @@ cr        if(iprintr.eq.0) write(nlog,1281) rec32
         goto 9999
       endif
 c
-c rrb 04/07/96 Check precip assignment is ok               
+c rrb 04/07/96 Check precipitation assignment is ok               
       if(sum.gt.0.001 .and. sum.lt.100.0) then
         write(6,1110) cresid(nr), sum
         write(nlog,1110) cresid(nr), sum
@@ -404,7 +404,7 @@ c rrb 2006/05/30; Additional check
       
 c
 c rrb 01/08/21; Check than there is not a mix of % data and 
-c               porportinal (pcteva()=0)
+c               proportional (pcteva()=0)
       if(sum.gt.small .and. iwarnx.eq.1) then
         write(6,1110) cresid(nr), sum
         write(nlog,1110) cresid(nr), sum
@@ -649,7 +649,7 @@ c
 c _________________________________________________________
 c
 c               Step X; Get Reservoir return flow data (*.rrf)
-c               NOte: Originally developed for Recharge Plans
+c               Note: Originally developed for Recharge Plans
 c               but works generically to route seepage
 c               to the stream as a return flow 
 c
@@ -831,7 +831,7 @@ cx     1  ' recommend you revise the common block size')
      1  '    but initial content of           ', f12.0)
      
  1110  FORMAT(/,
-     1   '  GetRes; Warning Reservor ID ',a12,/
+     1   '  GetRes; Warning Reservoir ID ',a12,/
      1   '          Has a precip type total = ', f12.2,/,
      1   '          Note: Total of non negatives should be 0 for',/
      1   '          proration or 100% for percentage approach.',/
@@ -909,7 +909,7 @@ cx 1432 format(3i8, f8.0)
  1470  format(/,72('_'),/
      1   ' GetRes; Problem',
      1   ' two reservoirs at the same river node',/
-     1   '         Reservor IDs = ', a12, 1x, a12)
+     1   '         Reservoir IDs = ', a12, 1x, a12)
 c
 c               Error Tracking
 c _________________________________________________________

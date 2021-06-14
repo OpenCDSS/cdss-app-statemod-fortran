@@ -27,9 +27,9 @@ c
 c
 c _____________________________________________________________
 c	Program Description
-c	    It calculates the Modified Direct Solution Algorythm  
-c	    Specifically it esitmates the diversion (divact) and
-c	    minimum available flow (pavail) given the demand (divalo)	
+c	    It calculates the Modified Direct Solution Algorithm  
+c	    Specifically it estimates the diversion (divact) and
+c	    minimum available flow (pavail) given the demand (divalo)
 c
 c _____________________________________________________________
 c	Update History
@@ -170,7 +170,7 @@ c rrb 2009/05/26; Correction
       iwhy=0
       cwhy='NA'
 c_____________________________________________________________
-c               Step 2; Find mininum downstream flow (pavail)
+c               Step 2; Find minimum downstream flow (pavail)
 c          
 cx      if(iout.eq.1) write(nlog,*) '  DsaMod; iscd, ndns,     ', 
 cx     1  iscd, ndns

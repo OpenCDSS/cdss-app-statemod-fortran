@@ -756,7 +756,7 @@ cx 1262  format(36x,a12,f8.0,a12)
      1 '          they must be located at the same river ID',/
      1 '          Well Station ', a12,' is located at river ID: ',a12,/
      1 '          Div Station  ', a12,' is located at river ID: ',a12,/
-     1 '          Reconmend you revise the location data or',/
+     1 '          Recommend you revise the location data or',/
      1 '          the variable that indicates they are tied (idvcow2)')
      
  

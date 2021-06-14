@@ -129,7 +129,7 @@ c _________________________________________________________
 c
 c
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
       maxfn=maxfn
       j1=0
       j=0

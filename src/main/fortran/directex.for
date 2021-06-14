@@ -257,7 +257,7 @@ c rrb 2021/04/18; Compiler warning
       cCallBy='DirectEx    '
 c
 c          iout details if requested in *.ctl file
-c		       ioutX=0 no detials
+c		       ioutX=0 no details
 c		            1 details
 c		            2 summary 
 c          ioutp=1 details of plan operation

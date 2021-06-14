@@ -44,7 +44,7 @@ c                                0,1=100% replacement
 c                                -1=depletion replacement
 c                                -999 no replacement
 c               reprnk(lx)    = Replacement reservoir admin #
-c               reprnkx       = Most senior replacement reservoir admni #
+c               reprnkx       = Most senior replacement reservoir admin #
 c
 c               iout          = 0 no detailed printout
 c                               1 yes detailed printout
@@ -60,7 +60,7 @@ c               Step 1; Initialize
 
         iout = 0                                    
         if(iout.ge.1) write(io99,*)
-     1     '  Getrep; Replacement reservior provided', n,k
+     1     '  Getrep; Replacement reservoir provided', n,k
 
         irepk(n)   = k
         irepnr(n)  = iopsou(1,k)
@@ -95,7 +95,7 @@ c
 c               Error with network
           if(issr.eq.0.or.ndndr.le.1) goto 180
 c
-c               Search every river node downstram of the reservoir
+c               Search every river node downstream of the reservoir
 c               to see if it can be served directly
           if(iout.eq.1) write(nlog,*) '  GetRep; ndndr-1', ndndr-1
           do 100 ndr=1,ndndr-1

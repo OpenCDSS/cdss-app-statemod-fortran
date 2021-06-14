@@ -549,7 +549,7 @@ c
       DIVACT=DIVALO
 c
 c_____________________________________________________________
-c               Step 17; Find mininum downstream station from
+c               Step 17; Find minimum downstream station from
 c		         the well
 c
 c
@@ -778,7 +778,7 @@ c
 c
 c ---------------------------------------------------------
 c		a. Set the net plan obligation (PNetObl) to the
-c                  mininum value in Avtemp that contains the impact 
+c                  minimum value in Avtemp that contains the impact 
 c                  of this well only on the entire network.
 c                  Note call dnmfso (not dnmfsoW) to get min from the
 c	                 well (balance point) downstream

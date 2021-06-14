@@ -37,13 +37,13 @@ c rrb 2021/05/22; Runtime Error Tracking
 c                 Correct error on call Chekres (change mon to mon,)
 c
 c rrb 2021/05/15; Runtime Error Tracking and
-c                 Initilize Source reservoir (nr) if
+c                 Initialize Source reservoir (nr) if
 c                 routine makes a quick exit          
 c                 
 c rrb 2021/04/18; Compiler warning
 c
 c 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
-c             From Storage to River for Exchangec Carried, Other 
+c             From Storage to River for Exchange Carried, Other 
 c
 c 2003/13/96; initialize divact, send returns to bottom & set divo
 c
@@ -114,7 +114,7 @@ c rrb 98/03/03; Daily capability
       cTandC='No'
 c
 c rrb 2021/05/15; Runtime Error Tracking.  
-c                 Initilize Source reservoir (nr) if
+c                 Initialize Source reservoir (nr) if
 c                 routine makes a quick exit          
       NR  =IOPSOU(1,L2)           
 c
@@ -214,7 +214,7 @@ C
       POWREL(NR) = POWREL(NR)+DIVACT
 c
 c rrb 2020-04-03; Add qdiv(38 to .xdd (column 11) reporting to include
-c                 From Storage to River for Exchangec, Carried, Other 
+c                 From Storage to River for Exchange, Carried, Other 
       qdiv(38,iscd) = qdiv(38,iscd) + divact  
 C
 c rrb 02/05/97; Distribute to account assigned (iopsou>0) or

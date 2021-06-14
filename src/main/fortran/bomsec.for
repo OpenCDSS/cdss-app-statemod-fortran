@@ -80,7 +80,7 @@ c _________________________________________________________
 c     Dimensions
       include 'common.inc'
 c
-c rrb 2021/04/18; Compiler not used or initilize
+c rrb 2021/04/18; Compiler not used or initialize
       iexit=0
       if(iexit.gt.0) goto 500
       rnextar=0.0
@@ -1492,14 +1492,14 @@ cx     1        ' set to average = ', f8.2, ' for well ID ',a12)
      1  '          Out-of-Priority diversions to a reservoir or',/
      1  '          diversion are now controlled by a type 38',/
      1  '          operating rule',/
-     1  '          Reconmend you delete the OOP reservoir right',/
+     1  '          Recommend you delete the OOP reservoir right',/
      1  '          and add a type 38 operating rule')
 
      
  1281  FORMAT(/,72('_'),/
      1  '  BomSec;  Warning See *.chk for details in year', i5,
      1  ' regarding ',a24,/
-     1  '           Note only first occurance (year) is printed')
+     1  '           Note only first occurrence (year) is printed')
 
 
 c
