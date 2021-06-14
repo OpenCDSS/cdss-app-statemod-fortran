@@ -111,17 +111,26 @@ c               Step 2; Get option type
 c rrb 01/08/19; Moved the following to top before call to datinp
 c
   130 if(ioptio2.gt.0) then
+        ! Report format was properly specified, such as on command line.
         iopout = ioptio2
       else
+        ! Ask user to specify the report format.
         write(6,190)
         call flush(6)
-        read (5,'(i5)') ioptio2          
+        read (5,'(i5)') ioptio2
         write(nlog,*) '  Report from screen option = ', ioptio2
 
-        if(ioptio2.eq.0) then
-          goto 210          
+        if(ioptio2.lt.0 .or. ioptio2.gt.24) then
+          write(6,*) 'Invalid option: ', ioptio2
+          ioptio = 0  ! Set to zero to force prompt and avoid infinite loop.
+          goto 130
         endif
-      endif        
+
+        if(ioptio2.eq.0) then
+          ! Want to exit the menu.
+          goto 210
+        endif
+      endif
 
       if(ioptio2.gt.maxrpt) then
         ioptio2 = 0
@@ -1368,7 +1377,7 @@ c     write(nlog,501) ctimed*60.0, ctimed*60./float(iye-iys+1)
       if(filenO(1:2).ne.'NA') then
         write(6,270) filenO
         write(nlog,270) filenO
-      else
+      else if ( ioptio2 .ne. 0 ) then
         write(6,272) 
         write(nlog,272)
       endif  
@@ -1401,37 +1410,39 @@ c               Formats
 
 cx  180 FORMAT(7I2)
 cx  
+      ! The following should agree with 'parse.for' command line options.
   190 FORMAT(//,
-     1 ' Report; The report option provided (if any) cannot be found',/
-     1 '         Note StateM.log contains the command provided',/
-     1          ' To stop or get a report enter one of the following',/
-     1          '  0 : Stop (NA)                      ',/,
-     1          '  1 : Data Printed to Binary files (*.xbn, *.xbr',/,
-     1          '  2 : Detailed Node Accounting (*.xnm,*.xna) ',/,
-     1          '  3 : Water Balance (*.xwb, *.xgw) ',/,
-     1          '  4 : Water Right List (*.xwr) '/,
-     1          '  5 : Water Supply (*.xsu) ',/,
-     1          '  6 : Graph Data for Reservoirs (*.xrg)',/,
-     1          '  7 : Graph Data for Diversions and Gauges (*.xdg)',/,
-     1          '  8 : Comparison for Reservoirs (*.xrc)',/,
-     1          '  9 : Coomparison Diversion (*.xdc)',/
-     1          ' 10 : Consumptive Use Model Report (*.xcu, *.xsu, ',/
-     1          '      *.xsh, *.xev, *.xwd)',/
-     1          ' 11 : Stream Information File Report (*.xrx)',/
-     1          ' 12 : Comparison Stream (*.xsc)',/
-     1          ' 13 : Standard Reports (*.xdd, *.xre, *.xop, *.xir',/
-     1          '      *.xss)',/
-     1          ' 14 : Shortage Summary (*.xsh)',/
-     1          ' 15 : Structure List (*.xdl)',/
-     1          ' 16 : Selected Parameter (*.xsp, *.xs2)',/
-     1          ' 17 : Graph Data for Wells (*.xwg)',/
-     1          ' 18 : Comparison for Wells (*.xwc)',/
-     1          ' 19 : Daily Selected Parameter (*.xds, *.xd2)'/
-     1          ' 20 : No Log (NA)'/,     
-     1          ' 21 : Plan Summary (*.xpl)',/
-     1          ' 22 : Well Plan Summary (*.xwp)',/
-     1          ' 23 : Aug plan to Well Structures (*.xpw)',/
-     1          ' 24 : Reach Report (*.xrh)',/)
+c    smalers, 2021-06-14 the following should not be needed.
+c             Either valid command line was used or interactive value is checked below.
+c    1 ' Report; The report option provided (if any) cannot be found',/
+c    1 '         Note statem.log contains the command provided',/
+     1 ' Enter one of the following to stop or create a report:',/
+     1 '  0 : Stop (NA) - return to main menu',/,
+     1 '  1 : Data Printed to Binary files (*.xbn, *.xbr)',/,
+     1 '  2 : Detailed Node Accounting (*.xnm, *.xna) ',/,
+     1 '  3 : Water Balance (*.xwb, *.xgw) ',/,
+     1 '  4 : Water Right List (*.xwr) '/,
+     1 '  5 : Water Supply (*.xsu) ',/,
+     1 '  6 : Graph Data for Reservoirs (*.xrg)',/,
+     1 '  7 : Graph Data for Diversions and Gauges (*.xdg)',/,
+     1 '  8 : Comparison for Reservoirs (*.xrc)',/,
+     1 '  9 : Coomparison Diversion (*.xdc)',/
+     1 ' 10 : Consumptive Use Model Report (*.xcu, *.xsu, ',
+     1 '*.xsh, *.xev, *.xwd)',/
+     1 ' 11 : Stream Information File Report (*.xrx)',/
+     1 ' 12 : Comparison Stream (*.xsc)',/
+     1 ' 13 : Standard Reports (*.xdd, *.xre, *.xop, *.xir, *.xss)',/
+     1 ' 14 : Shortage Summary (*.xsh)',/
+     1 ' 15 : Structure List (*.xdl)',/
+     1 ' 16 : Selected Parameter (*.xsp, *.xs2)',/
+     1 ' 17 : Graph Data for Wells (*.xwg)',/
+     1 ' 18 : Comparison for Wells (*.xwc)',/
+     1 ' 19 : Daily Selected Parameter (*.xds, *.xd2)'/
+     1 ' 20 : No Log (NA)'/,
+     1 ' 21 : Plan Summary (*.xpl)',/
+     1 ' 22 : Well Plan Summary (*.xwp)',/
+     1 ' 23 : Aug plan to Well Structures (*.xpw)',/
+     1 ' 24 : Reach Report (*.xrw)',/)
 c
 c rrb 2021/04/18; Compiler warning
 cx  200   FORMAT(//,'  Report; OUTPUT OPTION :',/,
@@ -1540,4 +1551,4 @@ c
 c rrb 20100208; Correction
       ioptio2=0
       return
-      END     
+      END

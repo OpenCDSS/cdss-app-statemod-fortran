@@ -18,17 +18,18 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
-        subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)   
+        ! subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)   ! smalers, 2021-06-14, maxfn not used
+        subroutine parse(nlog, ioptio, ioptio2, filenc, getid)
 c        
 c
 c _________________________________________________________
 c       Program Description
 c
-c       Parses the command line to find request
-c       modified to support the gfortran method
-c       of accessing command line arguments.
+c       Parses the command line, using code that is compatible with gfortran.
 c       Parsing occurs by searching the entire command line for
 c       recognized substrings.
+c       Each option rescans the entire command line,
+c       which is different than parsing approaches for other languages.
 c
 c _________________________________________________________
 c       Update History
@@ -66,63 +67,106 @@ c rrb 00/08/04; Revise maximum command line length
         character command*512, want*12, want2*12, rec12*12, filenc*256,
      1            getid*12,  wantx*12, titleh*50,
      1            gettyp*12, getpar*12, rec1*1
-        ! Variables for the new command line arg functions.
+        ! Variables for the new command line argument functions.
         character(len=512) :: cmdline
         integer iarg
         character(len=100) :: dummy
         integer iarglen
         integer istatus
-        data want/
-     1     '-baseflow   ', '-simulate   ',
-     1     '-report     ', '-check      ', '-version    ',
-     1     '-help       ', '-update     ', '-simulatex  ', 
-     1     '-baseflowx  ', '-warranty   ', '-conditions ',
-     1     '-contact    ', '-test       ', '            ',
+        ! The following are primary command line arguments using long names.
+        ! The number and order should agree with 'wantx' below.
+        data want/          ! Interactive menu 0 is 'Stop'
+     1     '-baseflow   ',  ! Interactive menu 1
+     1     '-simulate   ',  ! Interactive menu 2
+     1     '-report     ',  ! Interactive menu 3
+     1     '-check      ',  ! Interactive menu 4
+     1     '-version    ',  ! Interactive menu 5
+     1     '-help       ',  ! Interactive menu 6
+     1     '-update     ',  ! Interactive menu 7
+     1     '-simulatex  ',  ! Interactive menu 8
+     1     '-baseflowx  ',  ! Interactive menu 9
+     1     '-warranty   ',
+     1     '-conditions ',
+     1     '-contact    ',
+     1     '-test       ',
+     1     '            ',
      1     'N/A         '/
-        data wantx/
-     1     '-base       ', '-sim        ',
-     1     '-rep        ', '-chk        ', '-v          ',
-     1     '-h          ', '-up         ', '-simx       ', 
-     1     '-basex      ', '-w          ', '-c          ',
-     1     '-cx         ', '-t          ', '            ',
+        ! The following are primary command line arguments using short names.
+        ! The number and order should agree with 'want' above.
+        data wantx/         ! Interactive menu 0 is 'Stop'
+     1     '-base       ',  ! Interactive menu 1
+     1     '-sim        ',  ! Interactive menu 2
+     1     '-rep        ',  ! Interactive menu 3
+     1     '-chk        ',  ! Interactive menu 4
+     1     '-v          ',  ! Interactive menu 5
+     1     '-h          ',  ! Interactive menu 6
+     1     '-up         ',  ! Interactive menu 7
+     1     '-simx       ',  ! Interactive menu 8
+     1     '-basex      ',  ! Interactive menu 9
+     1     '-w          ',
+     1     '-c          ',
+     1     '-cx         ',
+     1     '-t          ',
+     1     '            ',
      1     'N/A         '/
+        ! The following are secondary command line arguments using short names.
+        ! The number and order should agree with 'titleh' below.
+        ! See the 'report.for' code for interactive prompts that should match these reports.
         data want2/
-     1     '-xbn      ', '-xnm      ', '-xwb      ',
-     1     '-xwr      ', '-xsu      ',
-     1     '-xrg      ', '-xdg      ', '-xrc      ', 
-     1     '-xdc      ', '-xcu      ', 
-     1     '-xrx      ', '-xsc      ', '-xst      ', 
-     1     '-xsh      ', '-xdl      ', 
-     1     '-xsp      ', '-xwg      ', '-xwc      ', 
-     1     '-xds      ', '-NoLog    ',
-     1     '-xpl      ', '-xwp      ',
-     1     '-xpw      ', '-xrw      ', 'NA'/
+     1     '-xbn      ',  ! Interactive menu 1
+     1     '-xnm      ',  ! Interactive menu 2
+     1     '-xwb      ',  ! Interactive menu 3
+     1     '-xwr      ',  ! Interactive menu 4
+     1     '-xsu      ',  ! Interactive menu 5
+     1     '-xrg      ',  ! Interactive menu 6
+     1     '-xdg      ',  ! Interactive menu 7
+     1     '-xrc      ',  ! Interactive menu 8
+     1     '-xdc      ',  ! Interactive menu 9
+     1     '-xcu      ',  ! Interactive menu 10
+     1     '-xrx      ',  ! Interactive menu 11
+     1     '-xsc      ',  ! Interactive menu 12
+     1     '-xst      ',  ! Interactive menu 13, "xst" = standard reports (multiple reports)
+     1     '-xsh      ',  ! Interactive menu 14
+     1     '-xdl      ',  ! Interactive menu 15
+     1     '-xsp      ',  ! Interactive menu 16
+     1     '-xwg      ',  ! Interactive menu 17
+     1     '-xwc      ',  ! Interactive menu 18
+     1     '-xds      ',  ! Interactive menu 19
+     1     '-NoLog    ',  ! Interactive menu 20
+     1     '-xpl      ',  ! Interactive menu 21
+     1     '-xwp      ',  ! Interactive menu 22
+     1     '-xpw      ',  ! Interactive menu 23
+     1     '-xrw      ',  ! Interactive menu 24
+     1     'NA'/
 
+        ! The following are secondary command line arguments using descriptions.
+        ! The number and order should agree with 'want2' above.
+        ! The information is printed when -help argument is given.
         data titleh/
-     1   ' Base flow information at stream gauge locations  ',
-     2   ' Detailed node accounting                         ',
-     3   ' Water Budget                                     ',
-     4   ' Water rights list sorted by basin rank           ',
-     5   ' Water Supply Summary                             ',
-     6   ' Reservoir Graph                                  ',
-     7   ' Diversion Graph                                  ',
-     8   ' Reservoir Comparison                             ',
-     9   ' Diversion Comparison                             ',
-     1   ' Consumptive Use Summary for the CU model or other',
-     1   ' River data Summary                               ',
-     2   ' Stream Comparison                                ',
-     3   ' Standard diversion (*.xdd) and reservoir (*.xre) ',
-     4   ' Shortage Summary                                 ',
-     5   ' Structure List                                   ',
-     6   ' Selected Parameter                               ',
-     7   ' Well Graph                                       ',
-     8   ' Well Comparison                                  ',
-     9   ' Daily Selected Parameter                         ',
-     2   ' NoLog                                            ',
-     1   ' Plan                                             ',
-     2   ' Well Structure to Plan                           ',
-     3   ' Plan to Well Structure                           ',
-     4   ' Reach Water Balance Report                       ',          
+     1   ' Base flow information at stream gauge locations  ',  ! Interactive menu 1
+     2   ' Detailed node accounting                         ',  ! Interactive menu 2
+     3   ' Water Budget                                     ',  ! Interactive menu 3
+     4   ' Water rights list sorted by basin rank           ',  ! Interactive menu 4
+     5   ' Water Supply Summary                             ',  ! Interactive menu 5
+     6   ' Reservoir Graph                                  ',  ! Interactive menu 6
+     7   ' Diversion Graph                                  ',  ! Interactive menu 7
+     8   ' Reservoir Comparison                             ',  ! Interactive menu 8
+     9   ' Diversion Comparison                             ',  ! Interactive menu 9
+     1   ' Consumptive Use Summary for the CU model or other',  ! Interactive menu 10
+     1   ' River data Summary                               ',  ! Interactive menu 11
+     2   ' Stream Comparison                                ',  ! Interactive menu 12
+     3   ' Standard diversion (*.xdd) and reservoir (*.xre) ',  ! Interactive menu 13
+     4   ' Shortage Summary                                 ',  ! Interactive menu 14
+     5   ' Structure List                                   ',  ! Interactive menu 15
+     6   ' Selected Parameter                               ',  ! Interactive menu 16
+     7   ' Well Graph                                       ',  ! Interactive menu 17
+     8   ' Well Comparison                                  ',  ! Interactive menu 18
+     9   ' Daily Selected Parameter                         ',  ! Interactive menu 19
+     2   ' NoLog                                            ',  ! Interactive menu 20
+     1   ' Plan                                             ',  ! Interactive menu 21
+     2   ' Well Structure to Plan                           ',  ! Interactive menu 22
+     3   ' Plan to Well Structure                           ',  ! Interactive menu 23
+     4   ' Reach Water Balance Report                       ',  ! Interactive menu 24
      5   'NA'/
 
 c _________________________________________________________
@@ -130,7 +174,7 @@ c
 c
 c
 c rrb 2021/04/18; Compiler not used or initialize
-      maxfn=maxfn
+      ! maxfn = maxfn  ! smalers 2021-06-14, maxfn not used
       j1=0
       j=0
 c
@@ -185,10 +229,10 @@ c rrb 03/06/02; Print at bottom if NoLog option is not on
           write(99,*) ' '
         endif
 c
-c               Find control file name, use statem as a default
+c       Find control file name, use statem as a default.
         filenc = 'statem' 
 c
-c               Initialize
+c       Initialize
         ioptio  = 0
         ioptio2 = 0
         getid  = ' '

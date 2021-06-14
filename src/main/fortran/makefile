@@ -15,15 +15,6 @@
 # - operating system is determined by checking for OS environment variable,
 #   which indicates Windows, otherwise Linux variant is assumed
 #
-# Modification history from Ray Bennett:
-# - TODO smalers 2021-03-11 remove these after testing since repo history includes changes.
-# rrb; Try to remove *.exe in case compile fails
-# rm -f statemod-gfortran-32bit.exe
-# rrb 2018-08-05; Add new programs FlowRes and DivmultR
-# rrb 2018-10-25; Add new jmstore in 2 spots
-# rrb 2018-11-05; Add new jmflow in 2 spots
-# rrb 2018-11-23; add new jmout in 2 spots
-# rrb 2018-12-16; Add new chekav3 in 1 spot
 
 # ======================================================================
 # Declarations
@@ -53,8 +44,9 @@ ifdef OS
 	endif
 	ifeq ($(MSYSTEM),MINGW64)
 		EXE_BITS = 64
-		# The following is needed for 64-bit
+		# The following is needed for 64-bit to avoid undefined symbol
 		# - see: https://github.com/actions/virtual-environments/issues/2721
+		# - TODO smalers 2021-06-13 maybe can remove in the future
 		FFLAGS_ARCH = -Wl,--default-image-base-low
 		# String to check for in 'file *.o'
 		OBJ_FILE_TYPE = amd64
@@ -129,8 +121,7 @@ BAD_OBJ_COUNT := $(shell file *.o | grep $(OBJ_WRONG_FILE_TYPE) | wc -l)
 #
 # -g 
 #
-# ALWAYS INCLUDE.  Actually, may want to comment this out for production versions
-# when using -O so that executables are smaller and faster.
+# ALWAYS INCLUDE, but for production version use -Og, which is optimized.
 #
 # This is from the gcc compiler (see: https://gcc.gnu.org/onlinedocs/gcc-10.2.0/gcc/Debugging-Options.html#Debugging-Options).
 #
@@ -149,14 +140,12 @@ BAD_OBJ_COUNT := $(shell file *.o | grep $(OBJ_WRONG_FILE_TYPE) | wc -l)
 # ALWAYS INCLUDE.
 #------------
 
-#FFLAGS = -g -fbounds-check -fno-align-commons
-# use -static especially for windows compiling 
-#FFLAGS = -g -cpp -fbounds-check -fno-align-commons -static
-
 # Extra checks that can be added for deep check of code logic
-# - Steve Malers added to track down remaining issues
-FFLAGS_EXTRA_CHECKS = -fcheck=do,mem,pointer
+# - do not use -all because 'array-temps' seems unnecessary
+# - do include all the other checks
+FFLAGS_EXTRA_CHECKS = -fcheck=bits,bounds,do,mem,pointer,recursion
 
+# TODO smalers 2021-06-13 need to remove these old combinations when optimized and check versions are tested out.
 # Use -O1 -Wall to check for common warnings.
 # This generally works but has some issues at runtime that cause different results and are still being resolved
 #FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
@@ -164,12 +153,19 @@ FFLAGS_EXTRA_CHECKS = -fcheck=do,mem,pointer
 #FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
 # Try removing -fno-automatic and -finit-local-zero and print warnings for code review
 # - use this periodically to improve code
-FFLAGS = -g -O1 -Wall -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
 
-#FFLAGS = -O2
+# The following compiler options result in all runtime checks but is slower to run.
+# - this is used by statemod_check target and 'check' variant
+FFLAGS_CHECK = -g -O1 -Wall -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS) -I/usr/include
+
+# The following compiler options result in fewer runtime checks but is faster to run.
+# -fcheck=bounds is retained because it catches major issues in array boundary issues
+# - this is used by statemod_o3 target and 'o3' variant
+FFLAGS_O3 = -Og -O3 -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds $(FFLAGS_ARCH) -I/usr/include
 
 # Compiler flags for all cases (e.g. look for system .mod files, required in gfortran)
-FFLAGS += -I/usr/include
+# - TODO smalers 2021-06-13 include above so it is easily included in variant FFLAGS
+#FFLAGS += -I/usr/include
 
 # The libraries needed for linking:
 # - currently do not need because only core Fortran is used
@@ -233,17 +229,21 @@ help:
 	@echo "-------------------------------------------------------------------------------------------"
 	@echo "StateMod makefile targets:"
 	@echo ""
-	@echo "all           Default target that prints this help message."
-	@echo "checkarch     Check that object files are consistent with shell (32 or 64 bit)."
-	@echo "clean         Remove dynamically created files (but not final executable)."
-	@echo "help          Print this message."
-	@echo "printenv      Helper to print which operating system is used, controls configuration."
-	@echo "statemod      Compile the StateMod executable, recompiling any .o if .for modified."
-	@echo "statemodrb    For Ray Bennett - compile the StateMod executable, and copy to his run folder."
-	@echo "veryclean     Make the 'clean' target, and also remove the final executable."
+	@echo "all               Default target that prints this help message."
+	@echo "checkarch         Check that object files are consistent with shell (32 or 64 bit)."
+	@echo "clean             Remove dynamically created files (but not final executable)."
+	@echo "help              Print this message."
+	@echo "printenv          Helper to print which operating system is used, controls configuration."
+	@echo "statemod          Compile the StateMod executable, recompiling any .o if .for modified."
+	@echo "                  Same as 'statemod_check' to compile with all checks for development testing."
+	@echo "statemod_check    Compile the StateMod executable including all runtime checks."
+	@echo "statemod_o3       Compile the StateMod executable for optimization level 3 and limited runtime checks."
+	@echo "statemod_release  Do clean compile on each release variant and copy o3 variant to plain name."
+	@echo "statemodrb        For Ray Bennett - compile the StateMod executable, and copy to his run folder."
+	@echo "veryclean         Make the 'clean' target, and also remove the final executable."
 	@echo ""
-	@echo "file.o        Compile the source file.for file into object file file.o,"
-	@echo "              useful to check syntax for a single file."
+	@echo "file.o            Compile the source file.for file into object file file.o,"
+	@echo "                  useful to check syntax for a single file."
 	@echo "-------------------------------------------------------------------------------------------"
 	@echo "Targets specific to Ray Bennett:"
 	@echo ""
@@ -454,23 +454,61 @@ welrig3.o: common.inc
 welrig3p.o: common.inc
 xdebug.o: common.inc
 
-# The rule for building the statemod executable:
-# - all source modules are listed as dependencies
-# - interdependencies are not accounted for, just the main program requirements
+# Below here are the rules for building the statemod executable:
+# - all source modules are listed as dependencies above
+# - interdependencies are not accounted for, just the main program requirements on all code
 # - the following were in Jim Brannon's code and have been integrated more generically:
 #
-#	parse_gfortran.o
-#	dattim_gfortran.o
+#     parse_gfortran.o
+#     dattim_gfortran.o
 #
-#	getpath_windows.o
-#	putpath_windows.o 
-#
-# If necessary, temporarily copy files with errors into a comment below this line to let all compile.
-statemod: \
-	checkarch \
-	statemod_compile
+#     getpath_windows.o
+#     putpath_windows.o 
 
-# This target is used internally to allow 'checkarch' to be executed.
+# Copy the o3 variant to plain name for release.
+copy_o3_for_release:
+ifdef OS
+	@# Windows...
+	@cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit-o3.exe statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe
+	@echo "-----------------------------------------------------------------------"
+	@echo "Release executable is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe"
+	@echo "-----------------------------------------------------------------------"
+else
+	@# Linux...
+	@cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit-o3 statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit
+	@echo "-----------------------------------------------------------------------"
+	@echo "Release executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit"
+	@echo "-----------------------------------------------------------------------"
+endif
+
+# The default rule for building StateMod executable.
+# For developers, the full check version is used to ensure that issues don't slip through.
+# For production testing, the optimized version is used because it is faster.
+# Automated tests run on both versions, to compare results, and then optimized version for most testing.
+statemod_check: FFLAGS = $(FFLAGS_CHECK)
+statemod_check: VARIANT = "-check"
+statemod_check: statemod_compile
+
+# The rule for building StateMod optimized executable.  See statemod_check comments.
+statemod_o3: FFLAGS = $(FFLAGS_O3)
+statemod_o3: VARIANT = "-o3"
+statemod_o3: statemod_compile
+	copy_o3_for_release
+
+# Same as statemod_check, to compile the check executable used during development (all checks).
+statemod: statemod_check
+
+# Do a full clean compile for release.
+# - do the optimized version first because normal work uses the full-check version and want those .o files to be in working files
+#   for incremental make
+statemod_release:
+	make veryclean
+	make statemod_o3
+	make veryclean
+	make statemod_check
+	copy_o3_for_release
+
+# This rule is used internally to allow 'checkarch' to be executed.
 statemod_compile: \
 	statem.o \
 		namext.o \
@@ -713,19 +751,19 @@ statemod_compile: \
 			year2.o
 ifdef OS
 	@# Windows...
-	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit$(VARIANT).exe $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
-	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit$(VARIANT).exe"
 	@echo "-----------------------------------------------------------------------"
 else
 	@# Linux...
-	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit $^ $(LDFLAGS)
+	$(FC) $(FFLAGS) -o statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit$(VARIANT) $^ $(LDFLAGS)
 	@echo "-----------------------------------------------------------------------"
-	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit"
+	@echo "Executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit$(VARIANT)"
 	@echo "-----------------------------------------------------------------------"
 endif
 
-# Special target for Ray Bennett:
+# Special rule for Ray Bennett:
 # - compile as above
 # - copy the executable to a folder that Ray uses to run tests
 statemodrb: statemod
@@ -737,7 +775,7 @@ ifdef OS
 	@# Copy the executable to a different location.
 	@cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe /C/cdss/bin
 else
-	@echo "statemodrb target is only enabled on windows."
+	@echo "statemodrb rule is only enabled on windows."
 endif
 
 # ======================================================================
@@ -770,29 +808,7 @@ endif
 # Utility targets.
 .PHONY: clean veryclean vercleanrb
 
-# TODO smalers 2021-03-25 remove when verified
-#	@if [ $(BAD_OBJ_COUNT) -ne 0 ]; then \
-#		echo "Run 'make veryclean' and 'make statemod' to force recompile with correct compiler for current shell."; \
-#		echo "Exiting."; \
-#		exit 0; \
-#	fi;
-
-# TODO smalers 2021-03-25 this did not work because exit in shell does not cause exit in makefile.
-# - remove when working
-# Check the *.o files for architecture.
-# The following is output that can e used to indicate whether a .o file has been compiled with 32-bit or 64-bit compiler.
-# file divres.o:
-# 32-bit:
-#   divres.o: Intel 80386 COFF object file, no line number info, not stripped, 12 sections, symbol offset=0x1e886, 185 symbols
-# 64-bit:
-#   divres.o: Intel amd64 COFF object file, no line number info, not stripped, 14 sections, symbol offset=0x2023c, 189 symbols
-#checkarch:
-#	@echo "Count of files compiled with wrong compiler: $(BAD_OBJ_COUNT)"
-#	ifneq $(BAD_OBJ_COUNT),0
-#		$(error Detected $(BAD_OBJ_COUNT) object files of wrong bit count.  Run 'make veryclean' and 'make statemod' to force recompile with correct compiler for current shell.)
-#	endif
-
-# Check the architecture to make sure are not trying to mix 32-bit and 64-bit object files.
+# Check the architecture to make sure that the compile does not attempt to mix 32-bit and 64-bit object files.
 ifneq ($(BAD_OBJ_COUNT),0)
 ifdef OS
 checkarch:

@@ -181,7 +181,7 @@ c      Max # of plans tied to a use (maxplnO)  15     15
 c      Max # of Carriers (maxCary)             40         
 c
 c _________________________________________________________
-c	Dimensions
+c     Dimensions
 c
       include 'common.inc'
 c
@@ -192,6 +192,9 @@ cx   1          rec8*8
      1          rec8*8
 c jhb 2014/07/21 initialize this variable passed to xdebug and report
       integer :: nreach=0
+      ! The following is used to check for valid response file up front.
+      logical :: rspexists
+      integer :: irsperror
       ! Date and time for logging performance.
       integer, dimension(3) :: dateparts
       integer, dimension(4) :: timeparts
@@ -216,6 +219,7 @@ c                7 includes new binary output format
         ver = '16.00.48'
         vdate = '2021/06/02'
 c
+        rspexists = .FALSE.
         igui = 0
         istop = 0
         io99=99     ! unit number for error file
@@ -277,9 +281,8 @@ c                 maximum daily and monthly return values
       endif      
       
 c
-c rrb 01/10/08; New variable for return array
-c		Includes returns for a diversion, well, reservoir
-c		and plans
+c rrb 01/10/08; New variable for return array.
+c               Includes returns for a diversion, well, reservoir and plans.
       maxrtnA= 5005
 
       MAXIFR=  2241
@@ -330,7 +333,7 @@ CX      maxrtnRP=180
       maxrtnRP=1001
       maxQdiv=39
 c
-c	Set ndivO maximum # of values to print in *.xdd      
+c     Set ndivO maximum # of values to print in *.xdd      
       ndivO=38
       nreso=29
 c
@@ -352,7 +355,7 @@ c rrb 2011/04/04;  Initialize some daily array counters
       numplnt=0    
 c
 c ---------------------------------------------------------
-c 		Check the dimension used for reporting
+c     Check the dimension used for reporting
       if(maxdiv.gt.5000) then
         write(6,90)
  90     format('  Statem; Warning outmon & outdiv assume the maximum',
@@ -383,21 +386,62 @@ c
 c-------------------------------------------------------------------
 
       ! Open startup log file.
-      filenc='Statem'
+      ! This is a generic name 'statem.log' that will be used before response file base name is used.
+      ! Once the response file name is parsed, the dataset-specific log file is opened.
+      filenc='statem'
       call namext(maxfn, filenc, 'log', filena)
       open(nlog,file=filena, status='unknown')
       
       write(nlog,200) ver, vdate
 
       ! Parse the command line.
-      call parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)
+      ! nlog - unit number for startup log file
+      ! ioptio - primary option consistent with interactive menu
+      ! ioptio2 - secondary option consistent with interactive menu, such as report type
+      ! filenc - response file name, with or without trailing *.rsp
+      ! getid - station ID for detailed reporting
+      ! call parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)  ! smalers, 2021-06-14, maxfn not used
+      call parse(nlog, ioptio, ioptio2, filenc, getid)
+
+      if ( filenc .ne. '' ) then
+        ! Make sure that the response file name, if given, is valid.
+        ! Otherwise, the log file name opened below won't a valid response file and
+        ! will end up with stray log files that don't match a valid response file name.
+        ! First determine whether rsp needs to be added to the given response file name.
+        ! The following code is repeated when opening the response file to read.
+        irsp=0
+        do i=1,72
+          if(filenc(i:i).eq.'.') irsp=1
+        end do
+        if(irsp.eq.0) then
+          call namext(maxfn, filenc, 'rsp', filena) 
+        else
+          filena = filenc
+        endif
+        ! Try opening the file to read.
+        open(unit=1, file=filena, status='old', iostat=irsperror)
+        if ( irsperror .ne. 0 ) then
+          write(6,*) 'Response file does not exist: ', filena
+          write(nlog,*) 'Response file does not exist: ', filena
+          rspexists = .FALSE.
+          goto 9997
+        else
+          ! Response file exists.
+          ! Immediately close the file if no error since don't need.
+          rspexists = .TRUE.
+          close(unit=1)
+        endif
+      endif
 
       ! Get the path to the log file.
       call getpath(maxfn, filenc, fpath1)
 
       ! Close the startup log file.
       write(*,*) 'Startup log file for messages to this point: ',filena
-      close (nlog)
+      if ( ioptio2 .eq. 20 ) then
+        ! Requested no log file (no logging), to save disk space, increase speed, etc.
+        close (nlog)
+      endif
 c
 c
 c _________________________________________________________
@@ -408,7 +452,7 @@ c               -help option
         write(6,206)
   206   format(
      1 72('_'),//
-     1 '        For help with StateMod see documentation and examples')
+     1 '        For help with StateMod see documentation and examples.')
         goto 190
       endif
 c
@@ -425,6 +469,7 @@ c               -version option
      1 '        Version: ',a20,/,
      1 '        Last revision date: ',a10,//
      1 72('_')) 
+        ! Also print the software license as per GPL requirements.
         call license(6)
         goto 190
       endif     
@@ -448,19 +493,35 @@ c _________________________________________________________
 c               Open dataset log file using name that matches response file.
 c rrb 03/06/02; Allow log file to be an option
       if(ioptio2.ne.20) then
-        ! Close the startup log file.
-        close(nlog)
-        call namext(maxfn, filenc, 'log', filena)
-        open(nlog,file=filena, status='unknown')
+        ! Log file is allowed (ioptio2=20 means no log file).
+        if ( filenc .eq. '' ) then
+          ! No response file name was provided.
+          ! The startup log file will continue to be used.
+          write(6,*)
+     1    'No response file was provided. Not opening dataset log file.'
+          write(nlog,*)
+     1    'No response file was provided. Not opening dataset log file.'
+        else
+          ! Close the startup log file, but only if a response file has been specified.
+          ! This fixes the situation where log file named '.log' would be created.
+          write(6,*) '  Closing startup log file: statem.log'
+          close(nlog)
+          call namext(maxfn, filenc, 'log', filena)
 
-        ! Print log file heading.
-        write(nlog,200) ver, vdate
-        write(6,200) ver, vdate
+          ! Subsequent log file messages are written to log file with dataset name,
+          ! for example 'cm2015H.log`, where the first part agrees with response file base name.
+          fnlog = filena
 
-        ! Subsequent log file messages are written to log file with dataset name.
-        fnlog = filena
-        write(6,80) fnlog
- 80     format(/,'  Opening dataset log file: ', a256)
+          write(6,*) '  Opening dataset log file: ', fnlog
+          open(nlog,file=filena, status='unknown')
+
+          ! Print StateMod heading to stdout and log file.
+          write(nlog,200) ver, vdate
+          write(6,200) ver, vdate
+          call flush(6)
+
+        endif
+
         ! TODO smalers 2021-03-24 test dattim
         ! - this is just a test of some new code that will be phased in
         ! - need to implement ms calculation and formatted time string
@@ -469,7 +530,6 @@ c rrb 03/06/02; Allow log file to be an option
         ms = dattim_ms(dateparts,timeparts)
         ! Comment out for now until more performance testing is done.
         !write(6,*) "Date/time=",formatted_string,' ms= ',ms
-        call flush(6)
 
 c
 c         write(6,81) ioptio, ioptio2, getid
@@ -520,12 +580,12 @@ c       write(6,200) ver, vdate
         goto 190
       endif
 c
-c		Open check file (*.chk)
+c     Open check file (*.chk)
       call namext(maxfn, filenc, 'chk', filena)
       open(nchk,file=filena, status='unknown')      
       write(nchk,200) ver, vdate
 c
-c		Open temporary file (*.tmp)
+c     Open temporary file (*.tmp)
       call namext(maxfn, filenc, 'tmp', filena)
       open(ntmp,file=filena, status='unknown')      
 c
@@ -541,7 +601,7 @@ c _________________________________________________________
      4        //,'   [0] : STOP',
      1         /,'   [1] : Baseflow',
      2         /,'   [2] : Simulate',
-     3         /,'   [3] : Report',
+     3         /,'   [3] : Report (prompt will ask for report type)',
      4         /,'   [4] : Data Check'
      1         /,'   [5] : Version',
      1         /,'   [6] : Help',
@@ -553,6 +613,12 @@ c
 c rrb 10/27/94 Additional Output
         write(6,*) ' '
         read (5,*,err=165) ioptio
+      endif
+
+      if(ioptio.lt.0 .or. ioptio.gt.9) then
+        write(6,*) 'Invalid option: ', ioptio
+        ioptio = 0  ! Set to zero to force prompt and avoid infinite loop.
+        goto 100
       endif
 
       if(ioptio.eq.0 .or. ioptio.eq.6) goto 170
@@ -593,13 +659,12 @@ c     call namext(maxfn, filenc, 'rsp', filena)
       open(20,file=filena,status='old',err=9997)
       call skipn(20)
       IIN=20
-c	Check and if positive read all response files
-c	in any order
+c    Check and if positive read all response files in any order.
       call Getfn(iin, nlog, infile, maxfile, 
      1    fileName, ifileNum, filetype, fileSuf)
       close(iin)
 c ______________________________________________________________________
-c		Set parameter values      
+c     Set parameter values.
       call setpar(maxparm, nlog, paramd, paramr, paramw)
 
       GO TO (130,140,150,160,166,166,166,140,130) IOPTIO
@@ -633,9 +698,18 @@ c               Go back to menu if in default mode
         ioptio = 0
         goto 100  
       endif                 
-  170 write(6,180) fnlog
+
+  170 if ( filenc .eq. '' ) then
+        ! Do not have a dataset log file.
+        write(6,*)
+     1  ' Statem; See detailed messages in startup log file: statem.log'
+      else
+        ! Have a dataset log file.
+        write(6,*)
+     1  ' Statem; See detailed messages in dataset log file: ', fnlog
+      endif
       call flush(6)
-  180 format('  Statem; See detailed messages in file: ', a256) 
+
   190 write(6,*) 'Stop 0'
       call flush(6)
       call exit(0)
@@ -4355,12 +4429,25 @@ cx     1 '          Recommend you revise StateM.for and the common.inc')
      1 '    Suggest you revise Statem.f and Common.inc')
        
 C
- 9997 write(6,9998) filena
-      write(nlog,9998) filena
- 9998 format('  Statem; Problem opening file: ', a72)
-      goto 9999
+ 9997 if ( filenc .eq. '' ) then
+        ! No response file was specified.
+        write(6,*) ' Response file was not provided on command line.'
+        write(nlog,*) ' Response file was not provided on command line.'
+      else
+        ! Response file was specified but is invalid.
+        write(6,9998) filena
+        write(nlog,9998) filena
+ 9998   format('  Statem; Problem opening file: ', a72)
+      endif
 
- 9999 write(6,*)  '  Stopped in Statem, see statem.log or *.log'
+ 9999 if ( (filenc .eq. '') .or. (rspexists .eqv. .FALSE.) ) then
+        ! No response file was specified or file does not exist.
+        write(6,*)
+     1  '  Stopped in Statem, see startup log file: statem.log'
+      else
+        ! Response file was specified and will have been used to determine dataset log file name.
+        write(6,*)  '  Stopped in Statem, see dataset log file: ', fnlog
+      endif
       write(nlog,*) '  Stopped in Statem'
       write (6,*) 'Stop 1'
       call flush(6)
