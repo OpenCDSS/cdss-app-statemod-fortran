@@ -18,8 +18,12 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
+        ! The 'common.inc' common data are not included so must pass values
+        ! back to the calling code.
+
         ! subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)   ! smalers, 2021-06-14, maxfn not used
-        subroutine parse(nlog, ioptio, ioptio2, filenc, getid)
+        subroutine parse(nlog, ioptio, ioptio2, filenc, getid,
+     +                   iystrCli, iyendCli)
 c        
 c
 c _________________________________________________________
@@ -34,6 +38,7 @@ c
 c _________________________________________________________
 c       Update History
 c
+c smalers 2021-06-14 Add -iystr Year and -iyend Year options.
 c
 c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c
@@ -64,15 +69,27 @@ c
         dimension want(15), want2(25), wantx(15), titleh(25)
 c
 c rrb 00/08/04; Revise maximum command line length
-        character command*512, want*12, want2*12, rec12*12, filenc*256,
-     1            getid*12,  wantx*12, titleh*50,
+        character command*512, want*12, want2*12, rec12*12,
+     1            filenc*256, getid*12,  wantx*12, titleh*50,
      1            gettyp*12, getpar*12, rec1*1
+
         ! Variables for the new command line argument functions.
         character(len=512) :: cmdline
         integer iarg
         character(len=100) :: dummy
+        character(len=100) :: arg
         integer iarglen
         integer istatus
+
+        logical foundPrimary
+        logical foundSecondary
+
+        ! Start and end of simulation, saved in common block for check in 'datinp'.
+        integer iystrCli, iyendCli
+
+        ! Control whether new parsing, which has flexible order.
+        integer iFlexibleOrder
+
         ! The following are primary command line arguments using long names.
         ! The number and order should agree with 'wantx' below.
         data want/          ! Interactive menu 0 is 'Stop'
@@ -175,33 +192,248 @@ c
 c
 c rrb 2021/04/18; Compiler not used or initialize
       ! maxfn = maxfn  ! smalers 2021-06-14, maxfn not used
-      j1=0
-      j=0
+      j1 = 0
+      j = 0
+      ! smalers 2021-06-14 enable flexible command line order to allow new options.
+      ! Set to 1 to enable flexible command line order.
+      iFlexibleOrder = 0
+      iFlexibleOrder = 1
 c
-c               Step 1; Initialize
-c
+c     Step 1; Initialize
 c
 c rrb 2021/04/18; Compiler not used
-        iexit=0
-        if(iexit.gt.0) goto 500
+      ! Set iexit to 1 to skip parsing, used for troubleshooting.
+      iexit = 0
+      if(iexit.gt.0) goto 500
 c
-c               iout = logging level
-c                      0 no details
-c                      1 details
-c                      2 summary
-        iout = 1
+c     iout = logging level
+c            0 no details
+c            1 details (use for debugging)
+c            2 summary
+      iout = 1
         
-        if(iout.eq.1) write(99,*) '  Parse'
+      if(iout.eq.1) write(nlog,*) 'Parse; parsing command line'
 c
-c               Get command line data
-        nin = 25
+c     Get command line data
+      nin = 25
 c
 c rrb 00/08/04; Maximum command length
-        maxcl = 512
+      maxcl = 512
 c
-c               Maximum want size (a12)
-        maxwant=12
-        nwant=15
+c     Maximum want size (a12)
+      maxwant=12
+      nwant=15
+
+c     Initialize
+
+      ioptio  = 0   ! Primary option, will cause interactive prompt if not specified
+      ioptio2 = 0   ! Secondary option, optional, such s for report type
+      getid  = ' '  ! Station identifier for reporting
+      gettyp = ' '  ! Data type for reporting
+      getpar = ' '  ! Parameter type for reporting
+      filenc = ' '  ! Response file name, will cause interactive prompt if not specified
+
+      if ( iFlexibleOrder .eq. 1 ) then
+        ! Parse with flexible order.
+        ! This fully uses modern Fortran command line parsing.
+        iarg = 0  ! Argument 0 is the program name.
+        do
+          ! Increment the argument being processed.
+          iarg = iarg + 1
+          call get_command_argument(iarg, arg, iarglen, istatus)
+          if ( len_trim(arg) == 0 ) then
+            ! No more arguments.
+            exit
+          endif
+          ! Have an argument to interpret.
+          arg = trim(arg)
+          write(nlog,*) '  arg: ', arg
+
+          ! See if a primary option by checking the option array.
+          ! Check the short and long option names.
+          foundPrimary = .FALSE.
+          do i=1,nwant
+            if(arg.eq.trim(want(i)) .or. arg.eq.trim(wantx(i))) then
+              ! Primary option was found.
+              ioptio = i
+              if(iout.eq.1) write(nlog,*) '    ioptio = ', ioptio
+              foundPrimary = .TRUE.
+              exit
+            endif
+          end do
+          if ( foundPrimary .eqv. .TRUE. ) then
+            ! No need to check more options.
+            cycle
+          endif
+
+          ! See if a secondary option.
+          foundSecondary = .FALSE.
+          do i=1,nin
+            if(arg.eq.trim(want2(i))) then
+              ! Secondary option was found.
+              ioptio2 = i
+              ! -xsc (12) is the same report routine as -xdc (9)
+              ! -xsh (14) is the same report routine as -xcu (10)
+              ! -xsu ( 5) is the same report routine as -xcu (10)
+              if(ioptio2.eq.12) ioptio2 = 9
+              if(ioptio2.eq.14) ioptio2 = 10
+              if(ioptio2.eq. 5) ioptio2 = 1 0
+ 
+              if(iout.eq.1) then
+                write(nlog,*) '    ioptio2 = ', ioptio2
+              endif
+              foundSecondary = .TRUE.
+              exit
+            endif
+          end do
+          if ( foundSecondary .eqv. .TRUE. ) then
+            ! No need to check more options.
+            cycle
+          endif
+
+          ! See if other specific options.
+
+          if ( arg == '-iystr' ) then
+            iarg = iarg + 1
+            call get_command_argument(iarg, arg, iarglen, istatus)
+            arg = trim(arg)
+            write(nlog,*) '    arg: ', arg
+            if ( istatus .ne. 0 ) then
+                write(6,*) '-iystr is missing year YYYY'
+                write(nlog,*) '    -iystr is missing year YYYY'
+            else
+              read(arg,*,iostat=istat) iystrCli
+              if ( istat == 0 ) then
+                if ( iout == 1 ) then
+                  write(nlog,*) '    iystr from command line; ',iystrCli
+                endif
+              else
+                write(6,*) '-iystr uses invalid year: ', arg
+                write(nlog,*) '    -iystr uses invalid year: ', arg
+              endif
+            endif
+            ! Go to the next argument
+            cycle
+          endif
+
+          if ( arg .eq. '-iyend' ) then
+            iarg = iarg + 1
+            call get_command_argument(iarg, arg, iarglen, istatus)
+            arg = trim(arg)
+            write(nlog,*) '    arg: ', arg
+            if ( istatus .ne. 0 ) then
+                write(6,*) '-iyend is missing year YYYY'
+                write(nlog,*) '    -iyend is missing year YYYY'
+            else
+              read(arg,*,iostat=istat) iyendCli
+              if ( istat == 0 ) then
+                if ( iout == 1 ) then
+                  write(nlog,*) '    iyend from command line; ', iyendCli
+                endif
+              else
+                write(6,*) '-iyend uses invalid year: ', arg
+                write(nlog,*) '    -iyend uses invalid year: ', arg
+              endif
+            endif
+            ! Go to the next argument
+            cycle
+          endif
+
+          if ( arg .eq. '-station' ) then
+            iarg = iarg + 1
+            call get_command_argument(iarg, arg, iarglen, istatus)
+            arg = trim(arg)
+            write(nlog,*) '    arg: ', arg
+            if ( istatus .ne. 0 ) then
+                write(6,*) '-station is missing id'
+                write(nlog,*) '    -station is missing id'
+            else
+              getid = arg
+              if ( iout == 1 ) then
+                write(nlog,*) '    station id from command line; ',getid
+              endif
+            endif
+            ! Go to the next argument
+            cycle
+          endif
+
+          ! TODO smalers 2021-06-14 not sure if this is the argument - documentation is lacking
+          if ( arg .eq. '-datatype' ) then
+            iarg = iarg + 1
+            call get_command_argument(iarg, arg, iarglen, istatus)
+            arg = trim(arg)
+            write(nlog,*) '    arg: ', arg
+            if ( istatus .ne. 0 ) then
+                write(6,*) '-datatype is missing type'
+                write(nlog,*) '    -datatype is missing type'
+            else
+              gettyp = arg
+              if ( iout == 1 ) then
+                write(nlog,*) '    data type from command line; ',gettyp
+              endif
+            endif
+            ! Go to the next argument
+            cycle
+          endif
+
+          ! TODO smalers 2021-06-14 not sure if this is the argument - documentation is lacking
+          if ( arg .eq. '-parameter' ) then
+            iarg = iarg + 1
+            call get_command_argument(iarg, arg, iarglen, istatus)
+            arg = trim(arg)
+            write(nlog,*) '    arg: ', arg
+            if ( istatus .ne. 0 ) then
+                write(6,*) '-parameter is missing type'
+                write(nlog,*) '    -parameter is missing type'
+            else
+              getpar = arg
+              if ( iout == 1 ) then
+                write(nlog,*) '    parameter from command line; ',getpar
+              endif
+            endif
+            ! Go to the next argument
+            cycle
+          endif
+
+          ! Other dash option is an error if not recognized above.
+
+          if ( arg(1:1) .eq. '-' ) then
+            write(6,*) 'Unrecognied option: ', arg
+            write(nlog,*) '    Unrecognied option: ', arg
+            cycle
+          endif
+
+          ! Anything else is assumed to be the response file name.
+          ! Detect space or period.
+          ! Filename 'filenc' does NOT contain the extension.
+          ! Extension '.rsp' is ignored if specified (will be appended later).
+          if ( arg(1:1) .ne. '-' ) then
+            ! Not a dash option so assume the response file.
+            ipos = index(arg,".rsp")
+            if ( ipos > 0 ) then
+              ! Remove the extension.
+              filenc = trim(arg(1:(ipos - 1)))
+            else
+              ! No extension
+              filenc = trim(arg)
+            endif
+            if ( iout == 1 ) then
+              write(nlog,*) '    response file without .rsp; ', filenc
+            endif
+            ! Skip to the next parameter.
+            cycle
+          endif
+
+        end do ! End looping through arguments
+
+        ! Additional defaults
+        if ( filenc .eq. '' ) then
+          ! Traditional default.
+          ! filenc = 'statem'
+          ! TODO smalers 2021-06-14 seems to work better if no default because prompt for name.
+        endif
+      else
+        ! Parse the old way where order is required and code is difficult to understand.
 c
 c _________________________________________________________
 c
@@ -212,33 +444,32 @@ c
         ! First get the entire command line.
         call get_command(cmdline)
         if(iout.eq.1)
-     +    write(99,*) ' Command line including program: ', cmdline
+     +    write(nlog,*) ' Command line including program: ', cmdline
         ! Next get the command line minus the program name
         ! by finding the length of the program name - 0th arg.
         iarg = 0
         call get_command_argument(iarg,dummy,iarglen,istatus)
         command = cmdline(iarglen+2:511)
-        if(iout.eq.1)
-     +    write(99,*) ' Command line without program: ', command
+        if(iout.eq.1) then
+          write(nlog,*) ' Command line without program: ', command
+          write(nlog,*) ' value: ', dummy
+          write(nlog,*) ' iarglen: ', iarglen
+          write(nlog,*) ' istatus: ', istatus
+        endif
 c
 c rrb 00/08/04; File length limit
 c rrb 03/06/02; Print at bottom if NoLog option is not on
         if(iout.eq.1 .or. iout.eq.2) then
           write(6,100) command
-          write(99,100) command
-          write(99,*) ' '
+          write(nlog,100) command
+          write(nlog,*) ' '
         endif
 c
-c       Find control file name, use statem as a default.
+c       Find response file name, use 'statem' as a default.
         filenc = 'statem' 
 c
 c       Initialize
-        ioptio  = 0
-        ioptio2 = 0
-        getid  = ' '
-        gettyp = ' '
-        getpar = ' '
-        ii = 0
+        ii = 0  ! Character position in the command line.
 c
 c _________________________________________________________
 c
@@ -247,16 +478,17 @@ c                       (command is packed to left)
 c
 c rrb 2008/09/16; Allow operation without a control file name
 c rrb 2019/01/31; Detailed output
-c       if(iout.eq.1) write(99,*) ' Parse; 0, command(1:1) ',
+c       if(iout.eq.1) write(nlog,*) ' Parse; 0, command(1:1) ',
 c    1                0, command(1:1)
      
         if(command(1:1) .ne. '-') then
           ! No dash so assume the response file name.
+          ! Can be before or after other options.
           filenc = ' '
           do i=1,maxcl
             if(iout.eq.1) then
               ! Log the character being processed.
-              write(99,20) i, i, command(i:i)
+              write(nlog,20) i, i, command(i:i)
 20            format('  Parse; command(',i2,':',i2,') = ',a1)
             endif
 
@@ -295,21 +527,22 @@ c           do j=i,i+9
         end do
 c
 c               Option provided, get type
-  140   if(iout.eq.1) write(99,*) ' Parse; Option 1 = ', rec12
+  140   if(iout.eq.1) write(nlog,*) ' Parse; Option 1 = ', rec12
 c
 c ---------------------------------------------------------
 c rrb 2008/09/10; Revise to handle bad data better  
         if(rec12.eq.'            ') then
-          write(99,*) ' Parse; Problem no option provided'
+          write(nlog,*) ' Parse; No primary option provided.'
+          write(nlog,*) ' Parse; Will prompt user with menu.'
 c         goto 500
           goto 400
         endif
         
         if(rec12.ne.'            ') then
           do i=1,nwant
-            if(rec12.eq.want(i) .or. rec12.eq.wantx(i)) ioptio = i 
-          end do                       
-c         write(99,*) ' Parse; ioptio = ', ioptio   
+            if(rec12.eq.want(i) .or. rec12.eq.wantx(i)) ioptio = i
+          end do
+c         write(nlog,*) ' Parse; ioptio = ', ioptio
 c
 c _________________________________________________________
 c
@@ -327,16 +560,16 @@ c             do j=i,i+9
                 j1 = j1+1
                 if(command(j:j).eq.' ')  goto 160
                 rec12(j1:j1) = command(j:j)
-                if(iout.eq.1) write(99,*) ' Parse; rec12 = ', rec12
+                if(iout.eq.1) write(nlog,*) ' Parse; rec12 = ', rec12
               end do
             endif
           end do
 
-  160     if(iout.eq.1) write(99,*) ' Parse; Option 2 = ', rec12
+  160     if(iout.eq.1) write(nlog,*) ' Parse; Option 2 = ', rec12
 
   
           if(rec12.ne.'          ') then
-            if(iout.eq.1) write(99,*) ' Parse; ioptio2 = ', ioptio2
+            if(iout.eq.1) write(nlog,*) ' Parse; ioptio2 = ', ioptio2
             
             do i=1,nin
               if(rec12.eq.want2(i)) ioptio2 = i
@@ -349,16 +582,16 @@ c               -xsu ( 5) is the same report routine as -xcu (10)
             if(ioptio2.eq.14) ioptio2=10
             if(ioptio2.eq. 5) ioptio2=10
             
-            if(iout.eq.1) write(99,*) ' Parse; ioptio2 = ', ioptio2
+            if(iout.eq.1) write(nlog,*) ' Parse; ioptio2 = ', ioptio2
 c
 c rrb 2003/10/27; Store test number if option 2 is not already found
             if(ioptio2.eq.0) then
               j0=j1-1
               rec1=rec12(j0:j0)
-              if(iout.eq.1) write(99,*) ' Parse; rec12 = ', rec12
-              if(iout.eq.1) write(99,*) ' Parse; rec1 = ', rec1
+              if(iout.eq.1) write(nlog,*) ' Parse; rec12 = ', rec12
+              if(iout.eq.1) write(nlog,*) ' Parse; rec1 = ', rec1
               read(rec1, *,end=161,err=161) ioptio2
-              if(iout.eq.1) write(99,*) ' Parse; ioptio2 = ', ioptio2
+              if(iout.eq.1) write(nlog,*) ' Parse; ioptio2 = ', ioptio2
             endif
               
           endif
@@ -416,7 +649,7 @@ c               Option provided, store command
 c
 c _________________________________________________________
 c
-c               Step 9; Get the data type (e.g. diversion)
+c               Step 9; Get the parameter (e.g. diversion)
 c                       currently used by daily *.xds only
 c
           rec12 = ' '
@@ -437,9 +670,14 @@ c               Option provided, store command
   166     if(rec12.ne.'          ') then
             getpar = rec12
           endif
+
 c
-c             Endif for option provided
+c         Endif for command line option provided.
         endif
+
+        endif ! iFlexibleOrder
+
+        ! Below here is responding to values parsed above.
 
 c
 c _________________________________________________________
@@ -451,46 +689,45 @@ c rrb 2021/04/18; Compiler not used
 cx190   if(ioptio.eq.6) then
         if(ioptio.eq.6) then
   
-c         open(99,file='statem.log', status='unknown')
-          write(99,*) ' '
-          write(99,*) ' Primary options are:'
+c         open(nlog,file='statem.log', status='unknown')
+          write(nlog,*) ' '
+          write(nlog,*) ' Primary options are:'
 
           do i=1,nwant
-            write(99,192) want(i), wantx(i)
+            write(nlog,192) want(i), wantx(i)
           end do
 
-          write(99,*) ' '
-          write(99,*) ' Secondary options are:'
+          write(nlog,*) ' '
+          write(nlog,*) ' Secondary options are:'
           do i=1,nin
-            write(99, '(i5, 2x, a10, a50)') i,want2(i), titleh(i)
+            write(nlog, '(i5, 2x, a10, a50)') i,want2(i), titleh(i)
           end do
 c
 c rrb 03/06/02; Print only if -NoLog option is not on
           if(ioptio2.ne.20) then
-            write(99,*) ' '
-            write(99,*) ' Primary options are:'
+            write(nlog,*) ' '
+            write(nlog,*) ' Primary options are:'
 
             do i=1,nwant
-              write(99,192) want(i), wantx(i) 
+              write(nlog,192) want(i), wantx(i)
             end do
 
-            write(99,*) ' '
-            write(99,*) ' Secondary options are:'
+            write(nlog,*) ' '
+            write(nlog,*) ' Secondary options are:'
 
             do i=1,nin
-              write(99,'(i5, 2x, a10, a50)') i,want2(i), titleh(i)
+              write(nlog,'(i5, 2x, a10, a50)') i,want2(i), titleh(i)
             end do
           endif
         endif
 c
-c       Get file name if not in version, help or update mode
-c       and not provided
+c       Get file name if not in version, help or update mode and not provided.
         if(ioptio.le.4 .or. ioptio.ge.8) then
-          if(filenc.eq.' ') then
+          if( filenc.eq.' ') then
             ! The filename was not entered on the command line so prompt for it.
-            write(99,*)
+            write(6,*)
      1     'Enter base file name without .rsp (statem, yampa, etc)'
-            write(99,*) ' '
+            write(nlog,*) ' '
             read(5,'(a256)') filenc
           endif
         endif
@@ -500,15 +737,15 @@ c _________________________________________________________
 c
 c               Step 11; Print results
        if(iout.eq.1 .or. iout.eq.2) then
-c        write(99,100) command
+c        write(nlog,100) command
 c
 c rrb 03/06/02; Print only if -NoLog option is not on
          if(ioptio2.ne.20) then
-c          write(99,100) command
-           write(99,*) ' '
+c          write(nlog,100) command
+           write(nlog,*) ' '
            if(ioptio2.eq.0) ioptio2=nin
            if(ioptio.eq.0) ioptio=nwant
-           write(99,200) filenc,want(ioptio), want2(ioptio2),
+           write(nlog,200) filenc, want(ioptio), want2(ioptio2),
      1       getid, gettyp, getpar
      
            if(ioptio2.eq.nin) ioptio2=0
@@ -521,13 +758,13 @@ c
 c               Step 12; Close temporary log file
 c
 c rrb 03/06/02; Close temporary log file (if used)
-c      if(ioptio2.ne.20) close (99)
+c      if(ioptio2.ne.20) close (nlog)
 c
 c _________________________________________________________
 c
 c               Step 13; Return
 c
- 400    if(iout.eq.1) write(99,*) ' Parse; Return'
+ 400    if(iout.eq.1) write(nlog,*) ' Parse; Return'
         return
 c
 c _________________________________________________________
@@ -553,16 +790,16 @@ c _________________________________________________________
 c               Error Processing
 
  500  write(6,510) 
-      write(99,520) 
+      write(nlog,520)
       call flush(6)
- 510  format('  Stopped in Getctl')
+ 510  format('  Stopped in Parse')
  520  format(72('_'),/
      1 '  Parse; Stopped in Parse, see the log file (*.log)')
       write(6,*) 'Stop 1'
       call flush(6)
       call exit(1)
 
-      stop 
+      stop
 c _________________________________________________________
 c
-      END     
+      END

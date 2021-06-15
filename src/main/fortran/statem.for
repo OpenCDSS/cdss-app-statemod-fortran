@@ -130,7 +130,7 @@ C      RESERVOIR OWNERS         maxown         50   155   180   1001
 C      RESERVOIR RIGHTS         maxrsr         80   101   251    351
 C      DIVERSION STATIONS       maxdiv        850  1110   1500
 C      DIVERSION USERS          maxuse        850  1110   3060
-c      Diversion Owners         maxownD      2400
+c      DIVERSION OWNERS         maxownD      2400
 C      DIVERSION RIGHTS         maxdvr       2000  3500   6500
 C      DIVERSION RETURNS        maxrtn       1900  1210   2001
 c
@@ -217,7 +217,7 @@ c                8 includes daily capability
 c                7 includes new binary output format
 
         ver = '16.00.48'
-        vdate = '2021/06/02'
+        vdate = '2021/06/14'
 c
         rspexists = .FALSE.
         igui = 0
@@ -390,9 +390,15 @@ c-------------------------------------------------------------------
       ! Once the response file name is parsed, the dataset-specific log file is opened.
       filenc='statem'
       call namext(maxfn, filenc, 'log', filena)
+      ! smalers 2021-06-14 Don't default the response file for below because skips prompt for filename.
+      filenc=''
       open(nlog,file=filena, status='unknown')
       
       write(nlog,200) ver, vdate
+
+      ! Initialize 'cli' common block data, used to overrule 'datinp' subroutine read of control file.
+      iystrCli = -1
+      iyendCli = -1
 
       ! Parse the command line.
       ! nlog - unit number for startup log file
@@ -401,7 +407,8 @@ c-------------------------------------------------------------------
       ! filenc - response file name, with or without trailing *.rsp
       ! getid - station ID for detailed reporting
       ! call parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)  ! smalers, 2021-06-14, maxfn not used
-      call parse(nlog, ioptio, ioptio2, filenc, getid)
+      call parse(nlog, ioptio, ioptio2, filenc, getid,
+     +           iystrCli, iyendCli)
 
       if ( filenc .ne. '' ) then
         ! Make sure that the response file name, if given, is valid.
@@ -597,7 +604,7 @@ c _________________________________________________________
         Write(6,110)
         call flush(6)
   110   format(/,
-     1           ' Option? ',
+     1           ' Select primary run option by entering number:',
      4        //,'   [0] : STOP',
      1         /,'   [1] : Baseflow',
      2         /,'   [2] : Simulate',

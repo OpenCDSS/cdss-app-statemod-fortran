@@ -41,28 +41,24 @@ c
 c               ichk =  0 do not print detail;
 c                       -n do at river id ichk,
 c                       + print detailed information (datinp)
-c			                  1 Network and downstream data (datinp)
+c                       1 Network and downstream data (datinp)
 c                       4 Calls from Execut (execut)
 c                       5 Demand & sprinkler (demand)
 c                       6 Daily data (daydist)
 c                       7 Return flow data (closs via mdainp or datest)
 c                       8 Print detailed daily baseflow data to *.xtp
 c                       9 Reoperation information from Execut
-c		                   10 Details on reading operating right data 
-c		                   11 Details regarding evaporation calculations
+c                      10 Details on reading operating right data 
+c                      11 Details regarding evaporation calculations
 c                      20 Override daily ID data for testing (datinp)
-c		                   21 Print binary header data
-c                      24 Detailed results of opr rule 24 (downstream
-c                         call)
-c                      25 Limit output to daily baseflow (*.xbx) to 
-c		                      stream ID in variable ccall		
-c                      30 Do not print any daily binary results 
-c                         see outmon call dayoutr.
+c                      21 Print binary header data
+c                      24 Detailed results of opr rule 24 (downstream call)
+c                      25 Limit output to daily baseflow (*.xbx) to stream ID in variable ccall
+c                      30 Do not print any daily binary results (see outmon call dayoutr).
 c
 c                      90 Return flow detailed water use data (return)
 c
-c                      91 Print detailed demand data (Bomsec) and well
-c                           water right info (welrig)
+c                      91 Print detailed demand data (Bomsec) and well water right info (welrig)
 c                      92 Print detailed soil moisture data (soilm)
 c                      99 Enter water right id for call information
 c                     100+n Print water right n (see *.xwr for a number)  
@@ -71,11 +67,9 @@ c
 c _________________________________________________________ 
 c rrb 6/15/95 Demand Control 
 c               icondem= 0 constrain demand to water rights
-c                        1 no constraint and for D&W do not add ddm 
-c                          and wem
+c                        1 no constraint and for D&W do not add ddm and wem
 c                        2 no constraint and for D&W add ddm and wem
-c                        3 no constraint and for D&W expect demands  
-c                          in *.ddm
+c                        3 no constraint and for D&W expect demands in *.ddm
 c                        4 same as 3 but do not limit demand from SW to 
 c                          IWR supplied by other sources (e.g. wells)
 c                        5 same as 4 but demand is water right if
@@ -90,12 +84,9 @@ c                         2 no reaches but open monthly *.ifm file
 c                         3 with reaches and open monthly *.ifm file
 
 c
-c		nrgfor   # of Rio Grande forecast statins to read 
-c                          in Mdainp
-c		nisfinA  # of annual ISF values stations 
-c                          to read in Mdainp
-c		nisfinM  # of monthly ISF values stations 
-c                          to read in Mdainp
+c               nrgfor   # of Rio Grande forecast statins to read in Mdainp
+c               nisfinA  # of annual ISF values stations to read in Mdainp
+c               nisfinM  # of monthly ISF values stations to read in Mdainp
 c _________________________________________________________
 c               Reoperation control
 c               ireopx  = 0 do reoperate, 
@@ -116,8 +107,7 @@ c
 c rrb 2021/04/18; Compiler not used or initialize
 c rrb 2005/08/22; Remove reservoir read to getres.for
 c rrb 2004/09/07; Revise diversions to allow multiple owners
-c		ndown. Note multiple users are still not
-c		allowed.
+c                 ndown. Note multiple users are still not allowed.
 c rrb 2003/08/18; Revise to allow random file read
 c
 c rrb 1999/09/15; Revised instream flows to allow monthly data
@@ -129,15 +119,18 @@ c               (0=no, 1=yes)
 c
 c
 c _________________________________________________________
-c	Dimensions
+c     Dimensions
 c
 
       include 'common.inc'
-c
+
       DIMENSION ITEMP(numstax)
 
       dimension mthd(12), xmon(12)
-C
+
+      ! Indicates whether control file format is new (1) or old (0).
+      integer iCtlNewFormat
+
       character ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
      1          recin*256, cgoto2*12, cx*12, rec4*4, rec24*24,
      1          rec1*1, rec12*12, 
@@ -158,12 +151,12 @@ c rrb 2021/04/18; Compiler not used or initialize
       rec4=rec4
       cgoto2=cgoto2
 c
-c		Details:
-c		  ioutC = Control Data (*.ctl)
-c     ioutS = River Station (*.ris)		
+c     Details:
+c     ioutC = Control Data (*.ctl)
+c     ioutS = River Station (*.ris)
 c     ioutI = Instream Flow (*.ifs)
 c     ioutN = 1 Network Data (*.rin)
-c		        = 2 Network plus idncod and ndnnod
+c           = 2 Network plus idncod and ndnnod
       iout=0
       ioutS=0
       ioutN=0
@@ -177,9 +170,8 @@ c		        = 2 Network plus idncod and ndnnod
 
       blank = '            '                       
 c ---------------------------------------------------------
-c               Initialize return pointer here so
-c		  resevoir returns can be read in GetRes
-c		  as well as Getdiv and Getwel.     
+c     Initialize return pointer here so reservoir returns can be read in GetRes
+c     as well as Getdiv and Getwel.
 
       numrtn=0
       NSTRTN=0
@@ -195,8 +187,7 @@ c		  as well as Getdiv and Getwel.
         irnord(is)=0
       end do  
 c
-c rrb 2006/11/08;  Move initialization to top for new control file read
-c		   (e.g. getctlC)      
+c rrb 2006/11/08;  Move initialization to top for new control file read (e.g. getctlC) 
       ireach = 0 
       icondem = 0
       iopout = 0
@@ -255,11 +246,11 @@ cx110 write(nlog,101)
       
 c
 c rrb 2008/02/22; Read new or old response file formats (infile)
-c		  add path (fpath1), open file (filena), get
-c		  number of stations (numopr, if 0) and get 
-c		  version number (ioprX)
-c		  inf = filename
-c		  nf = file #
+c                 add path (fpath1), open file (filena), get
+c                 number of stations (numopr, if 0) and get
+c                 version number (ioprX)
+c                 inf = filename
+c                 nf = file #
       inf=2
       nf=1
       call GetFile(
@@ -269,31 +260,43 @@ c		  nf = file #
 c
 c _________________________________________________________
 c
-c		Determine file type (old or new)      
-      itestCtl=0
+c     Determine file type (old or new).
+      iCtlNewFormat=0
       READ(1,'(a12)',end=926,err=928) rec12
       rec12=adjustl(rec12)
-      if(rec12(1:5) .eq.'Title') itestCtl=1
+      ! If 'Title' is found at start of line then assume new format.
+      ! TODO smalers 2021-06-14 seems to not handle # comments?
+      if(rec12(1:5) .eq.'Title') iCtlNewFormat=1
+      ! Rewind the file so that full processing can occur below.
       backspace(1)
 c
 c _________________________________________________________
 c               Read Control File
-c		iok=0 Not OK if not found
-c		iok=1 OK if not found
-c		
-      if(itestCtl.eq.1) then
+c               iok = 0 Not OK if property is not found
+c               iok = 1 OK if property is not found
+c
+      if(iCtlNewFormat.eq.1) then
+        ! First read properties that are required.
         iok=0
         call GetCtlC(nlog, 1, iok,3,'Title_1                  ',  
-     1    i,  r, cx, headin1(1))
+     1    i, r, cx, headin1(1))
      
         call GetCtlC(nlog, 1, iok,3,'Title_2                  ',  
-     1    i,  r, cx, headin1(2))
+     1    i, r, cx, headin1(2))
      
         call GetCtlC(nlog, 1, iok,0, 'Starting_Year           ',  
-     1    iystr,  r, cx, rec80)
+     1    iystr, r, cx, rec80)
+        if ( iystrCli > 0 ) then
+          ! Run start was specified on command line.
+          iystr = iystrCli
+        endif
         
         call GetCtlC(nlog, 1, iok,0, 'Ending_Year             ',      
-     1    iyend,  r, cx, rec80)
+     1    iyend, r, cx, rec80)
+        if ( iyendCli > 0 ) then
+          ! Run end was specified on command line.
+          iyend = iyendCli
+        endif
 c        
         call getctlC(nlog, 1, iok,2, 'Time_Step               ',       
      1    iday, r, cx, rec80)
@@ -311,31 +314,29 @@ c
         call GetCtlC(nlog, 1, iok,2, 'Streamflow_Type         ',  
      1    iopflo, r, cx, rec80)
 c
-c		Read ok if not found
-c		iok=0 Not OK if not found
-c		iok=1 OK if not found
+        ! Next read properties that are optional.
         iok=1        
-        call getctlC(nlog, 1, iok,2, 'Demand_Type             ',      
+        call getctlC(nlog, 1, iok,2, 'Demand_Type             ',
      1    icondem, r, cx, rec80)
         call getctlC(nlog, 1, iok,0, 'Reoperation_Control     ',
      1    ireopx, r, cx, rec80)
 c        
-        call getctlC(nlog, 1, iok,0, 'Detailed_Output         ',  
+        call getctlC(nlog, 1, iok,0, 'Detailed_Output         ',
      1     ichk, r, cx, rec80)
      
-        call getctlC(nlog, 1, iok,0, 'Call_Switch             ',       
+        call getctlC(nlog, 1, iok,0, 'Call_Switch             ',
      1    icall, r, cx, rec80)
-        call getctlC(nlog, 1, iok,2, 'Call_ID                 ',           
+        call getctlC(nlog, 1, iok,2, 'Call_ID                 ',
      1    i, r, ccall, rec80)
         ccall=adjustl(ccall)
           
         if(iok.eq.-1) goto 120       
 c          
-        call getctlC(nlog, 1, iok,0, 'Annual_Time_Series      ', 
+        call getctlC(nlog, 1, iok,0, 'Annual_Time_Series      ',
      1    itsfile, r, cx, rec80)
         call getctlC(nlog, 1, iok,0, 'Variable_Efficiency     ',
      1    ieffmax,r,cx, rec80)
-        call getctlC(nlog, 1, iok,0, 'Sprinkler_Approach      ', 
+        call getctlC(nlog, 1, iok,0, 'Sprinkler_Approach      ',
      1    isprink,r,cx, rec80)              
         call getctlC(nlog, 1, iok,1, 'Soil_Moisture_Depth     ',
      1    i, soild, cx, rec80)
@@ -351,11 +352,11 @@ c		iok=1 OK if not found
         
         call getctlC(nlog, 1, iok,0, 'Instream_Flow_Type      ',
      1    ireach, r, cx, rec80)
-        call getctlC(nlog, 1, iok,0, 'Well_Control            ',  
+        call getctlC(nlog, 1, iok,0, 'Well_Control            ',
      1    iwell, r, cx, rec80)
         call getctlC(nlog, 1, iok,1, 'Maximum_Stream_Loss     ',
      1    i,gwmaxrc,cx, rec80)      
-        call getctlC(nlog, 1, iok,0, 'San_Juan_RIP            ',   
+        call getctlC(nlog, 1, iok,0, 'San_Juan_RIP            ',
      1    isjrip, r,cx, rec80)
       
       else
@@ -371,7 +372,15 @@ c               Read Headings from control file
         end do
       
         call getctl(1, 0, 0, iystr,  r, cx)
+        if ( iystrCli > 0 ) then
+          ! Run start was specified on command.
+          iystr = iystrCli
+        endif
         call getctl(1, 0, 0, iyend,  r, cx)
+        if ( iyendCli > 0 ) then
+          ! Run end was specified on command.
+          iyend = iyendCli
+        endif
         call getctl(1, 0, 0, iresop, r, cx)
         call getctl(1, 0, 0, moneva, r, cx)
         call getctl(1, 0, 0, iopflo, r, cx)
@@ -2256,86 +2265,3 @@ c               Error Tracking
 
       stop 
       END
-c
-c *********************************************************
-c
-      subroutine getctl(nf, iok, ityp, i, r, c)
-c
-c       Getctl; A generic control data reader
-c               nf=file number
-c               iok     0 not OK if not found
-c                       1 OK if not found
-c               itype   0 integer
-c                       1 = real
-c                       2=character
-c               i = integer value
-c               r = real value
-c               c = character value
-c
-      character cx*12, c*12
-
-      iout=0
-      i=0
-      r=0.0
-      c=' '
-c
-c _________________________________________________________
-c               Read data based on type
-
-c100  read(nf,'(a12)',end=110,err=110) cx
- 100  read(nf,*,end=110,err=110) cx
-c     write(99,*) '  Getctl; iok, cx = ', iok, cx
-      if(cx(1:1).eq.'#') goto 100
-
-      backspace(nf)
-
-      if(ityp.eq.0) then      
-        read(nf,*,end=110,err=110) ri
-        i=ifix(ri)
-        if(iout.eq.1) write(99,*) '  GetCtl; Integer i = ', i
-        goto 120
-      endif
-
-      if(ityp.eq.1) then
-        read(nf,*,end=110,err=110) r
-        if(iout.eq.1) write(99,*) '  GetCtl; Real r = ',r
-        goto 120
-      endif
-
-      if(ityp.eq.2) then
-        read(nf,'(a12)',end=110,err=110) c
-        if(iout.eq.1) write(99,*) '  GetCtl; Character c = ',c
-        goto 120
-      endif
-c
-c _________________________________________________________
-c               Check if eof is OK    
-c
-c rrb 2021/04/18; Compiler not used or initialize
-cx 110  if(iout.eq.1) write(99,*) ' GetCtl; iok = ',iok
- 110  continue
-      if(iout.eq.1) write(99,*) ' GetCtl; iok = ',iok
- 
-      if(iok.eq.0) goto 200
-c
-c _________________________________________________________
-c               Return
- 120  return
-c
-c _________________________________________________________
-c               Error Processing
-
- 200  write(6,210) 
-      write(99,220) 
-      call flush(6)
- 210  format('  Stopped in Getctl')
- 220  format(72('_'),/
-     1 '  Getcl; Stopped in Getctl, see the log file (*.log)')
-      write(6,*) 'Stop 1'
-      call flush(6)
-      call exit(1)
-
-      stop 
-      END
-
-

@@ -19,11 +19,12 @@ c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
         ! subroutine parse(nlog, maxfn, ioptio, ioptio2, filenc, getid)  ! smalers, 2021-06-14, maxfn not used
-        subroutine parse(nlog, ioptio, ioptio2, filenc, getid)
+        subroutine parse(nlog, ioptio, ioptio2, filenc, getid,
+     +                   iystrCli, iyendCli)
 c        
 c
 c _________________________________________________________
-c	Program Description
+c       Program Description
 c
 c       Parse, it parses thru the command line to find request
 c
@@ -50,7 +51,7 @@ c               filenc  = base file name
 c
 c
 c _________________________________________________________
-c	Dimensions
+c       Dimensions
 c
         dimension want(15), want2(25), wantx(15), titleh(25)
 c
@@ -62,6 +63,9 @@ c rrb 2019-01/31; Revise maximum command line length from 127 to 256
 c
 c rrb 2018/08/14; Update to allow larger file names
         character rec36*36
+
+        ! Start and end of simulation.
+        integer iystrCli, iyendCli
 
         data want/
      1     '-baseflow   ', '-simulate   ',
@@ -484,17 +488,14 @@ c               Error Processing
  500  write(6,510) 
       write(99,520) 
       call flush(6)
- 510  format('  Stopped in Getctl')
+ 510  format('  Stopped in Parse')
  520  format(72('_'),/
      1 '  Parse; Stopped in Parse, see the log file (*.log)')
       write(6,*) 'Stop 1'
       call flush(6)
       call exit(1)
 
-      stop 
+      stop
 c _________________________________________________________
 c
-      END     
-
-
-
+      END

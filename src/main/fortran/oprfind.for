@@ -32,7 +32,7 @@ c       Oprfind; it reads various operational right data
 c                called by OprInp.f
 c
 c	               Same as OprFind but revised to recognize command line
-c	               arguements
+c	               arguments
 c
 c
 c _________________________________________________________
@@ -1001,7 +1001,7 @@ c ---------------------------------------------------------
 c               b. idumx=12 means read all months
           if(idumx.eq.12) then
 c
-c rrb 2007/07/03; Allow command line arguements          
+c rrb 2007/07/03; Allow command line arguments
             read(55,*,end=2000,err=2000) (imonsw(k,im),im=1,12)
             if(iecho.eq.1) write(nchk,'(12i8)') (imonsw(k,im),im=1,12)
             goto 500
@@ -1010,7 +1010,7 @@ c
 c ---------------------------------------------------------
 c rrb 00/02/28; c. Allow monthly and intervening structures
 c                  Note Recognize -8 and -20 for GUI operation 
-c		               of RG compact 
+c                  of RG compact 
           if(idumx.lt.0) then
             if(idumx.eq.-8) then
               do im=1,12
@@ -1031,7 +1031,7 @@ c rrb 2007/11/05; Correction -12 is monthly switches only
             if (idumy.ge.0) then
 c
 c ---------------------------------------------------------
-c rrb 2007/07/03; Allow command line arguements          
+c rrb 2007/07/03; Allow command line arguments          
               read(55,*,end=2000,err=2000) (imonsw(k,im),im=1,12)            
               if(iecho.eq.1) write(nchk,'(12i8)')(imonsw(k,im),im=1,12)
               
@@ -1170,7 +1170,7 @@ c ---------------------------------------------------------
 c		  Find diversion ID                                                                        
               ifound=0
               if(internT(k,i).eq.1) then
-                do nd=1,numdiv                                              
+                do nd=1,numdiv
                   if(cdivid(nd).eq.cntern(i)) then
                     intern(k,i)=nd
 c                   write(nlog,*) '  OprFind; nd = ', nd, cdivid(nd)
@@ -1182,7 +1182,7 @@ c
 c ---------------------------------------------------------
 c rrb 2008/01/04; Find Stream ID                                                                        
               if(internT(k,i).eq.2) then
-                do is =1,numsta                                              
+                do is =1,numsta
                   if (cstaid(is).eq.cntern(i)) then
 c                   write(nlog,*) '  OprFind; is = ', is, cstaid(is)
                     ifound=is
