@@ -591,6 +591,7 @@ statemod_compile: \
 			evasec.o \
 			flowres.o \
 			getcall.o \
+			getctl.o \
 			getctlc.o \
 			getdiv.o \
 			getdiv2.o \

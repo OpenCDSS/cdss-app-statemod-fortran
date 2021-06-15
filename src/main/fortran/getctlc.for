@@ -25,7 +25,7 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       GetCtlC; A control file reader that recognizes command arguements
+c       GetCtlC; A control file reader that recognizes command arguments
 c		 (e.g. Starting_Year = 1950)
 c
 c_________________________________________________________________
@@ -386,7 +386,5 @@ cx     1 ' GetCtlC; Problem cannot find data type = ',a24)
       call flush(6)
       call exit(1)
 
-      stop 
+      stop
       END
-
-

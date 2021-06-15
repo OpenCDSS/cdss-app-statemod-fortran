@@ -18,8 +18,7 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 C
-C               Revised common block for linked model
-c
+c smalers 2021-06-14  Add 'cli' common block for command line arguments.
 c
 c rrb 2021/02/14;   Add maxcary (max # of carriers) and revise
 c                   cntern from 10 to 40.
@@ -889,3 +888,11 @@ c rrb 2018/11/17; Data file for John Martin Monthly Model
      1 ijm,         cjm(12,5), cjmID(5)
       character
      1 cjmid*12
+
+c _________________________________________________________
+c     smalers 2021-06-15, add to facilitate automated testing
+c     Command line options, which override input file contents.
+      common/cli/
+     + iystrCli,   ! Simulation start year
+     + iyendCli    ! Simulation end year
+      integer iystrCli, iyendCli
