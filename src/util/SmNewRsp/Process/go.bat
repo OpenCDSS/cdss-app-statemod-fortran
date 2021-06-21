@@ -1,0 +1,1 @@
+..\source\smNewRsp rgtw.rsp

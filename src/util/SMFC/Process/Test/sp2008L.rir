@@ -1,0 +1,46 @@
+#
+# *.xri (*.rir);
+# River Reach data based on the following River Reach Data
+# 
+#    # Reach ID     Gage at end of Reach
+# ____ ___________  _______________________
+#    1 Reach_01     Kersey                  
+#    2 Reach_02     Weldona                 
+#    3 Reach_03     Balzac                  
+#    4 Reach_04     Julesburg               
+#    5 Reach_05     Bijou_O                 
+#    6 Reach_06     Riverside_O             
+#    7 Reach_07     Sterling_O              
+#    8 Reach_08     Julesburg_O             
+#    9 Reach_09     END                     
+#
+#      
+# rrb replace the goes to Reach and Goes To Reach Name to match True system
+#
+#                                         Goes To        Goes To                    
+# Reach ID     Reach Name                 Reach ID       Reach Name                 At Stream ID
+# ____________ __________________________ ______________ __________________________ ______________
+# rrb Reach_Data
+# rrb "Reach_01    " "Kersey                  " "Reach_02    " "Weldona                 " "06754000    "
+# rrb "Reach_02    " "Weldona                 " "Reach_03    " "Balzac                  " "06758500    "
+# rrb "Reach_03    " "Balzac                  " "Reach_04    " "Julesburg               " "06759910    "
+# rrb "Reach_04    " "Julesburg               " "Reach_05    " "Bijou_O                 " "06764000    "
+# rrb "Reach_05    " "Bijou_O                 " "Reach_06    " "Riverside_O             " "Bijou_O     "
+# rrb "Reach_06    " "Riverside_O             " "Reach_07    " "Sterling_O              " "Riverside_O "
+# rrb "Reach_07    " "Sterling_O              " "Reach_08    " "Julesburg_O             " "Sterling_O  "
+# rrb "Reach_08    " "Julesburg_O             " "Reach_09    " "END                     " "Julesburg_O "
+# rrb "Reach_09    " "END                     " "END         " "END                     " "END         "
+# rrb 
+#	                                        Goes To        Goes To                    
+# Reach ID     Reach Name                 Reach ID       Reach Name                 At Stream ID
+# ____________ __________________________ ______________ __________________________ ______________
+# Reach_Data
+"Reach_01    " "Kersey                  " "Reach_02    " "Weldona                 " "06754000    "
+"Reach_02    " "Weldona                 " "Reach_03    " "Balzac                  " "06758500    "
+"Reach_03    " "Balzac                  " "Reach_04    " "Julesburg               " "06759910    "
+"Reach_04    " "Julesburg               " "Reach_09    " "END                     " "06764000    "
+"Reach_05    " "Bijou_O                 " "Reach_09    " "END                     " "Bijou_O     "
+"Reach_06    " "Riverside_O             " "Reach_09    " "END                     " "Riverside_O "
+"Reach_07    " "Sterling_O              " "Reach_09    " "END                     " "Sterling_O  "
+"Reach_08    " "Julesburg_O             " "Reach_09    " "END                     " "Julesburg_O "
+"Reach_09    " "END                     " "END         " "END                     " "END         "

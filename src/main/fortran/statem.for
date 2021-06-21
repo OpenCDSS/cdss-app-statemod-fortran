@@ -725,7 +725,12 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
-     1 '    - 2021/05/30 (16.00.48):',/    
+     1 '    - 2021/06/14 (16.00.48):',/
+     1 '     Add -iystr Year and -iyend Year command line arguments.',/
+     1 '     Improve log file handling and menu prompts.',/
+     1 '     Command line arguments can be in any order.',/
+
+     1 '    - 2021/05/30 (16.00.48):',/
      1 '     Runtime Error Tracking',/
      1 '     Revised DirectWR (type 26) to fix a typo to ',/
      1 '       initialize a SCALAR dcrdiv1 not the ARRAY dcrdiv',/
@@ -930,7 +935,7 @@ c
      1 '         revises Divert = To_Conduit',/
      1 '    - 2020/08/31 (16.00.39)',/ 
      1 '       Revised DivResR.f (type 32) to correct ',/
-     1 '         qdiv(22,inode)=qdiv(22,inode)+divact such that:',/                     
+     1 '         qdiv(22,inode)=qdiv(22,inode)+divact such that:',/
      1 '         if ndtype 2 (reservoir) inode = irusta(nrD)',/
      1 '         not idvsta(nrD).  Note this revises a fix included',/
      1 '         in version 16.00.38',/
@@ -938,7 +943,7 @@ c
      1 '       Perforfmed the following based on the results of ',/
      1 '        compiling with Gfortran:',/
      1 '       1. Revised DivResR.f (type 32) to correct ',/
-     1 '          qdiv(22,inode)=qdiv(22,inode)+divact such that:',/                     
+     1 '          qdiv(22,inode)=qdiv(22,inode)+divact such that:',/
      1 '          if ndtype 2 (reservoir) inode = idvsta(nrD) &',/
      1 '          if ndtype 3 (diversi0n) inode = idvsta(ndD)',/     
      1 '       2. Revised Ifrrigsp.f (type 50) to not accrue the',/
@@ -948,7 +953,7 @@ c
      1 '          South Platte application.  Specifically',/ 
      1 '          Replaced diwrreqw(nw)=diwrwx(nd)* ca with',/
      1 '                   diwrreqw(nw)=diwrreqw(nw)* ca',/
-     1 '       4. Revise Oprinp.f for a type 46 opr rule to include a',/ 
+     1 '       4. Revise Oprinp.f for a type 46 opr rule to include a',/
      1 '          do loop when checking if the rule has data that',/
      1 '          indicates it should operate less than a full',/
      1 '          month that is not supported',/     
@@ -1151,7 +1156,7 @@ c
      1 '        to be Baseflow % only (no Enhanced %)',/
      1 '      Revised JMFlow.f (type 54) monthly model to calculate',/
      1 '        the Enhanced Baseflow % as 100 - Baseflow % and',/
-     1 '        check the ID in *.jmm equals the type 54 sourc 1 ID',/   
+     1 '        check the ID in *.jmm equals the type 54 sourc 1 ID',/
      1 '      Revised Oprinp.f to check type 53 and 54 data for:',/
      1 '       1) Type 54 is senior to type 53',/ 
      1 '       2) If a type 53 or 54 is provided then the other',/

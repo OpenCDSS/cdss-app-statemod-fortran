@@ -1,0 +1,89 @@
+#
+# Title
+-Title Test Title
+#
+#        1. Diversions
+#
+#       Delplt.rsp
+#
+#       Run Type: Single, Multiple, Difference, Merge,  Help 
+#
+# Difference
+# Diff2
+Multiple
+# Single
+# Version
+########################################
+#       File:
+# c:\w\statem\test\ex2\ex2.b43
+# c:\w\statem\test\ex2\ex2.xdd
+# \w\statem\test\ex2\ex2.xre
+# \w\statem\rg\daily_011102\rgtw.b42
+# \w\statem\rg\daily_011102\rgtw.xwe
+# \w\statem\rg\daily_011102\rgtw.b43
+# \w\statem\rg\daily_011102\rgtw.xdd
+\w\statem\rg\Task_8\rgmodel\rgtw.xdd
+#
+#       Type (Diversion, StreamGage or Reservoir)
+# Diversion
+# Reservoir
+# StreamGage or Stream
+# Well
+StreamID
+#
+#       Parameter (same as SMGUI) or type -help
+# Total_Supply
+River_Outflow
+# From_Well
+#
+#       ID (0=all, n=ID, end with a -999)
+0
+-999
+#
+#       Year or Ave (e.g. Ave or 1989 NOV)
+Ave
+
+
+
+
+
+
+
+#     
+########################################
+#
+#       File:
+# \w\statem\gunn4\gunnHxdd.old
+# \w\statem\test\ex1\ex1.b43
+# \w\statem\test\ex1\ex1.xdd
+# \w\statem\test\ex2\ex2.xre
+# \w\statem\rg\daily_011102\rgtwd.b42
+# \w\statem\rg\daily_011102\rgtwd.b43
+# \w\statem\rg\daily_011102\rgtwd.xdd
+\w\statem\rg\Task_8\rgmodel\rgtw.b43
+#
+#       Type (Diversion, StreamGage or Reservoir)
+# Diversion
+# Reservoir
+# StreamGage
+# Well
+StreamID
+#
+#       Parameter (same as SMGUI) or type -help
+# Total_Supply
+River_Outflow
+# From_Well
+#
+#       ID (0=all, n=ID, end with a -999)
+0
+-999
+#
+#       Year or Ave (e.g. Ave or 1989)
+Ave
+#
+#
+########################################
+#       End of File
+-999
+
+

@@ -1,0 +1,76 @@
+#
+# SmDelta.rsp; response file for SmDelta that runs using StateMod version 11.x
+# Title
+-Title Test Title
+#
+#        1. Diversions
+#
+#       Delplt.rsp
+#
+#       Run Type: Single, Multiple, Difference, Merge,  Help 
+#
+# Difference
+# Diff2
+# Multiple
+# Single
+# Version
+Multiple
+########################################
+#       File:
+rg2005C.xop
+#
+#       Type (Diversion, Reservoir, StreamGage, Instream, StreamID, Well,
+#             Water_Budget or Operational_Right)
+Operational_Right
+# Reservoir
+# StreamGage or Stream
+# Well
+# StreamID
+#
+#       Parameter (same as SMGUI) or type -help
+#       ! Not used for Operational_Right and Water Budget
+# Total_Supply
+River_Outflow
+# From_Well
+#
+#       ID (0=all, n=ID, end with a -999)
+#       ! Not used for Operational_Right and Water Budget
+0
+-999
+#
+#       Year or Ave (e.g. Ave or 1989 NOV)
+Ave           
+#     
+########################################
+#
+#       File:
+d:\w\rgdss\data\statemod\Old_Calculated_mon\oldC.xop
+#
+#       Type (Diversion, StreamGage or Reservoir)
+# Diversion
+# Reservoir
+# StreamGage
+# Well
+# StreamID
+Operational_Right
+#
+#       Parameter (same as SMGUI) or type -help
+#       ! Not used for Operational_Right and Water Budget
+# Total_Supply
+River_Outflow
+# From_Well
+#
+#       ID (0=all, n=ID, end with a -999)
+#       ! Not used for Operational_Right and Water Budget
+0
+-999
+#
+#       Year or Ave (e.g. Ave or 1989)
+Ave
+#
+#
+########################################
+#       End of File
+-999
+
+

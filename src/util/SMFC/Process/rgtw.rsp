@@ -1,0 +1,45 @@
+#
+# rgTW.rsp; response for Rio Grande Basin Surface Water Model (Monthly Historical)
+#
+#
+# Name                                                          Row  Description (optional)
+#---------------                                                ---  ----------------------                                  
+rgTW.ctl                                                         1   Control file name (*.ctl)                               
+rgTW.rin                                                         2   River Network file name (*.rin)                         
+rgTW.res                                                         3   Reservoir Station file name (*.res)                     
+rgTW.dds                                                         4   Direct Diversion Station file name (*.dds)              
+rgTW.ris                                                         5   River Station file name (*.ris)                         
+rgTW.ifs                                                         6   Instream Flow Station file name (*.ifs)                 
+rgTW.wes                                                         7   Well Station file name (*.wes)                          
+rgTW.ifr                                                         8   Instream Flow Right file name (*.ifr)                   
+rgTW.rer                                                         9   Reservoir Right file name (*.rer)                       
+rgTW.ddr                                                        10   Direct Diversion Right file name (*.ddr)                
+rgTW.opr                                                        11   Operational Right file name (.opr)                      
+rgTW.wer                                                        12   Well Right file name (*.wer)                            
+rgTW.dum                                                        13   Precipitation file name - monthly (*.pre)               
+rgTW.eva                                                        14   Evaporation file name - monthly or annual (*.eva)       
+rgtw.rim    rgTW.xbm                                                        15   Streamflow file name - monthly (*.rim or *.xbm)         
+rgTW.ddm                                                        16   Direct Flow demand file name - monthly                  
+rgTW.dum                                                        17   Direct Flow demand overwrite name - monthly             
+rgTW.dum                                                        18   Direct Flow demand file name - annual                   
+rgTW.ifm                                                        19   Instream demand file name - monthly                     
+rgTW.ifa                                                        20   Instream flow demand - Annual                           
+rgTW.wem                                                        21   Well structure demand file name - monthly               
+rgTW.dly                                                        22   Delay Table file name - monthly                         
+rgTW.tar                                                        23   Reservoir Target file name - monthly                    
+rg.tsp                                                          24   tsp file (From CU)
+rg.iwr                                                          25   irrigation water requirement file (From CU)
+rg.par                                                          26   parameter file (From CU)
+rgTW.eom                                                        27   End of Month Content file name - monthly                
+rgTW.rib                                                        28   Base Streamflow data                                    
+rgTW.rih                                                        29   Historic Streamflow data - monthly                      
+rgTW.ddh                                                        30   Historic Diversion data - monthly                       
+rgTW.weh                                                        31   Historic Well Pumping data - monthly                    
+rgTW.gis                                                        32   GIS data files                                          
+rrb.out   rgTW.out                                                        33   Output Control File                                     
+rgTW.dum                                                        34   Streamflow file name - daily                            
+rgTW.dum                                                        35   Direct Flow demand file name - daily                    
+rgTW.dum                                                        36   Instream demand file name - daily                       
+rgTW.dum                                                        37   Well demand file name - daily                           
+rgTW.dum                                                        38   Reservoir Target file name - daily                      
+rgTW.dum                                                        39   Delay Table file name - daily                           

@@ -1,0 +1,1735 @@
+c
+c
+C     Last change:  RB   27 Jun 98   12:10 pm
+C                                                                       
+C      Smlink.f 
+c              Code to generate a linked file for up to 5               
+c              Statemod input files
+c
+c !!!   See subroutines parse, getpath and putpath for
+c       Conversion to work
+c
+c               nd         = # of command line edits
+c               fndel()*72 = file name to be edited
+c               iddel()*12 = ID to be edited
+c               ndel()     = file # to be edited
+c               idtyp()    = Edit type 1=delsta, 2=addrec, 3=repzero
+c
+        dimension ndel(200), idtyp(200)
+        character filenc*72,  filout*72, fpath(5)*72,
+     1            fname(5)*72,ext(30)*4,  desc(30)*24,
+     1            iddel(200)*12, fndel(200)*72, recnew(200)*160,
+     1            vdate*8
+        data ext/                                                       
+     1    '.rsp', '.ctl', '.rin', '.res', '.dds', '.ris', '.ifs',       
+     1    '.ifr', '.rer', '.ddr', '.opr', '.pre', '.eva', '.rim',
+     1    '.ddm',       
+     1    '.dum', '.dda', '.ifa', '.dly', '.tar', '.eom', '.rib',       
+     1    '.rih', '.ddh', '.gis', '.out', '    ', '    ', '    ',
+     1    '    '/                               
+                                                                        
+        data desc/                                                      
+     1    'Response File           ', 'Control File            ',       
+     1    'River network file      ', 'Reservoir Station       ',       
+     1    'Direct Diversion Station', 'River Station           ',       
+     1    'Instream Flow Station   ', 'Instream Flow Rights    ',       
+                                                                        
+     1    'Reservoir Rights        ', 'Direct Diversion Rights ',       
+     1    'Operational Rights      ', 'Precipitation           ',       
+     1    'Evaporation             ', 'Streamflow              ',
+     1    'Direct Diversion Dem Mo ', 'Diversion Override      ',
+                                                                        
+     1    'Direct Diversion Dem An ', 'Instream Flow Demand An ',       
+     1    'Delay                   ', 'Reservoir Target        ',       
+     1    'Reservoir End-of-Month  ', 'River Baseflow          ',       
+     1    'Historic Streamflows    ', 'Historic Diversions     ',
+     1    'GIS                     ', 'Ouput Selection         ',
+     1    '                        ', '                        ',
+     1    '                        ', '                        '/       
+c                  
+c               Initilize
+       ver = 1.05
+c
+c               1.01 (05/31/96) handles time series with different years
+c               1.03 (06/28/96) handles *.out and *.gis & *.dly is file 1
+c               1.04 (12/06/96) added starib for big *.rib files
+c               1.05 (98/06/29) Added command lines to delete, etc.
+       vdate = '98/06/29'
+       iderr=0  
+       maxnf=5
+c                                                                       
+c               Open files                                              
+       open(99,file='smlink.log', status='unknown')
+       open(98,file='smlink.dim', status='unknown')
+       open(7, file='smlink.xgr', status='unknown')
+c                                                                       
+c               Get control (*.rsp) file
+       call parse(filenc)                     
+c
+c               Check for simple -version options
+       if(filenc(1:2).eq. '-v') then
+         write(6,120) ver, vdate
+         call flush(6)
+         goto 110
+       endif
+c
+c               Check for simple -help option
+       if(filenc(1:2).eq. '-h') then
+         write(6,130)
+         call flush(6)
+         goto 110
+       endif
+
+       open(5, file=filenc, status='old')                               
+c                                                                       
+c               Get output file name                                    
+c       write(6,*) ' Gettin output file name'
+       call skipn(5,0)  
+       read(5,'(a72)',end=150,err=150) filout
+       ix = 0                                                           
+       do 100 i=1,72
+         if(filout(i:i).ne.' ') ix=ix+1                                 
+  100  continue                                                         
+c                                                                       
+c               Get response file names                                 
+c -------------------------------------------                           
+       call opener(maxnf,fpath)
+c                                                                       
+c               Get commands for editing
+c -------------------------------------------
+c rrb; 98/10/21; Test
+c      call getcom(nd,fndel,idtyp,iddel,recnew)
+c        do i=1,nd
+c          write(99,111) i,fndel(i),i,iddel(i),i,recnew(i)
+c        end do
+c        goto 110
+
+c                                                                       
+c               Response file (*.rsp)                                   
+c -------------------------------------------                           
+        nf=1                                                            
+        call opentop(ix,maxnf,0,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call rsp(ix, filout, ext, desc)                                 
+c                                                                       
+c               Control file (*.ctl)                                    
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call control(maxnf,moneva,iybeg,iyend,filout)
+c                                                                       
+c               River Network (*.rin)                                   
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call rin(maxnf,iderr,nd,ndel,idtyp,iddel,filout,recnew)
+c                                                                       
+c               Reservoir Stations (*.res)                              
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,0,3,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Diversion Stations (*.dds)                              
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+c
+c rrb 98/10/20; test problem when n = 100%
+c       call station(maxnf,iderr,0,3,1,nd,ndel,
+        call station(maxnf,iderr,0,2,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c
+c rrb 98/06/29
+c        do i=1,nd
+c          write(99,112) i,fndel(i),i, iddel(i),i,ndel(i)
+c        end do
+c 112    format('  Main2    fndel  ',i5,' = ', a72,/,
+c     1         '           iddel  ',i5,' = ', a12,/,
+c     1         '            ndel  ',i5,' = ', i5)
+c       goto 160
+c                                                                       
+c               River Stations (*.ris)                                  
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)      
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,0,3,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Instream Stations (*.ifs)                               
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)      
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,0,3,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Instream rights (*.ifr)                                 
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)       
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,0,3,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Reservoir rights (*.rer)                                
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,0,3,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Diversion rights (*.ddr)                                
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,0,3,0,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Operation rights (*.opr)                                
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,0,3,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Precipitation (*.pre)                                   
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)        
+        if(moneva.eq.1) then
+          call getfn(maxnf,nd,ndel,fndel,fname)
+          call station(maxnf,iderr,1,17,1,nd,ndel,
+     1                 idtyp,iddel,filout,recnew)
+        else                                 
+          call timec(maxnf,iderr,0,iybeg,iyend,nd,ndel,
+     1               idtyp,iddel,filout)
+        endif
+c                                                                       
+c               Evaporation (*.eva)                                     
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        write(99,140)
+        write(26,140)
+        if(moneva.eq.1) then
+          call getfn(maxnf,nd,ndel,fndel,fname)
+          call station(1,iderr,1,17,1,nd,ndel,
+     1                 idtyp,iddel,filout,recnew)
+        else
+          call timec(1,iderr,0,iybeg,iyend,nd,ndel,
+     1               idtyp,iddel,filout)
+        endif
+c                                                                       
+c               River Baseflows (*.rim)
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c
+c rrb 98/07/28
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call timec(maxnf,iderr,0,iybeg,iyend,nd,ndel,
+     1             idtyp,iddel,filout)
+c                                                                       
+c               Diversion Demand-Monthly (*.ddm)                        
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c
+c rrb 98/07/28
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call timec(maxnf,iderr,0,iybeg,iyend,nd,ndel,
+     1             idtyp,iddel,filout)
+c                                                                       
+c               Diversion Override (*.ddo)                              
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,1,17,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Diversion Demand-Annual (*.dda)                         
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,1,17,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Instream Demand-Annual (*.ifa)                          
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call station(maxnf,iderr,1,17,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Delay Table (*.dly)                                     
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        write(99,142)
+        write(26,142)
+        call getfn(maxnf,nd,ndel,fndel,fname)
+c       call station(maxnf,iderr,0,12,1,nd,ndel,iddel,filout,recnew)
+        call station(1,iderr,0,12,1,nd,ndel,
+     1               idtyp,iddel,filout,recnew)
+c                                                                       
+c               Reservoir Target (*.tar)                                
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c
+c rrb 98/07/28
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call timec(maxnf,iderr,1,iybeg,iyend,nd,ndel,
+     1             idtyp,iddel,filout)
+c                                                                       
+c               Reservoir EOM (*.eom)                                   
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c
+c rrb 98/07/28
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call timec(maxnf,iderr,0,iybeg,iyend,nd,ndel,
+     1             idtyp,iddel,filout)
+c                                                                       
+c               River Baseflow Info (*.rib)                             
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c       call getfn(maxnf,nd,ndel,fndel,fname)
+c       call station(maxnf,iderr,0,3,1,nd,ndel,iddel,filout,recnew)
+        call starib(maxnf,iderr,3,filout)
+c                                                                       
+c               Historical Streamflow (*.rih)                           
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c
+c rrb 98/07/28
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call timec(maxnf,iderr,0,iybeg,iyend,nd,ndel,
+     1             idtyp,iddel,filout)
+
+         
+c                                                                       
+c               Historical Diversions (*.ddh)                           
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c
+c rrb 98/07/28
+        call getfn(maxnf,nd,ndel,fndel,fname)
+        call timec(maxnf,iderr,0,iybeg,iyend,nd,ndel,
+     1             idtyp,iddel,filout)
+c                                                                       
+c               GIS (*.gis)                                             
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+        call gis(maxnf,2)
+c                                                                       
+c               Output (*.out)                                             
+c -------------------------------------------                           
+        nf=nf+1
+        call opentop(ix,maxnf,1,filout,ext(nf),desc(nf),
+     1              fpath,fname)
+c       write(99,144)
+c       write(26,144)
+        call gis(maxnf,3)
+c
+c               Print global message regarding duplicate id's
+c -------------------------------------------                           
+ 110    write(6,*) ' '
+        write(6,140)
+        write(6,142)
+        write(6,144)
+c
+c               Print warning if edits were not implemented
+        iedit = 0
+        do i=1,nd
+          if(idtyp(i).ge.0) then
+            write(6,*)  '  Warning, edit not executed for: '
+            write(6,111)   i,fndel(i),i,iddel(i),i,recnew(i)
+            write(99,*) '  Warning, edit not executed for: '
+            write(99,111)  i,fndel(i),i,iddel(i),i,recnew(i)
+            iedit=1
+          endif
+        end do
+c
+c               Print termination notes
+        if(iedit.eq.0) then
+          write(6,*)  ' '
+          write(99,*) ' ' 
+          write(6,*)  '  All edits implemented'
+          write(99,*) '  All edits implemented'
+          call flush(6)
+        endif
+
+        if(iderr.eq.0) then
+          write(6,*)  '  Successful termination'
+          write(6,*)  '  No duplicate ID problems'
+          write(99,*) '  Successful termination'
+          write(99,*) '  No duplicate ID problems'
+
+          write(99,*) ' '
+          call flush(6)
+        else
+          write(6,*)  ' '
+          write(6,*)  '  Warning; duplicate id(s) in input files'
+          write(6,*)  '  Otherwise a successful termination'
+          write(99,*) ' '
+          write(99,*) '  Warning; duplicate id(s) in input files'
+          write(99,*) '  Otherwise a successful termination'
+        endif
+
+        call flush(6)
+        stop 0
+c
+c               Formats
+  111   format('  Main     fndel  ',i5,' = ', a72,/,
+     1          '           iddel  ',i5,' = ', a12,/,
+     1          '           recnew ',i5,' = ', a160)
+  120   format(
+     1 ' _______________________________________________________'//
+     1 '        SmLink                       '/
+     1 '        State of Colorado - Statemod Input File Linker  '//
+     1 '        Version: ',f5.2,/,
+     1 '        Last revision date: ',a8,//
+     1 ' _______________________________________________________')
+  130   format(
+     1 ' _______________________________________________________'//
+     1 '        SmLink                       '/
+     1 '        State of Colorado - Statemod Input File Linker  '//
+     1 '        For help, see manpage (man smlink)',/
+     1 ' _______________________________________________________')
+  140   format('#  !!!  Caution, assumed evap data for file 1 is ',
+     1  ' appropriate for all basins')
+  142   format('#  !!!  Caution, assumed delay data for file 1 is ',
+     1  ' appropriate for all basins')
+  144   format('#  !!!  Caution, assumed output data for file 1 is ',
+     1  ' appropriate for all basins')
+
+c
+c               Warning messages
+  150   write(99,*) '  Problem reading output file in main'
+  160   write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end                                                             
+c                                                                       
+c ************************************************************          
+c                                                                       
+c               blank; it checks the first n lines of a file            
+c                      for blanks                                       
+c                      ib = 0, blank; 1 = not blank                     
+        subroutine blank(rec1, n, ib)                                   
+        character rec1*155
+                                                                        
+        ib = 0                                                          
+        do 100 i=1,n                                                    
+          if(rec1(i:i) .ne. ' ') ib = 1                                 
+  100   continue                                                        
+        return                                                          
+        end                                                             
+c                                                                       
+c ************************************************************          
+c                                                                       
+c               checkc; it check the first n characters of a            
+c                       control file for consistency                    
+        subroutine checkc(filout, rec1, rec2, n, n1, n2)                        
+        character filout*72, rec1*155, rec2*155 
+                                                                        
+        do 110 i=1,n                                                    
+          if(rec1(i:i) .ne. rec2(i:i)) then                             
+            write(99,100) n1, n2, filout,rec1, rec2 
+  100       format(/,                                                    
+     1      ' Problem inconsistent contrl (*.ctl) data ', 
+     1      '   between input files ', 2i5,/, 
+     1      ' Output File = ', a72,/,                                   
+     1      ' Record 1    = ', a155,/,
+     1      ' Record 2    = ', a155)
+           write(6,*) '  Checkc; Problem see log (*.log) file'
+           call flush(6)
+           stop                                                        
+         endif                                                         
+  110   continue                                                        
+        return                                                          
+        end
+c
+c ************************************************************
+c
+c               checkid; it checks that an Id has not been
+c                 inadvertenly duplicated in the linked network
+        subroutine checkid(n, filout, id, iderr)
+        dimension id(7500)
+        character id*12, idx*12, filout*72
+ 
+c       write(99,*) ' n = ', n 
+        do 100 i=1,n                                                    
+          idx= id(i)                                                    
+                                                                        
+          do 100 j=1,n                                                  
+            if(j.ne.i .and. idx .eq. id(j)) then                          
+              filout=filout                                               
+              write(99,110) filout, idx, id(j)
+              write(6,110)  filout, idx, id(j)
+
+              iderr=1
+              do k=1,n
+                write(99,*) k, id(k)
+              end do
+              stop                                                        
+            endif                                                         
+ 100      continue                                                        
+        return                                                          
+c
+c               Formats
+  110   format(                                                     
+     1      ' Problem duplicate id ', /,                                
+     1      '   Output File = ', a72,/,                                 
+     1      '   ID 1        = ', a12,/,                                 
+     1      '   ID 2        = ', a12,/
+     1      '  Stopped in Checkid.for')
+
+        end                                                             
+c                                                                       
+c ************************************************************          
+c                                                                       
+        subroutine control(maxnf,moneva,iybeg,iyend,filout)
+        dimension rec(20)  
+        character rec*155, rec1*155, filout*72, rec8*8
+c                                                                       
+c               Title                                                   
+        nf=10                                                           
+        do 100 i=1,maxnf                                                
+          nf1 = nf+i                                                    
+          call skipn(nf1,0) 
+          call skipx(nf1,2)                                             
+  100   continue                                                        
+        write(26,110)                                                   
+  110   format(' Linked Model Simulation',/)                            
+                                                                        
+c                                                                       
+c               Other Control Data based on file 1                      
+        nf = 11                                                         
+        do 120 i=1,20                                                   
+          read(nf,'(a155)',end=130,err=170) rec1 
+                                         
+
+          if(i.eq.1) then
+            rec8=rec1(1:8)
+            read(rec8,'(i8)') iybeg
+          endif
+
+          if(i.eq.2) then
+            rec8=rec1(1:8)
+            read(rec8,'(i8)') iyend
+          endif
+c
+c               Adjust parameter iresop to print in Kaf
+          if(i.eq.3)  rec1(1:8) = '       3'
+
+          if(i.eq.4) then
+            rec8=rec1(1:8)
+            read(rec8,'(i8)') moneva
+          endif
+
+          write(26,'(a155)') rec1
+          rec(i) = rec1 
+
+  120   continue
+c                                                                       
+c             Check other files for consistency                         
+  130   if(i.lt.16) goto 170
+        nf = 10                                                         
+        do 140 j=1,20                                                   
+          do 140 i=2,maxnf                                              
+          nf1 = nf+i                                                    
+          read(nf1,'(a155)',end=150,err=170) rec1
+c
+c               Adjust parameter iresop to print in Kaf
+          if(j.eq.3)  rec1(1:8) = '       3'
+          call checkc(filout, rec(j), rec1, 8, 1, i)                          
+  140   continue                                                        
+c                                                                       
+c              Close input and output file                              
+  150   if(j.lt.16) goto 170
+        do 160 nf=11,10+maxnf                                           
+          close(nf)                                                     
+  160   continue                         
+        close(26)                                                       
+        return                             
+c
+c               Error Messages              
+  170   write(99,*) '  Problem reading file ', nf,' in control.f'
+        write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end                                                             
+c                                                                       
+c ************************************************************          
+        subroutine gis(maxnf, nx)
+        character rec1*155
+             
+        ix=0
+  100   ix=ix+1
+        nf=10
+        do 110 i=1,maxnf 
+          nf1=nf+i
+          call skipn(nf1,26)
+  110   continue
+                 
+        nf=10
+        do 130 i=1,maxnf
+          nf1=nf+i
+  120     read(nf1,'(a155)',end=130,err=150) rec1
+          if(rec1(1:1).ne. '#') then
+            write(26,'(a155)') rec1
+            goto 120
+          else
+            backspace(nf1)
+          endif
+  130   continue
+c
+c               Repeat for vector files
+  140   if(ix.le.nx-1) goto 100
+c                                                                       
+c              Close output file                                        
+        close(26)                                                       
+        return                                                          
+c
+c               Warning Messages
+  150   write(99,*) '  Problem with gis file in gis.f'
+        write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end                                                             
+c                                                                       
+c ************************************************************          
+        subroutine opener(maxnf,fpath)
+        dimension fpath(5)
+        character filrsp*72, fpath*72
+
+        nfin = 0 
+        do 100 nf=1,maxnf
+          call skipn(5,0)
+          read(5,'(a72)',end=110,err=120) filrsp
+          if(filrsp(1:3).eq.'   ') goto 110
+c
+c rrb 98/06/29
+          if(filrsp(1:1).eq.'#' .or. filrsp(1:1).eq.'-') goto 110
+
+          open(nf, file=filrsp, status='old',err=120)                           
+          call skipn(nf,0)
+          nfin = nfin+1
+          call getpath(filrsp,fpath(nf))
+          write(99,*) '  Opener, file successfully opened ', nfin
+  100   continue
+        
+  110   if(nfin.le.maxnf) then
+          maxnf = nfin
+c
+c rrb 98/06/29
+          backspace(5)
+        else
+          write(6,*) '  Problem, maximum # of files = 5'
+          call flush(6)
+          goto 130
+        endif
+                                     
+        return                                                          
+c
+c               Warning Messages
+  120   write(99,*) '  Opener: Problem opening file ', filrsp
+  130   write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end                                                             
+c                                                                       
+c ************************************************************          
+        subroutine opentop(ix,maxnf,it,filout,extx,descx,
+     1             fpath, fname)
+        dimension fpath(5), fname(5)
+        character filout*72, filin*72, extx*4, descx*24,
+     1            fpath*72,  fname*72
+                                                                        
+        write(6,100) extx, descx       
+        write(99,110) extx, descx       
+  100   format(   ' Processing ', a4, '; ', a24)
+  110   format(/, '---------------------',/
+     1            ' Processing ', a4, '; ', a24)
+                                                                        
+        filout(ix+1:ix+4) = extx                                        
+        open(26, file=filout, status='unknown')                         
+c                                                                       
+c               Print output                                            
+        write(26,130) extx, descx, filout                               
+        write(99,130) extx, descx, filout                               
+c                                                                       
+c               Get file names                                          
+        if(it.eq.1) then                                                
+          do 120 nf=1,maxnf
+            fname(nf)= ' '
+            nf1=nf+10
+            write(99,*) ' Opener; nf, nf1 ', nf, nf1
+            read(nf,'(a72)',end=150,err=150) filin
+            write(99,*) filin
+
+            fname(nf)=filin
+            write(26,140) nf, filin
+            write(99,140) nf, filin
+            call putpath(filin,fpath(nf))
+            open(nf1, file=filin, status='old')                         
+  120     continue                                                      
+        endif                                                           
+                                                                        
+  130   format(                                                         
+     1  '#',/                                                           
+     1  '# *', a4, 1x, a24,/,                                           
+     1  '# Linked file name: ', 1x, a72)                                
+  140   format(                                                         
+     1  '# Source file : ', i4, 1x, a72)                                
+        return                                                          
+c
+c               Error Messages              
+  150   write(99,*) '  Problem reading input file ', nf, ' in opentop'
+        write(99,*) '  Opentop; filin = ', filin
+        write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end                                                             
+c                                                                       
+c ************************************************************          
+        subroutine getpath(filrsp,fpath1)
+c
+c               It finds the path for an input file
+        character filrsp*72, fpath1*72, x*1
+c     
+c !!!           PC Specific                
+        x='\'
+c     
+c !!!           SGI Specific                
+c       x='/'
+        fpath1=' '
+        ichk=0
+
+        do i=1,72
+          ii=73-i
+          if(filrsp(ii:ii).eq.x) then
+            do j=1,ii
+              fpath1(j:j) = filrsp(j:j)
+            end do
+            goto 120
+          endif
+        end do
+            
+
+  120   if(ichk.eq.1) write(99,130) filrsp, fpath1
+  130   format('  Getpath results; ',/,
+     1         '           filrsp  ',a72,/,
+     1         '           fpath   ',a72)
+        return    
+        end
+c                                                                       
+c ************************************************************          
+        subroutine putpath(filrsp,fpath1)
+c
+c               It adds a path for an iput file if none provided
+        character filrsp*72, fpath1*72, filrsp1*72, x*1
+c
+c     
+c !!!           PC Specific                
+        x='\'
+c     
+c !!!           SGI Specific                
+c       x='/'
+        icheck=0                         
+        filrsp1=filrsp
+c
+c               Check to see if a path was provided
+        do 100 i=1,72
+          ii=73-i
+          if(filrsp(ii:ii).eq.x) goto 130
+  100   continue              
+c
+c               Add path
+        do 120 i=1,72
+          if(fpath1(i:i).ne.' ') then
+            filrsp(i:i) = fpath1(i:i)
+          else         
+            ii=i-1
+            do 110 j=1,72
+              if(filrsp1(j:j).ne.' ') then
+                ii=ii+1                
+                if(ii.gt.72) goto 140
+                filrsp(ii:ii) = filrsp1(j:j)
+              else
+                goto 130
+              endif
+  110       continue
+          endif
+  120   continue
+        goto 140
+
+  130   if(icheck.eq.1) write(99,150)  filrsp1, fpath1, filrsp
+        return      
+                 
+  140   write(6,*) '  Problem with putpath, see *.log'
+        write(99,150)  filrsp1, fpath1, filrsp
+  150   format('  Putpath results; ',/,
+     1         '           filrsp1 ',a72,/,
+     1         '           fpath1  ',a72,/
+     1         '           filrsp  ',a72)
+        end
+c                                                                       
+c ************************************************************          
+c       Parse, it parses thru the command line to find request          
+c                                                                       
+c               filenc  = base file name                                
+c                                                                       
+        subroutine parse(filenc)                                        
+        character command*127, filenc*72                                
+c
+c               Initilize
+        filenc = ' '                                                    
+c     
+c !!!           PC Specific
+c               Get command line data                                   
+        call getcl(command)                                            
+c                                                                       
+c !!!           SGI specific                                            
+c       command = ' '                                                   
+c       narg = 1                                                        
+c       call getarg (narg, command)                                     
+c                                                                       
+c               Find control file name (command is packed to left)      
+c ----------------------------------------------------------------      
+        do 100 i=1,127                                                  
+          if(command(i:i) .ne. ' ') then                                
+            filenc(i:i) = command(i:i)                                  
+          else                                                          
+            goto 110                                                    
+          endif                                                         
+  100   continue                                                        
+                                                                        
+  110   if(i.eq.1) filenc = 'smlink.rsp'
+        write(99,120) filenc                                            
+  120   format(' Input file name = ', a72)                              
+        return                                                          
+        end                                                             
+c                                                                       
+c ************************************************************          
+        subroutine rin(maxnf,iderr,nd,ndel,idtyp,iddel,filout,recnew) 
+        dimension id(7500), nin(5), ndel(200), idtyp(200),iddel(200),
+     1            recnew(200)
+        character filout*72, rec1*155, id*12, ifx*1, rec3*3, iddel*12,
+     1            recnew*160
+c                                                                       
+c               Initilize                                               
+        nf = 10                                                         
+        do 100 i=1,maxnf                                                
+          call skipn(nf+i,26)
+  100     nin(i) = 0                                                    
+c                                                                       
+c               Print network                                           
+        n = 0  
+        nf=11                                                 
+  110   nf1=nf-10                                                       
+  120   read(nf,'(a155)',end=140,err=180) rec1  
+        call blank(rec1, 12, ib)                           
+c
+c               Find 'End' even if it starts in column n
+        i3 = 0
+        do 130 i=1,12
+          i1=12+i
+          if(rec1(i1:i1).ne.' ') then
+            i3 = i3+1
+            if(i3.le.3) rec3(i3:i3) = rec1(i1:i1)
+          endif
+  130   continue
+                                                                        
+        if(rec3.eq.'End' .or. rec3.eq.'END' .or. rec3.eq.'end') goto 140
+        if(ib.ne.0) then
+c
+c               Check for an id indicator in first 3 columns
+          call blank(rec1, 3, ib2)
+          if(ib2.ne.0) then                   
+            n = n+1
+            id(n) = rec1(1:12)  
+            nin(nf1) = nin(nf1) + 1
+c
+c rrb 98/06/29; Delete desired stations
+            call delsta(nf1,idel,n,nin(nf1),nd,ndel,0,
+     1                  idtyp,iddel,id(n))
+          endif
+
+          if(idel.eq.0) write(26,'(a155)') rec1       
+          goto 120                                                      
+        endif                                                           
+c                                                                       
+c                      End of file                                      
+  140   if(n.eq.0) goto 180
+        write(ifx,'(i1)') nf1
+        rec1(37:48) = 'End_File_?  '                                    
+        rec1(13:36) = 'End_File_?              '                        
+        rec1(46:46) = ifx                                               
+        rec1(22:22) = ifx                                               
+                                                                        
+        write(26,'(a155)') rec1 
+        n=n+1                                                           
+        id(n) = rec1(1:12)                                            
+        nin(nf1) = nin(nf1)+1
+c
+c                       Check for an add record by file
+        call addrec(nf1,idel,n,nin(nf1),nd,ndel,0,idtyp,iddel,id,recnew)
+
+c                                                                       
+c               Check for another file                                  
+        nf=nf+1                                                         
+        if(nf.le.10+maxnf) goto 110                                     
+c                                                                       
+c               Print network linkage                                   
+c       do 150 i=1,maxnf                                                
+c         rec1=' '                                                      
+c         rec1(1:12)  = 'End_File_?  '                                  
+c         write(ifx,'(i1)') i                                          
+c         rec1(10:10) = ifx                                             
+c                                                                       
+c         rec1(13:36) = 'File ? to Confluence   '                       
+c         rec1(18:18) = ifx                                             
+c                                                                       
+c         rec1(37:48) = 'Confluence  '                                  
+c         write(26,'(a155)') rec1
+c         n=n+1      
+c         id(n) = rec1(1:12)                                            
+c 150   continue                                                        
+c                                                                       
+c              Next to Final                                                
+c       rec1=' '                                                        
+c       rec1(1:12)  = 'Confluence  '                                    
+c       rec1(37:48) = '            '                                    
+c       rec1(13:36) = 'Compact_Dem          '                        
+c       write(26,'(a155)') rec1 
+c       n=n+1                                                           
+c       id(n) = rec1(1:12)
+c                                                                       
+c              Final                                                
+c       rec1=' '                                                        
+c       rec1(1:12)  = 'Compact_Dem '                                  
+c       rec1(37:48) = '            '                                    
+c       rec1(13:36) = 'End                     '                        
+c       write(26,'(a155)') rec1 
+c       n=n+1                                                           
+c       id(n) = rec1(1:12)
+c
+c rrb 98/08/05; Moved to file loop
+c       call addrec(nf1,idel,n,nin(nf1),nd,ndel,0,idtyp,iddel,id,recnew)
+
+c                                                                       
+c              Check id's for duplicates                                
+        call checkid(n, filout, id, iderr)
+c                                                                       
+c              Print processing results                                 
+        write(99,160) filout, (nin(j),j=1,maxnf), n                     
+        write(98,160) filout, (nin(j),j=1,maxnf), n                     
+  160   format(a72,/,2x, 20i5)                                          
+c                                                                       
+c              Close input and output file                              
+        do 170 nf=11,10+maxnf                                           
+          close(nf)                                                     
+  170   continue                                                        
+        close(26)                                                       
+        return                                                          
+c
+c               Error Messages              
+  180   write(99,*) '  Problem reading network file ', nf, ' in rin.f'
+        write(99,*) '    or number of cards read: ', n
+        write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end                                                             
+c                                                                       
+c ************************************************************          
+        subroutine rsp(ix, filout, ext, desc)                           
+        dimension ext(30), desc(30)                                     
+        character filout*72, ext*4, desc*24                             
+                                                                        
+                                                                        
+        write(26,100)                                                   
+  100   format(                                                         
+     1  '# Name' 66x, 'Description (optional)',/                        
+     1  '# ',10('-'), 62x, 10('-'))                                     
+                                                                        
+        do 110 i=2,26                                                   
+          filout(ix+1:ix+4) = ext(i)                                    
+          write(26,120) filout, desc(i)                                 
+  110   continue                                                        
+  120   format(a72, a24)                                                
+c                                                                       
+c              Close output file                                        
+        close(26)                                                       
+        return                                                          
+        end                                                             
+c                            
+c ************************************************************
+c
+c               skipn it skips any number of comment cards identified
+c               as a '#' in column 1 of a file
+c
+        subroutine skipn(nf,io)
+        character rec1*144
+c                 
+c              Check first record and store for use on this file
+  100   read(nf,'(a144)',end=110,err=110) rec1
+c
+        if(rec1(1:1).eq.'#') then  
+          if(io.ne.0) write(io,'(a144)') rec1
+          goto 100
+        else
+          backspace(nf)
+        endif        
+
+  110   return
+        end
+c                            
+c ************************************************************
+c
+c               skipx it skips x lines from an input file
+c
+        subroutine skipx(nf,n)
+        character rec1*1
+c                 
+c              Check first record and store for use on this file
+        do 100 i=1,n
+  100   read(nf,'(a1)',end=110) rec1
+        rec1 = rec1
+  110   return
+        end
+c                            
+c ************************************************************
+        subroutine station(maxnf,iderr,ia,i3,ichk,
+     1                     nd,ndel,idtyp,iddel,filout,recnew)
+c
+c               i3        = columns to check for ID
+c               ia      Time series control 1=annual data
+c               ichk    0 = Check ID,
+c                       1 = Do not Check id (temporarily off for *.ddr)
+c               nd        = Number of command file edits
+c               ndel()    = File number to be edited
+c               iddel()*12= ID to be edited
+c               idtyp()   = Edit type 1=delsta, 2=addrec, 3=repzero
+c               filout    = Output file
+        dimension id(7500), nin(5), ndel(200), idtyp(200),
+     1            iddel(200),recnew(200)
+        character filout*72, rec1*155, id*12, iddel*12, recnew*160
+c
+c               Initilize
+        n = 0                 
+        nf = 10
+
+        do 100 i=1,maxnf
+          call skipn(nf+i,26)
+  100     nin(i) = 0
+
+  110   nf=nf+1
+        nf1= nf-10
+c
+c               Time series control for annual data 
+         if(ia.eq.1) then
+           if(nf1.eq.1) then
+             read(nf,'(a155)',end=130,err=160) rec1
+             write(26,'(a155)') rec1
+           else
+             read(nf,'(a155)',end=130,err=160) rec1
+           endif
+         endif
+
+  120   read(nf,'(a155)',end=130,err=160) rec1
+        call blank(rec1, 96, ib)
+ 
+        if(ib.eq.1) then
+c
+c               Check for an id indicator in first 3 columns or 12
+          call blank(rec1,i3, ib2)
+          if(ib2.ne.0) then                   
+            n = n+1     
+            nin(nf1) = nin(nf1) + 1
+            if(i3.ne.17) then
+              id(n) = rec1(1:12)
+            else
+              id(n) = rec1(6:17)
+            endif
+c
+c rrb 98/06/29; Delete desired stations
+            call delsta(nf1,idel,n,nin(nf1),nd,ndel,0,
+     1                  idtyp,iddel,id(n))
+          endif
+
+          if(idel.eq.0) write(26,'(a155)') rec1
+          goto 120
+        endif
+c
+c               Add stations as necessary note the ID must be -addstr
+  130   call addrec(nf1,idel,n,nin(nf1),nd,ndel,0,idtyp,iddel,id,recnew)
+c
+c               Check for other stations
+        if(nf1.lt.maxnf) goto 110
+c
+c              Print processing results
+        write(99,140) filout, (nin(j),j=1,maxnf), n
+        write(98,140) filout, (nin(j),j=1,maxnf), n                     
+  140   format(a72,/,2x, 20i5)
+c
+c              Check id's for duplicates
+c rrb 98/06/29; Temporarily do not print duplicates for *.ddr
+ 
+        if(ichk.eq.1) then
+          call checkid(n, filout, id, iderr)
+        else
+          write(99,*) '  ** Warning not checking duplicates for *.ddr'
+        endif
+c
+c              Close input and output file
+        do 150 nf=11,10+maxnf
+          close(nf)      
+  150   continue                                             
+        close(26)
+
+        return
+c
+c               Error Messages              
+  160   write(99,*) '  Problem reading station file ', nf
+        write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end
+c                            
+c ************************************************************
+        subroutine delsta(nf,idel,n,nin1,nd,ndel,iy1,idtyp,iddel,id1)
+        character id1*12, iddel(200)*12
+        dimension ndel(200),idtyp(200)
+
+        idel=0
+        ichk=0
+
+        do i=1,nd
+          if(ichk.eq.1) then
+            write(99,111) i, nf, ndel(i), idtyp(i),iddel(i),id1
+ 111        format('  Delsta ', 4i5, 2(1x,a12))
+          endif
+
+          if(iabs(idtyp(i)).eq.1) then
+            if(nf.eq.ndel(i) .and. id1.eq.iddel(i)) then
+              if(idtyp(i).eq.1) write(99,100) id1, nf
+              idel=1
+              n=n-1
+              nin1=nin1-1
+              id1=' '
+              idtyp(i)=-1
+            end if
+          end if
+        end do
+        return
+ 100    format('  ** Delsta;  Deleting  ID ', a12,
+     1         ' From Source File ', i5,' in all years ')
+        end
+c ************************************************************
+        subroutine repzero(nf,idel,n,nin1,nd,ndel,iy1,idtyp,
+     1             iddel,id1,rec1)
+        character id1*12, iddel(200)*12, rec1*155, rec0*8
+        dimension ndel(200),idtyp(200)
+
+        idel=0
+        rec0='    0.00'
+
+        do i=1,nd
+c         write(99,111) i, nf, ndel(i), id1, iddel(i)
+c111      format('  Repzero ', 3i5, 2(1x,a12))
+
+          if(iabs(idtyp(i)).eq.3) then
+            if(nf.eq.ndel(i) .and. id1.eq.iddel(i)) then
+
+              if(idtyp(i).eq.3) write(99,100) id1, nf
+c             idel=1
+c             n=n-1
+c             nin1=nin1-1
+c             id1=' '
+              idtyp(i)=-3
+c
+c                       Replace data with zero's
+              ke=17
+              do k=1,12
+                kb=ke+1
+                ke=kb+7
+                rec1(kb:ke)=rec0
+              end do
+
+              rec1(ke+1:ke+2) = '  '
+              kb=ke+3
+              ke=kb+7
+              rec1(kb:ke)=rec0
+c             write(99,'(a155)') rec1
+            end if
+          end if
+        end do
+        return
+ 100    format('  ** Repzero; Replacing ID ', a12,
+     1         ' From Source File ', i5,' in all years with zeros')
+        end
+
+c
+c ************************************************************
+        subroutine addrec(nf,iadd,n,nin1,nd,ndel,iy1,
+     1             idtyp,iddel,id,recnew)
+        character iddel(200)*12, recnew*160, id*12, rec160*160
+        dimension ndel(200), idtyp(200), recnew(200), id(200)
+
+        iadd=0
+        ichk=0
+
+        do i=1,nd
+          if(ichk.eq.1) then
+            write(99,111) i, nf, ndel(i), idtyp(i), iddel(i)
+ 111        format('  Addsta ', 4i5, 2(1x,a12))
+          endif
+
+          if(nf.eq.ndel(i) .and. iabs(idtyp(i)).eq.2) then
+            write(26,'(a160)') recnew(i)
+            if(idtyp(i).eq.2) write(99,100) recnew(i)
+
+            iadd=1
+            n=n+1
+            nin1=nin1+1
+c           id1=' '
+            idtyp(i)=-2
+c
+c               Set ID
+            rec160=recnew(i)
+            id(n)=rec160(1:12)
+          end if
+        end do
+        return
+ 100    format('  ** Addsta; Adding the following record for all years',
+     1       /,'           ',a160)
+        end
+c                            
+c ************************************************************
+        subroutine starib(maxnf, iderr, i3, filout)
+c
+c               Similar to station, but handles larger record
+c               size for *.rib file.  Also checks number for 
+c               poetntial dimension problems; 
+c               Note max dimension = 15 = (350 - 28)/21
+        dimension id(7500), nin(5)
+c       character filout*72, rec1*155, id*12
+        character filout*72, rec1*350, id*12, recid*155, rec8*8
+c
+c               Initilize
+        n = 0                 
+        nf = 10                    
+        ndim=350
+
+        do 100 i=1,maxnf
+          call skipn(nf+i,26)
+  100     nin(i) = 0
+
+  110   nf=nf+1
+        nf1= nf-10
+
+  120   read(nf,'(a350)',end=130,err=160) rec1
+c
+c rrb 98/06/29
+c       write(99,'(a350)') rec1
+c
+c               Check dimension (it is 28+21*gages)
+        rec8=rec1(21:28)
+        read(rec8,'(i8)') n
+        if(28+21*n.gt.ndim) goto 170
+c
+c               Check for blank card
+        recid=rec1(1:155)
+        call blank(recid, 96, ib)
+ 
+        if(ib.eq.1) then
+c
+c               Check for an id indicator in first 3 columns or 12
+          call blank(recid,i3, ib2)
+          if(ib2.ne.0) then                   
+            n = n+1     
+            nin(nf1) = nin(nf1) + 1
+            if(i3.ne.17) then
+              id(n) = recid(1:12)
+            else
+              id(n) = recid(6:17)
+            endif
+          endif
+c
+
+          write(26,'(a350)') rec1
+          goto 120
+        endif
+c
+c               Check for other stations
+  130   if(nf1.lt.maxnf) goto 110
+c
+c              Print processing results
+        write(99,140) filout, (nin(j),j=1,maxnf), n
+        write(98,140) filout, (nin(j),j=1,maxnf), n                     
+  140   format(a72,/,2x, 20i5)
+c
+c              Check id's for duplicates
+        call checkid(n, filout, id, iderr)
+c
+c              Close input and output file
+        do 150 nf=11,10+maxnf
+          close(nf)      
+  150   continue
+        close(26)
+
+        return
+c
+c               Error Messages              
+  160   write(99,*) '  Problem reading station file ', nf
+        write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)     
+        goto 180
+  170   write(99,*) '  Problem reading station file ', nf
+        write(99,*) '  Number of gages = ', n
+        write(99,*) '  Max number of =   ', (ndim-28)/21
+        write(99,*) '  Dimension of ', ndim, ' exceeded'
+        write(99,*) '  Note max dimension approx = 28 + 21 * gages'
+        write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)     
+        goto 180
+
+  180   stop 1
+        end
+c                            
+c ************************************************************
+c
+        subroutine timec(maxnf, iderr, idtar, iybeg, iyend,
+     1                   nd,ndel,idtyp,iddel,filout)  
+c
+c
+c               idtar = 0 standard
+c                     = 1 target file, two id's per station
+c               iyz   = 0 first year
+c                     = 1 years n
+c               ib    = 0 blank data (end of file)
+c                     = 1 non blank data
+c               idy   = number of values read
+c               nin(i)= number read from file i
+c               idtyp = 1 = delsta, 2=adddrec, 3=repzero
+c
+        dimension nin(5), iymax(5), iymin(5), idtyp(200), id(7500),
+     1            ndel(200), iddel(200)
+        character filout*72, rec1*155, rec4*4, id*12, iddel*12
+c
+c               Initilize
+c       n=0                    
+        iyz=0
+        idy=0    
+        nf=10
+        do i=1,maxnf
+          call skipn(nf+i,26)                           
+          iymax(i) = 0  
+          iymin(i) = 9999
+          nin(i) = 0
+        end do
+c
+  110   n=0
+        nf=11
+        nf1=nf-10
+        do i=1,maxnf
+          nin(i)=0
+        end do
+c
+c               Read and write time control (card 1)
+c ------------------------------------------------------------
+        if(iyz.eq.0) then
+          read(nf,'(a155)',end=180,err=180) rec1
+          call blank(rec1, 12, ib)
+c
+c               Non blank data
+          if(ib.eq.1) then
+            write(26,'(a155)') rec1
+          else
+            write(99,*) '  Warning Dummy file ', nf, ' in time.f'
+            close(nf)
+            goto 170
+          endif
+        endif
+c
+c               Read first year of data to get the year from file 1 (11) 
+c ------------------------------------------------------------
+        iprnt = 0
+ 1      read(nf,'(a155)',end=140,err=180) rec1
+        call blank(rec1, 12, ib)
+        if(ib.eq.1) then
+c
+c               Non Blank data
+          idy=idy+1
+          rec4=rec1(1:4)
+          read(rec4,'(i4)',err=190) iy     
+c
+c rrb 06/12/96
+          if(iy.lt.iybeg) then
+            if(iprnt.eq.0) write(99,155) iybeg, iyend, iy
+            iprnt=1
+            goto 1
+          endif
+
+          iymax(nf1) = max0(iymax(nf1),iy)
+          iymin(nf1) = min0(iymin(nf1),iy) 
+
+c         if(iyz.eq.0) then
+c
+c               Check if a target file (idtar=1), with 2 lines per id
+            if(idtar.eq.0) then 
+              n = n+1
+              nin(nf1) = nin(nf1)+1           
+              id(n) = rec1(6:17)
+              call delsta(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                    idtyp,iddel,id(n))
+              call repzero(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                     idtyp,iddel,id(n),rec1)
+
+            else        
+              if(idy.eq.2) then               
+                idy=0
+                n=n+1
+                nin(nf1) = nin(nf1)+1
+                id(n) = rec1(6:17)
+                call delsta(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                      idtyp,iddel,id(n))
+                call repzero(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                      idtyp,iddel,id(n),rec1)
+
+              endif
+            endif
+            if(idel.eq.0) write(26,'(a155)') rec1
+c         endif
+        else
+c
+c rrb 05/31/96
+          goto 140
+        endif
+c
+c              Get time series data years n+1-n, files 1-n
+c ------------------------------------------------------------
+        iprnt = 0
+  120   read(nf,'(a155)',end=130,err=180) rec1
+        call blank(rec1, 12, ib)
+ 
+        if(ib.eq.1) then
+c
+c rrb 98/06/29
+          idy=idy+1
+          rec4=rec1(1:4)
+          read(rec4,'(i4)',err=190) iy1
+c
+c rrb 06/12/96
+          if(iy1.lt.iybeg) then
+            if(iprnt.eq.0) write(99,155) iybeg, iyend, iy1
+            iprnt=1
+            goto 120
+          endif
+
+          iymax(nf1) = max0(iymax(nf1),iy1)
+          iymin(nf1) = min0(iymin(nf1),iy1)
+
+c
+c                       New Year
+          if(iy1.eq.iy) then
+            if(idtar.eq.0) then
+c
+c                      Non Target file
+              n=n+1
+              nin(nf1)=nin(nf1)+1
+              id(n) = rec1(6:17)
+              call delsta(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                    idtyp,iddel,id(n))
+              call repzero(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                     idtyp,iddel,id(n),rec1)
+
+            else
+c
+c                       Target File
+              if(idy.eq.2) then               
+                idy=0
+                n=n+1
+                nin(nf1) = nin(nf1)+1
+                id(n) = rec1(6:17)
+                call delsta(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                      idtyp,iddel,id(n))
+                call repzero(nf1,idel,n,nin(nf1),nd,ndel,iy1,
+     1                      idtyp,iddel,id(n),rec1)
+              endif
+            endif
+c
+            if(idel.eq.0) write(26,'(a155)') rec1
+            goto 120
+c
+c               A New Year
+          else
+            backspace(nf)
+            nf=nf+1
+            nf1=nf-10
+c
+c               Branch for next year
+            if(nf1.gt.maxnf) then
+              iyz=1
+              goto 110
+            else
+c
+c               Skip header and time control on files 2-n
+              if(iyz.eq.0) then 
+                read(nf,'(a155)',end=130,err=180) rec1
+              endif
+              goto 120
+            endif
+          endif                
+        endif
+c
+c              Handle end of file considerations
+c ------------------------------------------------------------
+  130   nf=nf+1        
+        nf1=nf-10
+c
+c rrb 98/06/29;
+        idy=0
+        if(nf.le.10+maxnf) goto 120
+c
+c              Check id's for duplicates
+  140   call checkid(n, filout, id, iderr)
+c
+c rrb 98/08/05;
+        if(iderr.eq.1) then
+          do i=1,n
+            write(99,'(i5, 1x, a12)') i, id(i)
+          enddo
+        endif
+c
+c              Check years for control/file mismatch
+        ie1=0
+        ie2=0
+        do 152 nf1=1,maxnf
+          if(iymin(nf1).gt.iybeg) ie1 = 1
+          if(iymax(nf1).lt.iyend) ie1 = 1
+
+          if(iymin(nf1).ne.iybeg) ie2 = 1
+          if(iymax(nf1).ne.iyend) ie2 = 1
+ 152    continue                          
+
+        if(ie1.eq.1) then
+          write(99,*)   ' '          
+          write(99,*)   ' Timec; Problem starting and ending years are' 
+          write(99,*)   '   inconsistent with the control data'
+          write(99,*)   '   Control data: ',iybeg, iyend
+          write(99,*)   ' '          
+
+          do 154 nf1=1,maxnf
+ 154        write(99,*) '  Data for File: ',nf1, iymin(nf1), iymax(nf1)
+          goto 200      
+        endif
+
+        if(ie2.eq.1) then
+          write(99,155) iybeg, iyend
+ 155      format(/,
+     1           ' Timec; Warning starting or ending years are',/ 
+     1           '   inconsistent with the control data',/
+     1           '   Continuing on with smaller data set',/
+     1           '   Control data =            ',2i5, /
+     1           '   Beginning year of data = ', i5)
+
+          do 156 nf1=1,maxnf
+ 156        write(99,*) '  Data for File: ',nf1, iymin(nf1), iymax(nf1)
+        endif
+c
+c              Print processing results
+        write(99,150) filout, (nin(j),j=1,maxnf), n
+        write(98,150) filout, (nin(j),j=1,maxnf), n                     
+  150   format(a72,/,2x, 20i5)
+c
+c              Close input and output file
+        do 160 nf=11,10+maxnf
+          close(nf)      
+  160   continue
+  170   close(26)
+
+        return
+c
+c               Error Messages              
+  180   write(99,*) '  Problem reading file ', nf, ' in timec.f'
+        goto 200
+  190   write(99,*) '  Problem reading year in timec.f from file ', nf
+        goto 200
+  200   write(6,*)  '  Unsuccessful termination, see smlink.log'
+        write(99,*) '  Unsuccessful termination, see smlink.log'
+        call flush(6)
+        stop 1
+        end
+c                            
+c ************************************************************
+        subroutine getcom(nd,fndel,idtyp,iddel,recnew)
+        dimension  fndel(200), idtyp(200), iddel(200), recnew(200)
+        character command*232, iddel*12, recnew*160, fndel*72,
+     1            rec7*7, rec1*1
+
+        nd=0
+        do i=1,200
+          idtyp(i)=0
+          read(5,'(a232)',end=150,err=150) command
+          rec1=command(1:1)
+          rec7=command(1:7)
+c         if(rec7.eq.'-delsta' .or. rec7.eq.'-addrec') then
+          if(rec1.eq.'-') then
+            nd=nd+1
+            idtyp(nd)=-1
+            if(rec7.eq.'-delsta') idtyp(nd)=1
+            if(rec7.eq.'-addrec') idtyp(nd)=2
+            if(rec7.eq.'-repzer') idtyp(nd)=3
+            call getcom2(idtyp(nd),fndel(nd),iddel(nd),
+     1                   recnew(nd),command)
+          endif
+        end do
+ 150    return
+        end
+c                            
+c ************************************************************
+        subroutine getcom2(idtyp1,fndel1,iddel1,recnew1,command)
+        character command*232, iddel1*12, fndel1*72,recnew1*160,
+     1            rec1*1
+
+        ifd=1
+        iid=1
+        fndel1=' '
+        iddel1=' '
+        recnew1=' '
+        ichk=1
+        n1=72
+        n2=160
+        nt=n1+n2
+
+        do i=1,nt
+          if(command(i:i).eq.'(') then
+c
+c                               Find replacement File
+            i1=i
+            do j=1,nt-i
+              i1=i1+1
+              rec1=command(i1:i1)
+              if(rec1.eq.',') ifd=0
+              if(ifd.eq.1) then
+                fndel1(j:j) = command(i1:i1)
+              else
+c
+c                               Find replacement ID
+                iid=1
+                i2=i1
+                do k=1,12
+                  i2=i2+1
+                  rec1=command(i2:i2)
+                  if(rec1.eq.')' .or. rec1.eq.',') iid=0
+                  if(iid.eq.1) then
+                    iddel1(k:k) = command(i2:i2)
+                  else
+c
+c                               Find replacement string
+                    iid=1
+                    i3=i2
+                    do l=1,n2
+                      i3=i3+1
+                      rec1=command(i3:i3)
+                      if(rec1.eq.')') iid=0
+                      if(iid.eq.1) then
+                        recnew1(l:l) = command(i3:i3)
+                      endif
+                    end do
+                    goto 100
+                  endif
+                end do
+c               goto 100
+              endif
+            end do
+          end if
+        end do
+
+ 100    if(ichk.eq.1) write(99,110) command,idtyp1,
+     1                              fndel1,iddel1,recnew1
+ 110    format('  Getcom2 command = ', a144,/
+     1         '           idtyp  = ', i4,/
+     1         '           fndel1 = ', a72,/,
+     1         '           iddel1 = ', a12,/
+     1         '           recnew1= ', a160)
+        return
+        end
+c                            
+c ************************************************************
+        subroutine getfn(maxnf,nd,ndel,fndel,fname)
+c
+c               If the file name (fname) is to be edited
+c                 (.eq. fndel) set the file pointer (ndel)
+c                 to the edit counter (j)
+        dimension  ndel(200)
+        character  fndel(200)*72, fname(5)*72
+
+        do j=1,200
+          ndel(j)=0
+          do i=1,maxnf
+c           write(99,*) 'Getfn i, j, fndel(j),fname(i)',
+c    1       i,j,fndel(j),fname(i)
+            if(fndel(j).eq.fname(i)) then
+              ndel(j)=i
+c             write(99,*) '** Getfn i, j, ndel(j)', i,j,ndel(j)
+            endif
+          end do
+        end do
+        return
+        end
+

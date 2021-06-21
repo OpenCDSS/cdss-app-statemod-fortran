@@ -1,0 +1,9 @@
+#
+# smDelay.rsp; 
+#   Response file to create a daily dealy file from a monthly file
+#
+#
+# Name                                                         
+#---------------                                               
+rg2005.urM			Existing Monthly delay file
+rg2005.urD                      New Daily delay file		
