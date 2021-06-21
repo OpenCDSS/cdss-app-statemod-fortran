@@ -1,0 +1,47 @@
+#
+# evadat.                                                                                                                                       
+# net reservoir evaporation annual data                                                                                                         
+#                                                                                                                                               
+# *******************************************************                                                                                       
+#                                                                                                                                               
+#     Card 1   Control                                                                                                                          
+#     format:  (5x, a12, 12f8.0                                                                                                                 
+#                                                                                                                                               
+#     ID       cistat:          Station id                                                                                                      
+#              diverm(1-12):    Evap by month                                                                                                   
+#                                                                                                                                               
+# Oct-Sept units in feet                                                                                                                        
+# 1 yampa,                                                                                                                                      
+# 2 white,                                                                                                                                      
+# 3 dolores/san miguel (mcphee),                                                                                                                
+# 4 san juan (navajo reservoir), Modified to reflect BuRec evap 10/9/98 ra                                                                                                                
+# 5 colorado (rifle gap),                                                                                                                       
+# 6 colorado (ruedi, vega),                                                                                                                     
+# 7 sanjuan,                                                                                                                                    
+# 8 colorado (dillon, williams fork),                                                                                                           
+# 9 colorado (shadow mt, granby, willow crk)                                                                                                    
+#10 gunnison (taylor park)                                                                                                                      
+#11 gunnison (blue mesa, paonia)                                                                                                                
+#12 gunnison (ridgeway)                                                                                                                         
+# 01-03-96: added a ninth evaporation curve for the extreme upper Colorado basin (10009).                                                       
+# This curve was developed from the evaporation pan located at Shadow Mountain Reservoir which reports                                          
+# an annual average gross pan evaporation of 40 inches and a pan coefficient of 0.75 which yields an annual                                     
+# average gross free water surface evaporation value of 30 inches.  Evaporation curve 10008 was developed using                                 
+# 35 inches of gross annual free water survace evaporation.  Curve 10009 was developed by multiplying                                           
+# curve 10008 by the ratio 30/35.                                                                                                               
+#                                                                                                                                               
+# NA ID               Oct     Nov     Dec     Jan     Feb     Mar     Apr     May     Jun     Jul     Aug     Sep                               
+# -e-b----------eb------eb------eb------eb------eb------eb------eb------eb------eb------eb------eb------eb------eb                              
+   10/   0  -      9/   0 ACFT  WYR                                                                                                                        
+     10001           0.13   -0.01   -0.11   -0.12   -0.03    0.06    0.15    0.28    0.40    0.39    0.29    0.25 
+     10002           0.13    0.04   -0.05   -0.06    0.02    0.09    0.16    0.30    0.41    0.41    0.27    0.24
+     10003           0.13    0.04   -0.02   -0.03    0.05    0.11    0.22    0.33    0.48    0.43    0.32    0.28    
+     10004         0.1361  0.0666  0.0480  0.0477  0.0593  0.1228  0.1932  0.2765  0.3351  0.3584   0.209  0.2253   
+     10005           0.13    0.06    0.02    0.03    0.06    0.11    0.22    0.32    0.42    0.41    0.35    0.24  
+     10006           0.13    0.02   -0.09   -0.10   -0.02    0.07    0.17    0.32    0.41    0.42    0.29    0.24 
+     10007           0.03   -0.15   -0.16   -0.08   -0.07   -0.01    0.15    0.29    0.41    0.29    0.07    0.08
+     10008           0.14    0.03   -0.05   -0.05    0.01    0.06    0.16    0.25    0.35    0.32    0.26    0.22     
+     10009           0.03    0.01   -0.06   -0.06    0.01    0.05    0.07    0.29    0.38    0.32    0.22    0.08    
+     10010           0.08    0.01   -0.02   -0.01    0.01    0.04    0.12    0.18    0.24    0.21    0.18    0.16   
+     10011           0.14    0.07    0.02    0.03    0.05    0.13    0.24    0.33    0.40    0.35    0.31    0.29  
+     10012           0.08   -0.02    0.05    0.04    0.06    0.02    0.19    0.31    0.44    0.33    0.28    0.18                                          

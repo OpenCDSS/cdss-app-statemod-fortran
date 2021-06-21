@@ -1,0 +1,68 @@
+#
+# SmDelta.rsp; response file for SmDelta that runs using StateMod version 11.x
+# Title
+-Title Test Title
+#
+#        1. Diversions
+#
+#       Delplt.rsp
+#
+#       Run Type: Single, Multiple, Difference, Merge,  Help 
+#
+# Single
+Difference
+# Diff2
+# Multiple
+# Single
+# Version
+#__________________________________________________________
+#       File:
+c:\w\statem\Colorado\Cm2005H2_20061115\cm2005H2.xop
+#
+#__________________________________________________________
+#       Type (Diversion, StreamGage or Reservoir or Operational_Right)
+Operational_Right
+#
+#__________________________________________________________
+#       Parameter (same as SMGUI) or type -help
+# Total_Supply
+# From_Well
+NA
+#
+#__________________________________________________________
+#       ID (0=all, n=ID, end with a -999)
+0
+-999
+#
+#__________________________________________________________
+#       Year or Ave (e.g. Ave or 1989 NOV)
+Ave           
+#     
+########################################
+#
+#__________________________________________________________
+c:\w\statem\Colorado\Cm2005H2_20061115\old.xop
+#
+#__________________________________________________________
+#       Type (Diversion, StreamGage or Reservoir or Operational_Right)
+Operational_Right               
+#
+#__________________________________________________________
+#       Parameter (Total_Supply, From_Well, ... same as SMGUI) or type -help
+NA
+#
+#__________________________________________________________
+#       ID (0=all, n=ID, end with a -999)
+0
+-999
+#
+#__________________________________________________________
+#       Year or Ave (e.g. Ave or 1989)
+Ave
+#
+#
+########################################
+#       End of File
+-999
+
+

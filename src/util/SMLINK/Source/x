@@ -1,0 +1,42 @@
+AUTOMAKE - Version 6.56Dc
+Copyright (C) Polyhedron Software Ltd. (1987-2003) - All rights reserved
+ 
+Configuration data       read from automake.fig
+Reading dependency file AUTOMAKE.DEP
+Compile SMLINK.FOR (no object file)
+Relink Smlink.exe (Newly compiled object files)
+AUTOMAKE finished normally
+Lahey/Fujitsu Fortran 95 Compiler Release 7.10.00  S/N: 003049311338905
+Copyright (C) 1994-2004 Lahey Computer Systems.  All rights reserved.
+Copyright (C) 1998-2004 FUJITSU LIMITED. All rights reserved.
+Compiling program unit main at line 1:
+  1121-S: "SMLINK.FOR", line 579, column 22: Extra character found after statement syntax.
+  1121-S: "SMLINK.FOR", line 622, column 11: Extra character found after statement syntax.
+Compiling program unit blank at line 989:
+Compiling program unit checkc at line 1004:
+Compiling program unit chekfn at line 1028:
+Compiling program unit checkid at line 1072:
+Compiling program unit control at line 1113:
+Compiling program unit gis at line 1188:
+Compiling program unit opener at line 1227:
+Compiling program unit opentop at line 1286:
+Compiling program unit getpath at line 1423:
+Compiling program unit putpath at line 1456:
+Compiling program unit parse at line 1507:
+Compiling program unit rin at line 1543:
+Compiling program unit rsp at line 1675:
+Compiling program unit skipn at line 1697:
+Compiling program unit skipx at line 1720:
+Compiling program unit station at line 1734:
+Compiling program unit delsta at line 1858:
+Compiling program unit repzero at line 1898:
+Compiling program unit addrec at line 1950:
+Compiling program unit staRib at line 1996:
+Compiling program unit timec at line 2112:
+Compiling program unit getcom at line 2501:
+Compiling program unit getcom2 at line 2552:
+Compiling program unit getfnX at line 2642:
+Compiling program unit AdjCase at line 2669:
+Compiling program unit staStr at line 2721:
+Encountered 2 errors, 0 warnings in file SMLINK.FOR.
+Compiling file SMLINK.FOR.

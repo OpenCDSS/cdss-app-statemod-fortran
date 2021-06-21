@@ -1,0 +1,8 @@
+QUITONERROR
+
+FILES=*.for
+COMPILE=@lf95 -c -chk -g -pca -stchk -trace -w %fi
+
+LINK=@lf95 @%rf -g -exe %ex
+TARGET=SmDelay.exe
+

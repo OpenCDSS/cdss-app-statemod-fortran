@@ -1,0 +1,8 @@
+QUITONERROR
+
+FILES=*.for
+COMPILE=@lf95 -c  -g -pca -stchk  -w %fi
+
+LINK=@lf95 @%rf -g -exe %ex
+TARGET=SmFc.exe
+

@@ -1,0 +1,26 @@
+#
+# Smfc.rsp; response file to smfc.for; Statemod file compare
+#
+# iprint = 0 print all
+#          1 print differences only
+# iprint 
+       1
+# 
+#
+# Files to compare (.rsp = all, .rim, .rsp, .res, .ris
+#	.wes, .weh, .rsp, .rsp, .tsp, .dds, .wes, .opr, .dly, etc.)
+# .rsp
+#.rin
+# .rin
+.xdd
+#
+# Output File name
+smfc.out
+#
+# File 1 to compare
+# c:\w\statem\data\Sp2008L\StateMod\Historic\Sp2008L.rsp
+c:\w\statem\data\Sp2008L\StateMod\Historic\Sp2008L.xdd
+#
+# File 2 to compare
+# c:\w\statem\data\Sp2008L\StateMod\Historic\Sp2008L.rsp
+c:\w\statem\data\Sp2008L\StateMod\Historic\Sp2008L.xdd

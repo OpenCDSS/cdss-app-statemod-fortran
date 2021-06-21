@@ -1,0 +1,36 @@
+# Exhibit 1.1
+# *.rsp; Response file for Statemod Example 
+#
+#
+# Name                                                                  Description (optional)
+#---------------                                                        ----------------------
+ex50.ctl                                                                 Control
+ex50.rin                                                                 River network 
+ex50.dum                                                                 Reservoir station file
+ex50.dds                                                                 Direct Diversion station file 
+ex50.ris                                                                 Stream Gauge file
+ex50.ifs                                                                 Instream flow station file 
+ex50.ifr                                                                 Instream flow right file 
+ex50.dum                                                                 Reservoir rights file
+ex50.ddr                                                                 Direct diversion rights file
+ex50.dum                                                                 Operational rights file
+ex50.dum                                                                 Precipitatoin file - Annual
+ex50.dum                                                                 Evaporation file - Monthly or Annual
+ex50.rim                                                                 Streamflow - Monthly
+ex50.ddm                                                                 Direct diversion demand - Monthly
+ex50.dum                                                                 Direct diversion demand overwrite - Monthly
+ex50.dum                                                                 Direct diversion demand - Annual
+ex50.ifa                                                                 Instream flow demand - Annual 
+ex50.dly                                                                 Delay Table file 
+ex50.dum                                                                 Reservoir target - Annual
+ex50.dum                                                                 Reservoir End of month contents - Monthly
+ex50.dum                                                                 Base flow data for river stations without gauged data
+ex50.rih                                                                 Historic Streamflow - Monthly
+ex50.ddh                                                                 Historic Diversions - Monthly
+ex50.gis                                                                 Graphics Files
+ex50.out                                                                 Output Control
+
+
+
+
+
