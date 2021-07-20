@@ -32,6 +32,8 @@ c _________________________________________________________
 c       Update History
 c
 c
+c rrb 2021/07/11; Set control file name to a blank to match Gfortran
+c
 c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c
 c rrb 2001/01/02; Added option 10 (baseflows with variable efficiency)
@@ -169,7 +171,10 @@ c rrb 03/06/02; Print at bottom if NoLog option is not on
         endif
 c
 c               Find control file name, use statem as a default
-        filenc = 'statem' 
+c
+c rrb 2021/07/11; Set control file name to a blank to match Gfortran
+cx      filenc = 'statem' 
+        filenc = '' 
 c
 c               Initialize
         ioptio  = 0

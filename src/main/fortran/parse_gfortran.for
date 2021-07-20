@@ -226,12 +226,12 @@ c     Maximum want size (a12)
 
 c     Initialize
 
-      ioptio  = 0   ! Primary option, will cause interactive prompt if not specified
-      ioptio2 = 0   ! Secondary option, optional, such s for report type
-      getid  = ' '  ! Station identifier for reporting
-      gettyp = ' '  ! Data type for reporting
-      getpar = ' '  ! Parameter type for reporting
-      filenc = ' '  ! Response file name, will cause interactive prompt if not specified
+      ioptio  = 0   ! Primary option, will cause interactive prompt if not specified.
+      ioptio2 = 0   ! Secondary option, optional, such as for report type.
+      getid  = ' '  ! Station identifier for reporting.
+      gettyp = ' '  ! Data type for reporting.
+      getpar = ' '  ! Parameter type for reporting.
+      filenc = ' '  ! Response file name, will cause interactive prompt if not specified.
 
       if ( iFlexibleOrder .eq. 1 ) then
         ! Parse with flexible order.
@@ -328,7 +328,7 @@ c     Initialize
               read(arg,*,iostat=istat) iyendCli
               if ( istat == 0 ) then
                 if ( iout == 1 ) then
-                  write(nlog,*) '    iyend from command line; ', iyendCli
+                  write(nlog,*) '    iyend from command line; ',iyendCli
                 endif
               else
                 write(6,*) '-iyend uses invalid year: ', arg
@@ -348,7 +348,7 @@ c     Initialize
                 write(6,*) '-station is missing id'
                 write(nlog,*) '    -station is missing id'
             else
-              getid = arg
+              getid = trim(arg(1:12))
               if ( iout == 1 ) then
                 write(nlog,*) '    station id from command line; ',getid
               endif
@@ -367,7 +367,7 @@ c     Initialize
                 write(6,*) '-datatype is missing type'
                 write(nlog,*) '    -datatype is missing type'
             else
-              gettyp = arg
+              gettyp = trim(arg(1:12))
               if ( iout == 1 ) then
                 write(nlog,*) '    data type from command line; ',gettyp
               endif
@@ -386,7 +386,7 @@ c     Initialize
                 write(6,*) '-parameter is missing type'
                 write(nlog,*) '    -parameter is missing type'
             else
-              getpar = arg
+              getpar = trim(arg(1:12))
               if ( iout == 1 ) then
                 write(nlog,*) '    parameter from command line; ',getpar
               endif
@@ -398,8 +398,8 @@ c     Initialize
           ! Other dash option is an error if not recognized above.
 
           if ( arg(1:1) .eq. '-' ) then
-            write(6,*) 'Unrecognied option: ', arg
-            write(nlog,*) '    Unrecognied option: ', arg
+            write(6,*) 'Unrecognized option: ', arg
+            write(nlog,*) '    Unrecognized option: ', arg
             cycle
           endif
 

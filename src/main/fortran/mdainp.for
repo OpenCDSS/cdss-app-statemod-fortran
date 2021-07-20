@@ -4047,8 +4047,8 @@ C
  1590 write(nlog,1600)
  1600 FORMAT(/,
      1 '  Mdainp; Problem.',/
-     1 '          NOT ENOUGH DATA IN THE RUNOFF DATA FILE (*.rim)',/
-     1 '          Check Period of Record and or Rerun Base flows')
+     1 '     NOT ENOUGH DATA IN THE RUNOFF DATA FILE (*.rim or *.xbm)',/
+     1 '     Check Period of Record and or Rerun Base flows')
       goto 9999
 C
 c rrb 2011/04/03; Warn if the annual time series switch (itsfile) is set

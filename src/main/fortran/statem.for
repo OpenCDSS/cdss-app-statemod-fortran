@@ -215,9 +215,9 @@ c               10 includes plans
 c                9 includes wells
 c                8 includes daily capability
 c                7 includes new binary output format
-
+c
         ver = '16.00.48'
-        vdate = '2021/06/14'
+        vdate = '2021/07/11'
 c
         rspexists = .FALSE.
         igui = 0
@@ -725,11 +725,26 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
+     1 '    - 2021/07/11 (16.00.48):',/
+c    
+     1 '     Revised Parse to not initialize the command file to',/
+     1 '       blank to be consistent with the Gfortran version',/
+     1 '       of parse (e.g. parse_gfortran.for) to fix a problem',/
+     1 '       executing a -v (-version) or -u (-update), ... that',/
+     1 '       occurred with the command line updates performed',/
+     1 '       to parse_gfortran.for on 6-14-2021',/
+     1 '      Revised license to add a space to print statement 100',/
+     1 '        so the first character does not get cut off when ',/
+     1 '        printed to the screen when compiled with Lahey ',/
+c
+     1 '    - 2021/07/05 (16.00.48):',/
+     1 '     Compile using Lahey without save command i(-nsav)',/
+c
      1 '    - 2021/06/14 (16.00.48):',/
      1 '     Add -iystr Year and -iyend Year command line arguments.',/
      1 '     Improve log file handling and menu prompts.',/
      1 '     Command line arguments can be in any order.',/
-
+c
      1 '    - 2021/05/30 (16.00.48):',/
      1 '     Runtime Error Tracking',/
      1 '     Revised DirectWR (type 26) to fix a typo to ',/

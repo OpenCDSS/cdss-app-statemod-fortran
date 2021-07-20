@@ -4,6 +4,7 @@
 # Use 'make' or 'make help' to see usage.
 # ======================================================================
 #
+# - has been tested with gfortran in MSys2 environment
 # - initial version taken from Jim Brannon's work
 # - significant updates to add documentation, help target, make portable
 # - should be able to update to work with Windows, Linux, and Lahey compiler;
@@ -25,6 +26,8 @@ FC = gfortran
 # Determine the StateMod version
 # - used in the executable name
 # - also used for installer upload folder, etc.
+# - example code line:
+#      ver = '16.00.48'
 # - "dev" at the end of the version (e.g., 15.00.14dev) indicates the software is under development
 STATEMOD_VERSION := $(shell cat statem.for | grep 'ver =' | grep -v 'xx' | cut -d '=' -f 2 | sed "s/'//g" | tr -d ' ' )
 
@@ -33,7 +36,7 @@ STATEMOD_VERSION := $(shell cat statem.for | grep 'ver =' | grep -v 'xx' | cut -
 # - use in filename to clearly differentiate between 32-bit and 64-bit versions until transition to 64-bit is complete
 # - TODO smalers 2021-03-11 focus on Windows and deal with Linux when there is time
 ifdef OS
-	# Windows
+	# Windows, including MSys2
 	EXE_BITS = 32
 	ifeq ($(MSYSTEM),MINGW32)
 		EXE_BITS = 32
@@ -221,51 +224,6 @@ endif
 # - uncomment line with 'printenv' if troubleshooting the environment
 #all: printenv $(PROGRAMS)
 all: help
-
-# help
-#
-# Print the targets that are available.
-help:
-	@echo "-------------------------------------------------------------------------------------------"
-	@echo "StateMod makefile targets:"
-	@echo ""
-	@echo "all               Default target that prints this help message."
-	@echo "checkarch         Check that object files are consistent with shell (32 or 64 bit)."
-	@echo "clean             Remove dynamically created files (but not final executable)."
-	@echo "help              Print this message."
-	@echo "printenv          Helper to print which operating system is used, controls configuration."
-	@echo "statemod          Compile the StateMod executable, recompiling any .o if .for modified."
-	@echo "                  Same as 'statemod_check' to compile with all checks for development testing."
-	@echo "statemod_check    Compile the StateMod executable including all runtime checks."
-	@echo "statemod_o3       Compile the StateMod executable for optimization level 3 and limited runtime checks."
-	@echo "statemod_release  Do clean compile on each release variant and copy o3 variant to plain name."
-	@echo "statemodrb        For Ray Bennett - compile the StateMod executable, and copy to his run folder."
-	@echo "veryclean         Make the 'clean' target, and also remove the final executable."
-	@echo ""
-	@echo "file.o            Compile the source file.for file into object file file.o,"
-	@echo "                  useful to check syntax for a single file."
-	@echo "-------------------------------------------------------------------------------------------"
-	@echo "Targets specific to Ray Bennett:"
-	@echo ""
-	@echo "statemodrb    Compile the StateMod executable and copy to Ray's run folder."
-	@echo "verycleanrb   Veryclean full compile, save log to statemod-compile.log,"
-	@echo "              and copy executable to Ray's run folder.  DOES NOT ECHO TO SCREEN UNTIL DONE."
-	@echo "-------------------------------------------------------------------------------------------"
-	@echo "Important makefile variables that are used:"
-	@echo ""
-	@echo "FC (compiler) = $(FC)"
-	@echo "STATEMOD_VERSION (from statem.for) = $(STATEMOD_VERSION)"
-	@echo "EXE_BITS (from environment) = $(EXE_BITS)"
-	@echo "-------------------------------------------------------------------------------------------"
-	@echo "Important environment variables that are used:"
-	@echo ""
-	@echo "OS (to determine if Windows) = $(OS)"
-	@echo "MSYSTEM (to determine EXE_BITS on Windows) = $(MSYSTEM)"
-	@echo "-------------------------------------------------------------------------------------------"
-	@echo "To force compile of files even if errors:  make -k statemod"
-	@echo "To force compile and save output to file:  make -k statemod 2>&1 | tee statemod-compile.log"
-	@echo "To count warning types from above:         ./count-warnings.bash"
-	@echo "-------------------------------------------------------------------------------------------"
 
 # Dependencies for object files:
 # - because statemod is the main output (not library, etc.) only concern is the include file
@@ -455,6 +413,7 @@ welrig3p.o: common.inc
 xdebug.o: common.inc
 
 # Below here are the rules for building the statemod executable:
+# - generally alphabetize
 # - all source modules are listed as dependencies above
 # - interdependencies are not accounted for, just the main program requirements on all code
 # - the following were in Jim Brannon's code and have been integrated more generically:
@@ -465,49 +424,112 @@ xdebug.o: common.inc
 #     getpath_windows.o
 #     putpath_windows.o 
 
-# Copy the o3 variant to plain name for release.
+# copy_o3_for_release
+#
+# Copy the o3 (optimized) variant to plain name for release.
 copy_o3_for_release:
 ifdef OS
 	@# Windows...
 	@cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit-o3.exe statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe
 	@echo "-----------------------------------------------------------------------"
-	@echo "Release executable is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe"
+	@echo "Release executable (copy of o3 variant) is statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe"
 	@echo "-----------------------------------------------------------------------"
 else
 	@# Linux...
 	@cp statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit-o3 statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit
 	@echo "-----------------------------------------------------------------------"
-	@echo "Release executable is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit"
+	@echo "Release executable (copy of o3 variant) is statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit"
 	@echo "-----------------------------------------------------------------------"
 endif
 
+# help
+#
+# Print the targets that are available.
+help:
+	@echo "-------------------------------------------------------------------------------------------"
+	@echo "StateMod makefile targets:"
+	@echo ""
+	@echo "all               Default target that prints this help message."
+	@echo "checkarch         Check that object files are consistent with shell (32 or 64 bit)."
+	@echo "clean             Remove dynamically created files (but not final executable)."
+	@echo "help              Print this message."
+	@echo "printenv          Helper to print which operating system is used, controls configuration."
+	@echo "statemod          Compile the StateMod executable, recompiling any .o if .for modified."
+	@echo "                  Same as 'statemod_check' to compile with all checks for development testing."
+	@echo "                  USE FOR NORMAL DEVELOPMENT."
+	@echo "statemod_check    Compile the StateMod executable including all runtime checks."
+	@echo "statemod_o3       Compile the StateMod executable for optimization level 3 and limited runtime checks."
+	@echo "statemod_release  Do clean compile on each release variant and copy o3 variant to plain name."
+	@echo "                  USE FOR PRODUCTION RELEASE AND FULL TESTING."
+	@echo "statemodrb        For Ray Bennett - compile the StateMod executable, and copy to his run folder."
+	@echo "veryclean         Make the 'clean' target, and also remove the final executable."
+	@echo "veryclean_check   Needed by statemod_release."
+	@echo "veryclean_o3      Needed by statemod_release."
+	@echo ""
+	@echo "file.o            Compile the source file.for file into object file file.o,"
+	@echo "                  useful to check syntax for a single file."
+	@echo "-------------------------------------------------------------------------------------------"
+	@echo "Targets specific to Ray Bennett:"
+	@echo ""
+	@echo "statemodrb    Compile the StateMod executable and copy to Ray's run folder."
+	@echo "verycleanrb   Veryclean full compile, save log to statemod-compile.log,"
+	@echo "              and copy executable to Ray's run folder.  DOES NOT ECHO TO SCREEN UNTIL DONE."
+	@echo "-------------------------------------------------------------------------------------------"
+	@echo "Important makefile variables that are used:"
+	@echo ""
+	@echo "FC (compiler) = $(FC)"
+	@echo "STATEMOD_VERSION (from statem.for) = $(STATEMOD_VERSION)"
+	@echo "EXE_BITS (from environment) = $(EXE_BITS)"
+	@echo "-------------------------------------------------------------------------------------------"
+	@echo "Important environment variables that are used:"
+	@echo ""
+	@echo "OS (to determine if Windows) = $(OS)"
+	@echo "MSYSTEM (to determine EXE_BITS on Windows) = $(MSYSTEM)"
+	@echo "-------------------------------------------------------------------------------------------"
+	@echo "To force compile of files even if errors:  make -k statemod"
+	@echo "To force compile and save output to file:  make -k statemod 2>&1 | tee statemod-compile.log"
+	@echo "To count warning types from above:         ./count-warnings.bash"
+	@echo "-------------------------------------------------------------------------------------------"
+
+# statemod_check
+#
 # The default rule for building StateMod executable.
 # For developers, the full check version is used to ensure that issues don't slip through.
 # For production testing, the optimized version is used because it is faster.
-# Automated tests run on both versions, to compare results, and then optimized version for most testing.
+# Automated tests can be run on check and optimized variants to compare results.
+# Automated tests should be run on the optimized version prior to release.
 statemod_check: FFLAGS = $(FFLAGS_CHECK)
-statemod_check: VARIANT = "-check"
+statemod_check: VARIANT = -check
 statemod_check: statemod_compile
 
-# The rule for building StateMod optimized executable.  See statemod_check comments.
+# statemod_o3
+#
+# The rule for building StateMod optimized executable:
+# - see statemod_check comments
+# - use multiple rules because ran into problems trying to list under one target
 statemod_o3: FFLAGS = $(FFLAGS_O3)
-statemod_o3: VARIANT = "-o3"
-statemod_o3: statemod_compile
-	copy_o3_for_release
+statemod_o3: VARIANT = -o3
+statemod_o3: statemod_compile copy_o3_for_release
 
+# statemod
+#
 # Same as statemod_check, to compile the check executable used during development (all checks).
 statemod: statemod_check
 
+# statemod_release
+#
 # Do a full clean compile for release.
-# - do the optimized version first because normal work uses the full-check version and want those .o files to be in working files
-#   for incremental make
+# - do the optimized version first because normal work uses the full-check version and want
+#   those .o files to be in working files for incremental make
+# - use separate calls to 'make' to ensure variables are set correctly
 statemod_release:
-	make veryclean
+	make veryclean_o3
 	make statemod_o3
-	make veryclean
+	make veryclean_check
 	make statemod_check
-	copy_o3_for_release
 
+# statemod_compile
+#
 # This rule is used internally to allow 'checkarch' to be executed.
 statemod_compile: \
 	statem.o \
@@ -764,6 +786,8 @@ else
 	@echo "-----------------------------------------------------------------------"
 endif
 
+# statemodrb
+#
 # Special rule for Ray Bennett:
 # - compile as above
 # - copy the executable to a folder that Ray uses to run tests
@@ -809,6 +833,8 @@ endif
 # Utility targets.
 .PHONY: clean veryclean vercleanrb
 
+# checkarch
+#
 # Check the architecture to make sure that the compile does not attempt to mix 32-bit and 64-bit object files.
 ifneq ($(BAD_OBJ_COUNT),0)
 ifdef OS
@@ -829,10 +855,13 @@ checkarch:
 endif
 endif
 
+# clean
+#
 # Remove intermediate files used when compiling:
 # - Do not remove *.obj because that is used with Lahey and want gfortran compile to be separate.
 # - normal artifacts are *.o, etc.
-# - additional artifacts may be created due to compiler problem, for example as listed below.
+# - additional artifacts may be created due to compiler problem, for example as listed below
+#   and are removed with a wildcard pattern
 #     parse_gfortran.for.236r.expand
 #     parse_gfortran.for.237r.vregs
 #     parse_gfortran.for.238r.into_cfglayout
@@ -866,17 +895,8 @@ clean: printenv
 	rm -f *.o *.mod *.MOD
 	rm -f *.for.*r.*
 
-# Special target for Ray Bennett.
-# Clean compile and log the results to a file.
-# Count the warnings and print to screen and append to the compile log file.
-# 
-verycleanrb: veryclean
-	@echo "Compiling statemod after veryclean - full compile."
-	@# Have to compile using a shell command because of output redirect.
-	$(shell make -k statemodrb 2>&1 | tee statemod-compile.log)
-	@# Summarize the warning count to the screen and end of compile log file.
-	$(shell ./count-warnings.bash 2>&1 | tee --append statemod-compile.log)
-
+# printenv
+#
 # Print important environment information to help understand setup.
 printenv:
 	@echo "-----------------------------------------------------------------------"
@@ -894,6 +914,8 @@ else
 endif
 	@echo "-----------------------------------------------------------------------"
 
+# veryclean
+#
 # Remove all intermediate files and the final executable.
 # - only remove the executable for current architecture in case want to run both
 veryclean: printenv clean
@@ -901,15 +923,71 @@ veryclean: printenv clean
 	@echo "veryclean"
 	@echo ""
 	@echo "Removing compile artifacts (make clean) and final executable."
-	@echo "Only executable for current StateMod $(EXE_BITS)-bit version is removed."
+	@echo "Only executable for current StateMod $(EXE_BITS)-bit$(VARIANT) version is removed."
 	@echo "-----------------------------------------------------------------------"
 ifdef OS
 	# Windows
 	# - only remove the executable for the OS architecture of interest
-	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit.exe
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit*.exe
 else
 	# Linux
 	# - only remove the executable for the OS architecture of interest
 	# - no file extension
-	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit*
 endif
+
+# veryclean_check
+#
+# Remove all intermediate files and the final executable for 'check' variant.
+# - only remove the executable for current architecture in case want to run both
+veryclean_check: printenv clean
+	@echo "-----------------------------------------------------------------------"
+	@echo "veryclean_check"
+	@echo ""
+	@echo "Removing compile artifacts (make clean) and final executable."
+	@echo "Only executable for current StateMod $(EXE_BITS)-bit-check version is removed."
+	@echo "-----------------------------------------------------------------------"
+ifdef OS
+	# Windows
+	# - only remove the executable for the OS architecture of interest
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit-check.exe
+else
+	# Linux
+	# - only remove the executable for the OS architecture of interest
+	# - no file extension
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit-check
+endif
+
+# veryclean_o3
+#
+# Remove all intermediate files and the final executable for 'o3' variant.
+# - only remove the executable for current architecture in case want to run both
+veryclean_o3: printenv clean
+	@echo "-----------------------------------------------------------------------"
+	@echo "veryclean_o3"
+	@echo ""
+	@echo "Removing compile artifacts (make clean) and final executable."
+	@echo "Only executable for current StateMod $(EXE_BITS)-bit-o3 version is removed."
+	@echo "-----------------------------------------------------------------------"
+ifdef OS
+	# Windows
+	# - only remove the executable for the OS architecture of interest
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-win-$(EXE_BITS)bit-o3.exe
+else
+	# Linux
+	# - only remove the executable for the OS architecture of interest
+	# - no file extension
+	rm -f *~ $(PROGRAMS) statemod-$(STATEMOD_VERSION)-gfortran-lin-$(EXE_BITS)bit-o3
+endif
+
+# verycleanrb
+#
+# Special target for Ray Bennett:
+# - clean compile and log the results to a file.
+# - count the warnings and print to screen and append to the compile log file.
+verycleanrb: veryclean
+	@echo "Compiling statemod after veryclean - full compile."
+	@# Have to compile using a shell command because of output redirect.
+	$(shell make -k statemodrb 2>&1 | tee statemod-compile.log)
+	@# Summarize the warning count to the screen and end of compile log file.
+	$(shell ./count-warnings.bash 2>&1 | tee --append statemod-compile.log)
