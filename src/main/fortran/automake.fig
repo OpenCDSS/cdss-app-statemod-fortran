@@ -10,7 +10,9 @@ FILES=*.for
 # _________________________________________________________
 # Semi fast. The following saves local variables and checks stack
 # it will not find variable overflows
-COMPILE=@lf95 -c -nap -nchk -ncover -ng -o1 -npca -ntrace -sav -stchk -nw %fi
+# rrb 2021/07/05; recompile with -sav = -nsav to match Gfortran
+#COMPILE=@lf95 -c -nap -nchk -ncover -ng -o1 -npca -ntrace -sav -stchk -nw %fi
+COMPILE=@lf95 -c -nap -nchk -ncover -ng -o1 -npca -ntrace -nsav -stchk -nw %fi
 #
 # _________________________________________________________
 # Slow The following does all checks and is very slow
