@@ -31,7 +31,8 @@ listFile="/tmp/statemod-code-list.txt"
 # Include relevant files and ignore dynamic files.
 # - don't include Lahey files because Ray Bennett is in control and needs to make those work
 # - ignore specific files that are used in development but should not be included (can't seem to use ls -I for this so use grep)
-ls -1 fortran/*.inc fortran/*.for fortran/makefile fortran/*.bash fortran/*.sh fortran/*.md | grep -v junk-statem.for > ${listFile}
+# - ignore errors for files that don't exist
+ls -1 fortran/*.inc fortran/*.for fortran/makefile fortran/*.bash fortran/*.sh fortran/*.md 2> /dev/null | grep -v junk-statem.for > ${listFile}
 
 datestring=$(date +%Y-%m-%d)
 

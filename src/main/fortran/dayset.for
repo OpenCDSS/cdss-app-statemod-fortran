@@ -367,7 +367,7 @@ c
       end do
 c
 c _________________________________________________________
-c               Step 17; Compute daily Virgin Flow 1x/day
+c               Step 17; Compute daily natural Flow 1x/day
 c
       do iru=1,numrun
         iss=irusta(iru)

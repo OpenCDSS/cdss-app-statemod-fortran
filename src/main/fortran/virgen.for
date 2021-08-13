@@ -1,4 +1,4 @@
-c virgen - controls all virgin (base) flow calculations.
+c virgen - controls all natural (base) flow calculations.
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
@@ -20,7 +20,7 @@ c_________________________________________________________________NoticeEnd___
 
       SUBROUTINE VIRGEN
 c
-c      Virgen; It controls all virgin (base) flow calculations.
+c      Controls all natural (base) flow calculations.
 c	Called by StateM.f
 c
 c
@@ -61,8 +61,8 @@ C      file 5  - INPUT EOM RESERVOIR CONTENTS - SORT BY YEAR
 C                               
 C      file 14 - IWR data (*.iwr)
 C      file 16 - base flow information
-C      file 17 - VIRGIN FLOWS AT HISTORICAL FLOW STATIONS
-C      file 19 - VIRGIN FLOWS IN THE FORMAT REQUIRED FOR SIMULATION
+C      file 17 - NATURAL FLOWS AT HISTORICAL FLOW STATIONS
+C      file 19 - NATURAL FLOWS IN THE FORMAT REQUIRED FOR SIMULATION
 C      file 20 - response file
 C
 C-------------------------------------------------------------------
@@ -445,8 +445,8 @@ c               Error Handling
       write(io99,'(a256)') recin
       goto 9999
 
- 9999 write(6,*) '  Stopped in Virgin, see the log file (*.log)'
-      write(io99,*)'  Stopped in Virgin'
+ 9999 write(6,*) '  Stopped in Virgen, see the log file (*.log)'
+      write(io99,*)'  Stopped in Virgen'
       write(6,*) 'Stop 1'
       call flush(6)
       call exit(1)

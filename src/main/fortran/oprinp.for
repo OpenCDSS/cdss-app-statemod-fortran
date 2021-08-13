@@ -315,9 +315,11 @@ c		ioutSm 0 no details on small
 c		       1 details on small
 c		ioutLim 0 no details on diversion limit
 c		        1 details on diversion limit
-      iout=0
-      ioutSM=0  
-      ioutLim=0
+
+      ! Initialize to command line input.
+      iout=log_IOUT
+      ioutSM=log_IOUTSM
+      ioutLim=log_IOUTLIM
 c
       nout=0
 c
@@ -367,7 +369,7 @@ c                 is associated with a wwsp Supply (type 14) plan
       smallN=-1.0*small
 c
 c rrb 2015/03/24; Add file type warning indicator
-      ioutW1=0
+      ioutW1=log_IOUTW1
       if(ioutSm.eq.1) write(nlog,*) ' Oprinp_01; small ', small
       DO ND=1,NUMDIV
         IDRGST(ND)=0

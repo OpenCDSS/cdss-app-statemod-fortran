@@ -204,28 +204,30 @@ cx      ioutEv=1
 cx      ioutPPt=1
 cx      ioutURM=1
       
+      ! smalers 2021-08-05 allow log levels to be set on command line
+      ! Set initial log levels based on command line:
+      ! - can hard-code values below if necessary
+      ioutS=log_IOUTS
+      ioutGx=log_IOUTGX
+      ioutX=log_IOUTX
+      ioutW=log_IOUTW
+      ioutI=log_IOUTI
+      ioutD=log_IOUTD
+      ioutR=log_IOUTR
+      ioutEv=log_IOUTEV
+      ioutPPt=log_IOUTPPT
+      ioutURM=log_IOUTURM
       
-      ioutS=0
-      ioutGx=0
-      ioutX=0
-      ioutW=0
-      ioutI=0
-      ioutD=0
-      ioutR=0
-      ioutEv=0
-      ioutPPt=0
-      ioutURM=0
-      
-      
-      
-      if(ichk.eq.11) ioutEv=1
-      ioutRgS=0
-      ioutRgF=0
-      ioutSM=0
-      ioutPrf=0
+      if(ichk.eq.11) then
+        ioutEv=1
+      endif
+      ioutRgS=log_IOUTRGS
+      ioutRgF=log_IOUTRGF
+      ioutSM=log_IOUTSM
+      ioutPrf=log_IOUTPRF
 c
 c rrb 2021/05/02; Runtime error tracking      
-      ioutTar=0
+      ioutTar=log_IOUTTAR
       if(ioutTar.eq.1) then
         write(nlog,*) '  Mdainp;  iyr iin  i12 itarx' 
         write(nlog,'(a10,20i5)') '  Mdainp; ',iyr, iin, i12, itarx
@@ -271,18 +273,18 @@ cx       if(iday.eq.0) then
 cx          fac=mthday(mon)*factor
 cx        else
 cx         fac=factor
-cx        endif 
-cx      endif     
+cx        endif
+cx      endif
 c
 c rrb 01/01/03; Recognize other baseflow types
       ibasef=0
-      if(ioptio.eq.1 .or. ioptio.eq.9) then 
+      if(ioptio.eq.1 .or. ioptio.eq.9) then
         ibasef=1
       endif
-      
+
       if(ioutSM.eq.2 .or. ioutSM.eq.3) write(nlog,1323)
-      
-      
+ 
+ 
 c     write(nlog,*) '  Mdainp; ibasef = ', ibasef
 C
 C-------------------------------------------------------------------
@@ -293,9 +295,9 @@ C-------------------------------------------------------------------
 C
 c		Branch if reading every month
       IF(I12.EQ.12) GO TO 950
-      
+
       iyr=0
-        
+ 
 c
 c               1x/run Set warning on negative diversions (imports)
       do nu=1,maxuse
@@ -920,7 +922,7 @@ c         in which case comment() has backspaced the file
 c         and the line is read again below
             do 730 nf=1,maxifr
 c
-c		Checck for comments in dat
+c		Check for comments in dat
 c		Exit if EOF (2) or Error (3)
         call comment(55, nlog, iocode, nchk, 0)
 c jhb this is a mistake should jump OUT of the loop
@@ -1194,6 +1196,7 @@ c
 c rrb 2021/04/18; Compiler warning
 cx     ndlymx=amax0(ndlymx,ndly(idl))
        ndlymx=max(ndlymx,ndly(idl))
+
 C
 c rrb 05/28/98; allow return id to not be the array counter
 c       IDLORD(IDLY)=IDL
@@ -1228,8 +1231,13 @@ cx    numdly=amax0(IDL-1,0)
       numdly=max(IDL-1,0)
       
       write(nlog,*) ' ' 
-      write(Nlog,799) numdly
- 799  format('  Mdainp; Number of delay tables read = ', i5)
+c smalers 2021-08-05 revise for troubleshooting.
+      write(Nlog,*) 
+     & ' Mdainp; Number of monthly delay tables read (numdly) = ',
+     & numdly
+      write(Nlog,*)
+     & ' Mdainp; Maximum number of monthly delay values (ndlymx) = ',
+     &  ndlymx
       close(55)
 c
 c ---------------------------------------------------------
@@ -2230,7 +2238,7 @@ c     if(iopflo.eq.1  .or. ioptio.eq.1) then
 c
 c _________________________________________________________
 C
-C------  CONVERT TOTAL VIRGIN FLOW TO REACH GAIN 
+C------  CONVERT TOTAL NATURAL FLOW TO REACH GAIN 
 C
 c
 c rrb 2021/03/20; Compiler Update

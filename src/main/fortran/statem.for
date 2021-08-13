@@ -204,10 +204,11 @@ c
 c _________________________________________________________
 c       Step 1; Initialize
 c
-c       ver = xx.yy.zz; where
-c             xx is the major version
-c             yy has new functionality
-c             zz is a bug fix
+c       ver = xx.yy.zz[.mod]; where
+c             xx is the major version (no zero padding)
+c             yy has new functionality (no zero padding as of version 17)
+c             zz is a bug fix (no zero padding as of version 17)
+c             mod is an optional modifier, such as build number
 c             For example:
 c               12 has new *.ipy file
 c               11 includes carrier loss
@@ -216,8 +217,8 @@ c                9 includes wells
 c                8 includes daily capability
 c                7 includes new binary output format
 c
-        ver = '16.00.48'
-        vdate = '2021/07/11'
+        ver = '17.0.0.dev1'
+        vdate = '2021/08/05'
 c
         rspexists = .FALSE.
         igui = 0
@@ -256,17 +257,23 @@ cx    MAXOWN= 251
 
       maxwr =201
 
-      MaxDly=525    
+c smalers 2021-08-05 Assign using parameter variable
+c     MaxDly=525    
+      MaxDly=MAX_DELAY_TABLES    
       maxdlA=20  
 c
 c rrb 2019/01/31; Increase Dimension for ArkDss
 cx    maxdlAd=10 
       maxdlAd=20
-      maxdlm= 240
+c smalers 2021-08-05 Assign using parameter variable
+c     maxdlm= 240
+      maxdlm= MAX_DELAY_VALUE_MONTHS
 c
 c rrb 2019/01/31; Increase Dimension for ArkDss
 cx    maxdld= 3660 
-      maxdld= 7320   
+c smalers 2021-08-05 Assign using parameter variable
+c     maxdld= 7320 
+      maxdld= MAX_DELAY_VALUE_DAYS 
 c
 c rrb 2010/09/15; Add warning if years do not coincide with
 c                 maximum daily and monthly return values
@@ -399,6 +406,9 @@ c-------------------------------------------------------------------
       ! Initialize 'cli' common block data, used to overrule 'datinp' subroutine read of control file.
       iystrCli = -1
       iyendCli = -1
+
+      ! Initialize the global common block logging variables.
+      call loginit()
 
       ! Parse the command line.
       ! nlog - unit number for startup log file
@@ -3294,7 +3304,7 @@ c
      1        ' with the 10.30 update.',/
      1 '    - 2003/09/10 (10.30)',/
      1 '        Added getfn.f to allow a random response file read. ',/
-     1 '        Revised datinp, mdainp, riginp, & virgin to allow',
+     1 '        Revised datinp, mdainp, riginp, & virgen to allow',
      1        ' a random response file read.',/
      1 '        Revised virout to include:',/
      1 '          StreamGage_base_monthly (*.xbg) output',/

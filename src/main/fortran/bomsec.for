@@ -85,12 +85,15 @@ c rrb 2021/04/18; Compiler not used or initialize
       if(iexit.gt.0) goto 500
       rnextar=0.0
       
-      ioutP=0
-      ioutP1=0
-      ioutR=0
-      ioutI=0
-      ioutT=0
-      iout47=0
+      ! Set logging levels based on command line:
+      ! - developer can override by setting after, if desired to hard code
+
+      ioutP = log_IOUTP
+      ioutP1 = log_IOUTP1
+      ioutR = log_IOUTR
+      ioutI = log_IOUTI
+      ioutT = log_IOUTT
+      iout47 = log_IOUT47
 
       do i=1,maxsta
         xzero(i)=0.0
@@ -917,7 +920,7 @@ C
       end do
 c
 c _________________________________________________________
-c               Step 21; COMPUTE VIRGIN FLOW AT EACH STATION 1x/mo
+c               Step 21; COMPUTE NATURAL FLOW AT EACH STATION 1x/mo
 c
       DO 370 IRU=1,NUMRUN
        ISS=IRUSTA(IRU)
@@ -952,6 +955,15 @@ c
         ISS=ISTRTN(IRN)
 c       write(nlog,*) ' Bomsec; irn, iss', irn, iss
 c
+        ! FIXME smalers 2021-07-31 temporarily add the following for troubleshooting.
+        if(IMO.GT.MAX_DELAY_VALUE_MONTHS) then
+          write(nlog,998) ISS, IRN, NSTRTN
+ 998      format('ISS=',i8,' IRN=',i8,' NSTRTN=',i8)
+          write(nlog,999) IMO, MAX_DELAY_VALUE_MONTHS
+ 999      format('[ERROR] IMO (',i4,
+     &     ') is > MAX_DELAY_VALUE_MONTHS (',i4,')')
+          write(nlog,999) 'ndlymx=', ndlymx, 'maxdlm=', maxdlm
+        endif
         QTRIBU(ISS)=QTRIBU(ISS)+RETUR(IMO,IRN)-depl(imo,irn)
         RIVER (ISS)=RIVER (ISS)+RETUR(IMO,IRN)-depl(imo,irn)
         ISS=IDNCOD(ISS)

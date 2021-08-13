@@ -150,21 +150,25 @@ FFLAGS_EXTRA_CHECKS = -fcheck=bits,bounds,do,mem,pointer,recursion
 
 # TODO smalers 2021-06-13 need to remove these old combinations when optimized and check versions are tested out.
 # Use -O1 -Wall to check for common warnings.
-# This generally works but has some issues at runtime that cause different results and are still being resolved
+# This generally works but has some issues at runtime that cause different results and are still being resolved.
 #FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -fno-automatic -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
-# Try removing -fno-automatic, results in runtime errors
+# Try removing -fno-automatic, results in runtime errors.
 #FFLAGS = -g -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds -finit-local-zero $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS)
-# Try removing -fno-automatic and -finit-local-zero and print warnings for code review
+# Try removing -fno-automatic and -finit-local-zero and print warnings for code review:
 # - use this periodically to improve code
 
 # The following compiler options result in all runtime checks but is slower to run.
 # - this is used by statemod_check target and 'check' variant
-FFLAGS_CHECK = -g -O1 -Wall -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS) -I/usr/include
+# - DO NOT use in normal development because running automated tests is slow
+# - use -ffpe to try to help track down specific line of error
+FFLAGS_CHECK = -g -O1 -Wall -cpp -DCOMPILER=$(COMPILER_ENUM) -ffpe-trap=zero,overflow,underflow -fbacktrace -fno-align-commons -static $(FFLAGS_ARCH) $(FFLAGS_EXTRA_CHECKS) -I/usr/include
 
-# The following compiler options result in fewer runtime checks but is faster to run.
+# The following compiler options result in fewer runtime checks but is faster to run:
 # -fcheck=bounds is retained because it catches major issues in array boundary issues
 # - this is used by statemod_o3 target and 'o3' variant
-FFLAGS_O3 = -Og -O3 -cpp -DCOMPILER=$(COMPILER_ENUM) -fno-align-commons -static -fcheck=bounds $(FFLAGS_ARCH) -I/usr/include
+# - DO use in normal development because running automated tests is fast
+# - use -Wall because it checks for uninitialized variables and other common issues
+FFLAGS_O3 = -Og -O3 -Wall -cpp -DCOMPILER=$(COMPILER_ENUM) -fbacktrace -fno-align-commons -static -fcheck=bounds $(FFLAGS_ARCH) -I/usr/include
 
 # Compiler flags for all cases (e.g. look for system .mod files, required in gfortran)
 # - TODO smalers 2021-06-13 include above so it is easily included in variant FFLAGS
@@ -304,6 +308,8 @@ ifrrigx.o: common.inc
 intersup.o: common.inc
 jmflow.o: common.inc
 jmstore.o: common.inc
+loginit.o: common.inc
+logsetlevel.o: common.inc
 mdainp.o: common.inc
 oopbook.o: common.inc
 oopbook2.o: common.inc
@@ -451,19 +457,21 @@ help:
 	@echo ""
 	@echo "all               Default target that prints this help message."
 	@echo "checkarch         Check that object files are consistent with shell (32 or 64 bit)."
+	@echo "checkcode         Check code for potential problems." 
 	@echo "clean             Remove dynamically created files (but not final executable)."
 	@echo "help              Print this message."
 	@echo "printenv          Helper to print which operating system is used, controls configuration."
 	@echo "statemod          Compile the StateMod executable, recompiling any .o if .for modified."
-	@echo "                  Same as 'statemod_check' to compile with all checks for development testing."
+	@echo "                  Same as 'statemod_o3' to compile with all checks for development testing."
 	@echo "                  USE FOR NORMAL DEVELOPMENT."
 	@echo "statemod_check    Compile the StateMod executable including all runtime checks."
+	@echo "                  USE FOR TROUBLESHOOTING."
 	@echo "statemod_o3       Compile the StateMod executable for optimization level 3 and limited runtime checks."
 	@echo "statemod_release  Do clean compile on each release variant and copy o3 variant to plain name."
 	@echo "                  USE FOR PRODUCTION RELEASE AND FULL TESTING."
 	@echo "statemodrb        For Ray Bennett - compile the StateMod executable, and copy to his run folder."
 	@echo "veryclean         Make the 'clean' target, and also remove the final executable."
-	@echo "veryclean_check   Needed by statemod_release."
+	@echo "veryclean_check   Needed by statemod_check."
 	@echo "veryclean_o3      Needed by statemod_release."
 	@echo ""
 	@echo "file.o            Compile the source file.for file into object file file.o,"
@@ -513,20 +521,23 @@ statemod_o3: statemod_compile copy_o3_for_release
 
 # statemod
 #
-# Same as statemod_check, to compile the check executable used during development (all checks).
-statemod: statemod_check
+# Same as statemod_o3, to compile the optimized executable used during development (minimal checks, fast).
+statemod: statemod_o3
 
 # statemod_release
 #
-# Do a full clean compile for release.
-# - do the optimized version first because normal work uses the full-check version and want
+# Do a full clean compile for release:
+# - do the full-check version first because normal work uses the optimized version and want
 #   those .o files to be in working files for incremental make
 # - use separate calls to 'make' to ensure variables are set correctly
 statemod_release:
-	make veryclean_o3
-	make statemod_o3
+	@# Compile check version first.
 	make veryclean_check
 	make statemod_check
+	@# Compile optimized version second:
+	@# - this will clean out the check version from above
+	make veryclean_o3
+	make statemod_o3
 
 # statemod_compile
 #
@@ -651,6 +662,8 @@ statemod_compile: \
 			isleapyear.o \
 			jmflow.o \
 			jmstore.o \
+			loginit.o \
+			logsetlevel.o \
 			mdainp.o \
 			oopbook2.o \
 			oopdiv.o \
@@ -854,6 +867,17 @@ checkarch:
 	@echo "Assuming 64-bit on Linux."
 endif
 endif
+
+# checkcode
+#
+# Check the code for potential problems:
+# - currently all filenames must be lowercase
+checkcode:
+	@echo ""
+	@echo "The following source files have uppercase characters (may be none):"
+	$(shell ls -1 *[A-Z]*.for 2> /dev/null)
+	@echo ""
+	@echo "End code checks."
 
 # clean
 #

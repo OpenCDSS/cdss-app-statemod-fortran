@@ -209,13 +209,16 @@ c     ioutSep=details on call sepsec (seepage)
 c     ioutGVC = details on Grand Valley Check
 c     ioutRep = details on replacement rule
 c     ioutMin = control output to the screen 
-      iout=0
-      ioutR=0   
-      ioutSP=0
-      ioutSep=0
-      ioutGVC=0
+
+      ! Assign logging variables to those from command line:
+      ! - can set to hard-coded values after initialization if need to
+      iout=log_IOUT
+      ioutR=log_IOUTR
+      ioutSP=log_IOUTSP
+      ioutSep=log_IOUTSEP
+      ioutGVC=log_IOUTGVC
       noutGVC=0
-      ioutRep=0
+      ioutRep=log_IOUTREP
 c
 c rrb 2017/12/11; Control amount of output to
 c                 screen for Gfortran that does not
@@ -244,9 +247,9 @@ c rrb 98/10/07
       iyrmax=0
       idymax=0
       
-      ioutc=0
-      ioutcS=0
-      ioutcX=0
+      ioutc=log_IOUTC
+      ioutcS=log_IOUTCS
+      ioutcX=log_IOUTCX
       ipReop=0
 
       small = 0.001
@@ -825,18 +828,27 @@ c     write(6,*) ' '
       DO 1100 MON=1,12
 c
 c rrb 2021/05/30; Runtime Check       
-        if(ichk.eq.4 .and. mon.ge.3) then
-          write(nlog,*) '  Execut; Stoppin in month 2'
-          stop
-        endif
+c       if(ichk.eq.4 .and. mon.ge.3) then
+c         write(nlog,*) '  Execut; Stopping in month 2'
+c         stop
+c       endif
+c smalers 2021-08-05 used the following to debug Yampa daily model bug #64
+c         When bug was fixed, it results in A LOT of output.
+c       if(imo.ge.238) then
+c         ichk = 4
+c         !write(nlog,*) '  Execut; Stopping in month 2'
+c         !stop
+c       endif
+
 c
 c rrb 2019/07/21; Print to log beginning of every month
         if(ichk.ge.90) write(nlogx,540) iyrmo(mon), xmonam(mon)
 cx      write(nlogx,540) iyrmo(mon), xmonam(mon)
         
-        ioutc=0
-        ioutcR=0
-        ioutcS=0
+        ioutc=log_IOUTC
+        ioutcR=log_IOUTCR
+        ioutcS=log_IOUTCS
+
 cr      if(ioptio.eq.8) then
 cr        write(6,106) iyrmo(mon), xmonam(mon)
 cr      endif 
@@ -849,6 +861,8 @@ c_______________________________________________________________________
 c       Step X; Print call information
         nrepcall=0
         IMO=IMO+1
+c smalers 2021-09-05 Add to help with troubleshooting
+        if(ichk.eq.4) write(nlogx,*)' Execut; imo=',imo
 c jhb 2014/07/23 IMO can't get any bigger than maxdlm (240)
 c                because it is used in the first dimension of retur() and depl()
 c                which are declared as retur(240,) and depl(240,)
@@ -859,8 +873,11 @@ c                when the bounds check compiler flag is turned on.
 c                Try changing this to maxdlm.
 c jhb 2014/08/19 This change broke the return flow calculations in monthly models
 c                Revert it back and find another way to solve the array bounds problem
-        IF(IMO.GT.ndlymx) IMO=1
-c       IF(IMO.GT.maxdlm) IMO=1
+c smalers 2021-08-05 Revert back to check on maxdlm
+c       IF(IMO.GT.ndlymx) IMO=1
+        IF(IMO.GT.maxdlm) IMO=1
+        write(nlogx,*)
+     1  ' Execut; imo=',imo,' ndlymx=',ndlymx,' maxdlm=',maxdlm
 c_______________________________________________________________________
 c         Step X; Set factors Monthly (iday=0) or Daily (iday=1)
           f= factor*mthday(mon)
@@ -878,7 +895,7 @@ c       Step X; Monthly initialization
         if(ichk.eq.94) write(nlogx,*)' Execut; Calling Bomsec',iyr,mon
         CALL BOMSEC(iflow)
 c_______________________________________________________________________
-c       Step X; Daily  initialization
+c       Step X; Daily initialization
         if(iday.eq.1) call dayest(iin,i12)
 c_______________________________________________________________________
 c       Step X; Print call and reoperation headers

@@ -88,7 +88,8 @@ c rrb 00/08/04; Revise maximum command line length
         integer iystrCli, iyendCli
 
         ! Control whether new parsing, which has flexible order.
-        integer iFlexibleOrder
+        logical doFlexibleOrder
+        character(len=20) :: clog    ! Text after --log=
 
         ! The following are primary command line arguments using long names.
         ! The number and order should agree with 'wantx' below.
@@ -194,15 +195,16 @@ c rrb 2021/04/18; Compiler not used or initialize
       ! maxfn = maxfn  ! smalers 2021-06-14, maxfn not used
       j1 = 0
       j = 0
-      ! smalers 2021-06-14 enable flexible command line order to allow new options.
-      ! Set to 1 to enable flexible command line order.
-      iFlexibleOrder = 0
-      iFlexibleOrder = 1
+
+      ! smalers 2021-06-14 enable flexible command line order to allow new options
+      ! - this is now the default
+      ! - Lahey 'parse.for' may not have new options unless code is updated consistently
+      doFlexibleOrder = .TRUE.
 c
 c     Step 1; Initialize
 c
 c rrb 2021/04/18; Compiler not used
-      ! Set iexit to 1 to skip parsing, used for troubleshooting.
+      ! Set iexit to 1 to skip parsing, used for troubleshooting to exit now.
       iexit = 0
       if(iexit.gt.0) goto 500
 c
@@ -233,21 +235,22 @@ c     Initialize
       getpar = ' '  ! Parameter type for reporting.
       filenc = ' '  ! Response file name, will cause interactive prompt if not specified.
 
-      if ( iFlexibleOrder .eq. 1 ) then
-        ! Parse with flexible order.
+      if ( doFlexibleOrder .eqv. .TRUE. ) then
+        write(nlog,*) '  Parsing command line using flexible order.'
+        ! Parse with flexible order introduced in version 16.00.48.
         ! This fully uses modern Fortran command line parsing.
         iarg = 0  ! Argument 0 is the program name.
         do
           ! Increment the argument being processed.
           iarg = iarg + 1
           call get_command_argument(iarg, arg, iarglen, istatus)
-          if ( len_trim(arg) == 0 ) then
+          if ( iarglen == 0 ) then
             ! No more arguments.
             exit
           endif
           ! Have an argument to interpret.
           arg = trim(arg)
-          write(nlog,*) '  arg: ', arg
+          write(nlog,*) '  arg: "', arg, '"'
 
           ! See if a primary option by checking the option array.
           ! Check the short and long option names.
@@ -312,11 +315,10 @@ c     Initialize
                 write(nlog,*) '    -iystr uses invalid year: ', arg
               endif
             endif
-            ! Go to the next argument
+            ! Go to the next argument.
             cycle
-          endif
 
-          if ( arg .eq. '-iyend' ) then
+          else if ( arg .eq. '-iyend' ) then
             iarg = iarg + 1
             call get_command_argument(iarg, arg, iarglen, istatus)
             arg = trim(arg)
@@ -335,11 +337,10 @@ c     Initialize
                 write(nlog,*) '    -iyend uses invalid year: ', arg
               endif
             endif
-            ! Go to the next argument
+            ! Go to the next argument.
             cycle
-          endif
 
-          if ( arg .eq. '-station' ) then
+          else if ( arg .eq. '-station' ) then
             iarg = iarg + 1
             call get_command_argument(iarg, arg, iarglen, istatus)
             arg = trim(arg)
@@ -353,12 +354,11 @@ c     Initialize
                 write(nlog,*) '    station id from command line; ',getid
               endif
             endif
-            ! Go to the next argument
+            ! Go to the next argument.
             cycle
-          endif
 
           ! TODO smalers 2021-06-14 not sure if this is the argument - documentation is lacking
-          if ( arg .eq. '-datatype' ) then
+          else if ( arg .eq. '-datatype' ) then
             iarg = iarg + 1
             call get_command_argument(iarg, arg, iarglen, istatus)
             arg = trim(arg)
@@ -372,12 +372,11 @@ c     Initialize
                 write(nlog,*) '    data type from command line; ',gettyp
               endif
             endif
-            ! Go to the next argument
+            ! Go to the next argument.
             cycle
-          endif
 
           ! TODO smalers 2021-06-14 not sure if this is the argument - documentation is lacking
-          if ( arg .eq. '-parameter' ) then
+          else if ( arg .eq. '-parameter' ) then
             iarg = iarg + 1
             call get_command_argument(iarg, arg, iarglen, istatus)
             arg = trim(arg)
@@ -391,23 +390,33 @@ c     Initialize
                 write(nlog,*) '    parameter from command line; ',getpar
               endif
             endif
-            ! Go to the next argument
+            ! Go to the next argument.
             cycle
-          endif
+
+          ! New logging option as of 17.x for more flexible troubleshooting, for example:
+          !   --log=ioutp=1
+          else if ( (iarglen > 6) .AND. (arg(1:6) == '--log=' )) then
+            ! Use the original argument length below to get the substring.
+            clog=arg(7:(len(arg)-6))
+            call logsetlevel(clog,ierror)
+            if ( ierror > 0 ) then
+              write(nlog,*)
+     +        'Error in syntax (should be similar to --log=ioutp=1): ',
+     +        arg
+            endif
 
           ! Other dash option is an error if not recognized above.
 
-          if ( arg(1:1) .eq. '-' ) then
+          else if ( arg(1:1) .eq. '-' ) then
             write(6,*) 'Unrecognized option: ', arg
             write(nlog,*) '    Unrecognized option: ', arg
             cycle
-          endif
 
           ! Anything else is assumed to be the response file name.
           ! Detect space or period.
           ! Filename 'filenc' does NOT contain the extension.
           ! Extension '.rsp' is ignored if specified (will be appended later).
-          if ( arg(1:1) .ne. '-' ) then
+          else if ( arg(1:1) .ne. '-' ) then
             ! Not a dash option so assume the response file.
             ipos = index(arg,".rsp")
             if ( ipos > 0 ) then
@@ -432,8 +441,10 @@ c     Initialize
           ! filenc = 'statem'
           ! TODO smalers 2021-06-14 seems to work better if no default because prompt for name.
         endif
+
       else
         ! Parse the old way where order is required and code is difficult to understand.
+        write(nlog,*) '  Parsing command line using fixed order.'
 c
 c _________________________________________________________
 c

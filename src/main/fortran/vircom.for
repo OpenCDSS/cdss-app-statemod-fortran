@@ -24,7 +24,7 @@ c
 c _________________________________________________________
 c       Program Description
 c
-C       Vircom; it COMPUTES VIRGIN FLOWS FROM HISTORICAL DATA
+C       COMPUTES NATURAL FLOWS FROM HISTORICAL DATA
 c
 c       Called once per year from Virgen.for
 c

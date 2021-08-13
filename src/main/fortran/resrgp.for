@@ -76,6 +76,7 @@ c               Step 1; Initialize
 c
 c rrb 2021/04/18; Compiler warning
       ircd=0
+      irow=0
       nr=0
       cidvri=' '
 
