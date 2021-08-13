@@ -1,4 +1,4 @@
-c virout - prints baseflow (virgin) results
+c virout - prints baseflow (natural flow) results
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
@@ -24,7 +24,7 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       Virout; It prints baseflow (virgin) results
+c       Virout; It prints baseflow (natural flow) results
 c
 c               Called from vircom
 c               ityp = 1; Monthly & Daily

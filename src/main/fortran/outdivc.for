@@ -99,6 +99,7 @@ c _________________________________________________________
 c		Step 1; Initialize
 c
 c rrb 2021/04/18; Compiler warning
+      idyr1=0
       iskip=0       
       iprintx=0
       nd1=0  

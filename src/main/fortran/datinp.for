@@ -17,9 +17,6 @@ c
 c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
-c
-C     Last change:  RRB  16 Oct 99   12:18 pm
-c
 C
       SUBROUTINE DATINP(IIN, inx, numstax)
 c
@@ -111,7 +108,7 @@ c                 ndown. Note multiple users are still not allowed.
 c rrb 2003/08/18; Revise to allow random file read
 c
 c rrb 1999/09/15; Revised instream flows to allow monthly data
-c rrb 2000/05/30; Revised to allow Irrigation Water Req. data for
+c rrb 2000/05/30; Revised to allow Irrigation Water Requirement data for
 c               demand information
 c rrb 2000/11/10; Revised to read itsfile; annual time series code
 c rrb 2000/12/04; Revised to add ieffmax; variable efficiency code
@@ -126,15 +123,16 @@ c
 
       DIMENSION ITEMP(numstax)
 
-      dimension mthd(12), xmon(12)
+      dimension xmon(12)
 
       ! Indicates whether control file format is new (1) or old (0).
-      integer iCtlNewFormat
+      logical ctlNewFormat
 
       character ch3*3, ch4*4, blank*12, crtnid*12, xmon*4,
      1          recin*256, cgoto2*12, cx*12, rec4*4, rec24*24,
-     1          rec1*1, rec12*12, 
-     1          rec32*32, rec132*132, rec80*80
+     1          rec12*12, 
+     1          rec32*32, rec80*80
+
 
       write(6,*) ' Subroutine Datinp'
 c
@@ -142,13 +140,14 @@ c__________________________________________________________
 c               Initialize
 c
 c rrb 2021/04/18; Compiler not used or initialize
-      rec1=rec1
-      rec132=rec132
-      mthd(1) = mthd(1)
+c     rec1=rec1
+c     rec132=rec132
+c     mthd(1) = mthd(1)
       itemp=itemp
       ch3=ch3
       ch4=ch4   
       rec4=rec4
+
       cgoto2=cgoto2
 c
 c     Details:
@@ -157,11 +156,13 @@ c     ioutS = River Station (*.ris)
 c     ioutI = Instream Flow (*.ifs)
 c     ioutN = 1 Network Data (*.rin)
 c           = 2 Network plus idncod and ndnnod
-      iout=0
-      ioutS=0
-      ioutN=0
-      ioutC=0
-      ioutI=0
+
+      ! Initialize the command line logging values.
+      iout=log_IOUT
+      ioutS=log_IOUTS
+      ioutN=log_IOUTN
+      ioutC=log_IOUTC
+      ioutI=log_IOUTI
       
       small = 0.001
       small2= 0.002
@@ -261,12 +262,14 @@ c
 c _________________________________________________________
 c
 c     Determine file type (old or new).
-      iCtlNewFormat=0
+      ctlNewFormat = .FALSE.
       READ(1,'(a12)',end=926,err=928) rec12
       rec12=adjustl(rec12)
       ! If 'Title' is found at start of line then assume new format.
       ! TODO smalers 2021-06-14 seems to not handle # comments?
-      if(rec12(1:5) .eq.'Title') iCtlNewFormat=1
+      if(rec12(1:5) .eq.'Title') then
+        ctlNewFormat = .TRUE.
+      endif
       ! Rewind the file so that full processing can occur below.
       backspace(1)
 c
@@ -275,7 +278,7 @@ c               Read Control File
 c               iok = 0 Not OK if property is not found
 c               iok = 1 OK if property is not found
 c
-      if(iCtlNewFormat.eq.1) then
+      if ( ctlNewFormat .eqv. .TRUE. ) then
         ! First read properties that are required.
         iok=0
         call GetCtlC(nlog, 1, iok,3,'Title_1                  ',  
@@ -1974,8 +1977,8 @@ cx 1080  FORMAT(12x,a12,3f8.0,i8)
      1  '  Number of Reservoir nodes                 = ',i5,/
      1  '  Number of Minimum Instream nodes          = ',i5,/
      1  '  Number of Well nodes Total                = ',i5,/
-     1  '  Number of Supplemental Well nodes = ',i5,/
-     1  '  Number of Sole Source Well nodes  = ',i5,/
+     1  '  Number of Supplemental Well nodes         = ',i5,/
+     1  '  Number of Sole Source Well nodes          = ',i5,/
      1  '  Number of Plans                           = ',i5,/
      1  '  Number of Other nodes (1)                 = ',i5,/
      1  '  _________________________________________________',/
@@ -2164,7 +2167,7 @@ cx     1  '  ____________ ________________________ ____________')
  
  1330  FORMAT(/,72('_'),/
      1 '  Datinp; Problem. ',
-     1  ' Too MANY INPUT VIRGIN FLOWS,   MAXIMUM = ',I5)
+     1  ' Too MANY INPUT NATURAL FLOWS,   MAXIMUM = ',I5)
 c
 c rrb 99/09/15; Allow isf to have monthly data
  1340  FORMAT(a12,A24,a12,i8,1x,a12,1x,a12,i8)
@@ -2254,8 +2257,8 @@ c
 c               Error Tracking
 
 
- 9999 write(6,1440) 
-      write(nlog,1450) 
+ 9999 write(6,1440)
+      write(nlog,1450)
       call flush(6)
  1440 format('  Stopped in Datinp, see the log file (*.log)')
  1450 format('  Stopped in Datinp')
@@ -2263,5 +2266,5 @@ c               Error Tracking
       call flush(6)
       call exit(1)
 
-      stop 
+      stop
       END

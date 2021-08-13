@@ -96,15 +96,18 @@ c     write(6,*) '  Dayest; iin, i12', iin, i12
 c
 c
 c              iout = 1 print downstream call data
-      iout=0
+      iout=log_IOUT
       ichk6=0
       ichk8=0
       if(ichk.eq.6) then
         ichk6=1
         ichk8=1
-      endif  
+      endif
 
       if(ichk.eq.8) ichk8=1
+
+c smalers 2021-08-05 set ioutURM similar to mdainp for troubleshooting.
+      ioutURM=log_IOUTURM
 
       small=0.01
 c
@@ -390,6 +393,18 @@ c
            else
              read(87,*,end=100,err=510)
      1       irtnid(idl),ndly(idl), (dlyratd(i,idl),i=1,ndly(idl))
+
+c smalers 2021-08-05 add the following similar to mdainp for troubleshooting.
+           if(ioutURM .eq.1) then
+             write(nlog,*) '  Dayest; delay ', 
+     1       irtnid(idl), (dlyratd(i,idl), i=1,ndly(idl))        
+           endif  
+         
+           if(ioutURM .eq.2) then
+             write(nlog,*) '  Dayest; delay ', irtnid(idl)
+           endif
+c smalers 2021-08-05 end adding the above
+
 c
 c rrb 2021/04/18; Compiler warning
 cx           ndlymx=amax0(ndlymx,ndly(idl))
@@ -436,6 +451,7 @@ c rrb 01/10/08; Reset to 0 if the sum is less than 1%
 c
            endif
          end do
+
 c
 c ----------------------------------------------------------
 c               Step 9c; Return Flow - warn if dimension exceeded
@@ -449,6 +465,15 @@ c               Step 9d; Return Flow - set delay counter and close
 
   100    numdly=idl-1
          close (87)
+
+c smalers 2021-08-05 Add for troubleshooting
+         write(Nlog,*)
+     &   ' Dayest; Number of daily delay tables read (numdly) = ',
+     &     numdly
+c smalers 2021-08-05 add for troubleshooting.
+         write(Nlog,*)
+     &   ' Dayest; Maximum number of daily delay values (ndlymx) = ',
+     &     ndlymx
 c
 c
 c ----------------------------------------------------------

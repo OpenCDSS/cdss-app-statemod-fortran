@@ -27,7 +27,7 @@ c       case or vice versa
 c
 c
 c _________________________________________________________
-ci      Update History
+c       Update History
 c
 c       NA
 c
@@ -36,11 +36,11 @@ c       Documentation
 c
 c
 c       nlog   = log file number
-c       recin  = input record
-c       recout = output record
-c       nin    = record size
-c       ntype  = 1 caps to lower case
-c                2 lower case to capitol
+c       recin  = input string
+c       recout = output string, can be the same as the input string
+c       nin    = number of characters to process
+c       ntype  = 1 upper case to lower case
+c                2 lower case to upper case
 c
 c
 c _________________________________________________________
@@ -48,7 +48,7 @@ c     Dimensions
 c
       dimension cap(26), lc(26)
       character cap*1, lc*1
-      character recin*132, recout*132
+      character(len=*) recin, recout
       
       data cap/'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
      1         'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 
@@ -81,4 +81,4 @@ c     Caps to lower case
      1         '           recout = ', a72)
       endif
       return
-      end     
+      end

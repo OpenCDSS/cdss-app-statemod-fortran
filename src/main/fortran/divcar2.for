@@ -104,6 +104,8 @@ c rrb 2021/04/18; Compiler warning
       iri=0
       irow=0
       ndr=0
+      iuse=0
+      nro=0
       
       iout=0
       if(ichk.eq.119) iout=1
@@ -235,6 +237,15 @@ c rrb 00/01/24; Test
 c 120 IF(iresw.eq.0.and.DIVREQ(IUSE).LT.small .OR.
 
   120 continue
+
+c smalers 2021-08-05 check for zero iuse,
+c         need because code above may skip setting iuse
+      if ( iuse .eq. 0 ) then
+        write(*,*) ' Divcar2; IUSE = 0'
+        write(nlog,*) ' Divcar2; IUSE = 0'
+        goto 9999
+      endif
+
 c     write(io99,*) '  Divcar; iresw, nd2, iuse', iresw,nd2,iuse
       IF(iresw.eq.0.and.DIVREQ(IUSE).LT.small .OR.  
      1   divcap(nd2)-divmon(nd2).le.small) goto 380

@@ -100,7 +100,7 @@ c               qdiv(20  From Carrier by Storage or Exchange
 c
 c --------------------------------------------------------------
 c
-c		            qres(2  From Carrier by Priority
+c               qres(2  From Carrier by Priority
 c               qres(4  From Carrier by Storage or Exch
 c               qres(8  From storage to river for use
 c               qres(9  From storage to carrier for non Tmtn.
@@ -134,6 +134,7 @@ c rrb 2021/04/18; Compiler not used or initialize
       iri=0
       ire=0
       irow=0
+      idcd=0
       
 c		a. Output Control      
       iout=0
@@ -357,9 +358,15 @@ c _________________________________________________________
 c               Step 6. Set Source diversion location 
 c               associated with Carrier Operating Rule
       ndr=iopsou(1,l2opr)
-       if(ndr.ge.0) goto 130
-         ndr=idivco(1,-ndr)
-  130 IDCD=IDVSTA(NDr)
+c smalers 2021-08-05 get rid of unnecessary goto
+c     if(ndr.ge.0) goto 130
+c       ndr=idivco(1,-ndr)
+c  130 IDCD=IDVSTA(NDr)
+      if(ndr.lt.0) then
+        ! Handle negative value in array position.
+        ndr=idivco(1,-ndr)
+      endif
+      IDCD=IDVSTA(NDr)
 c
 c _________________________________________________________
 c rrb 2009/06/25; Set the source diversion location
@@ -884,8 +891,14 @@ c        qdiv(10  From river by Storage to Transmountain
 
   370 QDIV(10,IDCD)=QDIV(10,IDCD)+DIVACT
       Goto 390
-c
   380 IR=IRSORD(1,IDCD)             
+
+c smalers 2021-08-05 add check to make sure idcd is valid
+      if ( IDCD .le. 0 ) then
+        write(*,*) ' Carrpl; IDCD <= 0: ', IDCD
+        write(nlog,*) ' Carrpl; IDCD <= 0: ', IDCD
+        goto 9999
+      endif
 c
 c rrb 98/03/03; Daily capability
 c               qdiv(18  Carrier passing thru a structure 

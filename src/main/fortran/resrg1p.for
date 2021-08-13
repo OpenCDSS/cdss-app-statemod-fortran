@@ -75,6 +75,8 @@ c
 c               Step 1; Initialize
 c                                
 c rrb 2021/04/18; Compiler warning
+c                 ncallx not used and the following prevents a compiler warning
+      ircd=0
       ncallx=ncallx
 c
 c                 iout = 0 no details
@@ -140,6 +142,12 @@ c _________________________________________________________
 c
 c               Step 3;  CHECK AVAILABLE WATER AT CURRENT STATION
 c
+c smalers 2021-08-05 check for IRCD=0 since may jump over assignment above
+      if ( ircd .le. 0 ) then
+        write(*,*) ' Resrg1p; IRCD <= 0: ', IRCD
+        write(nlog,*) ' Resrg1p; IRCD <= 0: ', IRCD
+        goto 9999
+      endif
       IF(AVAIL(IRCD).LT.small) then
         iwhy=2
         cwhy='Available at reservoir = 0'

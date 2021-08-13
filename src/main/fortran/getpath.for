@@ -63,6 +63,9 @@ c		iout =	0 no details
 c			1 details
 c			2 summary
         iout=2
+c smalers 2021-08-05 initialize based on compiler warning
+        ii = 0
+
         if(iout.eq.1) write(99,110)
 
         do i=1,maxfn

@@ -142,6 +142,35 @@ c
 c
 c _________________________________________________________
 c
+
+c ================================================================
+c smalers 2021-08-05 Added initial parameters for delay tables.
+c
+c Define controlling parameters at the top to control array size.
+c The long names are easier to understand and help avoid confusion.
+c Array sizes can therefore be changed in one place.
+c The same approach can be taken for all sizes.
+c Ray Bennett says that minor variations in numbers,
+c such as 400, 401, 402 are used to differentiate the data arrays.
+c Each unique number can be assigned PARAMETER.
+c Main program variables with shorter names,
+c which are used throughout the code and in common
+c block data below, can be assigned in the main program
+c to initialize to the constant values, for example:
+c   maxdlm = MAX_DELAY_VALUE_MONTHS
+c This allows shorter variables to be used and still agree with
+c the parameters that are defined in one place below.
+c Gfortran has a limit of 31 characters for variable names.
+
+      ! Maximum number of delay tables,
+      ! which applies to monthly and daily delay tables.
+      INTEGER,PARAMETER::MAX_DELAY_TABLES = 525
+      ! Maximum number of values for a delay table.
+      ! The values below equate to 20 years (366 days/year for daily data).
+      INTEGER,PARAMETER::MAX_DELAY_VALUE_DAYS = 7320
+      INTEGER,PARAMETER::MAX_DELAY_VALUE_MONTHS = 240
+c ================================================================
+
        COMMON/WEL/
      1 iwell,
      1 numdivw,  numdxw,   numrtnw,  numrtnw2, 
@@ -179,7 +208,10 @@ c               Operations
      1 gwstor(5000),    gw2riv(5000),    gw2gw(5000),   gwmaxr(5000), 
 c
 c               Depletion
-     1 depl(240,3920), depld(7320,3920),  deplm(3920)
+c    smalers 2021-08-05 change to use parameter
+c    1 depl(240,3920), depld(7320,3920),  deplm(3920)
+     1 depl(MAX_DELAY_VALUE_MONTHS,3920),
+     1 depld(MAX_DELAY_VALUE_DAYS,3920),  deplm(3920)
 c
 c
 c _________________________________________________________
@@ -273,14 +305,30 @@ c
 c _________________________________________________________
 c                   Unit Response
 c
-c rrb 2009/05/27; Revise      
+c rrb 2009/05/27; Revise
+
 cx    COMMON/SY3/
 cx   1                 DLYRAT(240, 525),RETUR (240,5000,2),
       COMMON/SY3/
-     1                 DLYRAT(240, 525),RETUR (240,5000),
-     1 QDIV  (39,5000),QRES  (39,1001),CURRTN(   5000),
-     1 irtnid(    525),
-     1 dlytot(525)
+c    smalers 2021-08-05 change to use parameter
+c    1                 DLYRAT(240, 525),RETUR (240,5000),
+     1  DLYRAT(MAX_DELAY_VALUE_MONTHS,
+     1         MAX_DELAY_TABLES),
+c    smalers 2021-08-05 change to use parameter
+c    2  RETUR (240,5000),
+     2  RETUR (MAX_DELAY_VALUE_MONTHS,5000),
+     3  QDIV  (39,5000),
+     4  QRES  (39,1001),
+     5  CURRTN(   5000),
+c    smalers 2021-08-05 change to use parameter
+c    6 irtnid(    525),
+     6  irtnid(MAX_DELAY_TABLES),
+c    smalers 2021-08-05 change to use parameter
+c    7 dlytot(525)
+     7  dlytot(MAX_DELAY_TABLES)
+
+
+
 c
 c
 c _________________________________________________________
@@ -323,7 +371,10 @@ c _________________________________________________________
      1 maxgrp, numgrp, iinput,
      1 iwx, maxfile, infile,   nchk,   nlog,   ntmp,
      1 isigfig, ndivO, nresO, nwelO,   maxopr2,
-     1 fmo(13),fdy(13),faf(13),ndly(525)
+     1 fmo(13),fdy(13),faf(13),
+c smalers 2021-08-05 Use parameter
+c    1 ndly(525)
+     1 ndly(MAX_DELAY_TABLES)
 C
 c
 c _________________________________________________________
@@ -545,6 +596,7 @@ c
 c
 c _________________________________________________________
 c rrb 04/29/97; Daily model
+
       COMMON/daycom/
      1 iday, idaydem,    imd, idy,   maxdld, numdld, ido,     imstr,
      1 idays(5000),      idayd(3060),     idaydw(402),
@@ -553,7 +605,10 @@ c rrb 04/29/97; Daily model
      1 flowrd(32,2241),   targetd(32,1001),  
      1 riverm(5000),     availm(5000),    avinpm(5000), returm(5000),
 c 
-     1 returd(7320,5000),dlyratd(7320,525),
+c    smalers 2021-08-05 change to use parameter
+c    1 returd(7320,5000),dlyratd(7320,525),
+     1 returd(MAX_DELAY_VALUE_DAYS,5000),
+     1 dlyratd(MAX_DELAY_VALUE_DAYS,MAX_DELAY_TABLES),
 
      1 divreqm(3060),    divreqwm(13110),
      1 flowrqm(2241),     qdivm(39,5000),  qdivrm(1002),
@@ -725,14 +780,22 @@ cx     1 Pname(6,1440),
      1 iPsta(1440),        
      1 iPlnOprE(1440,3701),  iplnOprS(1440,3701), iplnOprR(1440,3701),
      1 iplnOprU(1440,3701),  iplnOprO(1440,3701), iplnOprP(1440,3701),
-     1 Pobl(240,1440),     Pdem(1440),        PdemT(1440), 
-     1 PoblD(7320,1440),   PdemM(1440),       PdemTm(1440),
+c    smalers 2021-08-05 change to use parameter
+c    1 Pobl(240,1440),     Pdem(1440),        PdemT(1440), 
+     1 Pobl(MAX_DELAY_VALUE_MONTHS,1440),    Pdem(1440),  PdemT(1440), 
+c    smalers 2021-08-05 change to use parameter
+c    1 PoblD(7320,1440),   PdemM(1440),       PdemTm(1440),
+     1 PoblD(MAX_DELAY_VALUE_DAYS,1440), PdemM(1440),    PdemTm(1440),
      1 Pdrive(1440),       PdriveM(1440),
 c
 c              Reuse Plan Data     
      1 iPlnTyp(1440),      ipnode(5000),     ipSource(1440), 
-     1 Psup(240,1440),     Psuply(1440),      PsuplyT(1440), 
-     1 PsupD(7320,1440),   PsuplyM(1440),     PsuplyTm(1440),
+c    smalers 2021-08-05 change to use parameter
+c    1 Psup(240,1440),     Psuply(1440),      PsuplyT(1440), 
+     1 Psup(MAX_DELAY_VALUE_MONTHS,1440), Psuply(1440), PsuplyT(1440), 
+c    smalers 2021-08-05 change to use parameter
+c    1 PsupD(7320,1440),   PsuplyM(1440),     PsuplyTm(1440),
+     1 PsupD(MAX_DELAY_VALUE_DAYS,1440), PsuplyM(1440),PsuplyTm(1440),
      1 Preuse(3701),       PresueM(1440),
      1 Peff(12,1440),      iPrf(1440),
      1 iPfail(1440),       Pfail(1440),       iPacct(1440),
@@ -851,7 +914,7 @@ C
      
        CHARACTER
      1 FILENA*256, filenc*256, fpath1*256, 
-     1 ver*8,      vdate*10, ccall*12,  xmonam*4,   
+     1 ver*16,      vdate*10, ccall*12,  xmonam*4,   
      1 filetype*40, filename*256, fileSuf*5, rec256*256
 c
 c _________________________________________________________
@@ -890,9 +953,151 @@ c rrb 2018/11/17; Data file for John Martin Monthly Model
      1 cjmid*12
 
 c _________________________________________________________
-c     smalers 2021-06-15, add to facilitate automated testing
-c     Command line options, which override input file contents.
+c smalers 2021-06-15, add to facilitate automated testing
+c Command line options, which override input file contents.
+c In the following, 'cli' means "command line interface".
+      integer iystrCli, iyendCli
       common/cli/
      + iystrCli,   ! Simulation start year
      + iyendCli    ! Simulation end year
-      integer iystrCli, iyendCli
+
+c _________________________________________________________
+c smalers 2021-07-31, add the following to facilitate logging:
+c - this is a prototype of how run-time control of debugging could be enabled
+c - the existing control file 'ichk' variable is a more "friendly" way to control output
+c - additionally, sometimes it is convenient to control detailed "iout" variable
+c   logging without recompiling code, which is the focus of the following
+c - the following are a unique list of "iout*=" variables from all the code, as uppercase
+c - the loginit.for code includes functions to initialize the common block values to 0 (zero)
+c - the parse_gfortran.for code now allows syntax such as --log=iout01=1 (case ignored)
+c   to set logging to a level
+c - code that uses can initialize the local debugging variable to the
+c   common block value, for example:
+c     IOUTP=log_OUTP
+c - TODO smalers 2021-07-31 ideally this approach can be made more friendly,
+c   such as controlling logging for code modules based on module name (e.g., operating rule)
+c - TODO smalers 2021-08-05 really need a way to limit the log file size
+c   so it does not fill the disk, such as restarting the file if it gets too big,
+c   perhaps with command line options to tell what start and end year to
+c   increase logging level
+c - TODO smalers 2021-08-05 would be helpful to have functions to write to the
+c   log file, which can more intelligently handle the log file
+
+      common/logging/
+     +log_IOUT01,
+     +log_IOUT02,
+     +log_IOUT03,
+     +log_IOUT04,
+     +log_IOUT05,
+     +log_IOUT06,
+     +log_IOUT6,
+     +log_IOUT07,
+     +log_IOUT8,
+     +log_IOUT09,
+     +log_IOUT10,
+     +log_IOUT11,
+     +log_IOUT12,
+     +log_IOUT13,
+     +log_IOUT14,
+     +log_IOUT15,
+     +log_IOUT16,
+     +log_IOUT17,
+     +log_IOUT18,
+     +log_IOUT19,
+     +log_IOUT20,
+     +log_IOUT21,
+     +log_IOUT22,
+     +log_IOUT23,
+     +log_IOUT24,
+     +log_IOUT25,
+     +log_IOUT26,
+     +log_IOUT27,
+     +log_IOUT28,
+     +log_IOUT29,
+     +log_IOUT30,
+     +log_IOUT31,
+     +log_IOUT32,
+     +log_IOUT33,
+     +log_IOUT34,
+     +log_IOUT35,
+     +log_IOUT36,
+     +log_IOUT37,
+     +log_IOUT38,
+     +log_IOUT39,
+     +log_IOUT40,
+     +log_IOUT41,
+     +log_IOUT42,
+     +log_IOUT43,
+     +log_IOUT45,
+     +log_IOUT45X,
+     +log_IOUT46,
+     +log_IOUT47,
+     +log_IOUT48,
+     +log_IOUT49,
+     +log_IOUT50,
+     +log_IOUT51,
+     +log_IOUT52,
+     +log_IOUT54,
+     +log_IOUT,
+     +log_IOUTA,
+     +log_IOUTADJ,
+     +log_IOUTB,
+     +log_IOUTC,
+     +log_IOUTCR,
+     +log_IOUTCS,
+     +log_IOUTCU,
+     +log_IOUTCX,
+     +log_IOUTD,
+     +log_IOUTE,
+     +log_IOUTEF,
+     +log_IOUTEV,
+     +log_IOUTF,
+     +log_IOUTG1,
+     +log_IOUTG,
+     +log_IOUTGVC,
+     +log_IOUTGX,
+     +log_IOUTHG1,
+     +log_IOUTHG,
+     +log_IOUTI,
+     +log_IOUTIN,
+     +log_IOUTIR,
+     +log_IOUTIW,
+     +log_IOUTJM,
+     +log_IOUTL,
+     +log_IOUTLIM,
+     +log_IOUTN,
+     +log_IOUTNG,
+     +log_IOUTOUT,
+     +log_IOUTP,
+     +log_IOUTP1,
+     +log_IOUTPPT,
+     +log_IOUTPRF,
+     +log_IOUTPU,
+     +log_IOUTPUC,
+     +log_IOUTQ,
+     +log_IOUTR,
+     +log_IOUTRE2,
+     +log_IOUTRE,
+     +log_IOUTREP,
+     +log_IOUTRF,
+     +log_IOUTRGF,
+     +log_IOUTRGS,
+     +log_IOUTRO,
+     +log_IOUTRTN,
+     +log_IOUTS,
+     +log_IOUTSEP,
+     +log_IOUTSM,
+     +log_IOUTSO,
+     +log_IOUTSP,
+     +log_IOUTT,
+     +log_IOUTTAR,
+     +log_IOUTURM,
+     +log_IOUTW1,
+     +log_IOUTW,
+     +log_IOUTWR,
+! TODO smalers 2021-07-31 This is sometimes an array, sometimes not.
+! - deal with the array version later
+!    +log_IOUTX_array(100?),
+     +log_IOUTX,
+     +log_IOUTY,
+     +log_IOUTZ

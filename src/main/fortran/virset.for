@@ -1,4 +1,4 @@
-c virset - sets virgin (base) flow data for both daily and monthly model
+c virset - sets natural (base) flow data for both daily and monthly model
 c_________________________________________________________________NoticeStart_
 c StateMod Water Allocation Model
 c StateMod is a part of Colorado's Decision Support Systems (CDSS)
@@ -24,7 +24,7 @@ c
 c _________________________________________________________
 c	Program Description
 c
-c       Virset; It sets virgin (base) flow data for both
+c       Virset; It sets natural (base) flow data for both
 c                 daily and monthly model
 c
 c
