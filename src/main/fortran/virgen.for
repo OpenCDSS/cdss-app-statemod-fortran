@@ -335,7 +335,7 @@ c
 c
 c _________________________________________________________
 c
-c               Step 13; Get Monthly resrvoir data
+c               Step 13; Get Monthly reservoir data
       if(ichk.eq.4) write(nlog,*) ' Virgen; Calling Virin(12)'
 cx      write(nlog,*) ' Virgen; Calling Virin(12)'
 

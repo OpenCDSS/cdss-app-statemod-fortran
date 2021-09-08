@@ -208,7 +208,7 @@ c       ver = xx.yy.zz[.mod]; where
 c             xx is the major version (no zero padding)
 c             yy has new functionality (no zero padding as of version 17)
 c             zz is a bug fix (no zero padding as of version 17)
-c             mod is an optional modifier, such as build number
+c             mod is an optional modifier, such as build number or 'dev1', 'dev2', etc.
 c             For example:
 c               12 has new *.ipy file
 c               11 includes carrier loss
@@ -217,16 +217,16 @@ c                9 includes wells
 c                8 includes daily capability
 c                7 includes new binary output format
 c
-        ver = '17.0.0.dev1'
-        vdate = '2021/08/05'
+        ver = '17.0.1'
+        vdate = '2021/08/10'
 c
         rspexists = .FALSE.
         igui = 0
         istop = 0
-        io99=99     ! unit number for error file
-        nlog=99     ! unit number for log file
-        nchk=98     ! unit number for check file
-        ntmp=97     ! unit number for temporary file
+        io99=99     ! Unit number for error file.
+        nlog=99     ! Unit number for log file (same as log file).
+        nchk=98     ! Unit number for check file.
+        ntmp=97     ! Unit number for temporary file.
 c        
 c
 c _________________________________________________________
@@ -735,8 +735,20 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
+     1 '    - 2021/08/10 (17.00.01)',/
+     1 '      In response to a runtime error in Yampa related to ',/
+     1 '        variable ndlymx:',/
+     1 '        Revised common.inc to include ndlymxM, ndlymxD and',/
+     1 '          ndlmxX for monthly, daily and both',/
+     1 '        Revised bomsec to include additional output',/
+     1 '        Revised execut to replace ndlymx with ndlymxX',/
+     1 '        Revised mdainp to initialize ndlymxM and ndlymxX',/
+     1 '          for a monthly model',/
+     1 '        Revised dayest to initialize ndlymxD and ndlymxX',/
+     1 '          for a daily model',/
+     1 '        Revised vircom to replace ndlymx with ndlymxX',/
+c
      1 '    - 2021/07/11 (16.00.48):',/
-c    
      1 '     Revised Parse to not initialize the command file to',/
      1 '       blank to be consistent with the Gfortran version',/
      1 '       of parse (e.g. parse_gfortran.for) to fix a problem',/

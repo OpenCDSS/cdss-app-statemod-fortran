@@ -4,6 +4,8 @@ This folder contains utility scripts and Windows batch files that are used in th
 
 | **File** | **Description** |
 | -- | -- |
+| `copy-to-co-dnr-gcp.bash` | Create and copy the StateMod zip file installer to Google Cloud platform, for public access. |
+| `create-gcp-statecu-index.bash` | Create an `index.html` file on GCP that lists the installer downloads and associated documentation. |
 | `create-code-zip.sh` | Creates a zip file of the source code folder, used to transfer current code to Ray Bennett. |
 | `eclipse/run-eclipse-statemod-mingw.bat` | Windows batch file to start proper version of Eclipse with proper Java version, used if Photran is used for development. |
 | `git-check-statemod.md` | Script to indicate status of all StateMod repositories. |

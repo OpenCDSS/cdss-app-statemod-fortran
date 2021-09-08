@@ -154,7 +154,7 @@ c
       NR  =IOPSOU(1,L2)
       IF(IRESSW(NR).EQ.0) then
         iwhy=2
-        cwhy='Source Reservoir is Off'      
+        cwhy='Source Reservoir is Off'
         Goto 100
       endif  
       IROW=NOWNER(NR)+IOPSOU(2,L2)-1
@@ -172,7 +172,7 @@ c
       ND  =IOPDES(1,L2)
       IF(IRESSW(ND).EQ.0) then
         iwhy=3
-        cwhy='Destination Resrvoir is Off'      
+        cwhy='Destination Reservoir is Off'
         Goto 100
       endif  
       

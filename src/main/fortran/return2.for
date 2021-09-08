@@ -46,6 +46,8 @@ c             based on switches ieffmax and ieff2
 c     CALLED BY: Rtnsec and RtnsecW
 c _________________________________________________________
 c       Update History
+
+c rrb 2021/08/12; Compiler warning
 c                                
 c rrb 2021/04/18; Compiler warning
 c
@@ -120,6 +122,9 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
 c
+c
+c rrb 2021/08/12; Compiler warning
+      cuactT=0.0
 c rrb 2021/04/18; Compiler warning 
       divcapw=divcapw
       effmax=effmax

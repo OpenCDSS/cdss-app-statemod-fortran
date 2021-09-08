@@ -31,6 +31,11 @@ c
 c_______________________________
 c       Update History
 c
+c
+c rrb 2021/08/10; Correction to fix a runtime error where ndlymx (# of delay
+c                 elements) varies for daily and monthly model run and
+c                 ndlymxX is the # for both a monthly & daily model
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 2008/10/31; Included to recharge. Note it is part of
@@ -235,14 +240,21 @@ c                        1 daily model
 
       if(iday.eq.1) then
         call virset(1)
-        if(ichk.eq.4) write(nlog,*) ' Vircom; back from Virset(1)' 
+        if(ichk.eq.4) write(nlog,*) ' Vircom; back from Virset(1)'
       endif
 c
 c rrb 00/07/10; Test
 c         write(nlog,*) mon, mthday(mon)
 
-      IMO=IMO+1         
-      IF(IMO.GT.ndlymx) IMO=1
+      IMO=IMO+1
+c
+c ---------------------------------------------------------------------
+c
+c rrb 2021/08/10; Correction to fix a runtime error where ndlymx (# of delay
+c                 elements) varies for daily and monthly model run and
+c                 ndlymxX is the # for both a monthly & daily model
+cx    IF(IMO.GT.ndlymx) IMO=1
+      IF(IMO.GT.ndlymxX) IMO=1
 c
 c ___________________________________________________________________
 c

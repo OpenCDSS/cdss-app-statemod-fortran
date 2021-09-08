@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # Count the number of line ends in each file in a folder
+# - only list file types corresponding to source code and other non-generated files
 # - This is important because formatting issues may occur if developers use different line ending
 # - Editors and git (with .gitattributes) should handle but is helpful to know for sure
 
@@ -10,7 +11,7 @@ outfileTxt=endline-count-for.txt
 outfileCsv=endline-count-for.csv
 
 echo "file countLines countCRLF endType" > ${outfileTxt}
-ls -1 | (while read f;
+ls -1 *.for *.inc makefile *.md *.sh *.bash | (while read f;
 do
 	# For each file count the CR-LF and LF only
 

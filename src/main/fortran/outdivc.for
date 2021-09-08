@@ -33,6 +33,9 @@ c
 c _________________________________________________________
 c       Update History
 c
+c
+c rrb 2021/08/12; Compiler Warning
+c
 c rrb 2021/04/18; Compiler warning
 c
 c rrb 95/06/26; Revised to handle less diversions than simulated
@@ -98,6 +101,9 @@ c
 c _________________________________________________________
 c		Step 1; Initialize
 c
+c
+c rrb 2021/08/12; Compiler Warning
+      isyr1=0
 c rrb 2021/04/18; Compiler warning
       idyr1=0
       iskip=0       

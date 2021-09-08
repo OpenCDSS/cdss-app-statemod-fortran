@@ -30,6 +30,9 @@ c_________________________________________________________________
 c
 c       Update History
 c
+c
+c rrb 2021/08/12; Compiler Warning
+c
 c rrb 2021/04/18; Compiler warning
 c _________________________________________________________
 c       Documentation
@@ -65,6 +68,8 @@ c _________________________________________________________
 
 c	Initialize
 c
+c rrb 2021/08/12; Compiler Warning
+      idyr1=0
 c
 c rrb 2021/04/18; Compiler warning
       ida=0

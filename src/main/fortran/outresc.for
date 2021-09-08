@@ -20,7 +20,8 @@ c_________________________________________________________________NoticeEnd___
 
 c	      Update History
 c
-
+c rrb 2021/08/12; Compiler Warning
+c
 c
 c _________________________________________________________
 c	      Documentation
@@ -68,6 +69,10 @@ c
 c                                 
 c               Step 1 Initialize
 c
+c
+c rrb 2021/08/12; Compiler Warning
+      iryr1=0
+
 c rrb 2021/04/18; Compiler warning
       nacc=0
 c

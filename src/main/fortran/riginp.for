@@ -927,15 +927,15 @@ c 480 format(a12,a24,a12,f16.0,f8.0,i8, 3(1x,a12,i8), 20i8)
   485 format(/,
      1  72('_'),//       
      1    '  Riginp; Problem; a reservoir right is tied to more',/
-     1    '          accounts than the resrvoir has',/
-     1    '          Resrvoir ID = ',a12, 'has ', i5 ' accounts',/
-     1    '          Right    ID = ',a12, 'has ', i5 ' accounts')
+     1    '          accounts than the reservoir has',/
+     1    '          Reservoir ID = ',a12, 'has ', i5 ' accounts',/
+     1    '          Right     ID = ',a12, 'has ', i5 ' accounts')
      
   486 format(/,
      1  72('_'),//       
      1    '  Riginp; Problem; an OOP reservoir right must have',/
      1    ' the variable copid tied to an operating rule ID',/
-     1    '          Resrvoir ID = ',a12, ' Right    ID = ',a12,/
+     1    '          Reservoir ID = ',a12, ' Right    ID = ',a12,/
      1    ' has Operating rule ID (copid) = ', a12)
 
 cx  490 format(/,
