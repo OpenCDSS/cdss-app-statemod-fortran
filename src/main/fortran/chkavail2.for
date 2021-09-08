@@ -20,6 +20,13 @@ c_________________________________________________________________NoticeEnd___
 
        subroutine ChkAvail2(nlog, ifirst, icx, nchkA, maxsta, numsta, 
      1   fac, avail)
+c
+c _________________________________________________________
+c	Program Description
+c
+c       Chekavail2; It prints the contents of array Avail for
+c                   detailed checking
+c
 c _________________________________________________________
 c	Update History
 c		NA

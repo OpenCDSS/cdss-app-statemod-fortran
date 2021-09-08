@@ -28,6 +28,9 @@ c_____________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/08/15; Runtime error initialization related to not saving
+c                   local variables with Gfortran compilation moved
+c                   from JMFlow to Execut (here)
 c
 c rrb 2021/08/10; Correction to fix a runtime error where ndlymx (# of delay
 c                 elements) varies for daily and monthly model run and
@@ -687,7 +690,7 @@ c
 c_______________________________________________________________________
 c               Step 12; Get Plan Reservoir Data
 c                       Note call after Datinp because
-c                       reservoir stations & plan stations must be known
+c                       resrvoir stations & plan stations must be known
 
       if(ichk.eq.94) write(nlogx,*) ' Execut; Calling GetPlnR'
       ifn=79
@@ -887,8 +890,10 @@ c                 elements) varies for daily and monthly model runx and
 c                 ndlymxX is the # for both a monthly & daily model
 cx      IF(IMO.GT.maxdlm) IMO=1
         IF(IMO.GT.ndlymxX) IMO=1
-        write(nlogx,*)
-     1  ' Execut; imo=',imo,' ndlymx=',ndlymx,' maxdlm=',maxdlm
+c
+c rrb 2021/08/15; Remove I/O to screen for every month
+cx      write(nlogx,*)
+cx   1  ' Execut; imo=',imo,' ndlymxX=',ndlymxX,' maxdlm=',maxdlm
 c_______________________________________________________________________
 c         Step 18; Set factors Monthly (iday=0) or Daily (iday=1)
           f= factor*mthday(mon)
@@ -2140,8 +2145,26 @@ c rrb 2018/08/20; Type 54. JM Flow
 c
   354 continue
        if(ichk.eq.94) write(nlogx,*) 
-     1              ' Execut; Calling 54-JMFlow',corid(l2)   
-       call JMFlow(iw,l2,ncall(54))       
+     1              ' Execut; Calling 54-JMFlow',corid(l2)
+c
+c ---------------------------------------------------------
+c  rrb 2021/08/15; Runtime error initialization related to not saving local
+c                    variables with Gfortran compilation
+c                  Initialize percentage and average once per year
+       if(mon.eq.1 .and. idy.eq.1 .and. icallOP(l2).eq.0) then
+         pctBjm=0.0
+         pctEjm=0.0
+         aveBjm=0.0
+         aveEjm=0.0
+         rday1jm=0.0
+         rday2jm=0.0
+cx         write(nlog,*) '  Execut; JMFlow initializing:',
+cx     1     ' iyr = ', iyr, ' mon = ',mon, ' idy = ', idy,
+cx     1     ' icallop = ', icallop(l2)
+       endif
+
+       call JMFlow(iw,l2,ncall(54),
+     1             pctBjm, pctEjm, aveBjm, aveEjm, rday1jm, rday2jm)
        goto 400
 c
 c_______________________________________________________________________
@@ -2411,7 +2434,7 @@ c       Because the number of rights simulated (iw)
 c       is greater than the total number of rights (ntorig)
       iwxt = iwxt + iwx
 c__________________________________________________________
-c     Step 43; Reservoir Seepage at end of time step
+c     Step 43; Reservoir Seepage at  at end of time step
 c rrb 2006/10/18; Moved from beginning of time step
 c rrb 2008/05/07; Re-operate because of seepage returns once
 c                 (when iseep=0) if total seepage (seepT) > 0

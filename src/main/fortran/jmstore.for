@@ -61,6 +61,8 @@ c_____________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/08/15; Typo when calling chekres (ndr not nrs) and
+c                 reduce output to nlog
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -269,9 +271,7 @@ c ---------------------------------------------------------
 c rrb 2018/12/16; Set avtemp check impact to array avail      
       
       ioutC=1
-      idcd=0
-      
-        
+      idcd=0   
 c
 c _________________________________________________________
 c		            Step 2; Check for On/Off Switches      
@@ -434,6 +434,14 @@ c               Step 7.1; Calculate minimum downstream flow from
 c                 the destination reservoir (after Ark & Purgatorie
 c                 converge to determine if there is a loosing reach
       ndR=iopdes(1,l2)
+c
+c ---------------------------------------------------------
+c rrb 2021/08/15; Additional Check for destination reservoir ID
+      if(ndR.le.0) then
+        write(io99,*) '  DivMultR; Problem reservoir ID (ndr) = ', ndr
+        goto 9999
+      endif  
+      
       iscdR=irssta(ndR)
       ndnsR=ndnnod(iscdR)
      
@@ -451,7 +459,7 @@ c                 from the reservoir
       divoWWX(l2) = avail(imcdR)
 
 cx    if(ioutX.eq.1) 
-      write (nlog,*) '  JMStore; availY = ', availY*fac
+cx   1   write (nlog,*) '  JMStore; availY = ', availY*fac
       
       if(availY.le.small) then
         iwhy=3
@@ -478,7 +486,7 @@ c
         availG2 = avail(ns2) - rlossX * avail(ns2)/rtot
       endif
       
-cx      if(ioutX.eq.1) then
+      if(ioutX.eq.1) then
         write(nlog,*) ' '
         write(nlog,*) '  JMStore_3; ns, ns2, AvailX,',
      1               ' avail(ns), availG1, avail(ns2), availG2',
@@ -487,7 +495,7 @@ cx      if(ioutX.eq.1) then
      1                avail(ns)*fac,  availG1*fac,
      1                avail(ns2)*fac, availG2*fac,
      1                rtot*fac, rlossX*fac  
-cx      endif
+      endif
 c
 c _____________________________________________________________
 c rrb 2020/06/03; Check avail array
@@ -496,10 +504,10 @@ c rrb 2020/06/03; Check avail array
       
       nchkA=1
       
-cx      if(ioutX.eq.1) then
+      if(ioutX.eq.1) then
         call ChkAvail2(nlog, ifirst, icx, nchkA, maxsta, numsta, 
      1     fac, avail)
-cx      endif 
+      endif 
 c
 c     
 c *********************************************************
@@ -654,9 +662,6 @@ c rrb 2019/10/27
             write(nlog,*) '  JmStore_5;  idcd,availX divact'
             write(nlog,*) '  JmStore_5;',idcd,availX*fac, divact*fac
           endif
-          
-          
-     
 c     
 c *********************************************************                
 c
@@ -888,7 +893,11 @@ c                        column of output in *.xjm
 c _________________________________________________________
 c
 c               Step 19; Call Chekres for Roundoff issues
-          call chekres(io99,maxres, 1, 53, iyr, mon, nsR, nowner,
+c
+c rrb 2021/08/15; Typo when calling chekres (ndr not nrs)
+cx          call chekres(io99,maxres, 1, 53, iyr, mon, nsR, nowner,
+c    1               curown,cursto,cresid)  
+            call chekres(io99,maxres, 1, 53, iyr, mon, ndR, nowner,
      1               curown,cursto,cresid)  
 c
 c _________________________________________________________

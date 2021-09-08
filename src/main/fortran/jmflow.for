@@ -21,8 +21,8 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 c
-      SUBROUTINE JMFlow(IW,L2,ncallX)
-c
+      SUBROUTINE JMFlow(IW,L2,ncallX,
+     1             pctB, pctE, aveB, aveE, rday1, rday2)
 c
 c _________________________________________________________
 c	Program Description
@@ -35,6 +35,12 @@ c
 c_____________________________________________________________
 c
 c       Update History
+c
+c
+c ---------------------------------------------------------
+c rrb 2015/08/15; Runtime error initialization related to not saving
+c                   local variables with Gfortran compilation moved
+c                   from here (JMFlow) to execut
 c 
 c rrb 2020/04/26; Revise Winter Storage season to go 
 c                 from 3/15 to 3/31.  Therefore:
@@ -147,17 +153,21 @@ c		       d. Detailed Output
 cx      flow1=-1/fac  
 c
 c ---------------------------------------------------------
+c rrb 2015/08/15; Runtime error initialization related to not saving
+c                   local variables with Gfortran compilation moved
+c                   from here (JMFlow) to execut
 c          e. Initialize percentage and average once per year
-      if(mon.eq.1 .and. idy.eq.1 .and. icallOP(l2).eq.0) then
-        pctb=0.0
-        pcte=0.0
-        aveB=0.0
-        aveE=0.0
-        rday1=0.0
-        rday2=0.0
-c        write(nlog,*) '  JMFlow; initializing', mon, idy, icallop(l2)
-c        write(nlog,*) '  JMFlow; iyr ', iyr, mon, idy, numsta        
-      endif           
+c
+cx       if(mon.eq.1 .and. idy.eq.1 .and. icallOP(l2).eq.0) then
+cx        pctb=0.0
+cx        pcte=0.0
+cx        aveB=0.0
+cx        aveE=0.0
+cx        rday1=0.0
+cx        rday2=0.0
+cxc        write(nlog,*) '  JMFlow; initializing', mon, idy, icallop(l2)
+cxc        write(nlog,*) '  JMFlow; iyr ', iyr, mon, idy, numsta
+cx      endif
 c
 c ____________________________________________________
 c          f. Limit to one call per time step
@@ -179,30 +189,30 @@ c
       Flow1= avail(ns)   
       
 c     write(nlog,*) '  JMFlow; iyr ', iyr, mon, idy, numsta      
-      if(ioutX.eq.1) then
-        if(mon.eq.2 .and. idy.eq.22) then
-          do is=1,numsta
-          write(nlog,*) '  JMFlow; for day 22 ', iyr, mon, iday, is,  
-     1                   cstaid(is), fac
-          write(nlog,'(20f8.2)')  
-     1                   avail(is),  avail(is)*fac, avail(is)*fac*30, 
-     1                   flow1,      flow1*fac,     flow1*fac*30
-          end do
-        endif
-      endif
+cx      if(ioutX.eq.1) then
+cx        if(mon.eq.2 .and. idy.eq.22) then
+cx          do is=1,numsta
+cx          write(nlog,*) '  JMFlow; for day 22 ', iyr, mon, iday, is,
+cx     1                   cstaid(is), fac
+cx          write(nlog,'(20f8.2)')
+cx     1                   avail(is),  avail(is)*fac, avail(is)*fac*30,
+cx     1                   flow1,      flow1*fac,     flow1*fac*30
+cx          end do
+cx        endif
+cx      endif
 c     
 c _________________________________________________________
 c
 c		            Step 2.5; Adjust for year type
 c
-c              TEST data is in water year      
+c              TEST data is in water year
       if(cyr1.eq.'  WYR') monx=mon+9
-      if(cyr1.eq.'  IYR') monx=mon+10      
+      if(cyr1.eq.'  IYR') monx=mon+10
  
       if(ioutX.eq.1) then
         write(nlog,*) ' ' 
-        write(nlog,*) ' JmFlow;      mon monx  idy pctB pctE'
-        write(nlog,'(a12,3i5, 2f8.0)') ' JmFlow;    ', 
+        write(nlog,*) '  JmFlow;    mon monx  idy    pctB    pctE'
+        write(nlog,'(a12,3i5, 2f8.0)') '   JmFlow;  ',
      1       mon, monx, idy, pctB, pctE
       endif
 c      
@@ -289,7 +299,7 @@ cx
           AveE=-1.0/fac
 c
 c               Detailed monthly results        
-          if(ioutX.eq.3) then
+          if(ioutX.eq.1 .or. ioutX.eq.3) then
             write(nlog,*) 
      1        '  JMFlow;  iyr  iyr  mon  idy',
      1        '   cjm_1   cjm_2    pctB    pctE'
@@ -389,8 +399,8 @@ cx      if(cyr1.eq.'  IYR') monx=mon+10
 cx 
 cx      if(ioutX.eq.1) then
 cx        write(nlog,*) ' ' 
-cx        write(nlog,*) ' JmFlow;      mon monx  idy pctB pctE'
-cx        write(nlog,'(a12,3i5, 2f8.0)') ' JmFlow;    ', 
+cx        write(nlog,*) '  JmFlow;    mon monx  idy pctB pctE'
+cx        write(nlog,'(a12,3i5, 2f8.0)') '  JmFlow;   ',
 cx     1       mon, monx, idy, pctB, pctE
 cx      endif
       
