@@ -10489,8 +10489,8 @@ c           write(nlog,*) ' Oprinp; type 53 ', n1, k, cx, iopd1
 c
 c ---------------------------------------------------------
 c		            f. Detailed output
-     
-        iout53=1  
+c     
+        iout53=0  
 c
         if(iout53.eq.1) then
           n1=0

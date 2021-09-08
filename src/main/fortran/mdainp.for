@@ -1103,7 +1103,7 @@ c
 c ---------------------------------------------------------------------
 c rrb 2021/08/05; Runtime error correction to store max delay elements
 c                 in both a monthly data set (ndlymxM), a daily data set
-c                 (ndlymxD) and monthly when running in a mnthly or daily
+c                 (ndlymxD) and monthly when running in a mnthly or daily 
 c                 time step (ndlymxX)
       ndlymxM=0
       ndlymxD=0
@@ -1216,7 +1216,7 @@ C
 c rrb 05/28/98; allow return id to not be the array counter
 c       IDLORD(IDLY)=IDL
 c
-c rrb 94/11/15 I/O check the total pattern equals 100
+c rrb 94/11/15 I/O check the total pattern equals 100%
 c rrb 96/03/18 Make number of return intervals a variable
 c
 c ---------------------------------------------------------
@@ -1237,9 +1237,9 @@ c                 mnoths to be used for checking and in Bomsec.  Note:
 c                   ndlymxM is the max # of elements for a monthly model
 c                   ndlymxX is the max # of elements for a both a monthly
 c                     and daily model that gets reset in DayEst
-c
+c            
       ndlymxM=ndlymx
-      ndlymxX=ndlymx
+      ndlymxX=ndlymx     
 c
 c ---------------------------------------------------------
 c
@@ -1468,11 +1468,10 @@ c
       munmin=munmin
 C
 
-cx  890 write(nlog,109)
-cx     write(nscrn,,109)
-cx 109  format(/,72('_'),/
-cx     1 '  Mdainp; Reservoir Target Content File (*.tam (*.tar)) ')
-cx
+      write(nlog,109)
+ 109  format(/,72('_'),/
+     1 '  Mdainp; Reservoir Target Content File (*.tam (*.tar)) ')
+  
       nc = 0
       if(nrsact.eq.0 .or. numres.eq.0) nc = 1
 
@@ -1996,7 +1995,7 @@ C
       if(infile.eq.1) then
         ifn=88
         rec256=fileName(88)
-        write(nlog,*) ' Mdainp; rec256 = ', rec256
+cx      write(nlog,*) ' Mdainp; rec256 = ', rec256
         ityp=88
 c
 c		Set year type etc.

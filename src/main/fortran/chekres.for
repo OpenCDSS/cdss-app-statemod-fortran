@@ -30,6 +30,8 @@ c_______________________________________________
 c
 c       Update History
 c
+c
+c rrb 2021/08/15; Correction operating rule 53 is JMFlow, not WWSP
 c rrb 2021/05/14; Runtime Error Tracking
 c rrb 2021/04/18; Compiler warning
 c rrb 1999/05/10; Additional Check
@@ -63,8 +65,11 @@ cx      dimension subtyp(50)
      1    ' ',      ' ',       ' ',        ' ',        ' ',
      1    ' ',      ' ',       ' ',        ' ',        'DivCarL',
      1    ' ',      ' ',       'PowResP    ','DivRplP2 ',' ',
-     1    'FlowRes','DivMultR','WWSP ',    ' ',        ' ',     
-     1    ' ',      ' ',       ' ',        ' ',        ' '/
+c
+c rrb 2021/08/15; Correction operating rule 53 is JMFlow
+cx   1    'FlowRes','DivMultR','WWSP ',      ' ',        ' ',     
+     1    'FlowRes','DivMultR','JMStore    ','JMFlow   ',' ',     
+     1    ' ',      ' ',       ' ',          ' ',        ' '/
 c
 c _________________________________________________________
 c              Step 1; Initialize

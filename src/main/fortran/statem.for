@@ -208,8 +208,9 @@ c       ver = xx.yy.zz[.mod]; where
 c             xx is the major version (no zero padding)
 c             yy has new functionality (no zero padding as of version 17)
 c             zz is a bug fix (no zero padding as of version 17)
-c             mod is an optional modifier, such as build number or 'dev1', 'dev2', etc.
+c             mod is an optional modifier, such as build number, or "dev1", etc.
 c             For example:
+c               14 uses 64-bit gfortran compiler
 c               12 has new *.ipy file
 c               11 includes carrier loss
 c               10 includes plans
@@ -217,14 +218,14 @@ c                9 includes wells
 c                8 includes daily capability
 c                7 includes new binary output format
 c
-        ver = '17.0.1'
-        vdate = '2021/08/10'
+        ver = '17.0.2.dev1'
+        vdate = '2021/08/15'
 c
         rspexists = .FALSE.
         igui = 0
         istop = 0
-        io99=99     ! Unit number for error file.
-        nlog=99     ! Unit number for log file (same as log file).
+        io99=99     ! Unit number for error file, same as log file.
+        nlog=99     ! Unit number for log file.
         nchk=98     ! Unit number for check file.
         ntmp=97     ! Unit number for temporary file.
 c        
@@ -735,7 +736,16 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
-     1 '    - 2021/08/10 (17.00.01)',/
+     1 '    - 2021/08/15 (17.0.2.dev1)',/
+     1 '      In response to a compiler warning in JMflow:',/
+     1 '        Revised Execut to initialize pctB, pctE, AveB and ',/
+     1 '          AveE prior to call JMFlow',/
+     1 '        Revised Execut and JMFlow to pass pctB, pctE, AveB',/
+     1 '          and AveE',/
+     1 '        Revised DimvultR & JMStore to fix a typo when calling',/
+     1 '          chekres',/
+c
+     1 '    - 2021/08/10 (17.0.1.dev1)',/
      1 '      In response to a runtime error in Yampa related to ',/
      1 '        variable ndlymx:',/
      1 '        Revised common.inc to include ndlymxM, ndlymxD and',/

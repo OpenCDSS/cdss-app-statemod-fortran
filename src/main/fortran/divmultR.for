@@ -23,7 +23,6 @@ c_________________________________________________________________NoticeEnd___
 c
       SUBROUTINE DivMultR(IW,L2,ncallX)
 c
-c
 c _________________________________________________________
 c	Program Description
 c
@@ -43,6 +42,12 @@ c_____________________________________________________________
 c
 c       Update History
 c 
+c rrb 2021/08/15; Set source reservoir (nsr) near top of code
+c                   to simplify in case this rule is not operated this
+c                   time step or iteration (e.g. goto 260) and 
+c                 Fix typo when calling chekres (nsr not nrs) and
+c                 Revise go to 9999 to 300 for consistency to use
+c                   goto 9999 when stopping in a subroutine
 c
 c rrb 2021/04/18; Compiler warning
 c
@@ -138,7 +143,10 @@ cx    write(nlog,*) '  DivmultR; ', corid(l2), cdivtyp(l2)
       
       if(ipct.eq.-1) then
         write(nlog,290) corid(l2), cdivtyp(l2)
-        goto 9999
+c
+c rrb 2021/08/15; Revise to be consistent with use of goto 9999
+cx      goto 9999
+        goto 300
       endif                 
 c
 c ---------------------------------------------------------
@@ -150,6 +158,18 @@ c		f. Detailed Output
       cpuse='No'
       cTandC='No'
       cstaid1='NA'
+c _________________________________________________________
+c
+c rrb 2021/08/15; Error Checking
+c		 g. Set source reservoir here to simplify checks by
+c       call chekres in case this rule is not operated
+c       this time step or iteration (e.g. goto 260)
+c
+      nsR  =IOPSOU(1,L2)
+      if(nsR.le.0) then
+        write(io99,*) '  DivMultR; Problem reservoir ID (nsr) = ', nsr
+        goto 9999
+      endif  
 c
 c _________________________________________________________
 c		    Step 2; Check for On/Off Switches      
@@ -199,8 +219,6 @@ c
 c		    Step 3; FIND Source data (a RESERVOIR)
 c
       nsR  =IOPSOU(1,L2)
-c     write(io99,*) '  Rsrspu; nr = ', nr
-c     write(6,*) '  Rsrspu; nr = ', nr
 
       IF(IRESSW(nsR).EQ.0) then
         iwhy=2
@@ -286,7 +304,10 @@ c             Check storage has not gone negative
  250      format(
      1     ' DivmultR;', 
      1     'Problem source storage = ',f8.0 ' that is < zero')
-          goto 9999
+c
+c rrb 2021/08/15; Revise to be consistent with use of goto 9999
+cx        goto 9999
+          goto 300
         endif
 c
 c
@@ -409,15 +430,20 @@ c
   280     FORMAT(a12, i5,1x,a4,i5, 1x,a12, 4i8,
      1     F8.1, 10(i8, f8.2), f8.1, i5,1x,a48)
      
-      endif
-      
+      endif    
 c
 c _________________________________________________________
 c
 c               Step 16; Check Avail for Roundoff issues
-        call chekres(io99,maxres, 1, 52, iyr, mon, nrs,nowner,
-     1               curown,cursto,cresid)
-      
+c                        Note nsr is set prior to any goto 260
+c                        quick exits (goto 260) for this time step 
+c                        or iteration
+c
+c rrb 2021/08/15; Typo when calling chekres (nsr not nrs)
+cx      call chekres(io99,maxres, 1, 52, iyr, mon, nrs,nowner,
+cx    1               curown,cursto,cresid)
+        call chekres(io99,maxres, 1, 52, iyr, mon, nsr,nowner,
+     1               curown,cursto,cresid)    
 c
 c _________________________________________________________
 c
@@ -457,7 +483,10 @@ c _________________________________________________________
 c
 c              Error warnings
 c
- 9999 write(nlog,270) corid(l2),cdestyp, ccarry,cTandC
+c
+c rrb 2021/08/15; Revise to be consistent with use of goto 9999
+cx 9999 write(nlog,270) corid(l2),cdestyp, ccarry,cTandC
+ 300    write(nlog,270) corid(l2),cdestyp, ccarry,cTandC
 c
 c rrb 2018/11/27; Allow percent or volume to be specified
        if(ipct.eq.0) then
@@ -474,8 +503,10 @@ c rrb 2018/11/27; Allow percent or volume to be specified
      1     divactT, iwhy, cwhy   
        endif 
 c    
-
-      write(6,340) 
+c
+c rrb 2021/08/15; Revise to be consistent with use of goto 9999
+cx    write(6,340)
+ 9999 write(6,340) 
       write(nlog,350) 
       call flush(6)
  340  format('    Stopped in divmultR',/,
