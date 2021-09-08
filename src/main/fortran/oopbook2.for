@@ -241,7 +241,7 @@ c		a. Source 1 is a reservoir
       if(nr.gt.0) then
         IF(IRESSW(NR).EQ.0) then
           iwhy=2
-          cwhy='Source Reservoir is Off'      
+          cwhy='Source Reservoir is Off'
           Goto 200
         endif  
                 
@@ -310,7 +310,7 @@ c		a. Destination is a reservoir
       
         IF(IRESSW(ND).EQ.0) then
           iwhy=3
-          cwhy='Destination Resrvoir is Off'      
+          cwhy='Destination Reservoir is Off'
           Goto 200
         endif  
       
@@ -358,7 +358,7 @@ c		b. Destination is a plan
      
         IF(ifix(pon(iP)).EQ.0) then
           iwhy=4
-          cwhy='Destination Plan is Off'      
+          cwhy='Destination Plan is Off'
          Goto 200
         endif  
         

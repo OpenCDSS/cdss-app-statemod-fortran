@@ -460,6 +460,7 @@ help:
 	@echo "checkcode         Check code for potential problems." 
 	@echo "clean             Remove dynamically created files (but not final executable)."
 	@echo "help              Print this message."
+	@echo "installer         Create the StateMod software installer zip file."
 	@echo "printenv          Helper to print which operating system is used, controls configuration."
 	@echo "statemod          Compile the StateMod executable, recompiling any .o if .for modified."
 	@echo "                  Same as 'statemod_o3' to compile with all checks for development testing."
@@ -918,6 +919,18 @@ clean: printenv
 	@echo "-----------------------------------------------------------------------"
 	rm -f *.o *.mod *.MOD
 	rm -f *.for.*r.*
+
+# Create the StateMod software installer zip file:
+# - this creates the installer zip file and optionally uploads to GCP
+installer:
+	@echo "-----------------------------------------------------------------------"
+	@echo "installer"
+	@echo ""
+	@echo "Creating a StateMod software installer zip file."
+	@echo "The current software version is used for the zip file name."
+	@echo "Optionally upload the zip file to the State's GCP cloud bucket."
+	@echo "-----------------------------------------------------------------------"
+	../../../build-util/copy-to-co-dnr-gcp.bash
 
 # printenv
 #

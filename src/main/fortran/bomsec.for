@@ -34,6 +34,11 @@ c _________________________________________________________
 c
 c               Update history
 c
+c ---------------------------------------------------------
+c rrb 2021/08/10; Correction to temporary fix where ndymxX is the 
+c                 max delay value in months from either a monthly
+c                 data delay file (via mdainp) or a daily delay file
+c                 (via dayest)  
 c
 c rrb 2021/04/18; Miscellaneous updates to compile without warnings
 c
@@ -955,13 +960,28 @@ c
         ISS=ISTRTN(IRN)
 c       write(nlog,*) ' Bomsec; irn, iss', irn, iss
 c
-        ! FIXME smalers 2021-07-31 temporarily add the following for troubleshooting.
-        if(IMO.GT.MAX_DELAY_VALUE_MONTHS) then
-          write(nlog,998) ISS, IRN, NSTRTN
- 998      format('ISS=',i8,' IRN=',i8,' NSTRTN=',i8)
-          write(nlog,999) IMO, MAX_DELAY_VALUE_MONTHS
- 999      format('[ERROR] IMO (',i4,
-     &     ') is > MAX_DELAY_VALUE_MONTHS (',i4,')')
+c
+c ---------------------------------------------------------
+       ! FIXME smalers 2021-07-31 temporarily add the following for troubleshooting.
+c rrb 2021/08/10; Correction to temporary fix where ndlymxX is the 
+c                 max delay value months from either a monthly
+c                 return file (via mdainp) or a daily return file
+c                 (via dayest)  
+c
+cx      if(IMO.GT.MAX_DELAY_VALUE_MONTHS) then
+        if(IMO.GT.ndlymxX) then
+
+          write(nlog,998) ' Bomsec; ', ISS, IRN, NSTRTN
+ 998      format(a10, ',ISS=',i8,' IRN=',i8,' NSTRTN=',i8)
+c
+c rrb 2021/08/12; Update
+cx          write(nlog,999) IMO, MAX_DELAY_VALUE_MONTHS
+cx 999      format(' Bomsec; [ERROR] IMO (',i4,
+cx     &     ') is > MAX_DELAY_VALUE_MONTHS (',i4,')')
+          write(nlog,999) IMO, ndlymxX
+ 999      format(' Bomsec; [ERROR] IMO (',i4,
+     &     ') is > ndlymxX (',i4,')')
+
           write(nlog,999) 'ndlymx=', ndlymx, 'maxdlm=', maxdlm
         endif
         QTRIBU(ISS)=QTRIBU(ISS)+RETUR(IMO,IRN)-depl(imo,irn)

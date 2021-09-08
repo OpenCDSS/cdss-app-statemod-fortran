@@ -45,6 +45,13 @@ c __________________________________________________________
 c
 c       Update History
 c
+c rrb 2021/08/10; Add array check to check for consistency
+c                   with monthly reporting.
+c                 Redefine max # of monthly return elements (ndlymxX)
+c                   from the values read from the monthly file to be
+c                   consistent with the values read from the daily
+c                   simulation (ndlymx / 30 +1 to allow monthly
+c                   updating in Bomsec
 c
 c rrb 2021/04/18; Compiler warning
 c rrb 2001/02/01; Revise read file numbers 
@@ -309,7 +316,7 @@ c                        or daily EOD contents (baseflow)
            endif
            write(nlog,118) 
  118      format(/, 72('_'),/    
-     1    ' Dayest; Opening Daily Historic Resrvoir EOD (*.eoy)')
+     1    ' Dayest; Opening Daily Historic Reservoir EOD (*.eoy)')
          endif 
 c
          ioptiox=2
@@ -409,9 +416,22 @@ c
 c rrb 2021/04/18; Compiler warning
 cx           ndlymx=amax0(ndlymx,ndly(idl))
              ndlymx=max(ndlymx,ndly(idl))
+
+c
+c ---------------------------------------------------------------------
+c rrb 2021/08/05; Update to store max daily return elements (ndlymxD)
+c                 and max monthly return elements (ndlymxX) to be
+c                 used in Bomsec when executing a daily model
+             ndlymxD=ndlymx
+             ndlymxX=(ndlymx/30) + 1
+
              numdld=ndlymx
              if(ndly(idl).gt.maxdld) then
+c
+c rrb 2021/08/05; Update to store max daily return elements (ndlymxD)
+cx             write(io99,110) maxdly
                write(io99,110) irtnid(idl),maxdly
+
                goto 9999
              endif
 c
@@ -456,7 +476,9 @@ c
 c ----------------------------------------------------------
 c               Step 9c; Return Flow - warn if dimension exceeded
 c
-         write(io99,110) maxdly
+c rrb 2021/08/05; Correction; maxdly is the max # of delay tables
+cx       write(io99,110) maxdly
+         write(io99,210) idl, maxdly
          goto 9999
 c
 c
@@ -484,7 +506,7 @@ c rrb 01/11/30; Calculate loss data based on daily returns, etc.
 c
 c
 c ----------------------------------------------------------
-c               Step 9e; Open Downstream Call file
+c               Step 9f; Open Downstream Call file
 cr    if(idcall.ne.0) then
         write(nlog,809)
         Write(6,809)
@@ -936,9 +958,20 @@ c               Step 22; Error Processing
 c
 c __________________________________________________________
 c               Formats
+c
+c rrb 2021/08/10; Revised output
   110 format(
      1 '  Dayest;'
-     1 ' Too many Daily delay tables in (*.dld),    Maximum = ',I5)
+     1 ' Too many Daily delay table elements in (*.dld)',/
+     1 '    Number of elements read = ', i5,
+     1 '    Maximum number of elements = ', I5)
+c
+c rrb 2021/08/10; Revised output
+  210 format(/, 72('_'),/
+     1 '  Dayest;'
+     1 ' Too many Daily delay tables in (*.dld).',/
+     1 '    Number  of tables read = ', i5,
+     1 '    Maximum number of tables= ', I5)
   120 format(
      1 '  Dayest;'
      1 ' The variable interv from the control file (*.ctl)',

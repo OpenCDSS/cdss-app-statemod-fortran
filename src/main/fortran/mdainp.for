@@ -53,6 +53,12 @@ c
 c _________________________________________________________
 c       Update History
 c
+c ---------------------------------------------------------------------
+c rrb 2021/08/05; Runtime error correction to store max delay elements
+c                 in both a monthly data set (ndlymxM), a daily data set
+c                 (ndlymxD) and monthly when running in a monthly or
+c                 daily time step (ndlymxX)
+c
 c rrb 2021/05/02; Runtime error tracking - Save issue
 c 
 c rrb 2021/04/18; Compiler warning
@@ -1094,6 +1100,15 @@ c     MAXDLZ=MAXDLY+1
       maxdlz=maxdly
       ndlymx = 0
 c
+c ---------------------------------------------------------------------
+c rrb 2021/08/05; Runtime error correction to store max delay elements
+c                 in both a monthly data set (ndlymxM), a daily data set
+c                 (ndlymxD) and monthly when running in a mnthly or daily
+c                 time step (ndlymxX)
+      ndlymxM=0
+      ndlymxD=0
+      ndlymxX=0
+c
 c ---------------------------------------------------------
 c rrb 01/02/01; Allow return and delay data to be a fraction
 c     
@@ -1201,7 +1216,7 @@ C
 c rrb 05/28/98; allow return id to not be the array counter
 c       IDLORD(IDLY)=IDL
 c
-c rrb 94/11/15 I/O check the total pattern equals 100%
+c rrb 94/11/15 I/O check the total pattern equals 100
 c rrb 96/03/18 Make number of return intervals a variable
 c
 c ---------------------------------------------------------
@@ -1215,6 +1230,16 @@ c rrb 01/02/01 Allow data to be entered by a fraction
          dlytot(idl) = dlytot(idl) + dlyrat(i,idl)
        end do
 c
+c
+c ---------------------------------------------------------------------
+c rrb 2021/08/05; Runtime error correction to store max return elements for
+c                 mnoths to be used for checking and in Bomsec.  Note:
+c                   ndlymxM is the max # of elements for a monthly model
+c                   ndlymxX is the max # of elements for a both a monthly
+c                     and daily model that gets reset in DayEst
+c
+      ndlymxM=ndlymx
+      ndlymxX=ndlymx
 c
 c ---------------------------------------------------------
 c

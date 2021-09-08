@@ -18,6 +18,14 @@ c     You should have received a copy of the GNU General Public License
 c     along with StateMod.  If not, see <https://www.gnu.org/licenses/>.
 c_________________________________________________________________NoticeEnd___
 C
+c
+c rrb 2021/08/05;   Added ndlymxM (max monthly return elements) for a
+c                           monthly model,
+c                         ndlymxD (max daily return elements) for a
+c                           daily model and
+c                         ndlymxX (max monthly return elements) for a
+c                           monthly or daily model (e.g. ndlymxD/30 + 1)
+c
 c smalers 2021-06-14  Add 'cli' common block for command line arguments.
 c
 c rrb 2021/02/14;   Add maxcary (max # of carriers) and revise
@@ -366,7 +374,13 @@ c _________________________________________________________
      1 iystr0, iyend0, maxdla, 
      1 maxdlm, maxrep, maxrea, numrea, maxio,  maxtrnw,
      1 maxoprin,maxparm, maxQdiv,
-     1 ndlymx, numtop, idallx, icall,  io99,   ftot,
+c
+c rrb 2021/08/10; Correction to store ndlymx by month (ndlymxM)
+c                 or day (ndlymxD) or monthly if running in
+c                 a daily mode (ndlymxM2)
+cx   1 ndlymx, numtop, idallx, icall,  io99,   ftot,
+     1 ndlymx, ndlymxM,ndlymxD,ndlymxX,
+     1         numtop, idallx, icall,  io99,   ftot,
      1 monisf, nisfinA,nisfinM,nrgfor, maxrg,  maxfn,
      1 maxgrp, numgrp, iinput,
      1 iwx, maxfile, infile,   nchk,   nlog,   ntmp,
