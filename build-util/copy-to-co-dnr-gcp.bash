@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Create and copy the StateCU executable zip file installer to the CO DNR GCP website:
+# Create and copy the StateMod executable zip file installer to the CO DNR GCP website:
 # - replace all the files on the web for the specific version with local files
 
 # Supporting functions, alphabetized.
@@ -34,7 +34,7 @@ createZip() {
   local sevenZip
 
   if [ -z "${statemodVersion}" ]; then
-    echoStderr "[ERROR] StateCU version is not set.  Cannot create zip file."
+    echoStderr "[ERROR] StateMod version is not set.  Cannot create zip file."
     return 1
   fi
 
@@ -58,7 +58,7 @@ createZip() {
   cp ${srcMainFolder}/statemod-${statemodVersion}-gfortran-win-64bit.exe ${buildFolder2}
   cp ${srcMainFolder}/statemod-${statemodVersion}-gfortran-win-64bit-check.exe ${buildFolder2}
   cp ${srcMainFolder}/statemod.cmd ${buildFolder2}
-  cp ${srcMainFolder}/statemod.bash ${buildFolder2}/statecu
+  cp ${srcMainFolder}/statemod.bash ${buildFolder2}/statemod
   # Zip the file using 7zip.
   sevenZip="/C/Program Files/7-Zip/7z.exe"
   if [ ! -f "${sevenZip}" ]; then
@@ -174,9 +174,9 @@ printUsage() {
   echoStderr ""
   echoStderr "Usage: ${scriptName} [options]"
   echoStderr ""
-  echoStderr "Copy the StateCU installer (zip file) to the versioned website folder:"
+  echoStderr "Copy the StateMod installer (zip file) to the versioned website folder:"
   echoStderr "  ${gsFolderVersion}"
-  echoStderr "Optionally, copy the StateCU installer (zip file) to 'latest' website folder if -l specified:"
+  echoStderr "Optionally, copy the StateMod installer (zip file) to 'latest' website folder if -l specified:"
   echoStderr "  ${gsFolderLatest}"
   echoStderr ""
   echoStderr "--debug                Turn on debug for troubleshooting."
@@ -290,6 +290,10 @@ if [ -z "${statemodVersion}" ]; then
   echoStderr "[ERROR] Cannot determine StateMod version by scanning:  ${statemSrcFile}"
   exit 1
 fi
+
+buildFolder="/tmp/statemod-build"
+buildFolder2="/tmp/statemod-build/statemod-cdss-${statemodVersion}"
+zipFile="${buildFolder}/statemod-cdss-${statemodVersion}.zip"
 
 # TODO smalers 2021-07-20 have moved to 64-bit executable so don't even deal with 32-bit anymore.
 bits=64
