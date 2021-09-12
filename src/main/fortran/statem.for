@@ -218,8 +218,8 @@ c                9 includes wells
 c                8 includes daily capability
 c                7 includes new binary output format
 c
-        ver = '17.0.2.dev1'
-        vdate = '2021/08/15'
+        ver = '17.0.2'
+        vdate = '2021/09/08'
 c
         rspexists = .FALSE.
         igui = 0

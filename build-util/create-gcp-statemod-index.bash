@@ -302,7 +302,7 @@ See the <a href="https://opencdss.state.co.us/statemod/latest/doc-user/">latest 
 for installation information (or follow a documentation link below for specific version documentation).
 <!-- The StateMod software is typically packaged with the StateMod Graphical User Interface (StateMod GUI)
 and can be included in the StateMod folder of datasets to ensure that a dataset is run with compatible version of StateMod.-->
-StateMod software can be included in the StateMod folder of datasets to ensure that a dataset is run with compatible version of StateMod.-->
+StateMod software can be included in the StateMod folder of datasets to ensure that a dataset is run with compatible version of StateMod.
 </p>
 <p>
 <ul>
