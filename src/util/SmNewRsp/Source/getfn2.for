@@ -9,7 +9,7 @@ c              new StateMod response file
 c
 c _________________________________________________________
 c
-c	Documentation
+c               Documentation
 c
 c               iin = response file number
 c               infile = 0 standard sequential input
@@ -18,7 +18,7 @@ c               maxfile = max number of files in *.rsp
 
 c               filena = first file read
 c               fileran = vector of random input files
-c              Tyical input is: '*.rsp = .rsp'
+c              Typical input is: '*.rsp = .rsp'
 c              or               'Response = Filename.rsp'
 c
        dimension ifileNum(55), fileName(55), FileType(55),
@@ -131,13 +131,13 @@ c               gis = gvp
 c
 c _______________________________________________________ 
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 
        infile=0
        nfsize=256
 c
-c		iout = 1 detailed output       
-c		       2 summary
+c      iout = 1 detailed output       
+c             2 summary
        iout= 2
        icomment=0
        FileN1=' '
@@ -155,7 +155,7 @@ c
 c      do 100 i=1,maxfile
        do 100 i=1,1000
 c
-c		Copy comment cards if icomment .ne. 0
+c        Copy comment cards if icomment .ne. 0
          if(icomment.eq.0) then
            call skipn(iin)
          else  
@@ -168,24 +168,21 @@ c		Copy comment cards if icomment .ne. 0
            endif
          endif  
          
-         
          read(iin,'(a256)',err=9999, end=500) filena
          if(iout.eq.1) write(nlog,*) ' Getfn2; filena = ', filena
          call getID(i, nlog,nfsize,ifound, filena,fileID1,fileN1)
 c        write(nlog,*) '  Getfn2; ifound', ifound , fileid1
 
-c
-c
-c               Check for a blank file and/or Sequential input
+c        Check for a blank file and/or Sequential input.
          if(ifound.eq.0) then
+           ! Error finding file.
            if(j1.eq.0) write(nlog,310)        
            goto 500
          else
            if(j1.eq.0 .and. iout.ge.2) write(nlog,202)
          endif
 
-c
-c               Find File Type
+c        Find File Type.
          ifound=0
 
          do j=1,maxfile
@@ -195,13 +192,18 @@ c               Find File Type
 c            write(nlog,*) ' Getfn2; j = ', j
              fileName(j) = FileN1
 c
-c		Skip if equal to *.dum
+c            Skip if equal to *.dum
              if(j.ne.48) then
-               write(nout,206)  fileType(j), fileN1
+               write(nout,206)  fileType(j), trim(fileN1)
              endif  
- 206         format(a40, '= ', a256)
+! smalers 2021-09-12 trim the output so line does not wrap in file when editing.
+!206         format(a40, '= ', a256)
+ 206         format(a40, '= ', a)
              if(iout.eq.2) then
-               write(nlog,204) j1, fileid1, filetype(j), fileN1
+               write(nlog,204) j1, fileid1, filetype(j), trim(fileN1)
+! smalers 2021-09-12 trim the output so line does not wrap in file when editing.
+!204           format(i5, 1x, a5, 1x, a40, 1x, a256)
+ 204           format(i5, 1x, a5, 1x, a40, 1x, a)
              endif
            endif
          end do
@@ -225,7 +227,6 @@ c               Formats
      1 ' Name',/
      1 ' ____ _____ ________________________________________',
      1 ' ',  72('_'))
- 204   format(i5, 1x, a5, 1x, a40, 1x, a256)
  300   format(/,'   ** Getfn2; Building a New StateMod response file')
  310   format(/,'   ** Getfn2; Problem reading response file type ', a5)
  320   format(
@@ -248,16 +249,21 @@ c _________________________________________________________
       goto 1000
 
  1440 format(
-     1 '  Stopped in getfn2, see the log file (*.log)')
+     1 '  Stopped in getfn2, see the log file (*.log).')
  1450 format(
-     1 '  Stopped in getfn2; Problem reading response (*.rsp) file')
+     1 '  Stopped in getfn2; Problem reading response (*.rsp) file.')
  1460 format(
      1 '  Stopped in getfn2; File ID not found ', a5)
 
  1000 write(6,*) 'Stop 1'
       call flush(6)
- 500  return
-      stop
+      ! TODO smalers 2021-09-12 should return error to calling code.
+      call exit(1)
+
+ 500  continue
+      ! Normal end of file.
+      return
+
       END
 c
 c *********************************************************
@@ -269,7 +275,7 @@ c
 c
 c _______________________________________________________ 
 c
-c               Step 1; Find file type
+c      Step 1; Find file type
 
        FileN1=' '
        FileId1='*.    '
@@ -290,15 +296,16 @@ c        if(ifound.eq.0 .and. filena(j:j).eq.'.') then
          endif
        end do
 
-       if(ifound.eq.0) goto 500
-
-       if(iout.eq.1) then
+       if(ifound.eq.0) then
+         write(nlog,*) ' '
+         write(nlog,100) i, 'NOT FOUND', fileN1
+       else if(iout.eq.1) then
          write(nlog,*) ' '
          write(nlog,100) i, fileId1, fileN1
        endif
 c
-c               Step 4; Return
- 500  return
+c     Return.
+      return
 c
 c               Formats
 c _______________________________________________________ 
@@ -309,4 +316,3 @@ c _______________________________________________________
 
       stop
       END
-

@@ -218,8 +218,8 @@ c                9 includes wells
 c                8 includes daily capability
 c                7 includes new binary output format
 c
-        ver = '17.0.2'
-        vdate = '2021/09/08'
+        ver = '17.0.3'
+        vdate = '2021/09/12'
 c
         rspexists = .FALSE.
         igui = 0
@@ -736,6 +736,9 @@ c ______________________________________________________________________
 c     Formats
   201   format(//
      1 ' Recent updates',/
+     1 '    - 2021/09/12 (17.0.3)',/
+     1 '      Increase length of commmand line arguments.',/
+c
      1 '    - 2021/08/15 (17.0.2.dev1)',/
      1 '      In response to a compiler warning in JMflow:',/
      1 '        Revised Execut to initialize pctB, pctE, AveB and ',/
