@@ -6,11 +6,11 @@ c
 c     
 c      Getfn; Subroutine that reads in files in any order         
 c              and parses thru them to get actual file name
-c               Tyical input is *.rsp = FileName
+c               Typical input is *.rsp = FileName
 c
 c _________________________________________________________
 c
-c	Documentation
+c      Documentation
 c
 c               iin = response file number
 c               infile = 0 standard sequential input
@@ -19,7 +19,7 @@ c               maxfile = max number of files in *.rsp
 
 c               filena = first file read
 c               fileran = vector of random input files
-c              Tyical input is: '*.rsp = .rsp'
+c              Typical input is: '*.rsp = .rsp'
 c              or               'Response = Filename.rsp'
 c
        dimension ifileNum(55), fileName(55), FileType(55),
@@ -124,11 +124,11 @@ c       *.rid = 81 *.ddd=82, *.wed=84, *.eod=85
 c
 c       *.ri?=86 *.ri?=87 *.ri?=88 *.str=89
      1  86, 87, 88, 55,     
-     1   4*0/
+     1   12*0/     ! Add enough zeros to add up to ifileNx dimension
 c
 c _______________________________________________________ 
 c
-c               Step 1; Initilize
+c               Step 1; Initialize
 
        infile=0
        nfsize=256
@@ -337,4 +337,3 @@ c _______________________________________________________
      1 '           Name        = ', a256)
       stop 
       END
-

@@ -698,8 +698,8 @@ cx     1  12x,'Plan Return Type in the Plan Station File (*.pln).')
  930    format(/,72('_'),/
      1  ' GetPln; Problem provided a plan file but number of ',
      1           'plans read = ',i5,/
-     1  '         Reconmmend you check plan input or remove the file',/
-     1  '         Note an inital plan storage is required on input') 
+     1  '         Recommend you check plan input or remove the file',/
+     1  '         Note an initial plan storage is required on input.')
 
  940  format(4x, a256)
      
@@ -707,7 +707,7 @@ cx     1  12x,'Plan Return Type in the Plan Station File (*.pln).')
      1  '  GetPln; Problem with Plan ID = ', a12,' the location = ',/
      1  '          ',a12,' cannot be found in the river station ',/
      1  '          (*.rin) file',/
-     1  '          recommend you add to the river station file')
+     1  '          recommend you add to the river station file.')
      
 cx 960  format(/, 72('_'), /,'  GetPln; ',
 cx     1     'Problem with Plan ID = ', a12,' Plan Type = ', i5,/

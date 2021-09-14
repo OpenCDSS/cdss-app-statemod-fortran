@@ -2,7 +2,7 @@ C     Last change:  RRB  28 Aug 2002    4:00 pm
 c                            
 c ************************************************************
 c
-c               skipn it skips any number of comment cards identified
+c       skipn - skips any number of comment cards identified
 c               as a '#' in column 1 from a data file (nf)
 c
         subroutine skipn(nf)
@@ -14,7 +14,7 @@ c
         io99=99
         iout=0
 c
-c              Check first record and store for use on this file
+c       Check first record and store for use on this file.
  100    read(nf,500,end=926,err=928) rec1
         if(iout.eq.1) write(io99,500) rec1
 c
@@ -25,7 +25,7 @@ c
           goto 999
         endif        
 c                                                                
-c              Check subsequent records
+c       Check subsequent records.
  110    read(nf,500,end=926,err=928) rec1
         if(iout.eq.1) write(io99,500) rec1
 c
@@ -65,8 +65,3 @@ c
       call flush(6)
       stop 
       end
-
-
-
-
-

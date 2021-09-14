@@ -76,7 +76,7 @@ c rrb 00/08/04; Revise maximum command line length
         ! Variables for the new command line argument functions.
         character(len=512) :: cmdline
         integer iarg
-        ! smalers 2021-09-12 increase size to handle rsp file with full path.
+        ! smalers 2021-09-12 increase size because passing rsp file with full path
         !character(len=100) :: dummy
         !character(len=100) :: arg
         character(len=256) :: dummy
@@ -401,12 +401,13 @@ c     Initialize
           else if ( (iarglen > 6) .AND. (arg(1:6) == '--log=' )) then
             ! Use the original argument length below to get the substring.
             clog=arg(7:(len(arg)-6))
-            call logsetlevel(clog,ierror)
-            if ( ierror > 0 ) then
-              write(nlog,*)
-     +        'Error in syntax (should be similar to --log=ioutp=1): ',
-     +        arg
-            endif
+! TODO smalers 2021-09-12 Comment out since don't need for SmNewRsp.
+!           call logsetlevel(clog,ierror)
+!           if ( ierror > 0 ) then
+!             write(nlog,*)
+!    +        'Error in syntax (should be similar to --log=ioutp=1): ',
+!    +        arg
+!           endif
 
           ! Other dash option is an error if not recognized above.
 

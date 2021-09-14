@@ -452,7 +452,7 @@ c               Formats
      1 '  GetPlnW;  ',
      1     'Problem provided a plan file but the number of ',
      1           'well plans read = ',i5,/
-     1 12x,'Reconmmend you check plan input or remove the file')
+     1 12x,'Recommend you check plan input or remove the file')
      
  228  format(/,72('_'),/
      1 '  GetPlnW;  ',

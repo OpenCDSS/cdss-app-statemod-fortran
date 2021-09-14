@@ -32,7 +32,7 @@ c
 c _________________________________________________________
 c		Local dimensions, etc.        
         character command*127, want*12, want2*12, rec12*12, 
-     1            getid*12,    wantx*10, titleh*50,
+     1            getid*12,    wantx*12, titleh*50,
      1            gettyp*12,   getpar*12
 
         data want/

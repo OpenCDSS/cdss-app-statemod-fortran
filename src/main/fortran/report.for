@@ -1496,7 +1496,7 @@ c
   246 format(
      1 '  Report; Problem random response file (*.rsp) ',/
      1 '          format required. ',/
-     1 '          Reconmned you revise response file (*.rsp)')
+     1 '          Recommend you revise response file (*.rsp)')
 c
 c _________________________________________________________
 c               Unsuccessful termination Messages
